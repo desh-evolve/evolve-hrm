@@ -34,9 +34,10 @@ async function commonDeleteFunction(itemId, deleteUrl, itemName, $row = null) {
     // Attach an event listener to the "Yes, Delete It!" button
     $('#delete-confirm').off('click').on('click', async function() {
         try {
+
             // Send DELETE request using Fetch API
             const response = await fetch(`${deleteUrl}/${itemId}`, {
-                method: 'PUT',  // soft delete
+                method: 'DELETE', 
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for Laravel

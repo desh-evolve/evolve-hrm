@@ -15,7 +15,7 @@ class LocationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user', ['only' => [
+        $this->middleware('permission:view locations', ['only' => [
             'index', 
             'getAllCountries', 
             'getCountryByCountryId', 
@@ -26,9 +26,9 @@ class LocationController extends Controller
             'getCityByCityId', 
             'getCitiesByProvinceId'
         ]]);
-        $this->middleware('permission:create user', ['only' => ['createCountry', 'createProvince', 'createCity']]);
-        $this->middleware('permission:update user', ['only' => ['updateCountry', 'updateProvince', 'updateCity']]);
-        $this->middleware('permission:delete user', ['only' => ['deleteCountry', 'deleteProvince', 'deleteCity']]);
+        $this->middleware('permission:create locations', ['only' => ['createCountry', 'createProvince', 'createCity']]);
+        $this->middleware('permission:update locations', ['only' => ['updateCountry', 'updateProvince', 'updateCity']]);
+        $this->middleware('permission:delete locations', ['only' => ['deleteCountry', 'deleteProvince', 'deleteCity']]);
 
         $this->common = new CommonModel();
     }
@@ -73,11 +73,6 @@ class LocationController extends Controller
  
     public function updateCountry(Request $request, $id)
     {
-        $request->validate([
-            'country_name' => 'required',
-            'country_code' => 'required',
-        ]);
-
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
@@ -96,9 +91,9 @@ class LocationController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Country  added successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Country updated successfully' , 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed adding Country', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating Country', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -166,21 +161,31 @@ class LocationController extends Controller
     
     public function updateProvince(Request $request, $id)
     {
-        $request->validate([
-            'province_name' => 'required',
-            'country_id' => 'required',
-        ]);
-        $record = $this->province->getSingleRecord($id);
-        if ($record) {
-            $data = [
-                'province_name' => $request->province_name,
-                'country_id' => $request->country_id,
-                'updated_by' => Auth::user()->id,
-            ];
-            $this->province->updateRecord($id, $data);
-            return response()->json(['status' => 'success', 'message' => 'Province updated successfully',  'data' => ['id' => $id]], 200);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'Failed updating province', 'data' => []], 404);
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                $request->validate([
+                    'province_name' => 'required',
+                    'country_id' => 'required',
+                ]);
+
+                $table = 'loc_provinces';
+                $idColumn = 'id';
+                $inputArr = [
+                    'province_name' => $request->province_name,
+                    'country_id' => $request->country_id,
+                    'updated_by' => Auth::user()->id,
+                ];
+
+                $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+
+                if ($insertId) {
+                    return response()->json(['status' => 'success', 'message' => 'Province updated successfully' , 'data' => ['id' => $insertId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating province', 'data' => []], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
 
@@ -203,8 +208,15 @@ class LocationController extends Controller
         return response()->json(['data' => $provinces], 200);
     }
 
-    public function getProvinceByProvinceId(){}
-    public function getProvincesByCountryId(){}
+    public function getProvinceByProvinceId($id){
+        $idColumn = 'id';
+        $table = 'loc_provinces';
+        $fields = '*';
+        $provinces = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $provinces], 200);
+    }
+
+    public function getProvincesByCountryId($id){}
 
     //================================================================================================================================
     // city
@@ -241,21 +253,31 @@ class LocationController extends Controller
 
     public function updateCity(Request $request, $id)
     {
-        $request->validate([
-            'country_name' => 'required',
-            'province_id' => 'required',
-        ]);
-        $record = $this->city->getSingleRecord($id);
-        if ($record) {
-            $data = [
-                'city_name' => $request->city_name,
-                'province_id' => $request->province_id,
-                'updated_by' => Auth::user()->id,
-            ];
-            $this->city->updateRecord($id, $data);
-            return response()->json(['status' => 'success', 'message' => 'City updated successfully',  'data' => ['id' => $id]], 200);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'Failed updating city', 'data' => []], 404);
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                $request->validate([
+                    'city_name' => 'required',
+                    'province_id' => 'required',
+                ]);
+
+                $table = 'loc_cities';
+                $idColumn = 'id';
+                $inputArr = [
+                    'city_name' => $request->city_name,
+                    'province_id' => $request->province_id,
+                    'updated_by' => Auth::user()->id,
+                ];
+
+                $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+
+                if ($insertId) {
+                    return response()->json(['status' => 'success', 'message' => 'City updated successfully' , 'data' => ['id' => $insertId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating city', 'data' => []], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
 
@@ -284,8 +306,15 @@ class LocationController extends Controller
         return response()->json(['data' => $cities], 200);
     }
 
-    public function getCityByCityId(){}
-    public function getCitiesByProvinceId(){}
+    public function getCityByCityId($id){
+        $idColumn = 'id';
+        $table = 'loc_cities';
+        $fields = '*';
+        $cities = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $cities], 200);
+    }
+
+    public function getCitiesByProvinceId($id){}
 
 
 }
