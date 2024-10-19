@@ -57,7 +57,7 @@
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-success" id="location-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-primary" id="location-submit-confirm">Submit</button>
                     </div>
                 </div>
 
@@ -83,6 +83,7 @@
             $('.type-btn').removeClass('btn-primary').addClass('btn-outline-primary');
             $(this).removeClass('btn-outline-primary').addClass('btn-primary');
             type = $(this).data('type');
+            renderTableHeader(type);
             renderTableBody(type);
         });
 
