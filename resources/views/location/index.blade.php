@@ -54,9 +54,10 @@
 
 
                     </div>
+                    <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-danger" id="location-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-success" id="location-submit-confirm">Submit</button>
                     </div>
                 </div>
 
@@ -204,7 +205,7 @@
         //======================================================================================================
 
         $(document).on('click', '#add_new_btn', function(){
-            loadForm();
+            loadForm(type, "");
         })
 
         $(document).on('click', '.click_edit', async function(){
@@ -214,60 +215,58 @@
 
         $(document).on('click', '#location-submit-confirm', async function () {
             const location_id = $('#location_id').val();
-            let url = '';
-            let formData = new FormData();
+            const formData = new FormData();
+            
+            const typeToUrl = {
+                country: { create: '/location/country/create', update: `/location/country/update/${location_id}` },
+                province: { create: '/location/province/create', update: `/location/province/update/${location_id}` },
+                city: { create: '/location/city/create', update: `/location/city/update/${location_id}` }
+            };
 
-            if (type === 'country') {
-                const country_name = $('#country_name').val();
-                const country_code = $('#country_code').val();
+            const formFields = {
+                country: { name: 'country_name', code: 'country_code' },
+                province: { country_id: 'country_id', name: 'province_name' },
+                city: { province_id: 'province_id', name: 'city_name' }
+            };
 
-                if (!country_name || !country_code) return;
+            const data = formFields[type];
+            if (!data) return;
 
-                url = '/location/country/create';
-                formData.append('country_name', country_name);
-                formData.append('country_code', country_code);
-            } 
-            else if (type === 'province') {
-                const country_id = $('#country_id').val();
-                const province_name = $('#province_name').val();
-
-                if (!country_id || !province_name) return;
-
-                url = '/location/province/create';
-                formData.append('country_id', country_id);
-                formData.append('province_name', province_name);
-            } 
-            else {
-                const province_id = $('#province_id').val();
-                const city_name = $('#city_name').val();
-
-                if (!province_id || !city_name) return;
-
-                url = '/location/city/create';
-                formData.append('province_id', province_id);
-                formData.append('city_name', city_name);
+            // Validate required fields
+            for (const key in data) {
+                const value = $('#' + data[key]).val(); // If any required field is missing, return
+                if (!value){
+                    $('#error-msg').html('<p class="text-danger">All fields are required!</p>')
+                    return;
+                }else{
+                    $('#error-msg').html('');
+                }  
+                formData.append(data[key], value);
             }
 
-            // Append common data
-            if (location_id) {
+            // Append location_id if updating
+            const isUpdating = Boolean(location_id);
+            let url = isUpdating ? typeToUrl[type].update : typeToUrl[type].create;
+            let method = 'POST';
+            if (isUpdating){
                 formData.append('location_id', location_id);
+                method = 'PUT';
             }
 
-            let res = await commonSaveData(url, formData);
-            
-            if(res.status === 'success'){
-                await commonAlert('success', res.message);
+            // Send data and handle response
+            let res = await commonSaveData(url, formData, method);
+            await commonAlert(res.status, res.message);
+
+            if (res.status === 'success') {
                 await renderTableBody(type);
-            }else{
-                await commonAlert('error', res.message);
+                $('#location-form-modal').modal('hide');
             }
-            
-            $('#location-form-modal').modal('hide');
-
         });
 
+
         async function loadForm(type, id = "") {
-            let title = `${id === "" ? 'Add' : 'Edit'} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            $('#error-msg').html('');
+            let title = `${id === "" ? 'Add' : 'Edit'} ${type}`;
             let list = `<input type="hidden" id="location_id" value="${id}">`;
 
             let values = {};

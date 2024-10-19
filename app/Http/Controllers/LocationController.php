@@ -77,17 +77,32 @@ class LocationController extends Controller
             'country_name' => 'required',
             'country_code' => 'required',
         ]);
-        $record = $this->country->getSingleRecord($id);
-        if ($record) {
-            $data = [
-                'country_name' => $request->country_name,
-                'country_code' => $request->country_code,
-                'updated_by' => Auth::user()->id,
-            ];
-            $this->country->updateRecord($id, $data);
-            return response()->json(['status' => 'success', 'message' => 'Country updated successfully',  'data' => ['id' => $id]], 200);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'Failed updating Country', 'data' => []], 404);
+
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                $request->validate([
+                    'country_name' => 'required',
+                    'country_code' => 'required',
+                ]);
+
+                $table = 'loc_countries';
+                $idColumn = 'id';
+                $inputArr = [
+                    'country_name' => $request->country_name,
+                    'country_code' => $request->country_code,
+                    'updated_by' => Auth::user()->id,
+                ];
+
+                $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+
+                if ($insertId) {
+                    return response()->json(['status' => 'success', 'message' => 'Country  added successfully' , 'data' => ['id' => $insertId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed adding Country', 'data' => []], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
 

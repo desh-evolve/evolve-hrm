@@ -78,7 +78,9 @@ async function commonFetchData(url) {
 }
 
 //desh(2024-10-18)
-async function commonSaveData(url, formData) {
+async function commonSaveData(url, formData, method = "POST") {
+    formData.append('_method', method);
+
     let errorResponse = {
         status: 'error',
         message: 'Something went wrong!',
@@ -87,7 +89,7 @@ async function commonSaveData(url, formData) {
 
     try {
         const response = await fetch(url, {
-            method: 'POST',              // Set the method to POST
+            method: 'POST',              // Set the method to POST when save and PUT when update
             body: formData,              // Send the FormData
             headers: {
                 'Accept': 'application/json',  // Ensure the server responds with JSON
