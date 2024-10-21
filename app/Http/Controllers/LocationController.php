@@ -15,7 +15,7 @@ class LocationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view locations', ['only' => [
+        $this->middleware('permission:view location', ['only' => [
             'index', 
             'getAllCountries', 
             'getCountryByCountryId', 
@@ -26,13 +26,14 @@ class LocationController extends Controller
             'getCityByCityId', 
             'getCitiesByProvinceId'
         ]]);
-        $this->middleware('permission:create locations', ['only' => ['createCountry', 'createProvince', 'createCity']]);
-        $this->middleware('permission:update locations', ['only' => ['updateCountry', 'updateProvince', 'updateCity']]);
-        $this->middleware('permission:delete locations', ['only' => ['deleteCountry', 'deleteProvince', 'deleteCity']]);
+        $this->middleware('permission:create location', ['only' => ['createCountry', 'createProvince', 'createCity']]);
+        $this->middleware('permission:update location', ['only' => ['updateCountry', 'updateProvince', 'updateCity']]);
+        $this->middleware('permission:delete location', ['only' => ['deleteCountry', 'deleteProvince', 'deleteCity']]);
 
         $this->common = new CommonModel();
     }
 
+    //desh(2024-10-18)
     public function index()
     {
         return view('location.index');
@@ -41,6 +42,8 @@ class LocationController extends Controller
     //================================================================================================================================
     // country
     //================================================================================================================================
+    
+    //desh(2024-10-18)
     public function createCountry(Request $request)
     {
         try {
@@ -71,6 +74,7 @@ class LocationController extends Controller
         }
     }
  
+    //desh(2024-10-18)
     public function updateCountry(Request $request, $id)
     {
         try {
@@ -101,6 +105,7 @@ class LocationController extends Controller
         }
     }
 
+    //desh(2024-10-18)
     public function deleteCountry($id)
     {
         $whereArr = ['id' => $id];
@@ -110,6 +115,7 @@ class LocationController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
+    //desh(2024-10-18)
     public function getAllCountries()
     {
         $table = 'loc_countries';
@@ -118,6 +124,7 @@ class LocationController extends Controller
         return response()->json(['data' => $countries], 200);
     }
 
+    //desh(2024-10-18)
     public function getCountryByCountryId($id){
         $idColumn = 'id';
         $table = 'loc_countries';
@@ -129,6 +136,8 @@ class LocationController extends Controller
     //================================================================================================================================
     // province
     //================================================================================================================================
+    
+    //desh(2024-10-18)
     public function createProvince(Request $request)
     {
         try {
@@ -159,6 +168,7 @@ class LocationController extends Controller
         }
     }
     
+    //desh(2024-10-18)
     public function updateProvince(Request $request, $id)
     {
         try {
@@ -189,6 +199,7 @@ class LocationController extends Controller
         }
     }
 
+    //desh(2024-10-18)
     public function deleteProvince($id)
     {
         $whereArr = ['id' => $id];
@@ -198,6 +209,7 @@ class LocationController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
+    //desh(2024-10-18)
     public function getAllProvinces()
     {
         $table = 'loc_provinces';
@@ -208,6 +220,7 @@ class LocationController extends Controller
         return response()->json(['data' => $provinces], 200);
     }
 
+    //desh(2024-10-18)
     public function getProvinceByProvinceId($id){
         $idColumn = 'id';
         $table = 'loc_provinces';
@@ -216,11 +229,14 @@ class LocationController extends Controller
         return response()->json(['data' => $provinces], 200);
     }
 
+    //desh(2024-10-18)
     public function getProvincesByCountryId($id){}
 
     //================================================================================================================================
     // city
     //================================================================================================================================
+    
+    //desh(2024-10-18)
     public function createCity(Request $request)
     {
         try {
@@ -251,6 +267,7 @@ class LocationController extends Controller
         }
     }
 
+    //desh(2024-10-18)
     public function updateCity(Request $request, $id)
     {
         try {
@@ -281,6 +298,7 @@ class LocationController extends Controller
         }
     }
 
+    //desh(2024-10-18)
     public function deleteCity($id)
     {
         $whereArr = ['id' => $id];
@@ -290,6 +308,7 @@ class LocationController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
+    //desh(2024-10-18)
     public function getAllCities()
     {
         $table = 'loc_cities';
@@ -306,6 +325,7 @@ class LocationController extends Controller
         return response()->json(['data' => $cities], 200);
     }
 
+    //desh(2024-10-18)
     public function getCityByCityId($id){
         $idColumn = 'id';
         $table = 'loc_cities';
@@ -314,6 +334,7 @@ class LocationController extends Controller
         return response()->json(['data' => $cities], 200);
     }
 
+    //desh(2024-10-18)
     public function getCitiesByProvinceId($id){}
 
 

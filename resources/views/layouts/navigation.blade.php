@@ -167,7 +167,7 @@
                     >
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('company.index') }}" class="nav-link {{ request()->routeIs('company.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.info') }}" class="nav-link {{ request()->routeIs('company.info') ? 'active' : '' }}">
                                     Company Information
                                 </a>
                             </li>
@@ -176,7 +176,11 @@
                                     Locations
                                 </a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Branches/Departments</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.branch.index') }}" class="nav-link {{ request()->routeIs('company.branch.index') ? 'active' : '' }}">
+                                    Branch Management
+                                </a>
+                            </li>
                             <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Designations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Wage Groups</a></li>
