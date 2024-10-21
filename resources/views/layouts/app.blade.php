@@ -1,3 +1,4 @@
+<!-- desh(2024-10-14) -->
 <!DOCTYPE html>
 
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
@@ -112,13 +113,14 @@
     
         </div>
 
-        @include('layouts.delete')
+        <!-- common functions -->
+        @include('layouts.common')
 
-        <!--start back-to-top-->
+        <!--start back-to-top
         <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
             <i class="ri-arrow-up-line"></i>
         </button>
-        <!--end back-to-top-->
+        end back-to-top-->
 
         <!--preloader-->
         <div id="preloader">

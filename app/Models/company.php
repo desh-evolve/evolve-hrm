@@ -12,7 +12,7 @@ class Company extends Model
     use HasFactory;
 
     // Table associated with the model
-    protected $table = 'companies';
+    protected $table = 'com_companies';
 
     // Fields that are mass assignable
     protected $fillable = [
@@ -64,7 +64,7 @@ class Company extends Model
      */
     public function storeRecord($data)
     {
-        return $this->common->storeRecord('companies', $data);
+        return $this->common->storeRecord('com_companies', $data);
     }
 
     /**
@@ -76,7 +76,7 @@ class Company extends Model
      */
     public function updateRecord($id, $data)
     {
-        return $this->common->updateRecord('companies', $id, $data);
+        return $this->common->updateRecord('com_companies', $id, $data);
     }
 
     /**
@@ -86,7 +86,7 @@ class Company extends Model
      */
     public function getAllRecords()
     {
-        return $this->common->getAllRecords('companies');
+        return $this->common->getAllRecords('com_companies');
     }
 
     /**
@@ -97,7 +97,7 @@ class Company extends Model
      */
     public function getSingleRecord($id)
     {
-        return $this->common->getSingleRecord('companies', $id);
+        return $this->common->getSingleRecord('com_companies', $id);
     }
 
     /**
@@ -109,6 +109,6 @@ class Company extends Model
      */
     public function destroyRecord($id, $data)
     {
-        return $this->common->destroyRecord('companies', $id, $data);
+        return $this->common->destroyRecord('com_companies', $id, $data);
     }
 }

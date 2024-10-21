@@ -32,10 +32,10 @@ class UserRolePermissionSeeder extends Seeder
         Permission::create(['name' => 'update user', 'type' => 'User']);
         Permission::create(['name' => 'delete user', 'type' => 'User']);
 
-        Permission::create(['name' => 'view product', 'type' => 'Product']);
-        Permission::create(['name' => 'create product', 'type' => 'Product']);
-        Permission::create(['name' => 'update product', 'type' => 'Product']);
-        Permission::create(['name' => 'delete product', 'type' => 'Product']);
+        Permission::create(['name' => 'view location', 'type' => 'Location']);
+        Permission::create(['name' => 'create location', 'type' => 'Location']);
+        Permission::create(['name' => 'update location', 'type' => 'Location']);
+        Permission::create(['name' => 'delete location', 'type' => 'Location']);
 
 
         // Create Roles
@@ -50,10 +50,10 @@ class UserRolePermissionSeeder extends Seeder
         $superAdminRole->givePermissionTo($allPermissionNames);
 
         // Let's give few permissions to admin role.
-        $adminRole->givePermissionTo(['create role', 'view role', 'update role']);
-        $adminRole->givePermissionTo(['create permission', 'view permission']);
-        $adminRole->givePermissionTo(['create user', 'view user', 'update user']);
-        $adminRole->givePermissionTo(['create product', 'view product', 'update product']);
+        $adminRole->givePermissionTo(['create role', 'view role', 'update role', 'delete role']);
+        $adminRole->givePermissionTo(['create permission', 'view permission', 'delete permission']);
+        $adminRole->givePermissionTo(['create user', 'view user', 'update user', 'delete user']);
+        $adminRole->givePermissionTo(['create location', 'view location', 'update location', 'delete location']);
 
 
         // Let's Create User and assign Role to it.

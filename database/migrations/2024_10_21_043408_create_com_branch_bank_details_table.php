@@ -4,32 +4,29 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateComBranchBankDetailsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-
-        Schema::create('com_industries', function (Blueprint $table) {
+        Schema::create('com_branch_bank_details', function (Blueprint $table) {
             $table->id();
-            $table->string('industry_name');
-
+            $table->unsignedBigInteger('branch_id');
+            $table->string('bank_name');
+            $table->string('bank_code');
+            $table->string('bank_branch');
+            $table->string('bank_account');
+            
             $table->string('status')->default('active')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->nullable();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->integer('updated_by')->nullable();
         });
-        
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('com_industries');
+        Schema::dropIfExists('com_branch_bank_details');
     }
-};
+}
+

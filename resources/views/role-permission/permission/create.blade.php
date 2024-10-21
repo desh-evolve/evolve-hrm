@@ -23,6 +23,10 @@
                             @csrf
 
                             <div class="mb-3">
+                                <label for="">Permission Type</label>
+                                <input type="text" name="type" class="form-control" />
+                            </div>
+                            <div class="mb-3">
                                 <label for="">Permission Name</label>
                                 <input type="text" name="name" class="form-control" />
                             </div>

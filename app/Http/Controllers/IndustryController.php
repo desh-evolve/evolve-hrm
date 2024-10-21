@@ -33,8 +33,8 @@ class IndustryController extends Controller
         return view('industry.index', ['industries' => $industries]);
     }
      
-     public function create(Request $request)
-     {
+    public function create(Request $request)
+    {
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
@@ -59,18 +59,18 @@ class IndustryController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'Error occurred due to ' . $e->getMessage(), 'error_code' => 500], 500);
         }
-     }
+    }
 
      
-     public function edit($id)
-     {
+    public function edit($id)
+    {
          $student = Industry::findOrFail($id);
          return 'industry.edit';
-     }
+    }
  
      
-     public function update(Request $request, $id)
-     {
+    public function update(Request $request, $id)
+    {
         $request->validate([
             'industry_name' => 'required',
             // 'company_id' => 'required',
@@ -88,20 +88,20 @@ class IndustryController extends Controller
         } else {
             return response()->json(['message' => 'No Department Found', 'data' => []], 404);
         }
-     }
+    }
 
-     public function show($id)
-     {
+    public function show($id)
+    {
         $data = $this->industry->getSingleRecord($id);
         if ($data) {
             return response()->json(['industries' => $data[0]], 200);
         } else {
             return response()->json(['message' => 'No industry Found'], 404);
         }
-     }
+    }
 
-     public function delete($id)
-     {
+    public function delete($id)
+    {
         $record = $this->industry->getSingleRecord($id);
         if ($record) {
             $data = [
@@ -114,6 +114,6 @@ class IndustryController extends Controller
         } else {
             return response()->json(['message' => 'No Department Found', 'data' => []], 404);
         }
-     }
+    }
     
 }

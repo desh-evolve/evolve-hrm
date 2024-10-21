@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('com_companies', function (Blueprint $table) {
             $table->id();
             $table->string('company_name'); // Company name (up to 255 characters)
             $table->string('company_short_name')->nullable(); // Optional short name
@@ -35,14 +35,11 @@ return new class extends Migration
             $table->string('logo_small')->nullable(); // Small logo file path
             $table->string('website')->nullable(); // Company website URL 
 
-            $table->string('status')->nullable();  
-            $table->dateTime('created_date')->nullable();
+            $table->string('status')->default('active')->nullable();
+            $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->nullable();
-            $table->dateTime('updated_date')->nullable();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->integer('updated_by')->nullable();
-            $table->dateTime('deleted_date')->nullable();
-            $table->integer('deleted_by')->nullable();
-            $table->timestamps();
         });
     }
 
@@ -51,6 +48,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('com_companies');
     }
 };

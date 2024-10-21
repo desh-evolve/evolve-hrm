@@ -32,7 +32,7 @@ class CurrencyController extends Controller
         return view('countries.index', ['countries' => $countries]);
     }
     public function create(Request $request)
-     {
+    {
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
@@ -61,17 +61,17 @@ class CurrencyController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['message' => 'Error occurred due to ' . $e->getMessage(), 'error_code' => 500], 500);
         }
-     }
+    }
 
-     public function edit($id)
-     {
+    public function edit($id)
+    {
          $student = Currency::findOrFail($id);
          return 'countries.edit';
-     }
+    }
  
      
-     public function update(Request $request, $id)
-     {
+    public function update(Request $request, $id)
+    {
         $request->validate([
             'currency_name' => 'required',
             'conversion_rate' => 'required',
@@ -93,20 +93,20 @@ class CurrencyController extends Controller
         } else {
             return response()->json(['message' => 'No Department Found', 'data' => []], 404);
         }
-     }
+    }
 
-     public function show($id)
-     {
+    public function show($id)
+    {
         $data = $this->currency->getSingleRecord($id);
         if ($data) {
             return response()->json(['currency' => $data[0]], 200);
         } else {
             return response()->json(['message' => 'No industry Found'], 404);
         }
-     }
+    }
 
-     public function delete($id)
-     {
+    public function delete($id)
+    {
         $record = $this->currency->getSingleRecord($id);
         if ($record) {
             $data = [
@@ -119,5 +119,5 @@ class CurrencyController extends Controller
         } else {
             return response()->json(['message' => 'No currency Found', 'data' => []], 404);
         }
-     }
+    }
 }

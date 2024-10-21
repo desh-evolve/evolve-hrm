@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cities', function (Blueprint $table) {
+        Schema::create('loc_cities', function (Blueprint $table) {
             $table->id();
             $table->string('city_name');
             $table->unsignedBigInteger('province_id')->nullable(); 
-            $table->string('status')->nullable(); 
-            $table->dateTime('created_date')->nullable();
+
+            $table->string('status')->default('active')->nullable();
+            $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->nullable();
-            $table->dateTime('updated_date')->nullable();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->integer('updated_by')->nullable();
-            $table->dateTime('deleted_date')->nullable();
-            $table->integer('deleted_by')->nullable();
-            $table->timestamps();
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cities');
+        Schema::dropIfExists('loc_cities');
     }
 };
