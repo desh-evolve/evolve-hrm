@@ -112,7 +112,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::delete('/company/department/delete/{id}', [BranchController::class, 'deleteDepartment'])->name('company.department.delete');
     Route::get('/company/departments', [BranchController::class, 'getAllDepartments'])->name('company.departments.all');
     Route::get('/company/department/{id}', [BranchController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
-    Route::get('/company/departments/{countryId}', [BranchController::class, 'getDepartmentsByBranchId'])->name('company.departments.getByBranchId');
+    Route::get('/company/departments/{branchId}', [BranchController::class, 'getDepartmentsByBranchId'])->name('company.departments.getByBranchId');
     
     // Divisions routes
     Route::post('/company/division/create', [BranchController::class, 'createDivision'])->name('company.division.create');
@@ -120,7 +120,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::delete('/company/division/delete/{id}', [BranchController::class, 'deleteDivision'])->name('company.division.delete');
     Route::get('/company/divisions', [BranchController::class, 'getAllDivisions'])->name('company.divisions.all');
     Route::get('/company/division/{id}', [BranchController::class, 'getDivisionByDivisionId'])->name('company.division.getById');
-    Route::get('/company/divisions/{provinceId}', [BranchController::class, 'getDivisionsByDepartmentId'])->name('company.divisions.getByDepartmentId');
+    Route::get('/company/divisions/{departmentId}', [BranchController::class, 'getDivisionsByDepartmentId'])->name('company.divisions.getByDepartmentId');
     
     //==============================================================================================================================
     // Company

@@ -1,7 +1,7 @@
 <!-- desh(2024-10-18) -->
 <x-app-layout :title="'Input Example'">
     <x-slot name="header">
-        <h4 class="mb-sm-0">{{ __('Locations') }}</h4>
+        <h4 class="mb-sm-0">{{ __('Location Management') }}</h4>
 
         <!--
         <div class="page-title-right">
@@ -144,10 +144,8 @@
                 if (type === 'country') {
                     items = await commonFetchData(`/location/countries`);
                 } else if (type === 'province') {
-                    countries = await commonFetchData(`/location/countries`);
                     items = await commonFetchData(`/location/provinces`);
                 } else if (type === 'city') {
-                    provinces = await commonFetchData(`/location/provinces`);
                     items = await commonFetchData(`/location/cities`);
                 }
 

@@ -185,7 +185,6 @@
                             <li class="nav-item"><a href="#" class="nav-link">Designations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Wage Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
                         </ul>
                     </div>
                 </li>

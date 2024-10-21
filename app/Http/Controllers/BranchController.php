@@ -151,8 +151,13 @@ class BranchController extends Controller
     public function getAllBranches()
     {
         $table = 'com_branches';
-        $fields = '*';
-        $branches = $this->common->commonGetAll($table, $fields);
+        $fields = ['com_branches.*', 'com_branches.id as id', 'loc_countries.country_name', 'loc_provinces.province_name', 'loc_cities.city_name'];
+        $joinsArr = [
+            'loc_countries' => ['loc_countries.id', '=', 'com_branches.country_id'],
+            'loc_provinces' => ['loc_provinces.id', '=', 'com_branches.province_id'],
+            'loc_cities' => ['loc_cities.id', '=', 'com_branches.city_id']
+        ];
+        $branches = $this->common->commonGetAll($table, $fields, $joinsArr);
         return response()->json(['data' => $branches], 200);
     }
     
@@ -260,20 +265,18 @@ class BranchController extends Controller
     //desh(2024-10-21)
     public function getDepartmentsByBranchId($branch_id)
     {
+        $id = $branch_id;
+        $idColumn = 'branch_id';
         $table = 'com_branch_departments';
-        $fields = 'department_id';
-        $departments = $this->common->commonGetByCondition($table, ['branch_id' => $branch_id], $fields);
-
-        if ($departments) {
-            // Fetch full details of each department
-            $departmentDetails = [];
-            foreach ($departments as $dep) {
-                $departmentDetails[] = $this->common->commonGetById($dep->department_id, 'id', 'com_departments', '*');
-            }
-            return response()->json(['data' => $departmentDetails], 200);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'No departments found for this branch', 'data' => []], 404);
-        }
+        $fields = ['com_departments.id as department_id', 'branch_id', 'department_name'];
+        $joinsArr = [
+            'com_departments' => ['com_departments.id', '=', 'com_branch_departments.department_id']
+        ];
+        $whereArr = [
+            'com_departments.status' => 'active',
+        ];
+        $departments = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinsArr, $whereArr);
+        return response()->json(['data' => $departments], 200);
     }
 
     //================================================================================================================================
