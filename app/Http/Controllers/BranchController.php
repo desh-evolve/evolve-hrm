@@ -16,7 +16,8 @@ class BranchController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view branch', ['only' => [
-            'index', 
+            'branch', 
+            'department', 
             'getAllBranches', 
             'getBranchByBranchId', 
             'getAllDepartments',
@@ -24,7 +25,8 @@ class BranchController extends Controller
             'getDepartmentsByBranchId', 
             'getAllDivisions',
             'getDivisionByDivisionId', 
-            'getDivisionsByDepartmentId'
+            'getDivisionsByDepartmentId',
+            'getAllDropdownData'
         ]]);
         $this->middleware('permission:create branch', ['only' => ['createBranch', 'createDepartment', 'createDivision']]);
         $this->middleware('permission:update branch', ['only' => ['updateBranch', 'updateDepartment', 'updateDivision']]);
@@ -33,10 +35,28 @@ class BranchController extends Controller
         $this->common = new CommonModel();
     }
 
-    //desh(2024-10-21)
-    public function index()
+    public function branch()
     {
-        return view('company.branch.index');
+        return view('company.branch.branch');
+    }
+
+    public function department()
+    {
+        return view('company.branch.department');
+    }
+
+    //desh(2024-10-22)
+    public function getAllDropdownData(){
+        $countries = $this->common->commonGetAll('loc_countries', '*');
+        $provinces = $this->common->commonGetAll('loc_provinces', '*');
+        $cities = $this->common->commonGetAll('loc_cities', '*');
+        return response()->json([
+            'data' => [
+                'countries' => $countries,
+                'provinces' => $provinces,
+                'cities' => $cities,
+            ]
+        ], 200);
     }
 
     //================================================================================================================================
@@ -377,10 +397,12 @@ class BranchController extends Controller
     //desh(2024-10-21)
     public function getDivisionsByDepartmentId($department_id)
     {
+        $id = $department_id;
+        $idColumn = 'department_id';
         $table = 'com_divisions';
         $fields = '*';
-        $divisions = $this->common->commonGetByCondition($table, ['department_id' => $department_id], $fields);
-        return response()->json(['data' => $divisions], 200);
+        $departments = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $departments], 200);
     }
             
 

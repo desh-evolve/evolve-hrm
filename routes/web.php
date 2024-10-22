@@ -97,7 +97,10 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     //==============================================================================================================================
 
     // Branch index
-    Route::get('/company/branch', [BranchController::class, 'index'])->name('company.branch.index');
+    Route::get('/company/branch', [BranchController::class, 'branch'])->name('company.branch');
+    Route::get('/company/department', [BranchController::class, 'department'])->name('company.department');
+
+    Route::get('/company/branch/dropdown', [BranchController::class, 'getAllDropdownData'])->name('company.branch.dropdown');
     
     // Country routes
     Route::post('/company/branch/create', [BranchController::class, 'createBranch'])->name('company.branch.create');

@@ -1,49 +1,65 @@
-<!-- desh(2024-10-18) -->
 <x-app-layout :title="'Input Example'">
+   
     <x-slot name="header">
         <h4 class="mb-sm-0">{{ __('Location Management') }}</h4>
-
-        <!--
-        <div class="page-title-right">
-            <ol class="breadcrumb m-0">
-                <li class="breadcrumb-item"><a href="javascript: void(0);">Forms</a></li>
-                <li class="breadcrumb-item active">Basic Elements</li>
-            </ol>
-        </div>
-        -->
     </x-slot>
 
+    <style>
+        .card-header:hover {
+            background-color: #ddd;
+        }
+    </style>
+    
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-4">
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1 type-btn" data-type="country">Countries</button>
-                        <button type="button" class="btn btn-outline-primary waves-effect waves-light material-shadow-none me-1 type-btn" data-type="province">Provinces</button>
-                        <button type="button" class="btn btn-outline-primary waves-effect waves-light material-shadow-none type-btn" data-type="city">Cities</button>
+                        <h5 class="mb-0">Countries</h5>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">Add New <i class="ri-add-line"></i></button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_country_btn">New Country <i class="ri-add-line"></i></button>
                     </div>
                 </div>
-                <div class="card-body">
-
-                    <table class="table table-nowrap">
-                        <thead id="table_head">
-                            
-                        </thead>
-                        <tbody id="table_body">
-                            
-                        </tbody>
-                    </table>
-
+                <div class="card-body" id="country_list">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header align-items-center d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-0" id="province_title">Provinces</h5>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_province_btn">New Province <i class="ri-add-line"></i></button>
+                    </div>
+                </div>
+                <div class="card-body" id="province_list">
+                    <p>Click on a country to see provinces</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header align-items-center d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-0" id="city_title">Cities</h5>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_city_btn">New City <i class="ri-add-line"></i></button>
+                    </div>
+                </div>
+                <div class="card-body" id="city_list">
+                    <p>Click on a country to see provinces</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- form modal -->
-    <div id="location-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" >
+    <div id="location-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -51,170 +67,282 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="location-form-body" class="row">
-
-
-                    </div>
+                    <div id="location-form-body" class="row"></div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
+                        <input type="hidden" id="location-type" value="" />
+                        <input type="hidden" id="location-id" value="" />
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn w-sm btn-primary" id="location-submit-confirm">Submit</button>
                     </div>
                 </div>
-
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
 
     <script>
+        //=================================================================================================
+        // Render Tables
+        //=================================================================================================
+        let clicked_country_id = '';
+        let clicked_province_id = '';
         
-        //======================================================================================================
-        // render tables
-        //======================================================================================================
-        let type = 'country';
-        let countries = [];
-        let provinces = [];
-
-        $(document).ready(function() {
-            initFunction();
-        });
-        
-        // Handle button clicks for countries, provinces, and cities
-        $(document).on('click', '.type-btn', function() {
-            $('.type-btn').removeClass('btn-primary').addClass('btn-outline-primary');
-            $(this).removeClass('btn-outline-primary').addClass('btn-primary');
-            type = $(this).data('type');
-            renderTableHeader(type);
-            renderTableBody(type);
+        $(document).ready(async function(){
+            renderCountryTable();
         });
 
-        async function initFunction(){
-            await renderTableHeader(type);
-            await renderTableBody(type);
-        }
+        $(document).on('click', '.country_click', async function(){
+            let country_id = $(this).attr('country_id');
+            let country_name = $(this).find('.card-title').text();
+            clicked_country_id = country_id;
 
-        async function renderTableHeader(type){
-            // Define table headings based on the type
-            const tableHeadings = {
-                country: ['Country', 'Country Code'],
-                province: ['Country', 'Province'],
-                city: ['Province', 'City']
-            };
+            $('#province_title').html(`Provinces of ${country_name}`);
+            $('#province_list').html('<p>Loading...</p>');
+            $('#city_title').html(`Cities`);
+            $('#city_list').html('<p>Click on a province to see cities</p>');
+            $('.country_click').closest('.card-header').css({'background-color': 'white'});
+            $(this).closest('.card-header').css({'background-color': '#ddd'});
             
-            // Dynamically set the table headers based on the type
-            const head = `
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">${tableHeadings[type][0]}</th>
-                    <th scope="col">${tableHeadings[type][1]}</th>
-                    <th scope="col">Action</th>
-                </tr>
-            `;
-            $('#table_head').html(head);
-            $('#table_body').html('<tr><td colspan="4" class="text-center">Loading...</td></tr>');
+            await renderProvinceTable(country_id);
+        });
+
+        $(document).on('click', '.province_click', async function(){
+            let province_id = $(this).attr('province_id');
+            let province_name = $(this).find('.card-title').text();
+            clicked_province_id = province_id;
+
+            $('#city_title').html(`Cities of ${province_name}`);
+            $('#city_list').html('<p>Loading...</p>');
+            $('.province_click').closest('.card-header').css({'background-color': 'white'});
+            $(this).closest('.card-header').css({'background-color': '#ddd'});
+
+            await renderCityTable(province_id);
+        });
+
+        async function renderCountryTable(){
+            $('#add_new_province_btn').hide();
+            $('#add_new_city_btn').hide();
+            
+            let list = '';
+            $('#country_list').html('<p>Loading...</p>');
+            let items = await commonFetchData('/location/countries');
+
+            if(items && items.length > 0){
+                items.map((item, i)=>{
+                    list += `
+                            <div class="card border card-border-primary">
+                                <div class="card-header p-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 p-2 cursor-pointer country_click" country_id="${item.id}">
+                                            <h6 class="card-title mb-0">${item.country_name}</h6>
+                                        </div>
+                                        <div class="flex-shrink-0 p-2">
+                                            <ul class="list-inline card-toolbar-menu d-flex align-items-center mb-0">
+                                                <li class="list-inline-item">
+                                                    <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_country" title="Edit Country" data-tooltip="tooltip" data-bs-placement="top">
+                                                        <i class="ri-pencil-fill"></i>
+                                                    </button>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_country" title="Delete Country" data-tooltip="tooltip" data-bs-placement="top">
+                                                        <i class="ri-delete-bin-fill"></i>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    `;
+                })
+            }else{
+                list = `<p class="text-danger">No Countries Yet!</p>`;
+            }
+
+            $('#country_list').html(list);
+            $('#province_list').html('Click on a country to see provinces');
+            $('#city_list').html('Click on a country to see provinces');
+            $('[data-tooltip="tooltip"]').tooltip();
         }
 
-        // Common function to generate table rows
-        function generateTableRows(items, type) {
-            return items.map((item, i) => {
-                const firstCol = type === 'country' ? item.country_name : type === 'province' ? item.country_name : item.province_name;
-                const secondCol = type === 'country' ? item.country_code : item[type === 'province' ? 'province_name' : 'city_name'];
-                return `
-                    <tr type="${type}" id="${item.id}">
-                        <th scope="row">${i + 1}</th>
-                        <td>${firstCol}</td>
-                        <td>${secondCol}</td>
-                        <td>
-                            <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit">
-                                <i class="ri-pencil-fill"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete">
-                                <i class="ri-delete-bin-fill"></i>
-                            </button>
-                        </td>
-                    </tr>
+        async function renderProvinceTable(country_id){
+            $('#add_new_province_btn').show();
+            $('#add_new_city_btn').hide();
+            
+            let list = '';
+            let items = await commonFetchData(`/location/provinces/${country_id}`);
+
+            if(items && items.length > 0){
+                items.map((item, i)=>{
+                    list += `
+                            <div class="card border card-border-primary">
+                                <div class="card-header p-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 p-2 cursor-pointer province_click" province_id="${item.id}" country_id="${country_id}">
+                                            <h6 class="card-title mb-0">${item.province_name}</h6>
+                                        </div>
+                                        <div class="flex-shrink-0 p-2">
+                                            <ul class="list-inline card-toolbar-menu d-flex align-items-center mb-0">
+                                                <li class="list-inline-item">
+                                                    <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_province" title="Edit Province" data-tooltip="tooltip" data-bs-placement="top">
+                                                        <i class="ri-pencil-fill"></i>
+                                                    </button>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_province" title="Delete Province" data-tooltip="tooltip" data-bs-placement="top">
+                                                        <i class="ri-delete-bin-fill"></i>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    `;
+                })
+            }else{
+                list = `<p class="text-danger">No provinces for this country yet!</p>`;
+            }
+
+            $('#province_list').html(list);
+            $('#city_list').html('Click on a province to see cities');
+            $('[data-tooltip="tooltip"]').tooltip();
+        }
+
+        async function renderCityTable(province_id){
+            $('#add_new_city_btn').show();
+
+            let list = '';
+            let items = await commonFetchData(`/location/cities/${province_id}`);
+
+            if(items && items.length > 0){
+                items.map((item, i)=>{
+                    list += `
+                            <div class="card border card-border-primary">
+                                <div class="card-header p-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 p-2 cursor-pointer city_click" city_id="${item.id}" province_id="${province_id}">
+                                            <h6 class="card-title mb-0">${item.city_name}</h6>
+                                        </div>
+                                        <div class="flex-shrink-0 p-2">
+                                            <ul class="list-inline card-toolbar-menu d-flex align-items-center mb-0">
+                                                <li class="list-inline-item">
+                                                    <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_city" title="Edit City" data-tooltip="tooltip" data-bs-placement="top">
+                                                        <i class="ri-pencil-fill"></i>
+                                                    </button>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_city" title="Delete City" data-tooltip="tooltip" data-bs-placement="top">
+                                                        <i class="ri-delete-bin-fill"></i>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    `;
+                })
+            }else{
+                list = `<p class="text-danger">No cities for this province yet!</p>`;
+            }
+
+            $('#city_list').html(list);
+            $('[data-tooltip="tooltip"]').tooltip();
+        }
+
+        //=================================================================================================
+        // Form Modal
+        //=================================================================================================
+
+        $(document).on('click', '#add_new_country_btn', function(){
+            formModal('country');
+        });
+
+        $(document).on('click', '#add_new_province_btn', function(){
+            formModal('province');
+        });
+
+        $(document).on('click', '#add_new_city_btn', function(){
+            formModal('city');
+        });
+
+        // edit click event
+        $(document).on('click', '.click_edit_country', async function(){
+            let id = $(this).closest('.card-header').find('.country_click').attr('country_id');
+            let url = `/location/country/${id}`;
+            let values = await commonFetchData(url);
+            console.log('values', values)
+            await formModal('country', id, values[0]);
+        });
+
+        $(document).on('click', '.click_edit_province', async function(){
+            let id = $(this).closest('.card-header').find('.province_click').attr('province_id');
+            let url = `/location/province/${id}`;
+            let values = await commonFetchData(url);
+            console.log('values', values)
+            await formModal('province', id, values[0]);
+        });
+
+        $(document).on('click', '.click_edit_city', async function(){
+            let id = $(this).closest('.card-header').find('.city_click').attr('city_id');
+            let url = `/location/city/${id}`;
+            let values = await commonFetchData(url);
+            console.log('values', values)
+            await formModal('city', id, values[0]);
+        });
+
+        // Form Rendering Logic
+        async function formModal(type, id = '', values = null){
+            let form = '';
+            let title = `Add New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
+            if(id) {
+                title = `Edit ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            }
+
+            if(type === 'country'){
+                form = `
+                    <div class="col-xxl-6 col-md-6 mb-3">
+                        <label for="country_name" class="form-label mb-1 req">Country Name</label>
+                        <input type="text" class="form-control" id="country_name" placeholder="Enter Country Name" value="${values?.country_name || ''}" required>
+                    </div>
+                    <div class="col-xxl-6 col-md-6 mb-3">
+                        <label for="country_code" class="form-label mb-1 req">Country Code</label>
+                        <input type="text" class="form-control" id="country_code" placeholder="Enter Country Code" value="${values?.country_code || ''}" required>
+                    </div>
                 `;
-            }).join('');
-        }
-
-        // Render table based on the type
-        async function renderTableBody(type) {
-            try {
-                let items = [];
-                if (type === 'country') {
-                    items = await commonFetchData(`/location/countries`);
-                } else if (type === 'province') {
-                    items = await commonFetchData(`/location/provinces`);
-                } else if (type === 'city') {
-                    items = await commonFetchData(`/location/cities`);
-                }
-
-                if (items.length === 0) {
-                    $('#table_body').html('<tr><td colspan="4" class="text-center">No data available</td></tr>');
-                    return;
-                }
-
-                const list = generateTableRows(items, type);
-                $('#table_body').html(list);
-            } catch (error) {
-                $('#table_body').html('<tr><td colspan="4" class="text-center text-danger">Error loading data</td></tr>');
-                console.error('Error fetching data:', error);
             }
-        }
 
-        //======================================================================================================
-        // delete items
-        //======================================================================================================
-        $(document).on('click', '.click_delete', function() {
-            const $row = $(this).closest('tr'); 
-            const type = $row.attr('type');
-            const id = $row.attr('id');
-            
-            deleteItem(type, id, $row); 
-        });
-
-        async function deleteItem(type, id, $row) {
-            const urls = {
-                country: '/location/country/delete',
-                province: '/location/province/delete',
-                city: '/location/city/delete'
-            };
-            
-            const titles = {
-                country: 'Country',
-                province: 'Province',
-                city: 'City'
-            };
-
-            // Ensure type is valid; default to 'country' if not found
-            const url = urls[type] || urls['country'];
-            const title = titles[type] || titles['country'];
-
-            try {
-                const res = await commonDeleteFunction(id, url, title, $row);
-                if(res){
-                    renderTableBody(type)
-                }
-            } catch (error) {
-                console.error('Error deleting item:', error);
+            if(type === 'province'){
+                form = `
+                    <div class="col-xxl-12 col-md-12 mb-3">
+                        <input type="hidden" id="country_id" value="${clicked_country_id}">
+                        <input type="text" class="form-control" id="province_name" placeholder="Enter Province Name" value="${values?.province_name || ''}" required>
+                    </div>
+                `;
             }
+
+            if(type === 'city'){
+                form = `
+                    <div class="col-xxl-12 col-md-12 mb-3">
+                        <label for="city_name" class="form-label mb-1 req">City Name</label>
+                        <input type="hidden" id="province_id" value="${clicked_province_id}">
+                        <input type="text" class="form-control" id="city_name" placeholder="Enter City Name" value="${values?.city_name || ''}" required>
+                    </div>
+                `;
+            }
+
+            $('#location-type').val(type);
+            $('#location-id').val(id);
+            $('#location-form-title').html(title);
+            $('#location-form-body').html(form);
+            $('#location-form-modal').modal('show');
         }
 
-        //======================================================================================================
-        // add/edit items
-        //======================================================================================================
-
-        $(document).on('click', '#add_new_btn', function(){
-            loadForm(type, "");
-        })
-
-        $(document).on('click', '.click_edit', async function(){
-            let id = $(this).closest('tr').attr('id');
-            await loadForm(type, id);
-        })
-
-        $(document).on('click', '#location-submit-confirm', async function () {
-            const location_id = $('#location_id').val();
+        $(document).on('click', '#location-submit-confirm', async function(){
+            const type = $('#location-type').val();
+            const location_id = $('#location-id').val();
             const formData = new FormData();
             
             const typeToUrl = {
@@ -255,82 +383,74 @@
 
             // Send data and handle response
             let res = await commonSaveData(url, formData, method);
+            console.log('submit res', res)
             await commonAlert(res.status, res.message);
 
             if (res.status === 'success') {
-                await renderTableBody(type);
+                if(type === 'country'){
+                    renderCountryTable();
+                }else if(type === 'province'){
+                    renderProvinceTable(clicked_country_id);
+                }else{
+                    renderCityTable(clicked_province_id);
+                }
                 $('#location-form-modal').modal('hide');
             }
         });
 
+        //=================================================================================================
+        // delete items
+        //=================================================================================================
 
-        async function loadForm(type, id = "") {
-            $('#error-msg').html('');
-            let title = `${id === "" ? 'Add' : 'Edit'} ${type}`;
-            let list = `<input type="hidden" id="location_id" value="${id}">`;
+        // Generalized delete function
+        async function deleteLocation(type, id, parent_id = null) {
+            let url = `/location/${type}/delete`;
+            let title = type.charAt(0).toUpperCase() + type.slice(1);  // Capitalize type
 
-            let values = {};
-            if (id !== "") {
-                let data = await commonFetchData(`/location/${type}/${id}`);
-                if(data && data.length > 0){
-                    values = data[0];
+            try {
+                const res = await commonDeleteFunction(id, url, title);  // Await the promise here
+
+                if (res) {
+                    switch (type) {
+                        case 'country':
+                            await renderCountryTable();  // Refresh country table
+                            $('#province_title').html(`Provinces`);
+                            $('#city_title').html(`Cities`);
+                            break;
+                        case 'province':
+                            await renderProvinceTable(parent_id);  // Refresh province table with the country_id
+                            $('#city_title').html(`Cities`);
+                            break;
+                        case 'city':
+                            await renderCityTable(parent_id);  // Refresh city table with the province_id
+                            break;
+                    }
                 }
+            } catch (error) {
+                console.error(`Error during ${type} deletion:`, error);
             }
-
-            switch (type) {
-                case 'country':
-                    list += `
-                        <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="country_name" class="form-label mb-1 req">Country Name</label>
-                            <input type="text" class="form-control" id="country_name" placeholder="Enter Country Name" value="${values.country_name || ''}" required>
-                        </div>
-                        <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="country_code" class="form-label mb-1 req">Country Code</label>
-                            <input type="text" class="form-control" id="country_code" placeholder="Enter Country Code" value="${values.country_code || ''}" required>
-                        </div>`;
-                    break;
-
-                case 'province':
-                    list += `
-                        <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="country_id" class="form-label mb-1">Country</label>
-                            <select class="form-select" id="country_id">
-                                <option value="">Select Country</option>
-                                ${countries.map(country => `<option value="${country.id}" ${country.id === values.country_id ? 'selected' : ''}>${country.country_name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="province_name" class="form-label mb-1 req">Province Name</label>
-                            <input type="text" class="form-control" id="province_name" placeholder="Enter Province Name" value="${values.province_name || ''}" required>
-                        </div>`;
-                    break;
-
-                case 'city':
-                    list += `
-                        <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="province_id" class="form-label mb-1">Province/State</label>
-                            <select class="form-select" id="province_id">
-                                <option value="">Select Province</option>
-                                ${provinces.map(province => `<option value="${province.id}" ${province.id === values.province_id ? 'selected' : ''}>${province.province_name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="city_name" class="form-label mb-1 req">City Name</label>
-                            <input type="text" class="form-control" id="city_name" placeholder="Enter City Name" value="${values.city_name || ''}" required>
-                        </div>`;
-                    break;
-
-                default:
-                    console.error("Unknown type:", type);
-                    return;
-            }
-
-            $('#location-form-title').html(title);
-            $('#location-form-body').html(list);
-            $('#location-form-modal').modal('show');
         }
+
+        // Event listener for country deletion
+        $(document).on('click', '.click_delete_country', async function() {
+            let id = $(this).closest('.card-header').find('.country_click').attr('country_id');
+            await deleteLocation('country', id);
+        });
+
+        // Event listener for province deletion
+        $(document).on('click', '.click_delete_province', async function() {
+            let country_id = $(this).closest('.card-header').find('.province_click').attr('country_id');
+            let id = $(this).closest('.card-header').find('.province_click').attr('province_id');
+            await deleteLocation('province', id, country_id);
+        });
+
+        // Event listener for city deletion
+        $(document).on('click', '.click_delete_city', async function() {
+            let province_id = $(this).closest('.card-header').find('.city_click').attr('province_id');
+            let id = $(this).closest('.card-header').find('.city_click').attr('city_id');
+            await deleteLocation('city', id, province_id);
+        });
 
 
     </script>
-
 </x-app-layout>

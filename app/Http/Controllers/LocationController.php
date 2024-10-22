@@ -230,7 +230,13 @@ class LocationController extends Controller
     }
 
     //desh(2024-10-18)
-    public function getProvincesByCountryId($id){}
+    public function getProvincesByCountryId($id){
+        $idColumn = 'country_id';
+        $table = 'loc_provinces';
+        $fields = '*';
+        $provinces = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $provinces], 200);
+    }
 
     //================================================================================================================================
     // city
@@ -335,7 +341,13 @@ class LocationController extends Controller
     }
 
     //desh(2024-10-18)
-    public function getCitiesByProvinceId($id){}
+    public function getCitiesByProvinceId($id){
+        $idColumn = 'province_id';
+        $table = 'loc_cities';
+        $fields = '*';
+        $cities = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $cities], 200);
+    }
 
 
 }
