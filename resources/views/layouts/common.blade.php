@@ -119,15 +119,36 @@ async function commonDeleteFunction(itemId, deleteUrl, itemName, $row = null) {
 
 //desh(2024-10-18)
 async function commonFetchData(url) {
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        return data?.data || [];
-    } catch (error) {
-        console.error(`Error fetching data from ${url}:`, error);
-        return [];
-    }
+    return new Promise(async (resolve) => {
+        try {
+            // Send GET request using Fetch API
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Optional CSRF token for Laravel
+                }
+            });
+
+            // Check if the response is OK (status 200-299)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Parse the response as JSON
+            const data = await response.json();
+
+            // Resolve with the data or an empty array if no data
+            resolve(data?.data || []);
+        } catch (error) {
+            console.error(`Error fetching data from ${url}:`, error.message);
+
+            // Resolve with an empty array on error
+            resolve([]);
+        }
+    });
 }
+
 
 //desh(2024-10-18)
 async function commonSaveData(url, formData, method = "POST") {
