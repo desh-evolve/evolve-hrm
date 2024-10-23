@@ -50,11 +50,13 @@ class BranchController extends Controller
         $countries = $this->common->commonGetAll('loc_countries', '*');
         $provinces = $this->common->commonGetAll('loc_provinces', '*');
         $cities = $this->common->commonGetAll('loc_cities', '*');
+        $currencies = $this->common->commonGetAll('com_currencies', '*');
         return response()->json([
             'data' => [
                 'countries' => $countries,
                 'provinces' => $provinces,
                 'cities' => $cities,
+                'currencies' => $currencies,
             ]
         ], 200);
     }
@@ -69,7 +71,6 @@ class BranchController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'company_id' => 'required|integer',
                     'branch_name' => 'required|string|max:255',
                     'short_name' => 'nullable|string|max:100',
                     'address_1' => 'required|string|max:255',
@@ -82,7 +83,7 @@ class BranchController extends Controller
     
                 $table = 'com_branches';
                 $inputArr = [
-                    'company_id' => $request->company_id,
+                    'company_id' => 1, //hard coded - change later - check here
                     'branch_name' => $request->branch_name,
                     'short_name' => $request->short_name,
                     'address_1' => $request->address_1,
@@ -116,7 +117,6 @@ class BranchController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'company_id' => 'required|integer',
                     'branch_name' => 'required|string|max:255',
                     'short_name' => 'nullable|string|max:100',
                     'address_1' => 'required|string|max:255',
@@ -130,7 +130,7 @@ class BranchController extends Controller
                 $table = 'com_branches';
                 $idColumn = 'id';
                 $inputArr = [
-                    'company_id' => $request->company_id,
+                    'company_id' => 1, //hard coded - change later - check here
                     'branch_name' => $request->branch_name,
                     'short_name' => $request->short_name,
                     'address_1' => $request->address_1,
@@ -171,13 +171,18 @@ class BranchController extends Controller
     public function getAllBranches()
     {
         $table = 'com_branches';
-        $fields = ['com_branches.*', 'com_branches.id as id', 'loc_countries.country_name', 'loc_provinces.province_name', 'loc_cities.city_name'];
+        $fields = [
+            'com_branches.*', 'com_branches.id as id', 'com_branches.status as status',
+            'loc_countries.country_name', 'loc_provinces.province_name', 'loc_cities.city_name', 
+            'com_currencies.currency_name', 'com_currencies.iso_code'
+        ];
         $joinsArr = [
             'loc_countries' => ['loc_countries.id', '=', 'com_branches.country_id'],
             'loc_provinces' => ['loc_provinces.id', '=', 'com_branches.province_id'],
-            'loc_cities' => ['loc_cities.id', '=', 'com_branches.city_id']
+            'loc_cities' => ['loc_cities.id', '=', 'com_branches.city_id'],
+            'com_currencies' => ['com_currencies.id', '=', 'com_branches.currency_id']
         ];
-        $branches = $this->common->commonGetAll($table, $fields, $joinsArr);
+        $branches = $this->common->commonGetAll($table, $fields, $joinsArr, $whereArr = [], $exceptDel = true);
         return response()->json(['data' => $branches], 200);
     }
     
