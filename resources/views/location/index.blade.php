@@ -86,7 +86,7 @@
         //=================================================================================================
         let clicked_country_id = '';
         let clicked_province_id = '';
-        
+
         $(document).ready(async function(){
             renderCountryTable();
         });
@@ -272,7 +272,6 @@
             let id = $(this).closest('.card-header').find('.country_click').attr('country_id');
             let url = `/location/country/${id}`;
             let values = await commonFetchData(url);
-            console.log('values', values)
             await formModal('country', id, values[0]);
         });
 
@@ -280,7 +279,6 @@
             let id = $(this).closest('.card-header').find('.province_click').attr('province_id');
             let url = `/location/province/${id}`;
             let values = await commonFetchData(url);
-            console.log('values', values)
             await formModal('province', id, values[0]);
         });
 
@@ -288,7 +286,6 @@
             let id = $(this).closest('.card-header').find('.city_click').attr('city_id');
             let url = `/location/city/${id}`;
             let values = await commonFetchData(url);
-            console.log('values', values)
             await formModal('city', id, values[0]);
         });
 
@@ -383,7 +380,6 @@
 
             // Send data and handle response
             let res = await commonSaveData(url, formData, method);
-            console.log('submit res', res)
             await commonAlert(res.status, res.message);
 
             if (res.status === 'success') {
