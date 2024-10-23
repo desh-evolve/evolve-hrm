@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('com_currencies', function (Blueprint $table) {
             $table->id();
-            $table->string('country_name');
+            $table->string('currency_name');
             $table->string('iso_code');
             $table->decimal('conversion_rate', 10, 4)->nullable();
             $table->tinyInteger('is_default')->default(0);

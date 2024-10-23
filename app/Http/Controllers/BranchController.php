@@ -16,7 +16,8 @@ class BranchController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view branch', ['only' => [
-            'index', 
+            'branch', 
+            'department', 
             'getAllBranches', 
             'getBranchByBranchId', 
             'getAllDepartments',
@@ -24,7 +25,8 @@ class BranchController extends Controller
             'getDepartmentsByBranchId', 
             'getAllDivisions',
             'getDivisionByDivisionId', 
-            'getDivisionsByDepartmentId'
+            'getDivisionsByDepartmentId',
+            'getAllDropdownData'
         ]]);
         $this->middleware('permission:create branch', ['only' => ['createBranch', 'createDepartment', 'createDivision']]);
         $this->middleware('permission:update branch', ['only' => ['updateBranch', 'updateDepartment', 'updateDivision']]);
@@ -33,10 +35,30 @@ class BranchController extends Controller
         $this->common = new CommonModel();
     }
 
-    //desh(2024-10-21)
-    public function index()
+    public function branch()
     {
-        return view('company.branch.index');
+        return view('company.branch.branch');
+    }
+
+    public function department()
+    {
+        return view('company.branch.department');
+    }
+
+    //desh(2024-10-22)
+    public function getAllDropdownData(){
+        $countries = $this->common->commonGetAll('loc_countries', '*');
+        $provinces = $this->common->commonGetAll('loc_provinces', '*');
+        $cities = $this->common->commonGetAll('loc_cities', '*');
+        $currencies = $this->common->commonGetAll('com_currencies', '*');
+        return response()->json([
+            'data' => [
+                'countries' => $countries,
+                'provinces' => $provinces,
+                'cities' => $cities,
+                'currencies' => $currencies,
+            ]
+        ], 200);
     }
 
     //================================================================================================================================
@@ -49,7 +71,6 @@ class BranchController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'company_id' => 'required|integer',
                     'branch_name' => 'required|string|max:255',
                     'short_name' => 'nullable|string|max:100',
                     'address_1' => 'required|string|max:255',
@@ -62,7 +83,7 @@ class BranchController extends Controller
     
                 $table = 'com_branches';
                 $inputArr = [
-                    'company_id' => $request->company_id,
+                    'company_id' => 1, //hard coded - change later - check here
                     'branch_name' => $request->branch_name,
                     'short_name' => $request->short_name,
                     'address_1' => $request->address_1,
@@ -96,7 +117,6 @@ class BranchController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'company_id' => 'required|integer',
                     'branch_name' => 'required|string|max:255',
                     'short_name' => 'nullable|string|max:100',
                     'address_1' => 'required|string|max:255',
@@ -110,7 +130,7 @@ class BranchController extends Controller
                 $table = 'com_branches';
                 $idColumn = 'id';
                 $inputArr = [
-                    'company_id' => $request->company_id,
+                    'company_id' => 1, //hard coded - change later - check here
                     'branch_name' => $request->branch_name,
                     'short_name' => $request->short_name,
                     'address_1' => $request->address_1,
@@ -151,8 +171,18 @@ class BranchController extends Controller
     public function getAllBranches()
     {
         $table = 'com_branches';
-        $fields = '*';
-        $branches = $this->common->commonGetAll($table, $fields);
+        $fields = [
+            'com_branches.*', 'com_branches.id as id', 'com_branches.status as status',
+            'loc_countries.country_name', 'loc_provinces.province_name', 'loc_cities.city_name', 
+            'com_currencies.currency_name', 'com_currencies.iso_code'
+        ];
+        $joinsArr = [
+            'loc_countries' => ['loc_countries.id', '=', 'com_branches.country_id'],
+            'loc_provinces' => ['loc_provinces.id', '=', 'com_branches.province_id'],
+            'loc_cities' => ['loc_cities.id', '=', 'com_branches.city_id'],
+            'com_currencies' => ['com_currencies.id', '=', 'com_branches.currency_id']
+        ];
+        $branches = $this->common->commonGetAll($table, $fields, $joinsArr, $whereArr = [], $exceptDel = true);
         return response()->json(['data' => $branches], 200);
     }
     
@@ -260,20 +290,18 @@ class BranchController extends Controller
     //desh(2024-10-21)
     public function getDepartmentsByBranchId($branch_id)
     {
+        $id = $branch_id;
+        $idColumn = 'branch_id';
         $table = 'com_branch_departments';
-        $fields = 'department_id';
-        $departments = $this->common->commonGetByCondition($table, ['branch_id' => $branch_id], $fields);
-
-        if ($departments) {
-            // Fetch full details of each department
-            $departmentDetails = [];
-            foreach ($departments as $dep) {
-                $departmentDetails[] = $this->common->commonGetById($dep->department_id, 'id', 'com_departments', '*');
-            }
-            return response()->json(['data' => $departmentDetails], 200);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'No departments found for this branch', 'data' => []], 404);
-        }
+        $fields = ['com_departments.id as department_id', 'branch_id', 'department_name'];
+        $joinsArr = [
+            'com_departments' => ['com_departments.id', '=', 'com_branch_departments.department_id']
+        ];
+        $whereArr = [
+            'com_departments.status' => 'active',
+        ];
+        $departments = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinsArr, $whereArr);
+        return response()->json(['data' => $departments], 200);
     }
 
     //================================================================================================================================
@@ -374,10 +402,12 @@ class BranchController extends Controller
     //desh(2024-10-21)
     public function getDivisionsByDepartmentId($department_id)
     {
+        $id = $department_id;
+        $idColumn = 'department_id';
         $table = 'com_divisions';
         $fields = '*';
-        $divisions = $this->common->commonGetByCondition($table, ['department_id' => $department_id], $fields);
-        return response()->json(['data' => $divisions], 200);
+        $departments = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $departments], 200);
     }
             
 

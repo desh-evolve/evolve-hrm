@@ -43,7 +43,6 @@
         <!-- jQuery -->
 	    <script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}" crossorigin="anonymous"></script>
 
-
         <script>
             let DataTablesForAjax = '';
             $(document).ready(function(){
@@ -61,6 +60,12 @@
                 }
             });
         </script>
+
+        <style>
+            .cursor-pointer{
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
 

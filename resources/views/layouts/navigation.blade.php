@@ -150,47 +150,70 @@
                 @php
                     $checkCompanyNav = request()->routeIs('company.*') || request()->routeIs('location.*');
                 @endphp
-                
+
                 <li class="nav-item">
-                    <a 
-                        class="nav-link menu-link {{ $checkCompanyNav ? 'active' : '' }}" 
-                        href="#company" 
-                        data-bs-toggle="collapse" 
-                        role="button" 
+                    <a
+                        class="nav-link menu-link {{ $checkCompanyNav ? 'active' : '' }}"
+                        href="#companyMultiLevel"
+                        data-bs-toggle="collapse"
+                        role="button"
                         aria-expanded="{{ $checkCompanyNav ? 'true' : 'false' }}"
+                        aria-controls="companyMultiLevel"
                     >
-                        <i class="ri-building-line"></i> <span>Company</span>
+                        <i class="ri-building-line"></i> <span data-key="t-multi-level">Company</span>
                     </a>
-                    <div 
-                        class="collapse menu-dropdown {{ $checkCompanyNav ? 'show' : '' }}" 
-                        id="company"
-                    >
+                    <div class="collapse menu-dropdown {{ $checkCompanyNav ? 'show' : '' }}" id="companyMultiLevel">
                         <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('company.info') }}" class="nav-link {{ request()->routeIs('company.info') ? 'active' : '' }}">
-                                    Company Information
-                                </a>
-                            </li>
                             <li class="nav-item">
                                 <a href="{{ route('location.index') }}" class="nav-link {{ request()->routeIs('location.index') ? 'active' : '' }}">
                                     Locations
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('company.branch.index') }}" class="nav-link {{ request()->routeIs('company.branch.index') ? 'active' : '' }}">
-                                    Branch Management
+                                <a href="{{ route('company.info') }}" class="nav-link {{ request()->routeIs('company.info') ? 'active' : '' }}">
+                                    Company Information
                                 </a>
+                            </li>
+
+                            @php
+                                $checkBranchNav = request()->routeIs('company.branch') || request()->routeIs('company.department');
+                            @endphp
+                            <li class="nav-item">
+                                <a
+                                    href="#branchMultiLevel"
+                                    class="nav-link {{ $checkCompanyNav ? '' : 'collapsed' }}"
+                                    data-bs-toggle="collapse"
+                                    role="button"
+                                    aria-expanded="{{ $checkBranchNav ? 'true' : 'false' }}"
+                                    aria-controls="branchMultiLevel"
+                                    data-key="t-level-1.2"
+                                >
+                                    Branch/Department Management
+                                </a>
+                                <div class="collapse menu-dropdown {{ $checkCompanyNav ? 'show' : '' }}" id="branchMultiLevel">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('company.branch') }}" class="nav-link {{ request()->routeIs('company.branch') ? 'active' : '' }}"  data-key="t-level-2.1">
+                                                Branches
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ route('company.department') }}" class="nav-link {{ request()->routeIs('company.department') ? 'active' : '' }}"  data-key="t-level-2.2">
+                                                Departments
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
                             <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Designations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Wage Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
-                            <li class="nav-item"><a href="{{ route('currencies.index') }}" class="nav-link">Currencies</a></li>
                         </ul>
                     </div>
                 </li>
-                
+
 
                 <!-- Logout -->
                 <li class="nav-item">
