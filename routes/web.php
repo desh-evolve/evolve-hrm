@@ -8,6 +8,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\StationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -88,7 +89,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::post('/location/city/create', [LocationController::class, 'createCity'])->name('location.city.create');
     Route::put('/location/city/update/{id}', [LocationController::class, 'updateCity'])->name('location.city.update');
     Route::delete('/location/city/delete/{id}', [LocationController::class, 'deleteCity'])->name('location.city.delete');
-    Route::get('/location/cities', [LocationController::class, 'getAllCities'])->name('location.cities.all');
+    
     Route::get('/location/city/{id}', [LocationController::class, 'getCityByCityId'])->name('location.city.getById');
     Route::get('/location/cities/{provinceId}', [LocationController::class, 'getCitiesByProvinceId'])->name('location.city.getByProvinceId');
 
@@ -125,6 +126,24 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/company/division/{id}', [BranchController::class, 'getDivisionByDivisionId'])->name('company.division.getById');
     Route::get('/company/divisions/{departmentId}', [BranchController::class, 'getDivisionsByDepartmentId'])->name('company.divisions.getByDepartmentId');
     
+
+    // Station index
+    Route::get('/company/station', [StationController::class, 'index'])->name('company.station.index');
+    
+    // Country routes
+    Route::post('/company/station/create', [StationController::class, 'createStation'])->name('company.station.create');
+    Route::put('/company/station/update/{id}', [StationController::class, 'updateStation'])->name('company.station.update');
+    Route::delete('/company/station/delete/{id}', [StationController::class, 'deleteStation'])->name('company.station.delete');
+    Route::get('/company/stations', [StationController::class, 'getAllStations'])->name('company.stations.all');
+    Route::get('/company/station/{id}', [StationController::class, 'getStationByStationId'])->name('company.station.getById');
+    
+
+    // Divisions routes
+    Route::post('/company/station_type/create', [StationController::class, 'createStationType'])->name('company.station_type.create');
+    Route::put('/company/station_type/update/{id}', [StationController::class, 'updateStationType'])->name('company.station_type.update');
+    Route::delete('/company/station_type/delete/{id}', [StationController::class, 'deleteStationType'])->name('company.station_type.delete');
+    Route::get('/company/station_types', [StationController::class, 'getAllStationTypes'])->name('company.station_types.all');
+    Route::get('/company/station_type/{id}', [StationController::class, 'getStationTypeByStationId'])->name('company.station_type.getById');
     //==============================================================================================================================
     // Company
     //==============================================================================================================================
