@@ -164,6 +164,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     // Company Info index
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
 
+    Route::get('/currencies', function () {
+        return view('company/currencies/currencies_add');
+    })->name('currencies.index');
+
+
 });
 
 

@@ -68,7 +68,7 @@
                                 <label for="tin_no" class="form-label mb-1">TIN No</label>
                                 <input type="text" class="form-control" id="tin_no" placeholder="Enter TIN No">
                             </div>
-                        
+
                         </div>
                         <div class="row">
 
@@ -83,7 +83,7 @@
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="postal_code" class="form-label mb-1">Postal Code</label>
                                 <input type="text" class="form-control" id="postal_code" placeholder="Enter Postal Code">
-                            </div>   
+                            </div>
 
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="country_id" class="form-label mb-1">Country</label>
@@ -145,10 +145,10 @@
                                     <option value="2">Person 2</option>
                                 </select>
                             </div>
-                           
+
                         </div>
                         <div class="row">
-                            
+
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="logo_img" class="form-label mb-1">Logo Large</label>
                                 <input type="file" class="form-control" id="logo_img">
