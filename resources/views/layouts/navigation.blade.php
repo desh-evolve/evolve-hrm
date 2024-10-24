@@ -209,7 +209,18 @@
                             <li class="nav-item"><a href="#" class="nav-link">Designations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Wage Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
+
+
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_designation') }}" class="nav-link {{ request()->routeIs('company.employee_designation') ? 'active' : '' }}">
+                                    Designation
+                                </a>
+                            </li>
+
+                            
+
                             <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
+
                         </ul>
                     </div>
                 </li>

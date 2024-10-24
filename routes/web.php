@@ -9,6 +9,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\StationController;
+use App\Http\Controllers\EmployeeDesignationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -128,22 +129,34 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     
 
     // Station index
-    Route::get('/company/station', [StationController::class, 'index'])->name('company.station.index');
+    Route::get('/station', [StationController::class, 'index'])->name('station.index');
     
     // Country routes
-    Route::post('/company/station/create', [StationController::class, 'createStation'])->name('company.station.create');
-    Route::put('/company/station/update/{id}', [StationController::class, 'updateStation'])->name('company.station.update');
-    Route::delete('/company/station/delete/{id}', [StationController::class, 'deleteStation'])->name('company.station.delete');
-    Route::get('/company/stations', [StationController::class, 'getAllStations'])->name('company.stations.all');
-    Route::get('/company/station/{id}', [StationController::class, 'getStationByStationId'])->name('company.station.getById');
+    Route::post('/station/create', [StationController::class, 'createStation'])->name('station.create');
+    Route::put('/station/update/{id}', [StationController::class, 'updateStation'])->name('station.update');
+    Route::delete('/station/delete/{id}', [StationController::class, 'deleteStation'])->name('station.delete');
+    Route::get('/stations', [StationController::class, 'getAllStations'])->name('stations.all');
+    Route::get('/station/{id}', [StationController::class, 'getStationByStationId'])->name('station.getById');
     
 
     // Divisions routes
-    Route::post('/company/station_type/create', [StationController::class, 'createStationType'])->name('company.station_type.create');
-    Route::put('/company/station_type/update/{id}', [StationController::class, 'updateStationType'])->name('company.station_type.update');
-    Route::delete('/company/station_type/delete/{id}', [StationController::class, 'deleteStationType'])->name('company.station_type.delete');
-    Route::get('/company/station_types', [StationController::class, 'getAllStationTypes'])->name('company.station_types.all');
-    Route::get('/company/station_type/{id}', [StationController::class, 'getStationTypeByStationId'])->name('company.station_type.getById');
+    Route::post('/station/station_type/create', [StationController::class, 'createStationType'])->name('station.station_type.create');
+    Route::put('/station/station_type/update/{id}', [StationController::class, 'updateStationType'])->name('station.station_type.update');
+    Route::delete('/station/station_type/delete/{id}', [StationController::class, 'deleteStationType'])->name('station.station_type.delete');
+    Route::get('/station/station_types', [StationController::class, 'getAllStationTypes'])->name('station.station_types.all');
+    Route::get('/station/station_type/{id}', [StationController::class, 'getStationTypeByStationId'])->name('station.station_type.getById');
+   
+   
+    // employee_designation routes
+     // Station indeX
+     Route::get('company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation');
+
+    Route::post('/company/employee_designation/create', [EmployeeDesignationController::class, 'createEmployeeDesignation'])->name('company.employee_designation.create');
+    Route::put('/company/employee_designation/update/{id}', [EmployeeDesignationController::class, 'updateEmployeeDesignation'])->name('company.employee_designation.update');
+    Route::delete('/company/employee_designation/delete/{id}', [EmployeeDesignationController::class, 'deleteEmployeeDesignation'])->name('company.employee_designation.delete');
+    Route::get('/company/employee_designations', [EmployeeDesignationController::class, 'getAllEmployeeDesignations'])->name('company.employee_designation.all');
+    Route::get('/company/employee_designation/{id}', [EmployeeDesignationController::class, 'getEmployeeDesignationById'])->name('company.employee_designation.getById');
+    
     //==============================================================================================================================
     // Company
     //==============================================================================================================================
