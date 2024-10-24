@@ -198,6 +198,12 @@
                                 </a>
                             </li>
 
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_group') }}" class="nav-link {{ request()->routeIs('company.employee_group') ? 'active' : '' }}">
+                                    Group
+                                </a>
+                            </li>
+
                             
 
                             <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
