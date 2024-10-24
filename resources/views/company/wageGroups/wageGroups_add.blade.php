@@ -51,7 +51,7 @@
 
 
                                     <td>01</td>
-                                    <td>marycousar@velzon.com</td>
+                                    <td>marycousar@evolve.com</td>
                                     <td>
                                          <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit me-1">
                                             <i class="ri-pencil-fill"></i>

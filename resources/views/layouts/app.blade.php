@@ -19,6 +19,19 @@
     
         <!--Swiper slider css-->
         <link href="{{ asset('assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
+
+        <!-- Sweet Alert css-->
+        <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+        
+        <!--datatable css-->
+        <link rel="stylesheet" href="{{ asset('assets/css/datatables/dataTables.bootstrap5.min.css') }}" />
+        <!--datatable responsive css-->
+        <link rel="stylesheet" href="{{ asset('assets/css/datatables/responsive.bootstrap.min.css') }}" />
+
+        <link rel="stylesheet" href="{{ asset('assets/css/datatables/buttons.dataTables.min.css') }}">
+
+        <!-- select2 -->
+        <link rel="stylesheet" href="{{ asset('assets/libs/select2/select2.min.css') }}">
     
         <!-- Layout config Js -->
         <script src="{{ asset('assets/js/layout.js') }}"></script>
@@ -30,15 +43,7 @@
         <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
         <!-- custom Css-->
         <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
-        <!-- Sweet Alert css-->
-        <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
         
-        <!--datatable css-->
-        <link rel="stylesheet" href="{{ asset('assets/css/datatables/dataTables.bootstrap5.min.css') }}" />
-        <!--datatable responsive css-->
-        <link rel="stylesheet" href="{{ asset('assets/css/datatables/responsive.bootstrap.min.css') }}" />
-
-        <link rel="stylesheet" href="{{ asset('assets/css/datatables/buttons.dataTables.min.css') }}">
 
         <!-- jQuery -->
 	    <script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}" crossorigin="anonymous"></script>
@@ -65,6 +70,10 @@
             .cursor-pointer{
                 cursor: pointer;
             }
+            .select2-container {
+                z-index: 9999;
+            }
+
         </style>
     </head>
     <body>
@@ -176,6 +185,10 @@
 
         <!-- Sweet alert init js-->
         <script src="{{ asset('assets/js/pages/sweetalerts.init.js') }}"></script>
+
+        <!--select2-->
+        <script src="{{ asset('assets/libs/select2/select2.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/select2.init.js') }}"></script>
 
         <!-- App js -->
         <script src="{{ asset('assets/js/app.js') }}"></script>
