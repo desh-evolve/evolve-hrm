@@ -50,18 +50,17 @@
                             <input type="text" class="form-control" id="department_name" placeholder="Enter Department Name" value="" >
                         </div>
                         <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="department_status" class="form-label mb-1 req">Status</label>
+                            <label for="department_status" class="form-label mb-1 req">Department Status</label>
                             <select class="form-select" id="department_status" >
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
                         <hr>
-                        <div class="col-xxl-6 col-md-6 mb-3">
+                        <div class="col-xxl-12 col-md-12 mb-3">
                             <label for="branches" class="form-label mb-1 req">Branches</label>
-                            <select class="form-select" id="branches" >
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
+                            <select class="select2-multiple" id="branches" name="branches[]" multiple="multiple">
+                                
                             </select>
                         </div>
                     </div>
@@ -77,10 +76,26 @@
     </div>
 
     <script>
+        let dropdownData = [];
 
         $(document).ready(function(){
+            getDropdownData();
             renderDepartmentTable();
         })
+
+        async function getDropdownData() {
+            try {
+                dropdownData = await commonFetchData('/company/department/dropdown');
+                // Populate branches dropdown
+                let branchList = (dropdownData?.branches || [])
+                    .map(branch => `<option value="${branch.id}">${branch.branch_name}</option>`)
+                    .join('');
+                $('#branches').html(branchList);
+                $(".select2-multiple").select2();
+            } catch (error) {
+                console.error('Error fetching dropdown data:', error);
+            }
+        }
 
         async function renderDepartmentTable(){
             let list = '';
@@ -113,7 +128,6 @@
             $('#department_table_body').html(list);
             $('[data-tooltip="tooltip"]').tooltip();
         }
-
 
         // check here
         $(document).on('click', '#click_add_department', function(){
@@ -186,6 +200,13 @@
 
             let createUrl = `/company/department/create`;
             let updateUrl = `/company/department/update/${department_id}`;
+
+            let department_name = $('#department_name').val();
+            let department_status = $('#department_status').val();
+            let branches = $('#branches').val();
+
+            console.log('branches', branches)
+            return;
 
             const formFields = {
                 department_name: 'required',
