@@ -29,12 +29,12 @@
         <div class="container-fluid">
 
             <div id="two-column-menu"></div>
-            
+
             <!-- Main Navigation -->
             <ul class="navbar-nav" id="navbar-nav">
 
                 <li class="menu-title"><span>Menu</span></li>
-                
+
                 <!-- Dashboard -->
                 <li class="nav-item">
                     <a class="nav-link menu-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
@@ -144,7 +144,7 @@
                             </li>
                         </ul>
                     </div>
-                </li>    
+                </li>
 
                 <!-- Company -->
                 @php
@@ -152,11 +152,11 @@
                 @endphp
 
                 <li class="nav-item">
-                    <a 
-                        class="nav-link menu-link {{ $checkCompanyNav ? 'active' : '' }}" 
-                        href="#companyMultiLevel" 
-                        data-bs-toggle="collapse" 
-                        role="button" 
+                    <a
+                        class="nav-link menu-link {{ $checkCompanyNav ? 'active' : '' }}"
+                        href="#companyMultiLevel"
+                        data-bs-toggle="collapse"
+                        role="button"
                         aria-expanded="{{ $checkCompanyNav ? 'true' : 'false' }}"
                         aria-controls="companyMultiLevel"
                     >
@@ -179,15 +179,15 @@
                                 $checkBranchNav = request()->routeIs('company.branch') || request()->routeIs('company.department');
                             @endphp
                             <li class="nav-item">
-                                <a 
-                                    href="#branchMultiLevel" 
-                                    class="nav-link {{ $checkCompanyNav ? '' : 'collapsed' }}" 
-                                    data-bs-toggle="collapse" 
-                                    role="button" 
-                                    aria-expanded="{{ $checkBranchNav ? 'true' : 'false' }}" 
-                                    aria-controls="branchMultiLevel" 
+                                <a
+                                    href="#branchMultiLevel"
+                                    class="nav-link {{ $checkCompanyNav ? '' : 'collapsed' }}"
+                                    data-bs-toggle="collapse"
+                                    role="button"
+                                    aria-expanded="{{ $checkBranchNav ? 'true' : 'false' }}"
+                                    aria-controls="branchMultiLevel"
                                     data-key="t-level-1.2"
-                                > 
+                                >
                                     Branch/Department Management
                                 </a>
                                 <div class="collapse menu-dropdown {{ $checkCompanyNav ? 'show' : '' }}" id="branchMultiLevel">
@@ -210,6 +210,7 @@
                             <li class="nav-item"><a href="#" class="nav-link">Wage Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
 
+
                             <li class="nav-item">
                                 <a href="{{ route('company.employee_designation') }}" class="nav-link {{ request()->routeIs('company.employee_designation') ? 'active' : '' }}">
                                     Designation
@@ -217,10 +218,13 @@
                             </li>
 
                             
+
+                            <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
+
                         </ul>
                     </div>
                 </li>
-                
+
 
                 <!-- Logout -->
                 <li class="nav-item">

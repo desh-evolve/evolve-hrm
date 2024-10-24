@@ -79,6 +79,7 @@ class BranchController extends Controller
                     'country_id' => 'required|integer',
                     'contact_1' => 'required|string|max:15',
                     'email' => 'required|email|unique:com_branches,email',
+                    'branch_status' => 'required|string',
                 ]);
     
                 $table = 'com_branches';
@@ -94,6 +95,7 @@ class BranchController extends Controller
                     'contact_1' => $request->contact_1,
                     'contact_2' => $request->contact_2,
                     'email' => $request->email,
+                    'status' => $request->branch_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
@@ -125,6 +127,7 @@ class BranchController extends Controller
                     'country_id' => 'required|integer',
                     'contact_1' => 'required|string|max:15',
                     'email' => 'required|email|unique:com_branches,email,' . $id,
+                    'branch_status' => 'required|string',
                 ]);
     
                 $table = 'com_branches';
@@ -141,6 +144,7 @@ class BranchController extends Controller
                     'contact_1' => $request->contact_1,
                     'contact_2' => $request->contact_2,
                     'email' => $request->email,
+                    'status' => $request->branch_status,
                     'updated_by' => Auth::user()->id,
                 ];
     
