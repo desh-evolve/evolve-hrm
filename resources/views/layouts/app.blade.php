@@ -241,7 +241,34 @@
 
                 });
             }
-        
+
+
+            //==============================================================
+            // select2 code for disable selected item in dropdown
+            //==============================================================
+            // Handle the select event
+            $('.select2-multiple').on('select2:select', function (e) {
+                    var selectedId = e.params.data.id; // Get the selected item's ID
+                    
+                    // Hide the selected item in the dropdown
+                    $('.select2-multiple option[value="' + selectedId + '"]').attr('disabled', true);
+                    
+                    // Refresh the dropdown
+                    $('.select2-multiple').select2();
+            });
+            
+            // Handle the unselect event
+            $('.select2-multiple').on('select2:unselect', function (e) {
+                var unselectedId = e.params.data.id; // Get the unselected item's ID
+                
+                // Enable the unselected item back in the dropdown
+                $('.select2-multiple option[value="' + unselectedId + '"]').attr('disabled', false);
+                
+                // Refresh the dropdown
+                $('.select2-multiple').select2();
+            });
+            //==============================================================
+            
         </script>
     </body>
 </html>

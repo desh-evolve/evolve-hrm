@@ -11,6 +11,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\EmployeeDesignationController;
+use App\Http\Controllers\WageGroupController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -108,13 +109,13 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
 
     // Departments routes
     Route::get('/company/department', [DepartmentController::class, 'index'])->name('company.department.index');
+    Route::get('/company/department/employees', [DepartmentController::class, 'employees'])->name('company.department.employees');
     Route::get('/company/department/dropdown', [DepartmentController::class, 'getDepartmentDropdownData'])->name('company.department.dropdown');
     Route::post('/company/department/create', [DepartmentController::class, 'createDepartment'])->name('company.department.create');
     Route::put('/company/department/update/{id}', [DepartmentController::class, 'updateDepartment'])->name('company.department.update');
     Route::delete('/company/department/delete/{id}', [DepartmentController::class, 'deleteDepartment'])->name('company.department.delete');
     Route::get('/company/departments', [DepartmentController::class, 'getAllDepartments'])->name('company.departments.all');
     Route::get('/company/department/{id}', [DepartmentController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
-    Route::get('/company/departments/{branchId}', [DepartmentController::class, 'getDepartmentsByBranchId'])->name('company.departments.getByBranchId');
 
     //==============================================================================================================================
 
@@ -164,7 +165,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     //==============================================================================================================================
 
 
-    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups');
+    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
 
     // WageGroups routes
     Route::post('/company/wagegroups/create', [WageGroupController::class, 'createWageGroups'])->name('company.wagegroups.create');

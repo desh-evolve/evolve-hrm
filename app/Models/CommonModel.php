@@ -69,7 +69,7 @@ class CommonModel extends Model
     
                 if (!empty($val['con_joins'])) {
                     foreach ($val['con_joins'] as $conJoinTable => $conJoinOn) {
-                        $con_query->leftJoin($conJoinTable, $conJoinOn);
+                        $con_query->leftJoin($conJoinTable, $conJoinOn[0], $conJoinOn[1], $conJoinOn[2]);
                     }
                 }
     
@@ -129,7 +129,7 @@ class CommonModel extends Model
     
                 if (!empty($val['con_joins'])) {
                     foreach ($val['con_joins'] as $conJoinTable => $conJoinOn) {
-                        $con_query->leftJoin($conJoinTable, $conJoinOn);
+                        $con_query->leftJoin($conJoinTable, $conJoinOn[0], $conJoinOn[1], $conJoinOn[2]);
                     }
                 }
     
@@ -148,7 +148,7 @@ class CommonModel extends Model
     }
     
     // desh(2024-10-18)
-    public function commonDelete($id, $whereArr, $title, $table, $deletedBy = true, $recordLog = true) { 
+    public function commonDelete($id, $whereArr, $title, $table, $returnMsg = true, $deletedBy = true, $recordLog = true) { 
         $arr = ['status' => 'delete'];
         if ($deletedBy) {
             $arr['updated_by'] = Auth::user()->id;
@@ -164,7 +164,11 @@ class CommonModel extends Model
         $action = 'Deleted';
         $message = $re ? "$title $action Successfully!!!" : "$title $action Failed!!!";
     
-        return response()->json(['status' => $status, 'message' => $message, 'data' => ['id' => $id]]);
+        if($returnMsg){
+            return response()->json(['status' => $status, 'message' => $message, 'data' => ['id' => $id]]);
+        }else{
+            return $re;
+        }
     }
 
     // desh(2024-10-18)
