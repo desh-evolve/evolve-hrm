@@ -186,7 +186,7 @@
                             </li>
                             <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Designations</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Wage Groups</a></li>
+                            <li class="nav-item"><a href="{{ route('company.wagegroups') }}" class="nav-link {{ request()->routeIs('company.wagegroups') ? 'active' : '' }}">Wage Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
 
                             
