@@ -1,10 +1,10 @@
 <!-- desh(2024-10-23) -->
 <x-app-layout :title="'Input Example'">
-   
+
     <x-slot name="header">
         <h4 class="mb-sm-0">{{ __('Branches') }}</h4>
     </x-slot>
-    
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -107,7 +107,7 @@
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
-                        
+
                     </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
@@ -136,7 +136,7 @@
             if(branches && branches.length > 0){
                 branches.map((branch, i) => {
                     list += `
-                        <tr branch_id="${branch.id}"">
+                        <tr branch_id="${branch.id}">
                             <td>${i + 1}</td>
                             <td>${branch.branch_name +' '+ (branch.short_name && '('+ branch.short_name +')')}</td>
                             <td>
@@ -161,7 +161,7 @@
             }else{
                 list = '<tr><td colspan="7" class="text-center">No Branches Found!</td></tr>';
             }
-            
+
 
             $('#branch_table_body').html(list);
         }
@@ -335,13 +335,13 @@
                 // Check only required fields
                 if (formFields[key] === 'required' && !value) {
                     missingFields.push(fieldId); // Collect missing required fields
-                } 
+                }
 
                 // Append all fields to formData (even optional ones)
                 formData.append(key, value || ''); // Append empty string if no value for optional fields
             }
 
-            formData.append('status', formFields.branch_status); 
+            formData.append('status', formFields.branch_status);
 
             // If there are missing required fields, display an error message
             if (missingFields.length > 0) {
