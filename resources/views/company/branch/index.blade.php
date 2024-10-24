@@ -164,6 +164,7 @@
 
 
             $('#branch_table_body').html(list);
+            $('[data-tooltip="tooltip"]').tooltip();
         }
 
         //=====================================================================================
@@ -341,8 +342,6 @@
                 formData.append(key, value || ''); // Append empty string if no value for optional fields
             }
 
-            formData.append('status', formFields.branch_status);
-
             // If there are missing required fields, display an error message
             if (missingFields.length > 0) {
                 let errorMsg = '<p class="text-danger">The following fields are required: ';
@@ -393,7 +392,6 @@
             $('#currency_id').val('');
             $('#branch_status').val('active');
         }
-
 
     </script>
 

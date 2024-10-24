@@ -8,7 +8,9 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BranchController;
-use App\Http\Controllers\WageGroupController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\StationController;
+use App\Http\Controllers\EmployeeDesignationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -89,21 +91,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::post('/location/city/create', [LocationController::class, 'createCity'])->name('location.city.create');
     Route::put('/location/city/update/{id}', [LocationController::class, 'updateCity'])->name('location.city.update');
     Route::delete('/location/city/delete/{id}', [LocationController::class, 'deleteCity'])->name('location.city.delete');
-    Route::get('/location/cities', [LocationController::class, 'getAllCities'])->name('location.cities.all');
+    
     Route::get('/location/city/{id}', [LocationController::class, 'getCityByCityId'])->name('location.city.getById');
     Route::get('/location/cities/{provinceId}', [LocationController::class, 'getCitiesByProvinceId'])->name('location.city.getByProvinceId');
 
     //==============================================================================================================================
-    // Branch
-    //==============================================================================================================================
 
-    // Branch index
-    Route::get('/company/branch', [BranchController::class, 'branch'])->name('company.branch');
-    Route::get('/company/department', [BranchController::class, 'department'])->name('company.department');
-
-    Route::get('/company/branch/dropdown', [BranchController::class, 'getAllDropdownData'])->name('company.branch.dropdown');
-
-    // Country routes
+    // Branch routes
+    Route::get('/company/branch', [BranchController::class, 'index'])->name('company.branch.index');
+    Route::get('/company/branch/dropdown', [BranchController::class, 'getBranchDropdownData'])->name('company.branch.dropdown');
     Route::post('/company/branch/create', [BranchController::class, 'createBranch'])->name('company.branch.create');
     Route::put('/company/branch/update/{id}', [BranchController::class, 'updateBranch'])->name('company.branch.update');
     Route::delete('/company/branch/delete/{id}', [BranchController::class, 'deleteBranch'])->name('company.branch.delete');
@@ -111,21 +107,46 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/company/branch/{id}', [BranchController::class, 'getBranchByBranchId'])->name('company.branch.getById');
 
     // Departments routes
-    Route::post('/company/department/create', [BranchController::class, 'createDepartment'])->name('company.department.create');
-    Route::put('/company/department/update/{id}', [BranchController::class, 'updateDepartment'])->name('company.department.update');
-    Route::delete('/company/department/delete/{id}', [BranchController::class, 'deleteDepartment'])->name('company.department.delete');
-    Route::get('/company/departments', [BranchController::class, 'getAllDepartments'])->name('company.departments.all');
-    Route::get('/company/department/{id}', [BranchController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
-    Route::get('/company/departments/{branchId}', [BranchController::class, 'getDepartmentsByBranchId'])->name('company.departments.getByBranchId');
+    Route::get('/company/department', [DepartmentController::class, 'index'])->name('company.department.index');
+    Route::get('/company/department/dropdown', [DepartmentController::class, 'getDepartmentDropdownData'])->name('company.department.dropdown');
+    Route::post('/company/department/create', [DepartmentController::class, 'createDepartment'])->name('company.department.create');
+    Route::put('/company/department/update/{id}', [DepartmentController::class, 'updateDepartment'])->name('company.department.update');
+    Route::delete('/company/department/delete/{id}', [DepartmentController::class, 'deleteDepartment'])->name('company.department.delete');
+    Route::get('/company/departments', [DepartmentController::class, 'getAllDepartments'])->name('company.departments.all');
+    Route::get('/company/department/{id}', [DepartmentController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
+    Route::get('/company/departments/{branchId}', [DepartmentController::class, 'getDepartmentsByBranchId'])->name('company.departments.getByBranchId');
+
+    //==============================================================================================================================
+
+    // Station index
+    Route::get('/station', [StationController::class, 'index'])->name('station.index');
+    
+    // Country routes
+    Route::post('/station/create', [StationController::class, 'createStation'])->name('station.create');
+    Route::put('/station/update/{id}', [StationController::class, 'updateStation'])->name('station.update');
+    Route::delete('/station/delete/{id}', [StationController::class, 'deleteStation'])->name('station.delete');
+    Route::get('/stations', [StationController::class, 'getAllStations'])->name('stations.all');
+    Route::get('/station/{id}', [StationController::class, 'getStationByStationId'])->name('station.getById');
+    
 
     // Divisions routes
-    Route::post('/company/division/create', [BranchController::class, 'createDivision'])->name('company.division.create');
-    Route::put('/company/division/update/{id}', [BranchController::class, 'updateDivision'])->name('company.division.update');
-    Route::delete('/company/division/delete/{id}', [BranchController::class, 'deleteDivision'])->name('company.division.delete');
-    Route::get('/company/divisions', [BranchController::class, 'getAllDivisions'])->name('company.divisions.all');
-    Route::get('/company/division/{id}', [BranchController::class, 'getDivisionByDivisionId'])->name('company.division.getById');
-    Route::get('/company/divisions/{departmentId}', [BranchController::class, 'getDivisionsByDepartmentId'])->name('company.divisions.getByDepartmentId');
+    Route::post('/station/station_type/create', [StationController::class, 'createStationType'])->name('station.station_type.create');
+    Route::put('/station/station_type/update/{id}', [StationController::class, 'updateStationType'])->name('station.station_type.update');
+    Route::delete('/station/station_type/delete/{id}', [StationController::class, 'deleteStationType'])->name('station.station_type.delete');
+    Route::get('/station/station_types', [StationController::class, 'getAllStationTypes'])->name('station.station_types.all');
+    Route::get('/station/station_type/{id}', [StationController::class, 'getStationTypeByStationId'])->name('station.station_type.getById');
+   
+   
+    // employee_designation routes
+     // Station indeX
+     Route::get('company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation');
 
+    Route::post('/company/employee_designation/create', [EmployeeDesignationController::class, 'createEmployeeDesignation'])->name('company.employee_designation.create');
+    Route::put('/company/employee_designation/update/{id}', [EmployeeDesignationController::class, 'updateEmployeeDesignation'])->name('company.employee_designation.update');
+    Route::delete('/company/employee_designation/delete/{id}', [EmployeeDesignationController::class, 'deleteEmployeeDesignation'])->name('company.employee_designation.delete');
+    Route::get('/company/employee_designations', [EmployeeDesignationController::class, 'getAllEmployeeDesignations'])->name('company.employee_designation.all');
+    Route::get('/company/employee_designation/{id}', [EmployeeDesignationController::class, 'getEmployeeDesignationById'])->name('company.employee_designation.getById');
+    
     //==============================================================================================================================
     // Company
     //==============================================================================================================================
