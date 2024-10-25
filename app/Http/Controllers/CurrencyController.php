@@ -53,8 +53,9 @@ class CurrencyController extends Controller
                 ];
 
                 $insertId = $this->common->commonSave($table, $inputArr);
-                if($request->is_default){
-                    $this->setDefaultCurrency($insertId);
+                //check here
+                if($request->is_default == '1'){
+                    $this->setDefaultCurrency($id);
                 }
 
                 if ($insertId) {
@@ -92,7 +93,8 @@ class CurrencyController extends Controller
                 ];
 
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
-                if($request->is_default === 1){
+                //check here
+                if($request->is_default == '1'){
                     $this->setDefaultCurrency($id);
                 }
 
@@ -108,12 +110,13 @@ class CurrencyController extends Controller
         }
       }
 
+      //check here
     private function setDefaultCurrency($currency_id){
         $table = 'com_currencies';
         //updating all is_default values to 0
-        $this->common->commonSave($table, ['is_defalut' => '0'], $id = 'all');
+        $this->common->commonSave($table, ['is_default' => '0'], $id = 'all');
         //updating current currency is_default value to 1
-        $id = $this->common->commonSave($table, ['is_defalut' => '1'], $currency_id, 'id');
+        $id = $this->common->commonSave($table, ['is_default' => '1'], $currency_id, 'id');
         return $id ? true : false;
     }
 
