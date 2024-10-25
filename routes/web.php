@@ -113,14 +113,20 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     // Departments routes
     Route::get('/company/department', [DepartmentController::class, 'index'])->name('company.department.index');
+    Route::get('/company/department/employees', [DepartmentController::class, 'employees'])->name('company.department.employees');
+
     Route::get('/company/department/dropdown', [DepartmentController::class, 'getDepartmentDropdownData'])->name('company.department.dropdown');
     Route::post('/company/department/create', [DepartmentController::class, 'createDepartment'])->name('company.department.create');
     Route::put('/company/department/update/{id}', [DepartmentController::class, 'updateDepartment'])->name('company.department.update');
     Route::delete('/company/department/delete/{id}', [DepartmentController::class, 'deleteDepartment'])->name('company.department.delete');
     Route::get('/company/departments', [DepartmentController::class, 'getAllDepartments'])->name('company.departments.all');
     Route::get('/company/department/{id}', [DepartmentController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
-    Route::get('/company/departments/{branchId}', [DepartmentController::class, 'getDepartmentsByBranchId'])->name('company.departments.getByBranchId');
-
+    
+    // Department employees routes
+    Route::get('/company/department/employees/dropdown', [DepartmentController::class, 'getDepartmentEmployeesDropdownData'])->name('company.department.employees.dropdown');
+    Route::post('/company/department/employees/create', [DepartmentController::class, 'createDepartmentEmployees'])->name('company.department.employees.create');
+    Route::get('/company/{branch_id}/department/{department_id}/employees', [DepartmentController::class, 'getDepartmentBranchEmployees'])->name('company.department.getAll');
+    Route::delete('/company/department/employee/delete/{department_id}/{branch_id}/{employee_id}', [DepartmentController::class, 'deleteDepartmentBranchEmployees'])->name('company.department.employee.delete');
     //==============================================================================================================================
 
     // Station index
@@ -159,16 +165,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/company/employee_group/delete/{id}', [EmployeeGroupController::class, 'deleteEmployeeGroup'])->name('company.employee_group.delete');
     Route::get('/company/employee_groups', [EmployeeGroupController::class, 'getAllEmployeeGroups'])->name('company.employee_group.all');
     Route::get('/company/employee_group/{id}', [EmployeeGroupController::class, 'getEmployeeGroupById'])->name('company.employee_group.getById');
-
     //==============================================================================================================================
     // Company
     //==============================================================================================================================
 
     
-
-    Route::get('/currencies', function () {
-        return view('company/currencies/currencies_add');
-    })->name('currencies.index');
 
 
     //==============================================================================================================================
@@ -176,7 +177,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
 
 
-    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups');
+    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
 
     // WageGroups routes
     Route::post('/company/wagegroups/create', [WageGroupController::class, 'createWageGroups'])->name('company.wagegroups.create');
@@ -184,6 +185,21 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/company/wagegroups/delete/{id}', [WageGroupController::class, 'deleteWageGroups'])->name('company.wagegroups.delete');
     Route::get('/company/allwagegroups', [WageGroupController::class, 'getAllWageGroups'])->name('company.wagegroups.all');
     Route::get('/company/wagegroups/{id}', [WageGroupController::class, 'getWageGroupById'])->name('company.wagegroups.getById');
+
+
+    //==============================================================================================================================
+    // Currencies
+    //==============================================================================================================================
+
+
+    Route::get('/currency', [CurrencyController::class, 'currency'])->name('company.currency');
+
+    // Currency routes
+    Route::post('/company/currency/create', [CurrencyController::class, 'createCurrency'])->name('company.currency.create');
+    Route::put('/company/currency/update/{id}', [CurrencyController::class, 'updateCurrency'])->name('company.currency.update');
+    Route::delete('/company/currency/delete/{id}', [CurrencyController::class, 'deleteCurrency'])->name('company.currency.delete');
+    Route::get('/company/allcurrency', [CurrencyController::class, 'getAllCurrency'])->name('company.currency.all');
+    Route::get('/company/currency/{id}', [CurrencyController::class, 'getCurrencyById'])->name('company.currency.getById');
 
 
 });

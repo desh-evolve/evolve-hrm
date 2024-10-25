@@ -2,122 +2,139 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Currency;
+
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
 
+
 class CurrencyController extends Controller
 {
-    private $currency = null;
     private $common = null;
 
     public function __construct()
     {
-        $this->middleware('permission:view user', ['only' => ['index']]);
-        $this->middleware('permission:create user', ['only' => ['create','store']]);
-        $this->middleware('permission:update user', ['only' => ['update','edit']]);
-        $this->middleware('permission:delete user', ['only' => ['destroy']]);
+        $this->middleware('permission:view currency', ['only' => ['currency', 'getAllCurrency', 'getCurrencyById']]);
+        $this->middleware('permission:create currency', ['only' => ['createCurrency']]);
+        $this->middleware('permission:update currency', ['only' => ['updateCurrency']]);
+        $this->middleware('permission:delete currency', ['only' => ['deleteCurrency']]);
 
-        $this->currency = new Currency();
         $this->common = new CommonModel();
     }
 
-    public function index()
-    {
-        $countries = currency::all(); // Fetch all students
-        return view('countries.index', ['countries' => $countries]);
-    }
-    public function create(Request $request)
-    {
+
+     //pawanee(2024-10-24)
+     public function currency(){
+        return view('company.currencies.currencies_add');
+     }
+
+
+      //pawanee(2024-10-24)
+      public function createCurrency(Request $request){
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'currency_name' => 'required',
-                    'conversion_rate' => 'required',
+                    'currency_name' => 'required|string|max:255',
+                    'iso_code' => 'required',
+                    'conversion_rate' => 'required|numeric',
+                    'previous_rate' => 'required|numeric',
+                    'is_default' => 'required',
                 ]);
-                $data = [
+
+                $table = 'com_currencies';
+                $inputArr = [
                     'currency_name' => $request->currency_name,
                     'iso_code' => $request->iso_code,
                     'conversion_rate' => $request->conversion_rate,
                     'previous_rate' => $request->previous_rate,
-                    'status' => 'active',
-                    'is_default' => 'is_default',
-                    'created_date' => date("Y-m-d H:i:s"),
+                    'is_default' => $request->is_default,
                     'created_by' => Auth::user()->id,
+                    'updated_by' => Auth::user()->id,
                 ];
-                //store the record in the transaction_classes table
-                $insertId = $this->currency->storeRecord($data);
+
+                $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {
-                    return response()->json(['message' => 'currency  Added Successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Currency Added Auccessfully' , 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['message' => 'Error storing record', 'data' => [], 'error_code' => 500], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed to Adding Currency', 'data' => []], 500);
                 }
+
             });
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['message' => 'Error occurred due to ' . $e->getMessage(), 'error_code' => 500], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
+      }
+
+      //pawanee(2024-10-24)
+      public function updateCurrency(Request $request, $id){
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                $request->validate([
+                    'currency_name' => 'required|string|max:255',
+                    'iso_code' => 'required',
+                    'conversion_rate' => 'required|numeric',
+                    'previous_rate' => 'required|numeric',
+                    'is_default' => 'required',
+                ]);
+
+                $table = 'com_currencies';
+                $idColumn = 'id';
+                $inputArr = [
+                    'currency_name' => $request->currency_name,
+                    'iso_code' => $request->iso_code,
+                    'conversion_rate' => $request->conversion_rate,
+                    'previous_rate' => $request->previous_rate,
+                    'is_default' => $request->is_default,
+                    'updated_by' => Auth::user()->id,
+                ];
+
+                $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+
+                if ($insertId) {
+                    return response()->json(['status' => 'success', 'message' => 'Currency Updated Auccessfully' , 'data' => ['id' => $insertId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed to Update Currency', 'data' => []], 500);
+                }
+
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
+        }
+      }
+
+
+
+    //pawanee(2024-10-24)
+    public function deleteCurrency($id)
+    {
+        $whereArr = ['id' => $id];
+        $title = 'Currency';
+        $table = 'com_currencies';
+
+        return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
-    public function edit($id)
+
+    //pawanee(2024-10-24)
+    public function getAllCurrency()
     {
-         $student = Currency::findOrFail($id);
-         return 'countries.edit';
-    }
- 
-     
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'currency_name' => 'required',
-            'conversion_rate' => 'required',
-        ]);
-        $record = $this->currency->getSingleRecord($id);
-        if ($record) {
-            $data = [
-                'currency_name' => $request->currency_name,
-                'iso_code' => $request->iso_code,
-                'conversion_rate' => $request->conversion_rate,
-                'previous_rate' => $request->previous_rate,
-                'status' => 'active',
-                'is_default' => 'is_default',
-                'updated_date' => date("Y-m-d H:i:s"),
-                'updated_by' => Auth::user()->id,
-            ];
-            $this->currency->updateRecord($id, $data);
-            return response()->json(['message' => 'currency Updated Successfully',  'data' => ['id' => $id]], 200);
-        } else {
-            return response()->json(['message' => 'No Department Found', 'data' => []], 404);
-        }
+        $table = 'com_currencies';
+        $fields = '*';
+        $wageGroups = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $wageGroups], 200);
     }
 
-    public function show($id)
-    {
-        $data = $this->currency->getSingleRecord($id);
-        if ($data) {
-            return response()->json(['currency' => $data[0]], 200);
-        } else {
-            return response()->json(['message' => 'No industry Found'], 404);
-        }
+
+    //pawanee(2024-10-24)
+    public function getCurrencyById($id){
+        $idColumn = 'id';
+        $table = 'com_currencies';
+        $fields = '*';
+        $wageGroups = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $wageGroups], 200);
     }
 
-    public function delete($id)
-    {
-        $record = $this->currency->getSingleRecord($id);
-        if ($record) {
-            $data = [
-                'deleted_date' => date("Y-m-d H:i:s"),
-                'deleted_by' => Auth::user()->id,
-                'status'          => 'delete',
-            ];
-            $this->currency->destroyRecord($id, $data);
-            return response()->json(['message' => 'currency Deleted Successfully',  'data' => ['id' => $id]], 200);
-        } else {
-            return response()->json(['message' => 'No currency Found', 'data' => []], 404);
-        }
-    }
+
 }

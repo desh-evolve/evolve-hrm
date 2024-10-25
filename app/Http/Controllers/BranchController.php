@@ -150,11 +150,10 @@ class BranchController extends Controller
     //desh(2024-10-21)
     public function deleteBranch($id)
     {
-        $whereArr = ['id' => $id];
-        $title = 'Branch';
-        $table = 'com_branches';
-    
-        return $this->common->commonDelete($id, $whereArr, $title, $table);
+        $res = $this->common->commonDelete($id, ['id' => $id], 'Branch', 'com_branches');
+        $this->common->commonDelete($id, ['branch_id' => $id], 'Department Branches', 'com_branch_departments');
+        $this->common->commonDelete($id, ['branch_id' => $id], 'Department Branches Employees', 'com_branch_department_employees');
+        return $res;
     }
     
     //desh(2024-10-21)
@@ -182,7 +181,7 @@ class BranchController extends Controller
         $idColumn = 'id';
         $table = 'com_branches';
         $fields = '*';
-        $branch = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        $branch = $this->common->commonGetById($id, $idColumn, $table, $fields, [], [], true);
         return response()->json(['data' => $branch], 200);
     }       
 
