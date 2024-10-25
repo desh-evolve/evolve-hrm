@@ -15,7 +15,7 @@ class CurrencyController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view currency', ['only' => ['currency', 'getAllCurrency', 'getCurrencyById']]);
+        $this->middleware('permission:view currency', ['only' => ['index', 'getAllCurrency', 'getCurrencyById']]);
         $this->middleware('permission:create currency', ['only' => ['createCurrency']]);
         $this->middleware('permission:update currency', ['only' => ['updateCurrency']]);
         $this->middleware('permission:delete currency', ['only' => ['deleteCurrency']]);
@@ -25,7 +25,7 @@ class CurrencyController extends Controller
 
 
      //pawanee(2024-10-24)
-     public function currency(){
+     public function index(){
         return view('company.currencies.currencies_add');
      }
 
@@ -93,7 +93,7 @@ class CurrencyController extends Controller
 
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
                 if($request->is_default === 1){
-                    $this->setDefaultCurrency($insertId);
+                    $this->setDefaultCurrency($id);
                 }
 
                 if ($insertId) {
