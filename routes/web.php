@@ -11,6 +11,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\EmployeeDesignationController;
+use App\Http\Controllers\EmployeeGroupController;
 use App\Http\Controllers\WageGroupController;
 
 Route::get('/', function () {
@@ -27,7 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::group(['middleware' => ['role:super-admin|admin']], function() {
+Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     Route::resource('permissions', App\Http\Controllers\PermissionController::class);
     Route::get('permissions/{permissionId}/delete', [App\Http\Controllers\PermissionController::class, 'destroy']);
@@ -51,12 +52,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/industries/{id}', [IndustryController::class, 'show'])->name('industries.show');
 
     // company
-    Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
-    Route::post('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
-    Route::put('/companies/update/{id}', [CompanyController::class, 'update'])->name('companies.update');
-    Route::get('/companies/edit', [CompanyController::class, 'edit'])->name('companies.edit');
-    Route::delete('/companies/delete/{id}', [CompanyController::class, 'delete'])->name('companies.delete');
-    Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
+    // Company Info index
+    Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
+    Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
+    Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
+
+    // Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    // Route::post('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
+    // Route::get('/companies/edit', [CompanyController::class, 'edit'])->name('companies.edit');
+    // Route::delete('/companies/delete/{id}', [CompanyController::class, 'delete'])->name('companies.delete');
 
     // country
     Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index');
@@ -145,8 +149,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
 
 
     // employee_designation routes
-     // Station indeX
-     Route::get('company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation');
+    Route::get('company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation');
 
     Route::post('/company/employee_designation/create', [EmployeeDesignationController::class, 'createEmployeeDesignation'])->name('company.employee_designation.create');
     Route::put('/company/employee_designation/update/{id}', [EmployeeDesignationController::class, 'updateEmployeeDesignation'])->name('company.employee_designation.update');
@@ -154,12 +157,19 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/company/employee_designations', [EmployeeDesignationController::class, 'getAllEmployeeDesignations'])->name('company.employee_designation.all');
     Route::get('/company/employee_designation/{id}', [EmployeeDesignationController::class, 'getEmployeeDesignationById'])->name('company.employee_designation.getById');
 
+    // employee_designation routes
+    Route::get('company/employee_group', [EmployeeGroupController::class, 'index'])->name('company.employee_group');
+
+    Route::post('/company/employee_group/create', [EmployeeGroupController::class, 'createEmployeeGroup'])->name('company.employee_group.create');
+    Route::put('/company/employee_group/update/{id}', [EmployeeGroupController::class, 'updateEmployeeGroup'])->name('company.employee_group.update');
+    Route::delete('/company/employee_group/delete/{id}', [EmployeeGroupController::class, 'deleteEmployeeGroup'])->name('company.employee_group.delete');
+    Route::get('/company/employee_groups', [EmployeeGroupController::class, 'getAllEmployeeGroups'])->name('company.employee_group.all');
+    Route::get('/company/employee_group/{id}', [EmployeeGroupController::class, 'getEmployeeGroupById'])->name('company.employee_group.getById');
     //==============================================================================================================================
     // Company
     //==============================================================================================================================
 
-    // Company Info index
-    Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
+    
 
 
     //==============================================================================================================================
@@ -196,4 +206,4 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
