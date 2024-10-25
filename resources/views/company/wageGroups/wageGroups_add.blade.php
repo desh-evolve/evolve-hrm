@@ -68,12 +68,12 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" >Add Wage Group</h4>
+                <h4 class="modal-title"></h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="wageGroup-form-body" class="row">
-                    <div class="col-xxl-3 col-md-6 mb-3">
+                    <div class="col-xxl-3 col-md-12 mb-3">
                         <label for="wage_group_name" class="form-label mb-1">Name</label>
                         <input type="text" class="form-control" id="wage_group_name" placeholder="Enter Wage Group Name" value="">
                     </div>
@@ -140,8 +140,9 @@
                 }).join('');
             }
 
-
+            // Update the HTML content of the table body with the new list
             $('#table_body').html(list);
+
         } catch (error) {
             $('#table_body').html('<tr><td colspan="4" class="text-center text-danger">Error loading data</td></tr>');
             console.error('Error fetching data:', error);
@@ -187,6 +188,7 @@
     // Add wage group
     $(document).on('click', '#add_new_btn', function () {
         resetForm();
+        $('.modal-title').text('Add Wage Group');  // Set modal title for adding
         $('#wageGroup_form_modal').modal('show'); // Show the modalfor adding a new wage group
     });
 
@@ -194,7 +196,15 @@
     $(document).on('click', '.click_edit', async function () {
         resetForm();
 
+
         let wageGroup_id = $(this).closest('tr').attr('wage_group_id');
+
+        // Set modal title for editing the wage group
+        if (wageGroup_id) {
+
+            $('.modal-title').text('Edit Wage Group');
+        }
+
 
         // Get wage group data by ID
         try {
