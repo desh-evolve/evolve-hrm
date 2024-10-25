@@ -313,7 +313,7 @@
         $('#iso_code').val('');
         $('#conversion_rate').val('');
         $('#previous_rate').val('');
-        $('#is_default').prop('checked', true); // Uncheck the checkbox
+        $('#is_default').prop('checked', false); // Uncheck the checkbox
         $('#error-msg').html('');
     }
 

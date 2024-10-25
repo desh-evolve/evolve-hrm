@@ -177,7 +177,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
 
 
-    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
+    Route::get('/company/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
 
     // WageGroups routes
     Route::post('/company/wagegroups/create', [WageGroupController::class, 'createWageGroups'])->name('company.wagegroups.create');
@@ -192,7 +192,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
 
 
-    Route::get('/currency', [CurrencyController::class, 'currency'])->name('company.currency');
+    Route::get('/company/currency', [CurrencyController::class, 'currency'])->name('company.currency.index');
 
     // Currency routes
     Route::post('/company/currency/create', [CurrencyController::class, 'createCurrency'])->name('company.currency.create');
