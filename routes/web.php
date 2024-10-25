@@ -11,6 +11,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\EmployeeDesignationController;
+use App\Http\Controllers\WageGroupController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -91,7 +92,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::post('/location/city/create', [LocationController::class, 'createCity'])->name('location.city.create');
     Route::put('/location/city/update/{id}', [LocationController::class, 'updateCity'])->name('location.city.update');
     Route::delete('/location/city/delete/{id}', [LocationController::class, 'deleteCity'])->name('location.city.delete');
-    
+
     Route::get('/location/city/{id}', [LocationController::class, 'getCityByCityId'])->name('location.city.getById');
     Route::get('/location/cities/{provinceId}', [LocationController::class, 'getCitiesByProvinceId'])->name('location.city.getByProvinceId');
 
@@ -120,14 +121,14 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
 
     // Station index
     Route::get('/station', [StationController::class, 'index'])->name('station.index');
-    
+
     // Country routes
     Route::post('/station/create', [StationController::class, 'createStation'])->name('station.create');
     Route::put('/station/update/{id}', [StationController::class, 'updateStation'])->name('station.update');
     Route::delete('/station/delete/{id}', [StationController::class, 'deleteStation'])->name('station.delete');
     Route::get('/stations', [StationController::class, 'getAllStations'])->name('stations.all');
     Route::get('/station/{id}', [StationController::class, 'getStationByStationId'])->name('station.getById');
-    
+
 
     // Divisions routes
     Route::post('/station/station_type/create', [StationController::class, 'createStationType'])->name('station.station_type.create');
@@ -135,8 +136,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::delete('/station/station_type/delete/{id}', [StationController::class, 'deleteStationType'])->name('station.station_type.delete');
     Route::get('/station/station_types', [StationController::class, 'getAllStationTypes'])->name('station.station_types.all');
     Route::get('/station/station_type/{id}', [StationController::class, 'getStationTypeByStationId'])->name('station.station_type.getById');
-   
-   
+
+
     // employee_designation routes
      // Station indeX
      Route::get('company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation');
@@ -146,7 +147,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::delete('/company/employee_designation/delete/{id}', [EmployeeDesignationController::class, 'deleteEmployeeDesignation'])->name('company.employee_designation.delete');
     Route::get('/company/employee_designations', [EmployeeDesignationController::class, 'getAllEmployeeDesignations'])->name('company.employee_designation.all');
     Route::get('/company/employee_designation/{id}', [EmployeeDesignationController::class, 'getEmployeeDesignationById'])->name('company.employee_designation.getById');
-    
+
     //==============================================================================================================================
     // Company
     //==============================================================================================================================

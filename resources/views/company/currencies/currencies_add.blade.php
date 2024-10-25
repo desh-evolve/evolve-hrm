@@ -49,28 +49,9 @@
                                 </tr>
                             </thead>
 
-                                <tbody id="table_body">
-                                    <tr>
+                            <tbody id="table_body">
 
-
-                                        <td>01</td>
-                                        <td>marycousar@velzon.com</td>
-                                        <td>580-464-4694</td>
-                                        <td>06 Apr, 2021</td>
-                                        <td>06 Apr, 2021</td>
-                                        <td><span class="badge bg-success-subtle text-success text-uppercase">Yes</span></td>
-                                        <td>
-                                            <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit me-1">
-                                               <i class="ri-pencil-fill"></i>
-                                           </button>
-
-                                           <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete" id="delete_btn">
-                                               <i class="ri-delete-bin-fill"></i>
-                                           </button>
-                                       </td>
-
-                                    </tr>
-
+                                <tr><td colspan="7" class="text-center">Loading...</td></tr>
 
                             </tbody>
                         </table>
