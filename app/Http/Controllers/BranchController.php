@@ -16,37 +16,25 @@ class BranchController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view branch', ['only' => [
-            'branch', 
-            'department', 
+            'index', 
             'getAllBranches', 
             'getBranchByBranchId', 
-            'getAllDepartments',
-            'getDepartmentByDepartmentId', 
-            'getDepartmentsByBranchId', 
-            'getAllDivisions',
-            'getDivisionByDivisionId', 
-            'getDivisionsByDepartmentId',
-            'getAllDropdownData'
+            'getBranchDropdownData'
         ]]);
-        $this->middleware('permission:create branch', ['only' => ['createBranch', 'createDepartment', 'createDivision']]);
-        $this->middleware('permission:update branch', ['only' => ['updateBranch', 'updateDepartment', 'updateDivision']]);
-        $this->middleware('permission:delete branch', ['only' => ['deleteBranch', 'deleteDepartment', 'deleteDivision']]);
+        $this->middleware('permission:create branch', ['only' => ['createBranch']]);
+        $this->middleware('permission:update branch', ['only' => ['updateBranch']]);
+        $this->middleware('permission:delete branch', ['only' => ['deleteBranch']]);
 
         $this->common = new CommonModel();
     }
 
-    public function branch()
+    public function index()
     {
-        return view('company.branch.branch');
-    }
-
-    public function department()
-    {
-        return view('company.branch.department');
+        return view('company.branch.index');
     }
 
     //desh(2024-10-22)
-    public function getAllDropdownData(){
+    public function getBranchDropdownData(){
         $countries = $this->common->commonGetAll('loc_countries', '*');
         $provinces = $this->common->commonGetAll('loc_provinces', '*');
         $cities = $this->common->commonGetAll('loc_cities', '*');
@@ -61,8 +49,6 @@ class BranchController extends Controller
         ], 200);
     }
 
-    //================================================================================================================================
-    // branch
     //================================================================================================================================
 
     //desh(2024-10-21)
@@ -79,6 +65,7 @@ class BranchController extends Controller
                     'country_id' => 'required|integer',
                     'contact_1' => 'required|string|max:15',
                     'email' => 'required|email|unique:com_branches,email',
+                    'branch_status' => 'required|string',
                 ]);
     
                 $table = 'com_branches';
@@ -94,6 +81,7 @@ class BranchController extends Controller
                     'contact_1' => $request->contact_1,
                     'contact_2' => $request->contact_2,
                     'email' => $request->email,
+                    'status' => $request->branch_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
@@ -125,6 +113,7 @@ class BranchController extends Controller
                     'country_id' => 'required|integer',
                     'contact_1' => 'required|string|max:15',
                     'email' => 'required|email|unique:com_branches,email,' . $id,
+                    'branch_status' => 'required|string',
                 ]);
     
                 $table = 'com_branches';
@@ -141,6 +130,7 @@ class BranchController extends Controller
                     'contact_1' => $request->contact_1,
                     'contact_2' => $request->contact_2,
                     'email' => $request->email,
+                    'status' => $request->branch_status,
                     'updated_by' => Auth::user()->id,
                 ];
     
@@ -194,221 +184,6 @@ class BranchController extends Controller
         $fields = '*';
         $branch = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $branch], 200);
-    }    
-
-    //================================================================================================================================
-    // department
-    //================================================================================================================================
-    
-    //desh(2024-10-21)
-    public function createDepartment(Request $request)
-    {
-        try {
-            return DB::transaction(function () use ($request) {
-                $request->validate([
-                    'department_name' => 'required|string|max:255',
-                ]);
-    
-                $table = 'com_departments';
-                $inputArr = [
-                    'department_name' => $request->department_name,
-                    'created_by' => Auth::user()->id,
-                    'updated_by' => Auth::user()->id,
-                ];
-    
-                $insertId = $this->common->commonSave($table, $inputArr);
-    
-                if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Department added successfully', 'data' => ['id' => $insertId]], 200);
-                } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed to add department', 'data' => []], 500);
-                }
-            });
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
-        }
-    }
-    
-    //desh(2024-10-21)
-    public function updateDepartment(Request $request, $id)
-    {
-        try {
-            return DB::transaction(function () use ($request, $id) {
-                $request->validate([
-                    'department_name' => 'required|string|max:255',
-                ]);
-
-                $table = 'com_departments';
-                $idColumn = 'id';
-                $inputArr = [
-                    'department_name' => $request->department_name,
-                    'updated_by' => Auth::user()->id,
-                ];
-
-                $updatedId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
-
-                if ($updatedId) {
-                    return response()->json(['status' => 'success', 'message' => 'Department updated successfully', 'data' => ['id' => $updatedId]], 200);
-                } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed to update department', 'data' => []], 500);
-                }
-            });
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
-        }
-    }
-
-    //desh(2024-10-21)
-    public function deleteDepartment($id)
-    {
-        $whereArr = ['id' => $id];
-        $title = 'Department';
-        $table = 'com_departments';
-
-        return $this->common->commonDelete($id, $whereArr, $title, $table);
-    }
-
-    //desh(2024-10-21)
-    public function getAllDepartments()
-    {
-        $table = 'com_departments';
-        $fields = '*';
-        $departments = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $departments], 200);
-    }
-
-    //desh(2024-10-21)
-    public function getDepartmentByDepartmentId($id)
-    {
-        $idColumn = 'id';
-        $table = 'com_departments';
-        $fields = '*';
-        $department = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $department], 200);
-    }
-
-    //desh(2024-10-21)
-    public function getDepartmentsByBranchId($branch_id)
-    {
-        $id = $branch_id;
-        $idColumn = 'branch_id';
-        $table = 'com_branch_departments';
-        $fields = ['com_departments.id as department_id', 'branch_id', 'department_name'];
-        $joinsArr = [
-            'com_departments' => ['com_departments.id', '=', 'com_branch_departments.department_id']
-        ];
-        $whereArr = [
-            'com_departments.status' => 'active',
-        ];
-        $departments = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinsArr, $whereArr);
-        return response()->json(['data' => $departments], 200);
-    }
-
-    //================================================================================================================================
-    // division
-    //================================================================================================================================
-    
-    //desh(2024-10-21)
-    public function createDivision(Request $request)
-    {
-        try {
-            return DB::transaction(function () use ($request) {
-                $request->validate([
-                    'division_name' => 'required|string|max:255',
-                    'department_id' => 'required|integer',
-                ]);
-    
-                $table = 'com_divisions';
-                $inputArr = [
-                    'division_name' => $request->division_name,
-                    'department_id' => $request->department_id,
-                    'created_by' => Auth::user()->id,
-                    'updated_by' => Auth::user()->id,
-                ];
-    
-                $insertId = $this->common->commonSave($table, $inputArr);
-    
-                if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Division added successfully', 'data' => ['id' => $insertId]], 200);
-                } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed to add division', 'data' => []], 500);
-                }
-            });
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
-        }
-    }
-
-    //desh(2024-10-21)
-    public function updateDivision(Request $request, $id)
-    {
-        try {
-            return DB::transaction(function () use ($request, $id) {
-                $request->validate([
-                    'division_name' => 'required|string|max:255',
-                    'department_id' => 'required|integer',
-                ]);
-
-                $table = 'com_divisions';
-                $idColumn = 'id';
-                $inputArr = [
-                    'division_name' => $request->division_name,
-                    'department_id' => $request->department_id,
-                    'updated_by' => Auth::user()->id,
-                ];
-
-                $updatedId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
-
-                if ($updatedId) {
-                    return response()->json(['status' => 'success', 'message' => 'Division updated successfully', 'data' => ['id' => $updatedId]], 200);
-                } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed to update division', 'data' => []], 500);
-                }
-            });
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
-        }
-    }
-
-    //desh(2024-10-21)
-    public function deleteDivision($id)
-    {
-        $whereArr = ['id' => $id];
-        $title = 'Division';
-        $table = 'com_divisions';
-
-        return $this->common->commonDelete($id, $whereArr, $title, $table);
-    }
-
-    //desh(2024-10-21)
-    public function getAllDivisions()
-    {
-        $table = 'com_divisions';
-        $fields = '*';
-        $divisions = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $divisions], 200);
-    }
-
-    //desh(2024-10-21)
-    public function getDivisionByDivisionId($id)
-    {
-        $idColumn = 'id';
-        $table = 'com_divisions';
-        $fields = '*';
-        $division = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $division], 200);
-    }
-
-    //desh(2024-10-21)
-    public function getDivisionsByDepartmentId($department_id)
-    {
-        $id = $department_id;
-        $idColumn = 'department_id';
-        $table = 'com_divisions';
-        $fields = '*';
-        $departments = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $departments], 200);
-    }
-            
+    }       
 
 }
