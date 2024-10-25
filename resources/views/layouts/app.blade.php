@@ -242,7 +242,7 @@
                 });
             }
 
-
+            /*
             //==============================================================
             // select2 code for disable selected item in dropdown
             //==============================================================
@@ -251,7 +251,7 @@
                     var selectedId = e.params.data.id; // Get the selected item's ID
                     
                     // Hide the selected item in the dropdown
-                    $('.select2-multiple option[value="' + selectedId + '"]').attr('disabled', true);
+                    $('.select2-multiple option[value="' + selectedId + '"]').attr('disabled', true); //when we disable it can't get value to send by formData. do sth else here
                     
                     // Refresh the dropdown
                     $('.select2-multiple').select2();
@@ -268,7 +268,8 @@
                 $('.select2-multiple').select2();
             });
             //==============================================================
-            
+            */
+           
         </script>
     </body>
 </html>

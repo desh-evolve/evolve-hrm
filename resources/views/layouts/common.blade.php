@@ -26,50 +26,7 @@
 
 <script>
 
-//desh(2024-10-18)
-/*
-async function commonDeleteFunction(itemId, deleteUrl, itemName, $row = null) {
-    // Show confirmation modal
-    $('#delete_item_name').text(itemName);
-    $('#delete_modal').modal('show');
-
-    // Attach an event listener to the "Yes, Delete It!" button
-    $('#delete-confirm').off('click').on('click', async function() {
-        try {
-
-            // Send DELETE request using Fetch API
-            const response = await fetch(`${deleteUrl}/${itemId}`, {
-                method: 'DELETE', 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token for Laravel
-                }
-            });
-
-            const res = await response.json();  // Parse response JSON
-
-            // Common operation: hide the modal
-            $('#delete_modal').modal('hide');
-
-            let icon = response.ok ? 'success' : 'warning';
-            let msg = response.ok ? res.message || `${itemName} deleted successfully!` : res.message || `Failed to delete ${itemName}`;
-            commonAlert(icon, msg);
-            if (response.ok && $row) {
-                $row.remove();
-            }
-            return response.ok;
-        } catch (error) {
-            let icon = 'error';
-            let msg = `Error deleting ${itemName}`;
-            commonAlert(icon, msg);
-            console.error('Error deleting the item:', error.message);
-            return false;
-        }
-    });
-}
-*/
-
-async function commonDeleteFunction(itemId, deleteUrl, itemName, $row = null) {
+async function commonDeleteFunction(itemId = null, deleteUrl, itemName, $row = null) {
     return new Promise((resolve) => {
         // Show confirmation modal
         $('#delete_item_name').text(itemName);
@@ -79,7 +36,7 @@ async function commonDeleteFunction(itemId, deleteUrl, itemName, $row = null) {
         $('#delete-confirm').off('click').on('click', async function () {
             try {
                 // Send DELETE request using Fetch API
-                const response = await fetch(`${deleteUrl}/${itemId}`, {
+                const response = await fetch(`${deleteUrl}${itemId ? '/' + itemId : ''}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',

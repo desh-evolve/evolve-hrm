@@ -166,7 +166,7 @@
                 
                 // Disable selected options in the dropdown
                 branches.forEach(branchId => {
-                    $('#branches option[value="' + branchId + '"]').attr('disabled', true);
+                    //$('#branches option[value="' + branchId + '"]').attr('disabled', true); //when we disable it can't get value to send by formData. do sth else here
                 });
 
                 $(".select2-multiple").select2();
