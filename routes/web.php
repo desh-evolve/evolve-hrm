@@ -12,6 +12,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StationController;
 use App\Http\Controllers\EmployeeDesignationController;
 use App\Http\Controllers\EmployeeGroupController;
+use App\Http\Controllers\WageGroupController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,12 +52,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/industries/{id}', [IndustryController::class, 'show'])->name('industries.show');
 
     // company
-    Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
-    Route::post('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
-    Route::put('/companies/update/{id}', [CompanyController::class, 'update'])->name('companies.update');
-    Route::get('/companies/edit', [CompanyController::class, 'edit'])->name('companies.edit');
-    Route::delete('/companies/delete/{id}', [CompanyController::class, 'delete'])->name('companies.delete');
-    Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
+    // Company Info index
+    Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
+    Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
+    Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
+
+    // Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    // Route::post('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
+    // Route::get('/companies/edit', [CompanyController::class, 'edit'])->name('companies.edit');
+    // Route::delete('/companies/delete/{id}', [CompanyController::class, 'delete'])->name('companies.delete');
 
     // country
     Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index');
@@ -160,8 +164,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Company
     //==============================================================================================================================
 
-    // Company Info index
-    Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
+    
 
     Route::get('/currencies', function () {
         return view('company/currencies/currencies_add');
