@@ -184,11 +184,8 @@
                                     Departments
                                 </a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
-
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_designation') }}" class="nav-link {{ request()->routeIs('company.employee_designation') ? 'active' : '' }}">
+                                <a href="{{ route('company.employee_designation.index') }}" class="nav-link {{ request()->routeIs('company.employee_designation.index') ? 'active' : '' }}">
                                     Designations
                                 </a>
                             </li>
@@ -197,11 +194,6 @@
                                     Wage Groups
                                 </a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
-
-
-
-
                             <li class="nav-item">
                                 <a href="{{ route('company.currency.index') }}" class="nav-link {{ request()->routeIs('company.currency.index') ? 'active' : '' }}">
                                     Currencies
@@ -209,13 +201,12 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_group') }}" class="nav-link {{ request()->routeIs('company.employee_group') ? 'active' : '' }}">
-                                    Group
+                                <a href="{{ route('company.employee_group.index') }}" class="nav-link {{ request()->routeIs('company.employee_group.index') ? 'active' : '' }}">
+                                    Employee Groups
                                 </a>
                             </li>
-
-
-
+                            <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
                         </ul>
                     </div>
