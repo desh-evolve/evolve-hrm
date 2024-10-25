@@ -241,6 +241,7 @@
 
         $(document).on('click', '#click_add_branch', function(){
             resetForm();
+            $('#branch-form-title').text('Add Branch');
             $('#branch-form-modal').modal('show');
         })
 
@@ -285,6 +286,7 @@
             } catch (error) {
                 console.error('error at getBranchById: ', error);
             } finally {
+                $('#branch-form-title').text('Edit Branch');
                 $('#branch-form-modal').modal('show');
             }
         });

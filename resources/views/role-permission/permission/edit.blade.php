@@ -22,7 +22,10 @@
                         <form action="{{ url('permissions/'.$permission->id) }}" method="POST">
                             @csrf
                             @method('PUT')
-
+                            <div class="mb-3">
+                                <label for="">Permission Type</label>
+                                <input type="text" name="type" value="{{ $permission->type }}" class="form-control" />
+                            </div>
                             <div class="mb-3">
                                 <label for="">Permission Name</label>
                                 <input type="text" name="name" value="{{ $permission->name }}" class="form-control" />

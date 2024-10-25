@@ -109,14 +109,20 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
 
     // Departments routes
     Route::get('/company/department', [DepartmentController::class, 'index'])->name('company.department.index');
+    Route::get('/company/department/employees', [DepartmentController::class, 'employees'])->name('company.department.employees');
+
     Route::get('/company/department/dropdown', [DepartmentController::class, 'getDepartmentDropdownData'])->name('company.department.dropdown');
     Route::post('/company/department/create', [DepartmentController::class, 'createDepartment'])->name('company.department.create');
     Route::put('/company/department/update/{id}', [DepartmentController::class, 'updateDepartment'])->name('company.department.update');
     Route::delete('/company/department/delete/{id}', [DepartmentController::class, 'deleteDepartment'])->name('company.department.delete');
     Route::get('/company/departments', [DepartmentController::class, 'getAllDepartments'])->name('company.departments.all');
     Route::get('/company/department/{id}', [DepartmentController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
-    Route::get('/company/departments/{branchId}', [DepartmentController::class, 'getDepartmentsByBranchId'])->name('company.departments.getByBranchId');
-
+    
+    // Department employees routes
+    Route::get('/company/department/employees/dropdown', [DepartmentController::class, 'getDepartmentEmployeesDropdownData'])->name('company.department.employees.dropdown');
+    Route::post('/company/department/employees/create', [DepartmentController::class, 'createDepartmentEmployees'])->name('company.department.employees.create');
+    Route::get('/company/{branch_id}/department/{department_id}/employees', [DepartmentController::class, 'getDepartmentBranchEmployees'])->name('company.department.getAll');
+    Route::delete('/company/department/employee/delete/{department_id}/{branch_id}/{employee_id}', [DepartmentController::class, 'deleteDepartmentBranchEmployees'])->name('company.department.employee.delete');
     //==============================================================================================================================
 
     // Station index
@@ -161,7 +167,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     //==============================================================================================================================
 
 
-    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups');
+    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
 
     // WageGroups routes
     Route::post('/company/wagegroups/create', [WageGroupController::class, 'createWageGroups'])->name('company.wagegroups.create');

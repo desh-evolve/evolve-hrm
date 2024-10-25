@@ -116,6 +116,9 @@
                                 <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_department" title="Delete Department" data-tooltip="tooltip" data-bs-placement="top">
                                     <i class="ri-delete-bin-fill"></i>
                                 </button>
+                                <button type="button" class="btn btn-success waves-effect waves-light btn-sm click_assign_employees" title="Department Employees" data-tooltip="tooltip" data-bs-placement="top">
+                                    Department Employees <i class="ri-group-line"></i>
+                                </button>
                             </td>
                         </tr>
                     `;
@@ -132,50 +135,46 @@
         // check here
         $(document).on('click', '#click_add_department', function(){
             resetForm();
+            $('#department-form-title').text('Add Department');
             $('#department-form-modal').modal('show');
         })
 
         $(document).on('click', '.click_edit_department', async function() {
             resetForm();
-            let department_id = $(this).closest('tr').attr('department_id');
+            $('#error-msg').html('<p class="text-danger">* Note - Updating department branches may affect department employees.</p>');
 
             // Get department data by id
+            let department_id = $(this).closest('tr').attr('department_id');
             try {
                 let department_data = await commonFetchData(`/company/department/${department_id}`);
                 department_data = department_data[0];
-                console.log('department_data', department_data);
+                let branches = department_data?.branch_departments?.map(branch => (branch.branch_id).toString()) || [];
 
                 // Set initial form values
                 $('#department_id').val(department_id);
                 $('#department_name').val(department_data?.department_name || '');
-                $('#short_name').val(department_data?.short_name || '');
-                $('#address_1').val(department_data?.address_1 || '');
-                $('#address_2').val(department_data?.address_2 || '');
-                $('#contact_1').val(department_data?.contact_1 || '');
-                $('#contact_2').val(department_data?.contact_2 || '');
-                $('#email').val(department_data?.email || '');
-                $('#currency_id').val(department_data?.currency_id || '');
                 $('#department_status').val(department_data?.status || '');
 
-                // Load the country, province, and city accordingly
-                const countryId = department_data?.country_id || '';
-                const provinceId = department_data?.province_id || '';
-                const cityId = department_data?.city_id || '';
+                //==============================================================
+                // select2 code for update
+                //==============================================================
+                // Reset previously disabled options
+                $('#branches option').attr('disabled', false);
+                
+                // Set selected branches and disable them in the dropdown
+                $('#branches').val(branches).trigger('change');
+                
+                // Disable selected options in the dropdown
+                branches.forEach(branchId => {
+                    //$('#branches option[value="' + branchId + '"]').attr('disabled', true); //when we disable it can't get value to send by formData. do sth else here
+                });
 
-                // Load countries and set selected country
-                $('#country_id').val(countryId).trigger('change');
-
-                // Load provinces based on the selected country, and set selected province
-                await loadProvinces(countryId); // Ensures provinces are loaded before proceeding
-                $('#province_id').val(provinceId).trigger('change');
-
-                // Load cities based on the selected province, and set selected city
-                await loadCities(provinceId); // Ensures cities are loaded before proceeding
-                $('#city_id').val(cityId);
-
+                $(".select2-multiple").select2();
+                //==============================================================
             } catch (error) {
                 console.error('error at getDepartmentById: ', error);
             } finally {
+                $('#department-form-title').text('Edit Department');
                 $('#department-form-modal').modal('show');
             }
         });
@@ -194,6 +193,11 @@
                 console.error(`Error during department deletion:`, error);
             }
         })
+        
+        $(document).on('click', '.click_assign_employees', async function(){
+            let department_id = $(this).closest('tr').attr('department_id');
+            window.location.href = '/company/department/employees?dep_id='+department_id;
+        })
 
         $(document).on('click', '#department-submit-confirm', async function() {
             const department_id = $('#department_id').val();
@@ -204,70 +208,53 @@
             let department_name = $('#department_name').val();
             let department_status = $('#department_status').val();
             let branches = $('#branches').val();
-
-            console.log('branches', branches)
-            return;
-
-            const formFields = {
-                department_name: 'required',
-                short_name: '', // Not required
-                address_1: 'required',
-                address_2: '', // Not required
-                country_id: 'required',
-                province_id: 'required',
-                city_id: 'required',
-                contact_1: 'required',
-                contact_2: '', // Not required
-                email: '', // Not required
-                currency_id: 'required',
-                department_status: 'required'
-            };
-
+            
             let formData = new FormData();
             let missingFields = [];
 
-            // Validate only required fields
-            for (const key in formFields) {
-                const fieldId = key;
-                const value = $('#' + fieldId).val(); // Fetch value using the ID
+            // Check for missing fields and add them to the array
+            if (!department_name) missingFields.push('department_name');
+            if (!department_status) missingFields.push('department_status');
+            if (!branches || branches.length == 0) missingFields.push('branches');
 
-                // Check only required fields
-                if (formFields[key] === 'required' && !value) {
-                    missingFields.push(fieldId); // Collect missing required fields
-                } 
-
-                // Append all fields to formData (even optional ones)
-                formData.append(key, value || ''); // Append empty string if no value for optional fields
-            }
-
-            // If there are missing required fields, display an error message
+            // If there are any missing fields, display the error message and stop execution
             if (missingFields.length > 0) {
                 let errorMsg = '<p class="text-danger">The following fields are required: ';
                 errorMsg += missingFields.map(field => field.replace('_', ' ')).join(', ') + '.</p>';
                 $('#error-msg').html(errorMsg);
-                return;
+                return;  // Stop further execution if there are missing fields
             } else {
-                $('#error-msg').html(''); // Clear error message if no issues
+                $('#error-msg').html(''); // Clear any previous error messages
             }
 
-            // Append department_id if updating
+            // Append form data
+            formData.append('department_name', department_name);
+            formData.append('department_status', department_status);
+            formData.append('branches', branches);
+
+            // Determine if updating or creating
             const isUpdating = Boolean(department_id);
             let url = isUpdating ? updateUrl : createUrl;
-            let method = 'POST';
+            let method = isUpdating ? 'PUT' : 'POST';
 
             if (isUpdating) {
                 formData.append('department_id', department_id);
-                method = 'PUT';
+                // Use a workaround if necessary for the PUT method by adding a hidden `_method` field.
+                formData.append('_method', 'PUT');
             }
 
             try {
                 // Send data and handle response
                 let res = await commonSaveData(url, formData, method);
-                await commonAlert(res.status, res.message);
-
-                if (res.status === 'success') {
+                
+                if (res && res.status === 'success') {
+                    await commonAlert(res.status, res.message);
                     renderDepartmentTable();
                     $('#department-form-modal').modal('hide');
+                } else {
+                    // Handle possible failure scenarios
+                    let errorMessage = res && res.message ? res.message : 'An unexpected error occurred.';
+                    $('#error-msg').html('<p class="text-danger">' + errorMessage + '</p>');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -276,7 +263,11 @@
         });
 
         function resetForm(){
-            
+            $('#department_id').val('');
+            $('#department_name').val('');
+            $('#department_status').val('active');
+            $('#branches').val([]).trigger('change');
+            $('#error-msg').html('');
         }
 
     </script>
