@@ -14,7 +14,7 @@ class WageGroupController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view wage groups', ['only' => ['index', 'getAllWageGroups', 'getWageGroupById']]);
+        $this->middleware('permission:view wage groups', ['only' => ['wageGroup', 'getAllWageGroups', 'getWageGroupById']]);
         $this->middleware('permission:create wage groups', ['only' => ['createWageGroups']]);
         $this->middleware('permission:update wage groups', ['only' => ['updateWageGroups']]);
         $this->middleware('permission:delete wage groups', ['only' => ['deleteWageGroups']]);
@@ -49,9 +49,9 @@ class WageGroupController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Name added successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'WageGroup Added Successfully' , 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed adding WageGroups Name', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed to Add WageGroup', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -81,9 +81,9 @@ class WageGroupController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'WageGroup Name updated successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'WageGroup updated successfully' , 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed updating Name', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating WageGroup', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -104,6 +104,7 @@ class WageGroupController extends Controller
     }
 
 
+    //pawanee(2024-10-22)
     public function getAllWageGroups()
     {
         $table = 'com_wage_groups';
@@ -113,6 +114,7 @@ class WageGroupController extends Controller
     }
 
 
+    //pawanee(2024-10-22)
     public function getWageGroupById($id){
         $idColumn = 'id';
         $table = 'com_wage_groups';

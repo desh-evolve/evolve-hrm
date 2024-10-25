@@ -133,10 +133,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     // Company Info index
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
 
-    Route::get('/currencies', function () {
-        return view('company/currencies/currencies_add');
-    })->name('currencies.index');
-
 
     //==============================================================================================================================
     // Wage Groups
@@ -151,6 +147,21 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::delete('/company/wagegroups/delete/{id}', [WageGroupController::class, 'deleteWageGroups'])->name('company.wagegroups.delete');
     Route::get('/company/allwagegroups', [WageGroupController::class, 'getAllWageGroups'])->name('company.wagegroups.all');
     Route::get('/company/wagegroups/{id}', [WageGroupController::class, 'getWageGroupById'])->name('company.wagegroups.getById');
+
+
+    //==============================================================================================================================
+    // Currencies
+    //==============================================================================================================================
+
+
+    Route::get('/currency', [CurrencyController::class, 'currency'])->name('company.currency');
+
+    // Currency routes
+    Route::post('/company/currency/create', [CurrencyController::class, 'createCurrency'])->name('company.currency.create');
+    Route::put('/company/currency/update/{id}', [CurrencyController::class, 'updateCurrency'])->name('company.currency.update');
+    Route::delete('/company/currency/delete/{id}', [CurrencyController::class, 'deleteCurrency'])->name('company.currency.delete');
+    Route::get('/company/allcurrency', [CurrencyController::class, 'getAllCurrency'])->name('company.currency.all');
+    Route::get('/company/currency/{id}', [CurrencyController::class, 'getCurrencyById'])->name('company.currency.getById');
 
 
 });
