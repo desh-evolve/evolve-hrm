@@ -39,10 +39,17 @@ class CurrencyController extends Controller
                     'iso_code' => 'required',
                     'conversion_rate' => 'required|numeric',
                     'previous_rate' => 'required|numeric',
-                    'is_default' => 'required',
+                    'is_default' => 'required|boolean',
                 ]);
 
                 $table = 'com_currencies';
+
+                 // If the new currency is-default, reset all others to non-default
+                if ($request->is_default == 1) {
+                    DB::table($table)->update(['is_default' => 0]);
+                }
+
+
                 $inputArr = [
                     'currency_name' => $request->currency_name,
                     'iso_code' => $request->iso_code,
@@ -53,10 +60,11 @@ class CurrencyController extends Controller
                     'updated_by' => Auth::user()->id,
                 ];
 
+
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Currency Added Auccessfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Currency Added Successfully' , 'data' => ['id' => $insertId]], 200);
                 } else {
                     return response()->json(['status' => 'error', 'message' => 'Failed to Adding Currency', 'data' => []], 500);
                 }
@@ -76,11 +84,18 @@ class CurrencyController extends Controller
                     'iso_code' => 'required',
                     'conversion_rate' => 'required|numeric',
                     'previous_rate' => 'required|numeric',
-                    'is_default' => 'required',
+                    'is_default' => 'required|boolean',
                 ]);
 
                 $table = 'com_currencies';
                 $idColumn = 'id';
+
+                // If updating to be the default, reset all others to non-default
+                if ($request->is_default == 1) {
+                    DB::table($table)->where('id', '!=', $id)->update(['is_default' => 0]);
+                }
+
+
                 $inputArr = [
                     'currency_name' => $request->currency_name,
                     'iso_code' => $request->iso_code,
