@@ -5,13 +5,13 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\IndustryController;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\StationController;
 use App\Http\Controllers\EmployeeDesignationController;
+use App\Http\Controllers\EmployeeGroupController;
 use App\Http\Controllers\WageGroupController;
+use App\Http\Controllers\CurrencyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::group(['middleware' => ['role:super-admin|admin']], function() {
+Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     Route::resource('permissions', App\Http\Controllers\PermissionController::class);
     Route::get('permissions/{permissionId}/delete', [App\Http\Controllers\PermissionController::class, 'destroy']);
@@ -42,7 +42,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
 
 
 
-    // industry
+    //==============================================================================================================================
+    // Industry
+    //==============================================================================================================================
     Route::get('/industries', [IndustryController::class, 'index'])->name('industries.index');
     Route::post('/industries/create', [IndustryController::class, 'create'])->name('industries.create');
     Route::put('/industries/update/{id}', [IndustryController::class, 'update'])->name('industries.update');
@@ -50,26 +52,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::delete('/industries/delete/{id}', [IndustryController::class, 'delete'])->name('industries.delete');
     Route::get('/industries/{id}', [IndustryController::class, 'show'])->name('industries.show');
 
-    // company
-    Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
-    Route::post('/companies/create', [CompanyController::class, 'create'])->name('companies.create');
-    Route::put('/companies/update/{id}', [CompanyController::class, 'update'])->name('companies.update');
-    Route::get('/companies/edit', [CompanyController::class, 'edit'])->name('companies.edit');
-    Route::delete('/companies/delete/{id}', [CompanyController::class, 'delete'])->name('companies.delete');
-    Route::get('/companies/{id}', [CompanyController::class, 'show'])->name('companies.show');
-
-    // country
-    Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index');
-    Route::post('/currencies/create', [CurrencyController::class, 'create'])->name('currencies.create');
-    Route::put('/currencies/update/{id}', [CurrencyController::class, 'update'])->name('currencies.update');
-    Route::get('/currencies/edit', [CurrencyController::class, 'edit'])->name('currencies.edit');
-    Route::delete('/currencies/delete/{id}', [CurrencyController::class, 'delete'])->name('currencies.delete');
-    Route::get('/currencies/{id}', [CurrencyController::class, 'show'])->name('currencies.show');
-
     //==============================================================================================================================
     // Location
     //==============================================================================================================================
-
     // Location index
     Route::get('/location', [LocationController::class, 'index'])->name('location.index');
 
@@ -97,7 +82,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/location/cities/{provinceId}', [LocationController::class, 'getCitiesByProvinceId'])->name('location.city.getByProvinceId');
 
     //==============================================================================================================================
-
+    // Branches
+    //==============================================================================================================================
     // Branch routes
     Route::get('/company/branch', [BranchController::class, 'index'])->name('company.branch.index');
     Route::get('/company/branch/dropdown', [BranchController::class, 'getBranchDropdownData'])->name('company.branch.dropdown');
@@ -107,6 +93,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/company/branches', [BranchController::class, 'getAllBranches'])->name('company.branches.all');
     Route::get('/company/branch/{id}', [BranchController::class, 'getBranchByBranchId'])->name('company.branch.getById');
 
+    //==============================================================================================================================
+    // Departments
+    //==============================================================================================================================
     // Departments routes
     Route::get('/company/department', [DepartmentController::class, 'index'])->name('company.department.index');
     Route::get('/company/department/employees', [DepartmentController::class, 'employees'])->name('company.department.employees');
@@ -123,30 +112,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::post('/company/department/employees/create', [DepartmentController::class, 'createDepartmentEmployees'])->name('company.department.employees.create');
     Route::get('/company/{branch_id}/department/{department_id}/employees', [DepartmentController::class, 'getDepartmentBranchEmployees'])->name('company.department.getAll');
     Route::delete('/company/department/employee/delete/{department_id}/{branch_id}/{employee_id}', [DepartmentController::class, 'deleteDepartmentBranchEmployees'])->name('company.department.employee.delete');
+
     //==============================================================================================================================
-
-    // Station index
-    Route::get('/station', [StationController::class, 'index'])->name('station.index');
-
-    // Country routes
-    Route::post('/station/create', [StationController::class, 'createStation'])->name('station.create');
-    Route::put('/station/update/{id}', [StationController::class, 'updateStation'])->name('station.update');
-    Route::delete('/station/delete/{id}', [StationController::class, 'deleteStation'])->name('station.delete');
-    Route::get('/stations', [StationController::class, 'getAllStations'])->name('stations.all');
-    Route::get('/station/{id}', [StationController::class, 'getStationByStationId'])->name('station.getById');
-
-
-    // Divisions routes
-    Route::post('/station/station_type/create', [StationController::class, 'createStationType'])->name('station.station_type.create');
-    Route::put('/station/station_type/update/{id}', [StationController::class, 'updateStationType'])->name('station.station_type.update');
-    Route::delete('/station/station_type/delete/{id}', [StationController::class, 'deleteStationType'])->name('station.station_type.delete');
-    Route::get('/station/station_types', [StationController::class, 'getAllStationTypes'])->name('station.station_types.all');
-    Route::get('/station/station_type/{id}', [StationController::class, 'getStationTypeByStationId'])->name('station.station_type.getById');
-
-
-    // employee_designation routes
-     // Station indeX
-     Route::get('company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation');
+    // Employee Designation
+    //==============================================================================================================================
+    Route::get('/company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation.index');
 
     Route::post('/company/employee_designation/create', [EmployeeDesignationController::class, 'createEmployeeDesignation'])->name('company.employee_designation.create');
     Route::put('/company/employee_designation/update/{id}', [EmployeeDesignationController::class, 'updateEmployeeDesignation'])->name('company.employee_designation.update');
@@ -155,19 +125,22 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/company/employee_designation/{id}', [EmployeeDesignationController::class, 'getEmployeeDesignationById'])->name('company.employee_designation.getById');
 
     //==============================================================================================================================
-    // Company
+    // Employee Groups
     //==============================================================================================================================
+    Route::get('/company/employee_group', [EmployeeGroupController::class, 'index'])->name('company.employee_group.index');
 
-    // Company Info index
-    Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
+    Route::post('/company/employee_group/create', [EmployeeGroupController::class, 'createEmployeeGroup'])->name('company.employee_group.create');
+    Route::put('/company/employee_group/update/{id}', [EmployeeGroupController::class, 'updateEmployeeGroup'])->name('company.employee_group.update');
+    Route::delete('/company/employee_group/delete/{id}', [EmployeeGroupController::class, 'deleteEmployeeGroup'])->name('company.employee_group.delete');
+    Route::get('/company/employee_groups', [EmployeeGroupController::class, 'getAllEmployeeGroups'])->name('company.employee_group.all');
+    Route::get('/company/employee_group/{id}', [EmployeeGroupController::class, 'getEmployeeGroupById'])->name('company.employee_group.getById');
+
 
 
     //==============================================================================================================================
     // Wage Groups
     //==============================================================================================================================
-
-
-    Route::get('/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
+    Route::get('/company/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
 
     // WageGroups routes
     Route::post('/company/wagegroups/create', [WageGroupController::class, 'createWageGroups'])->name('company.wagegroups.create');
@@ -180,9 +153,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     //==============================================================================================================================
     // Currencies
     //==============================================================================================================================
-
-
-    Route::get('/currency', [CurrencyController::class, 'currency'])->name('company.currency.index');
+    Route::get('/company/currency', [CurrencyController::class, 'index'])->name('company.currency.index');
 
     // Currency routes
     Route::post('/company/currency/create', [CurrencyController::class, 'createCurrency'])->name('company.currency.create');
@@ -191,9 +162,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function() {
     Route::get('/company/allcurrency', [CurrencyController::class, 'getAllCurrency'])->name('company.currency.all');
     Route::get('/company/currency/{id}', [CurrencyController::class, 'getCurrencyById'])->name('company.currency.getById');
 
-
+    //==============================================================================================================================
+    // Company => this should be on the bottom of the page
+    //==============================================================================================================================
+    // Company Info index
+    Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
+    Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
+    Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
 });
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

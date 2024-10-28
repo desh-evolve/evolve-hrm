@@ -15,7 +15,7 @@ class CurrencyController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view currency', ['only' => ['currency', 'getAllCurrency', 'getCurrencyById']]);
+        $this->middleware('permission:view currency', ['only' => ['index', 'getAllCurrency', 'getCurrencyById']]);
         $this->middleware('permission:create currency', ['only' => ['createCurrency']]);
         $this->middleware('permission:update currency', ['only' => ['updateCurrency']]);
         $this->middleware('permission:delete currency', ['only' => ['deleteCurrency']]);
@@ -25,7 +25,7 @@ class CurrencyController extends Controller
 
 
      //pawanee(2024-10-24)
-     public function currency(){
+     public function index(){
         return view('company.currencies.currencies_add');
      }
 
@@ -55,13 +55,16 @@ class CurrencyController extends Controller
                     'iso_code' => $request->iso_code,
                     'conversion_rate' => $request->conversion_rate,
                     'previous_rate' => $request->previous_rate,
-                    'is_default' => $request->is_default,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
 
 
                 $insertId = $this->common->commonSave($table, $inputArr);
+                
+                if($request->is_default == '1'){
+                    $this->setDefaultCurrency($id);
+                }
 
                 if ($insertId) {
                     return response()->json(['status' => 'success', 'message' => 'Currency Added Successfully' , 'data' => ['id' => $insertId]], 200);
@@ -101,11 +104,14 @@ class CurrencyController extends Controller
                     'iso_code' => $request->iso_code,
                     'conversion_rate' => $request->conversion_rate,
                     'previous_rate' => $request->previous_rate,
-                    'is_default' => $request->is_default,
                     'updated_by' => Auth::user()->id,
                 ];
 
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+                
+                if($request->is_default == '1'){
+                    $this->setDefaultCurrency($id);
+                }
 
                 if ($insertId) {
                     return response()->json(['status' => 'success', 'message' => 'Currency Updated Auccessfully' , 'data' => ['id' => $insertId]], 200);
@@ -119,7 +125,14 @@ class CurrencyController extends Controller
         }
       }
 
-
+    private function setDefaultCurrency($currency_id){
+        $table = 'com_currencies';
+        //updating all is_default values to 0
+        $this->common->commonSave($table, ['is_default' => '0'], $id = 'all');
+        //updating current currency is_default value to 1
+        $id = $this->common->commonSave($table, ['is_default' => '1'], $currency_id, 'id');
+        return $id ? true : false;
+    }
 
     //pawanee(2024-10-24)
     public function deleteCurrency($id)

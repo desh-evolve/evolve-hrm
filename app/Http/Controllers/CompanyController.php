@@ -33,6 +33,7 @@ class CompanyController extends Controller
     //desh(2024-10-21)
     public function updateCompany(Request $request, $id)
     {
+        // var_dump('submit');
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
@@ -54,8 +55,10 @@ class CompanyController extends Controller
                     'admin_contact_id' => 'nullable|integer',
                     'billing_contact_id' => 'nullable|integer',
                     'primary_contact_id' => 'nullable|integer',
-                    'logo' => 'nullable|string',
-                    'logo_small' => 'nullable|string',
+                    // 'logo' => 'nullable|string',
+                    // 'logo_small' => 'nullable|string',
+                    'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate logo image
+                    'logo_small_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate small logo image
                     'website' => 'nullable|string',
                     'status' => 'nullable|string',
                 ]);
@@ -81,23 +84,33 @@ class CompanyController extends Controller
                     'admin_contact_id' => $request->admin_contact_id,
                     'billing_contact_id' => $request->billing_contact_id,
                     'primary_contact_id' => $request->primary_contact_id,
-                    'logo' => $request->logo,
-                    'logo_small' => $request->logo_small,
+                    // 'logo' => $request->company_logo,
+                    // 'logo_small' => $request->company_logo_small,
                     'website' => $request->website,
                     'status' => $request->status ?? 'active',
                     'updated_by' => Auth::user()->id,
                 ];
+                if ($request->hasFile('company_logo')) {
+                    $logoPath = $request->file('company_logo')->store('logos', 'public'); // Store in 'storage/app/public/logos'
+                    $inputArr['logo'] = $logoPath; // Save the path to the database
+                }
 
-                $updateId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+                // Handle small logo image upload
+                if ($request->hasFile('company_logo_small')) {
+                    $logoSmallPath = $request->file('company_logo_small')->store('logos/small', 'public'); // Store in 'storage/app/public/logos/small'
+                    $inputArr['logo_small'] = $logoSmallPath; // Save the path to the database
+                }
 
-                if ($updateId) {
-                    return response()->json(['status' => 'success', 'message' => 'Company updated successfully', 'data' => ['id' => $updateId]], 200);
+                $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+
+                if ($insertId) {
+                    return response()->json(['status' => 'success', 'message' => 'Company updated successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed to update company', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating Company', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error: ' . $e->getMessage(), 'data' => []], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
 
@@ -119,5 +132,4 @@ class CompanyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error: ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-
 }

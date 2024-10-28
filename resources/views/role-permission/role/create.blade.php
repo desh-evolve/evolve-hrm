@@ -1,4 +1,4 @@
-<x-app-web-layout>
+{{-- <x-app-web-layout> --}}
 
     <div class="container mt-5">
         <div class="row">
@@ -36,4 +36,4 @@
         </div>
     </div>
 
-</x-app-web-layout>
+{{-- </x-app-web-layout> --}}
