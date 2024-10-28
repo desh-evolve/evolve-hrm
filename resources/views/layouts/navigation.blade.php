@@ -87,19 +87,39 @@
                 </li>
 
                 <!-- Employees -->
+                @php
+                    $checkEmployeeNav = request()->routeIs('employee.*');
+                @endphp
+
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#employees" data-bs-toggle="collapse" role="button" aria-expanded="false">
-                        <i class="ri-user-line"></i> <span>Employees</span>
+                    <a
+                        class="nav-link menu-link {{ $checkEmployeeNav ? 'active' : '' }}"
+                        href="#employeeMultiLevel"
+                        data-bs-toggle="collapse"
+                        role="button"
+                        aria-expanded="{{ $checkEmployeeNav ? 'true' : 'false' }}"
+                        aria-controls="employeeMultiLevel"
+                    >
+                        <i class="ri-group-line"></i> <span data-key="t-multi-level">Employees</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="employees">
+                    <div class="collapse menu-dropdown {{ $checkEmployeeNav ? 'show' : '' }}" id="employeeMultiLevel">
                         <ul class="nav nav-sm flex-column">
-                            <li class="nav-item"><a href="#" class="nav-link">Add New Employee</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Employee List</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">My Details</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Messages</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('employee.create') }}" class="nav-link {{ request()->routeIs('employee.create') ? 'active' : '' }}">Add New Employee</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('employee.list') }}" class="nav-link {{ request()->routeIs('employee.list') ? 'active' : '' }}">Employee List</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">My Details</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">Messages</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
+                
 
                 <!-- Reports -->
                 <li class="nav-item">
