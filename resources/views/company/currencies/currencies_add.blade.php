@@ -133,9 +133,7 @@
         await renderTableBody();
     });
 
-
     async function renderTableBody() {
-
         try {
 
             const currItems = await commonFetchData('/company/allcurrency');
@@ -210,7 +208,6 @@
             let currency_data = await commonFetchData(`/company/currency/${currency_id}`);
             currency_data = currency_data[0];
 
-
             // Set form values with fetched data
             $('#currency_id').val(currency_id);
             $('#currency_name').val(currency_data?.currency_name || '');
@@ -242,7 +239,6 @@
             iso_code: 'required',
             conversion_rate: 'required',
             previous_rate: 'required',
-
         };
 
         let formData = new FormData();
@@ -269,13 +265,13 @@
 
         // If there are missing required fields, display an error message
         if (missingFields.length > 0) {
-                let errorMsg = '<p class="text-danger">The following fields are required: ';
-                errorMsg += missingFields.map(field => field.replace('_', ' ')).join(', ') + '.</p>';
-                $('#error-msg').html(errorMsg);
-                return;
-            } else {
-                $('#error-msg').html(''); // Clear error message if no issues
-            }
+            let errorMsg = '<p class="text-danger">The following fields are required: ';
+            errorMsg += missingFields.map(field => field.replace('_', ' ')).join(', ') + '.</p>';
+            $('#error-msg').html(errorMsg);
+            return;
+        } else {
+            $('#error-msg').html(''); // Clear error message if no issues
+        }
 
 
         // Check if updating
@@ -312,17 +308,17 @@
         $('#iso_code').val('');
         $('#conversion_rate').val('');
         $('#previous_rate').val('');
-        $('#is_default').prop('checked', false); // check the checkbox
+        $('#is_default').prop('checked', false); // Uncheck the checkbox
         $('#error-msg').html('');
     }
 
 
-//==================================================================================================
-// DELETE FUNCTION
-//==================================================================================================
+    //==================================================================================================
+    // DELETE FUNCTION
+    //==================================================================================================
 
 
-$(document).on('click', '.click_delete', function() {
+    $(document).on('click', '.click_delete', function() {
         const $row = $(this).closest('tr');
         const id = $row.attr('currency_id');
 
@@ -334,15 +330,14 @@ $(document).on('click', '.click_delete', function() {
         const url ='company/currency/delete';
         const title ='Currency';
 
-
         try {
-                    const res = await commonDeleteFunction(id, url, title, $row);
-                    if(res){
-                        renderTableBody()
-                    }
-                } catch (error) {
-                    console.error('Error deleting item:', error);
-                }
+            const res = await commonDeleteFunction(id, url, title, $row);
+            if(res){
+                renderTableBody()
+            }
+        } catch (error) {
+            console.error('Error deleting item:', error);
+        }
     }
 
 //===========================================================================================================

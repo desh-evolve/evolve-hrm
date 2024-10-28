@@ -204,12 +204,17 @@ class CommonModel extends Model
             }
         
             if ($type === 'updated') {
-                $re = DB::table($table)->where($idColumn, $id)->update($inputArr);
-                $id = $re ? $id : -1;
+                if ($id === 'all') { // when the whole table gets updated
+                    $re = DB::table($table)->update($inputArr);
+                    $id = -1; // No specific ID since all records were updated
+                } else {
+                    $re = DB::table($table)->where($idColumn, $id)->update($inputArr);
+                    $id = $re ? $id : -1; // If update was successful, keep the ID; otherwise set to -1
+                }
             } else {
                 $re = DB::table($table)->insert($inputArr);
-                $id = $re ? DB::getPdo()->lastInsertId() : -1;
-            }
+                $id = $re ? DB::getPdo()->lastInsertId() : -1; // Get last inserted ID or set to -1 on failure
+            }            
         
             if ($recordLog) {
                 //save in activity log
