@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Company;
 
 use App\Models\company;
 use Illuminate\Http\Request;
@@ -55,6 +55,8 @@ class CompanyController extends Controller
                     'admin_contact_id' => 'nullable|integer',
                     'billing_contact_id' => 'nullable|integer',
                     'primary_contact_id' => 'nullable|integer',
+                    // 'logo' => 'nullable|string',
+                    // 'logo_small' => 'nullable|string',
                     'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate logo image
                     'logo_small_img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate small logo image
                     'website' => 'nullable|string',

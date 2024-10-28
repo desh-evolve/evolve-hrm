@@ -3,15 +3,15 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\IndustryController;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\BranchController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\EmployeeDesignationController;
-use App\Http\Controllers\EmployeeGroupController;
-use App\Http\Controllers\WageGroupController;
-use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\Company\IndustryController;
+use App\Http\Controllers\Company\CompanyController;
+use App\Http\Controllers\Company\LocationController;
+use App\Http\Controllers\Company\BranchController;
+use App\Http\Controllers\Company\DepartmentController;
+use App\Http\Controllers\Company\EmployeeDesignationController;
+use App\Http\Controllers\Company\EmployeeGroupController;
+use App\Http\Controllers\Company\WageGroupController;
+use App\Http\Controllers\Company\CurrencyController;
 
 Route::get('/', function () {
     return view('welcome');
