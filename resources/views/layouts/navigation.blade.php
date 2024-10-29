@@ -105,7 +105,7 @@
                     <div class="collapse menu-dropdown {{ $checkEmployeeNav ? 'show' : '' }}" id="employeeMultiLevel">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('employee.create') }}" class="nav-link {{ request()->routeIs('employee.create') ? 'active' : '' }}">Add New Employee</a>
+                                <a href="{{ route('employee.form') }}" class="nav-link {{ request()->routeIs('employee.form') ? 'active' : '' }}">Add New Employee</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('employee.list') }}" class="nav-link {{ request()->routeIs('employee.list') ? 'active' : '' }}">Employee List</a>

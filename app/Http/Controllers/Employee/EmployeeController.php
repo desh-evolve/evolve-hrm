@@ -17,11 +17,10 @@ class EmployeeController extends Controller
     {
         $this->middleware('permission:view employee', ['only' => [
             'employee_list', 
-            'employee_form', 
             'getAllEmployees', 
             'getEmployeeByEmployeeId', 
         ]]);
-        $this->middleware('permission:create employee', ['only' => ['createEmployee']]);
+        $this->middleware('permission:create employee', ['only' => ['employee_form', 'createEmployee']]);
         $this->middleware('permission:update employee', ['only' => ['updateEmployee']]);
         $this->middleware('permission:delete employee', ['only' => ['deleteEmployee']]);
 
@@ -39,9 +38,13 @@ class EmployeeController extends Controller
     }
 
     public function getAllEmployees(){}
+
     public function getEmployeeByEmployeeId(){}
+
     public function createEmployee(){}
+
     public function updateEmployee(){}
+    
     public function deleteEmployee(){}
 
 }

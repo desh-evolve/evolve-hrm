@@ -195,6 +195,9 @@
 
         <script src="{{ asset('assets/js/pages/datatables.init.js') }}"></script>
 
+        <!-- form wizard init -->
+        <script src="{{ asset('assets/js/pages/form-wizard.init.js') }}"></script>
+
         <script>
 		
             $(document).ready(function() {
@@ -230,16 +233,7 @@
                         {extend: 'csv'},
                         {extend: 'excel', title: excelFileName},
                         {extend: 'pdf', title: pdfFileName},
-                        {extend: 'print',
-                            customize: function (win){
-                                    $(win.document.body).addClass('white-bg');
-                                    $(win.document.body).css('font-size', '10px');
-
-                                    $(win.document.body).find('table')
-                                            .addClass('compact')
-                                            .css('font-size', 'inherit');
-                            }
-                        }
+                        {extend: 'print', className: 'me-5'}
                     ]
 
                 });
