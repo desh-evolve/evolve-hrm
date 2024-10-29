@@ -51,7 +51,7 @@
         <script>
             let DataTablesForAjax = '';
             $(document).ready(function(){
-                DataTablesForAjax = $('.dataTables-example').DataTable();
+                DataTablesForAjax = $('.datatable-example').DataTable();
             })
     
             $(window).on('load', function(){
@@ -193,6 +193,8 @@
         <!-- App js -->
         <script src="{{ asset('assets/js/app.js') }}"></script>
 
+        <script src="{{ asset('assets/js/pages/datatables.init.js') }}"></script>
+
         <script>
 		
             $(document).ready(function() {
@@ -216,7 +218,9 @@
             });
 
             //datatable initialize
-            function init_dataTable(selector){
+            function init_dataTable(selector, excelFileName = 'Excel', pdfFileName = 'PDF'){
+                //DataTablesForAjax = $(selector).DataTable();
+                
                 DataTablesForAjax = $(selector).DataTable({
                     pageLength: 25,
                     responsive: true,
@@ -224,22 +228,22 @@
                     buttons: [
                         {extend: 'copy'},
                         {extend: 'csv'},
-                        {extend: 'excel', title: 'ExampleFile'},
-                        {extend: 'pdf', title: 'ExampleFile'},
-
+                        {extend: 'excel', title: excelFileName},
+                        {extend: 'pdf', title: pdfFileName},
                         {extend: 'print',
-                        customize: function (win){
-                                $(win.document.body).addClass('white-bg');
-                                $(win.document.body).css('font-size', '10px');
+                            customize: function (win){
+                                    $(win.document.body).addClass('white-bg');
+                                    $(win.document.body).css('font-size', '10px');
 
-                                $(win.document.body).find('table')
-                                        .addClass('compact')
-                                        .css('font-size', 'inherit');
-                        }
+                                    $(win.document.body).find('table')
+                                            .addClass('compact')
+                                            .css('font-size', 'inherit');
+                            }
                         }
                     ]
 
                 });
+                
             }
 
             /*

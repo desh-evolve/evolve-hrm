@@ -30,12 +30,12 @@ class EmployeeController extends Controller
 
     public function employee_list()
     {
-        return view('employee.employee_list');
+        return view('employee.emp_list');
     }
 
     public function employee_form()
     {
-        return view('employee.employee_form');
+        return view('employee.emp_form');
     }
 
     public function getAllEmployees(){}

@@ -13,6 +13,8 @@ use App\Http\Controllers\Company\EmployeeGroupController;
 use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 
+use App\Http\Controllers\Employee\EmployeeController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -169,6 +171,13 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
     Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
     Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
+
+    //==============================================================================================================================
+    // Employees
+    //==============================================================================================================================
+        Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
+        Route::get('/employee/create', [EmployeeController::class, 'employee_form'])->name('employee.create');
+
 });
 
 
