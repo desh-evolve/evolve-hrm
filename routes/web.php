@@ -108,7 +108,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/company/department/delete/{id}', [DepartmentController::class, 'deleteDepartment'])->name('company.department.delete');
     Route::get('/company/departments', [DepartmentController::class, 'getAllDepartments'])->name('company.departments.all');
     Route::get('/company/department/{id}', [DepartmentController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
-    
+
     // Department employees routes
     Route::get('/company/department/employees/dropdown', [DepartmentController::class, 'getDepartmentEmployeesDropdownData'])->name('company.department.employees.dropdown');
     Route::post('/company/department/employees/create', [DepartmentController::class, 'createDepartmentEmployees'])->name('company.department.employees.create');
@@ -175,9 +175,12 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
     // Employees
     //==============================================================================================================================
-        Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
-        Route::get('/employee/create', [EmployeeController::class, 'employee_form'])->name('employee.create');
-
+    Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
+    Route::get('/employee/create', [EmployeeController::class, 'employee_form'])->name('employee.create');
+    Route::put('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');
+    Route::delete('/employee/delete/{id}', [EmployeeController::class, 'deleteEmployee'])->name('employee.delete');
+    Route::get('/employee/allcurrency', [EmployeeController::class, 'getAllEmployee'])->name('employee.all');
+    Route::get('/employee/{id}', [EmployeeController::class, 'getEmployeeById'])->name('employee.getById');
 });
 
 
