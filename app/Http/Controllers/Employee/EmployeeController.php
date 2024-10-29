@@ -323,7 +323,4 @@ class EmployeeController extends Controller
         $employees = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $employees], 200);
     }
-    // public function getAllEmployees() {}
-    // public function getEmployeeByEmployeeId() {}
-    public function updateEmployee() {}
 }
