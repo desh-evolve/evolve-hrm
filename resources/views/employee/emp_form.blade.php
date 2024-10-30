@@ -4,6 +4,14 @@
         td {
             padding: 5px 10px !important;
         }
+
+        .step-arrow-nav .nav .nav-link.active {
+            background-color: rgb(1 19 78 / 47%);
+            color: #ffffff;
+        }
+        .step-arrow-nav .nav .nav-link.active::before {
+            border-left-color: rgb(1 19 78 / 47%);
+        }
     </style>
 
     <x-slot name="header">
@@ -13,10 +21,9 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-body">
-                    <form action="#" class="form-steps" autocomplete="off">
+                <form action="#" class="form-steps" autocomplete="off">
+                    <div class="card-header">
                         <div class="step-arrow-nav mb-4">
-
                             <ul class="nav nav-pills custom-nav nav-justified" role="tablist">
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link active" id="steparrow-basic-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-basic-info" type="button" role="tab" aria-controls="steparrow-basic-info" aria-selected="true">Employee Identification</button>
@@ -29,7 +36,8 @@
                                 </li>
                             </ul>
                         </div>
-
+                    </div>
+                    <div class="card-body">
                         <div class="tab-content">
 
                             <!-- start employee identification tab pane -->
@@ -357,7 +365,14 @@
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
                                             </div>
-                                            <hr>
+                                            
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="branch_id">Personal Email</label>
+                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
+                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                </div>
+                                            </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="branch_id">Contact 1</label>
@@ -368,13 +383,6 @@
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="branch_id">Contact 2</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Personal Email</label>
                                                     <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
@@ -445,19 +453,18 @@
                                             <hr>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Work Contact</label>
+                                                    <label class="form-label" for="branch_id">Work Email</label>
                                                     <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Work Email</label>
+                                                    <label class="form-label" for="branch_id">Work Contact</label>
                                                     <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
                                             </div>
-                                            
                                             
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
@@ -577,8 +584,8 @@
 
                         </div>
                         <!-- end tab content -->
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
