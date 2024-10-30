@@ -44,7 +44,6 @@ class EmployeeController extends Controller
         return view('employee.emp_profile');
     }
 
-    public function getAllEmployees(){}
     public function createEmployee(Request $request)
     {
         try {
