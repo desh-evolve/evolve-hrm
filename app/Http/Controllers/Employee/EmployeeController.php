@@ -12,9 +12,10 @@ use App\Models\CommonModel;
 class EmployeeController extends Controller
 {
     private $common = null;
-
+    
     public function __construct()
     {
+        $this->middleware('permission:view employee profile', ['only' => ['employee_profile']]);
         $this->middleware('permission:view employee', ['only' => [
             'employee_list', 
             'getAllEmployees', 
@@ -35,6 +36,11 @@ class EmployeeController extends Controller
     public function employee_form()
     {
         return view('employee.emp_form');
+    }
+
+    public function employee_profile()
+    {
+        return view('employee.emp_profile');
     }
 
     public function getAllEmployees(){}

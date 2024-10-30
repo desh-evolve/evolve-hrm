@@ -111,7 +111,7 @@
                                 <a href="{{ route('employee.list') }}" class="nav-link {{ request()->routeIs('employee.list') ? 'active' : '' }}">Employee List</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link">My Details</a>
+                                <a href="{{ route('employee.profile') }}" class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">My Profile</a>
                             </li>
                             <li class="nav-item">
                                 <a href="#" class="nav-link">Messages</a>

@@ -19,23 +19,21 @@
 
                             <ul class="nav nav-pills custom-nav nav-justified" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="steparrow-basic-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-basic-info" type="button" role="tab" aria-controls="steparrow-basic-info" aria-selected="true">Employee Identification</button>
+                                    <button class="nav-link active" id="steparrow-basic-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-basic-info" type="button" role="tab" aria-controls="steparrow-basic-info" aria-selected="true">Employee Identification</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="steparrow-gen-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-contact-info" type="button" role="tab" aria-controls="steparrow-contact-info" aria-selected="true">Contact Information</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="steparrow-document-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-document-info" type="button" role="tab" aria-controls="steparrow-document-info" aria-selected="false">Documents</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="pills-experience-tab" data-bs-toggle="pill" data-bs-target="#pills-experience" type="button" role="tab" aria-controls="pills-experience" aria-selected="false">Finish</button>
+                                    <button class="nav-link" id="steparrow-document-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-document-info" type="button" role="tab" aria-controls="steparrow-document-info" aria-selected="false">Documents</button>
                                 </li>
                             </ul>
                         </div>
 
                         <div class="tab-content">
 
-                            <div class="tab-pane fade" id="steparrow-basic-info" role="tabpanel" aria-labelledby="steparrow-basic-info-tab">
+                            <!-- start employee identification tab pane -->
+                            <div class="tab-pane fade show active" id="steparrow-basic-info" role="tabpanel" aria-labelledby="steparrow-basic-info-tab">
                                 <div class="row border-bottom">
                                     <div class="col-lg-6 border-end">
                                         <div class="row">
@@ -261,6 +259,7 @@
                             </div>
                             <!-- end tab pane -->
 
+                            <!-- start contact information tab pane -->
                             <div class="tab-pane fade" id="steparrow-contact-info" role="tabpanel" aria-labelledby="steparrow-contact-info-tab">
                                 <div class="row border-bottom">
                                     <div class="col-lg-6 border-end">
@@ -373,7 +372,13 @@
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
                                             </div>
-
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="branch_id">Personal Email</label>
+                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
+                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -452,20 +457,7 @@
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Home Contact</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Personal Email</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
-                                                </div>
-                                            </div>
+                                            
                                             
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
@@ -477,6 +469,13 @@
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="branch_id">Immediate Contact No</label>
+                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
+                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="branch_id">Home Contact</label>
                                                     <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
@@ -500,41 +499,75 @@
                             </div>
                             <!-- end tab pane -->
 
-                            <div class="tab-pane fade show active" id="steparrow-document-info" role="tabpanel" aria-labelledby="steparrow-document-info-tab">
+                            <!-- start documents tab pane -->
+                            <div class="tab-pane fade" id="steparrow-document-info" role="tabpanel" aria-labelledby="steparrow-document-info-tab">
                                 <div class="row">
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-3">
                                         <div class="mb-3">
                                             <label class="form-label" for="title">Document Type</label>
                                             <select class="form-select" id="title">
                                                 <option value="">Select</option>
                                                 <option value="1">Appointment Letter</option>
-                                                <option value="Mrs">Mrs</option>
-                                                <option value="Miss">Miss</option>
-                                                <option value="Hon">Hon</option>
+                                                <option value="2">Personal Files</option>
+                                                <option value="3">ID Copy</option>
+                                                <option value="4">Birth Certificate</option>
+                                                <option value="5">GS Letter</option>
+                                                <option value="6">Police Report</option>
+                                                <option value="7">NDA</option>
+                                                <option value="8">Bond</option>
                                             </select>
-                                            <div class="invalid-feedback">Please enter a title</div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-4">
                                         <div class="mb-3">
-                                            <label class="form-label" for="name_with_initials">Name with initials</label>
-                                            <input type="text" class="form-control" id="name_with_initials" placeholder="Enter Name with initials" />
-                                            <div class="invalid-feedback">Please enter name with initials</div>
+                                            <label class="form-label" for="name_with_initials">Title</label>
+                                            <input type="text" class="form-control" id="name_with_initials" placeholder="Enter Document Title" />
                                         </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="formFile" class="form-label">Upload Image</label>
-                                        <input class="form-control" type="file" id="formFile" />
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            <label for="formFile" class="form-label">Select File</label>
+                                            <input class="form-control" type="file" id="formFile" />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="form-label" for="des-info-description-input">Description</label>
-                                        <textarea class="form-control" placeholder="Enter Description" id="des-info-description-input" rows="3" required></textarea>
-                                        <div class="invalid-feedback">Please enter a description</div>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-success"><i class="ri-add-line"></i></button>
+                                    <div class="col-lg-2 d-flex align-items-end mb-3">
+                                        <div>
+                                            <button class="btn btn-primary"><i class="ri-add-line"></i></button>
+                                        </div>
                                     </div>
                                 </div>
+                                <hr>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Document Type</th>
+                                            <th>Document Title</th>
+                                            <th>Document</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="document_tbody">
+                                        <tr>
+                                            <td colspan="5" class="text-center">No Documents Selected</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Appointment Letter</td>
+                                            <td>Appointment Letter</td>
+                                            <td>file.pdf</td>
+                                            <td>
+                                                <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_download_document" title="Download Document" data-tooltip="tooltip" data-bs-placement="top">
+                                                    <i class="ri-download-2-line"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_document" title="Remove Document" data-tooltip="tooltip" data-bs-placement="top">
+                                                    <i class="ri-delete-bin-fill"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                                 <div class="d-flex align-items-start gap-3 mt-4">
                                     <button type="button" class="btn btn-light btn-label previestab" data-previous="steparrow-gen-info-tab"><i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to General</button>
                                     <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="pills-experience-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Submit</button>
@@ -542,19 +575,6 @@
                             </div>
                             <!-- end tab pane -->
 
-                            <div class="tab-pane fade" id="pills-experience" role="tabpanel">
-                                <div class="text-center">
-
-                                    <div class="avatar-md mt-5 mb-4 mx-auto">
-                                        <div class="avatar-title bg-light text-success display-4 rounded-circle">
-                                            <i class="ri-checkbox-circle-fill"></i>
-                                        </div>
-                                    </div>
-                                    <h5>Well Done !</h5>
-                                    <p class="text-muted">You have Successfully Signed Up</p>
-                                </div>
-                            </div>
-                            <!-- end tab pane -->
                         </div>
                         <!-- end tab content -->
                     </form>
@@ -563,22 +583,7 @@
         </div>
     </div>
 
-    <script>
-        $(document).on('change', 'input[name="employment_type"]', function() {
-            // Check the selected value
-            const selectedValue = $(this).val();
-
-            // Show month input only for Contract, Training, and Permanent (With Probation)
-            if (selectedValue === "Contract" || selectedValue === "Training" || selectedValue === "PermanentProbation") {
-                $('#month-selection').show();
-                $('#months').prop('required', true); // Make month input required
-            } else {
-                $('#month-selection').hide();
-                $('#months').prop('required', false); // Remove required attribute
-                $('#months').val(''); // Clear month input
-            }
-        });
-
-    </script>
+    <!-- javascript functions -->
+    @include('employee.emp_form_js')
 
 </x-app-layout>
