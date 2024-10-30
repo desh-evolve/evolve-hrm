@@ -108,7 +108,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/company/department/delete/{id}', [DepartmentController::class, 'deleteDepartment'])->name('company.department.delete');
     Route::get('/company/departments', [DepartmentController::class, 'getAllDepartments'])->name('company.departments.all');
     Route::get('/company/department/{id}', [DepartmentController::class, 'getDepartmentByDepartmentId'])->name('company.department.getById');
-    
+
     // Department employees routes
     Route::get('/company/department/employees/dropdown', [DepartmentController::class, 'getDepartmentEmployeesDropdownData'])->name('company.department.employees.dropdown');
     Route::post('/company/department/employees/create', [DepartmentController::class, 'createDepartmentEmployees'])->name('company.department.employees.create');
