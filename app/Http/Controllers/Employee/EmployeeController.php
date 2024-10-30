@@ -15,14 +15,13 @@ class EmployeeController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:view employee profile', ['only' => ['employee_profile']]);
+        $this->middleware('permission:view employee profile', ['only' => ['employee_profile', 'getMyDataByEmployeeId']]);
         $this->middleware('permission:view employee', ['only' => [
             'employee_list',
-            'employee_form',
             'getAllEmployees',
             'getEmployeeByEmployeeId',
         ]]);
-        $this->middleware('permission:create employee', ['only' => ['createEmployee']]);
+        $this->middleware('permission:create employee', ['only' => ['employee_form', 'createEmployee']]);
         $this->middleware('permission:update employee', ['only' => ['updateEmployee']]);
         $this->middleware('permission:delete employee', ['only' => ['deleteEmployee']]);
 

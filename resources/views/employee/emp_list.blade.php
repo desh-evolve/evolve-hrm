@@ -18,7 +18,7 @@
                         <h5 class="mb-0">Employees</h5>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="click_add_employee">New Employee <i class="ri-add-line"></i></button>
+                        <a type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" href="/employee/form">New Employee <i class="ri-add-line"></i></a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -132,10 +132,6 @@
                 $('.payroll-functions').show();
                 $('.employee-functions').hide();
             });
-        });
-
-        $(document).on('click', '#click_add_employee', function(){
-            window.location.href = '/employee/form'
         });
 
         $(document).on('click', '.click_edit_employee', function(){
