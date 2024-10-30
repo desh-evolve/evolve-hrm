@@ -98,15 +98,13 @@
                             <input type="text" class="form-control" id="previous_rate" placeholder="Enter Previous Rate" value="">
                         </div>
 
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                <label class="form-check-label" for="is_default">Is Default</label>&nbsp;&nbsp;
-                                <input class="form-check-input" type="checkbox" id="is_default" name="is_default" value="1">
-                            </div>
+                        <div class="col-md-12">
+                            <label class="form-check-label" for="is_default">Is Default</label>&nbsp;&nbsp;
+                            <input class="form-check-input" type="checkbox" id="is_default" name="is_default" value="1">
                         </div>
 
-
                         <div id="error-msg"></div>
+
                         <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                             <input type="hidden" id="currency_id" value="">
                             <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
@@ -262,6 +260,8 @@
 
         // Capture the actual value of is_default from the form
         formData.append('is_default', $('#is_default').is(':checked') ? '1' : '0');
+
+
 
         // If there are missing required fields, display an error message
         if (missingFields.length > 0) {

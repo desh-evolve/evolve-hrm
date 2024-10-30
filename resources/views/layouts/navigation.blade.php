@@ -116,10 +116,17 @@
                             <li class="nav-item">
                                 <a href="#" class="nav-link">Messages</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('employee.jobhistory.index') }}" class="nav-link {{ request()->routeIs('employee.jobhistory.index') ? 'active' : '' }}">
+                                    Employee Job History
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </li>
-                
+
 
                 <!-- Reports -->
                 <li class="nav-item">
