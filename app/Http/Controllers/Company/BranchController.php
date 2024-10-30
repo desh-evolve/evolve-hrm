@@ -16,9 +16,9 @@ class BranchController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view branch', ['only' => [
-            'index', 
-            'getAllBranches', 
-            'getBranchByBranchId', 
+            'index',
+            'getAllBranches',
+            'getBranchByBranchId',
             'getBranchDropdownData'
         ]]);
         $this->middleware('permission:create branch', ['only' => ['createBranch']]);
@@ -67,7 +67,7 @@ class BranchController extends Controller
                     'email' => 'required|email|unique:com_branches,email',
                     'branch_status' => 'required|string',
                 ]);
-    
+
                 $table = 'com_branches';
                 $inputArr = [
                     'company_id' => 1, //hard coded - change later - check here
@@ -85,9 +85,9 @@ class BranchController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
-    
+
                 $insertId = $this->common->commonSave($table, $inputArr);
-    
+
                 if ($insertId) {
                     return response()->json(['status' => 'success', 'message' => 'Branch added successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
@@ -98,7 +98,7 @@ class BranchController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
+
     //desh(2024-10-21)
     public function updateBranch(Request $request, $id)
     {
@@ -115,7 +115,7 @@ class BranchController extends Controller
                     'email' => 'required|email|unique:com_branches,email,' . $id,
                     'branch_status' => 'required|string',
                 ]);
-    
+
                 $table = 'com_branches';
                 $idColumn = 'id';
                 $inputArr = [
@@ -133,9 +133,9 @@ class BranchController extends Controller
                     'status' => $request->branch_status,
                     'updated_by' => Auth::user()->id,
                 ];
-    
+
                 $updatedId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
-    
+
                 if ($updatedId) {
                     return response()->json(['status' => 'success', 'message' => 'Branch updated successfully', 'data' => ['id' => $updatedId]], 200);
                 } else {
@@ -146,7 +146,7 @@ class BranchController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
+
     //desh(2024-10-21)
     public function deleteBranch($id)
     {
@@ -155,14 +155,14 @@ class BranchController extends Controller
         $this->common->commonDelete($id, ['branch_id' => $id], 'Department Branches Employees', 'com_branch_department_employees');
         return $res;
     }
-    
+
     //desh(2024-10-21)
     public function getAllBranches()
     {
         $table = 'com_branches';
         $fields = [
             'com_branches.*', 'com_branches.id as id', 'com_branches.status as status',
-            'loc_countries.country_name', 'loc_provinces.province_name', 'loc_cities.city_name', 
+            'loc_countries.country_name', 'loc_provinces.province_name', 'loc_cities.city_name',
             'com_currencies.currency_name', 'com_currencies.iso_code'
         ];
         $joinsArr = [
@@ -174,6 +174,7 @@ class BranchController extends Controller
         $branches = $this->common->commonGetAll($table, $fields, $joinsArr, $whereArr = [], $exceptDel = true);
         return response()->json(['data' => $branches], 200);
     }
+
     
     //desh(2024-10-21)
     public function getBranchByBranchId($id)
@@ -183,6 +184,6 @@ class BranchController extends Controller
         $fields = '*';
         $branch = $this->common->commonGetById($id, $idColumn, $table, $fields, [], [], true);
         return response()->json(['data' => $branch], 200);
-    }       
+    }
 
 }
