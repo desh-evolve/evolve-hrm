@@ -5,12 +5,15 @@
             padding: 5px 10px !important;
         }
 
+        .step-arrow-nav .nav .nav-link {
+            background-color: rgb(1 19 78 / 15%);
+        }
         .step-arrow-nav .nav .nav-link.active {
-            background-color: rgb(1 19 78 / 47%);
+            background-color: rgb(1 19 78 / 50%);
             color: #ffffff;
         }
         .step-arrow-nav .nav .nav-link.active::before {
-            border-left-color: rgb(1 19 78 / 47%);
+            border-left-color: rgb(1 19 78 / 50%);
         }
     </style>
 
@@ -47,8 +50,8 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="employee_id">Employee Number</label>
-                                                    <input type="text" class="form-control" id="employee_id" placeholder="Enter Employee Number" />
+                                                    <label class="form-label" for="employee_no">Employee Number</label>
+                                                    <input type="text" class="form-control" id="employee_no" placeholder="Enter Employee Number" />
                                                     <div class="invalid-feedback">Please enter an employee number</div>
                                                 </div>
                                             </div>

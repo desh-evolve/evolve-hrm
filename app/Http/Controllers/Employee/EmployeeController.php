@@ -21,8 +21,8 @@ class EmployeeController extends Controller
             'getAllEmployees',
             'getEmployeeByEmployeeId',
         ]]);
-        $this->middleware('permission:create employee', ['only' => ['employee_form', 'createEmployee']]);
-        $this->middleware('permission:update employee', ['only' => ['updateEmployee']]);
+        $this->middleware('permission:create employee', ['only' => ['employee_form', 'getEmployeeDropdownData', 'createEmployee']]);
+        $this->middleware('permission:update employee', ['only' => ['employee_form', 'getEmployeeDropdownData', 'updateEmployee']]);
         $this->middleware('permission:delete employee', ['only' => ['deleteEmployee']]);
 
         $this->common = new CommonModel();
@@ -41,6 +41,85 @@ class EmployeeController extends Controller
     public function employee_profile()
     {
         return view('employee.emp_profile');
+    }
+
+    public function getEmployeeDropdownData(){
+        $branches = $this->common->commonGetAll('com_branches', '*');
+        $departments = $this->common->commonGetAll('com_departments', '*');
+        $employee_groups = $this->common->commonGetAll('com_employee_groups', '*');
+        $employee_designations = $this->common->commonGetAll('com_employee_designations', '*');
+        //policy groups => create table
+        $policy_groups = [
+            [ 'id' => 1, 'name' => 'PG 1'],
+            [ 'id' => 2, 'name' => 'PG 2'],
+            [ 'id' => 3, 'name' => 'PG 3'],
+        ];
+        //employee status => create table
+        $employee_status = [
+            [ 'id' => 1, 'name' => 'Active', 'description' => ''],
+            [ 'id' => 2, 'name' => 'Leave', 'description' => 'Illness/Injury'],
+            [ 'id' => 3, 'name' => 'Leave', 'desription' => 'Maternity/Parental'],
+            [ 'id' => 3, 'name' => 'Leave', 'description' => 'Other'],
+            [ 'id' => 3, 'name' => 'Terminated', 'description' => ''],
+        ];
+        $currencies = $this->common->commonGetAll('com_currencies', '*');
+        //pay period => create table
+        $pay_period = [
+            [ 'id' => 1, 'name' => 'Daily'],
+            [ 'id' => 2, 'name' => 'Weekly'],
+            [ 'id' => 3, 'name' => 'Bi-weekly'],
+            [ 'id' => 4, 'name' => 'Monthly'],
+            [ 'id' => 5, 'name' => 'Quarterly'],
+            [ 'id' => 6, 'name' => 'Yearly'],
+        ];
+
+        // add status column to roles table
+        //$roles = $this->common->commonGetAll('roles', '*');
+        $roles = [
+            [ 'id' => 1, 'name' => 'Super Admin'],
+            [ 'id' => 2, 'name' => 'Admin'],
+            [ 'id' => 3, 'name' => 'Staff'],
+            [ 'id' => 4, 'name' => 'User'],
+        ];
+        //religion => create table
+        $religion = [
+            [ 'id' => 1, 'name' => 'Buddhism'],
+            [ 'id' => 2, 'name' => 'Christian'],
+            [ 'id' => 3, 'name' => 'Islam'],
+            [ 'id' => 4, 'name' => 'Hindu'],
+            [ 'id' => 5, 'name' => 'Other'],
+        ];
+
+        //employment types => create table
+        $employment_types = [
+            [ 'id' => 1, 'name' => 'Contract', 'is_duration' => 1],
+            [ 'id' => 2, 'name' => 'Training', 'is_duration' => 1],
+            [ 'id' => 3, 'name' => 'Permanent (With Probation)', 'is_duration' => 1],
+            [ 'id' => 4, 'name' => 'Permanent (Confirmed)', 'is_duration' => 0],
+            [ 'id' => 5, 'name' => 'Resign', 'is_duration' => 0],
+            [ 'id' => 6, 'name' => 'External', 'is_duration' => 0],
+        ];
+        
+        $countries = $this->common->commonGetAll('loc_countries', '*');
+        $provinces = $this->common->commonGetAll('loc_provinces', '*');
+        $cities = $this->common->commonGetAll('loc_cities', '*');
+        return response()->json([
+            'data' => [
+                'branches' => $branches,
+                'departments' => $departments,
+                'employee_groups' => $employee_groups,
+                'employee_designations' => $employee_designations,
+                'policy_groups' => $policy_groups,
+                'employee_status' => $employee_status,
+                'pay_period' => $pay_period,
+                'roles' => $roles,
+                'religion' => $religion,
+                'employment_types' => $employment_types,
+                'countries' => $countries,
+                'provinces' => $provinces,
+                'cities' => $cities,
+            ]
+        ], 200);
     }
 
     public function createEmployee(Request $request)
