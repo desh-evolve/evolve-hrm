@@ -225,6 +225,11 @@
                                     Employee Groups
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_qualification.index') }}" class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
+                                    Employee Qulifications
+                                </a>
+                            </li>
                             <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>

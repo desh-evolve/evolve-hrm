@@ -14,6 +14,7 @@ use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 
 use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Employee\EmployeeQualificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -184,6 +185,21 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
         Route::delete('/employee/delete/{id}', [EmployeeController::class, 'deleteEmployee'])->name('employee.delete');
         Route::get('/employees', [EmployeeController::class, 'getAllEmployees'])->name('employee.all');
         Route::get('/employee/{id}', [EmployeeController::class, 'getEmployeeByEmployeeId'])->name('employee.getById');
+
+        
+    //==============================================================================================================================
+    // Employee qulification
+    //==============================================================================================================================
+    Route::get('/company/employee_qualification/index', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification.index');
+    // Route::get('/company/employee_qualification', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification');
+
+    // Currency routes
+    Route::post('/company/employee_qualification/create', [EmployeeQualificationController::class, 'createEmployeeQulification'])->name('company.employee_qualification.create');
+    Route::put('/company/employee_qualification/update/{id}', [EmployeeQualificationController::class, 'updateEmployeeQulification'])->name('company.employee_qualification.update');
+    Route::delete('/company/employee_qualification/delete/{id}', [EmployeeQualificationController::class, 'deleteEmployeeQulification'])->name('company.employee_qualification.delete');
+    Route::get('/company/allemployee_qualifications', [EmployeeQualificationController::class, 'getAllEmployeeQulification'])->name('company.employee_qualification.all');
+    Route::get('/company/employee_qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQulificationById'])->name('company.employee_qualification.getById');
+
 
 });
 
