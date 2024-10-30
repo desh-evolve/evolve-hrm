@@ -15,6 +15,7 @@ use App\Http\Controllers\Company\CurrencyController;
 
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
+use App\Http\Controllers\Employee\JobHistoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -166,7 +167,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/currency/{id}', [CurrencyController::class, 'getCurrencyById'])->name('company.currency.getById');
 
     //==============================================================================================================================
-    // Company => this should be on the bottom of the page 
+    // Company => this should be on the bottom of the page
     //==============================================================================================================================
     // Company Info index
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
@@ -199,6 +200,20 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/company/employee_qualification/delete/{id}', [EmployeeQualificationController::class, 'deleteEmployeeQulification'])->name('company.employee_qualification.delete');
     Route::get('/company/allemployee_qualifications', [EmployeeQualificationController::class, 'getAllEmployeeQulification'])->name('company.employee_qualification.all');
     Route::get('/company/employee_qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQulificationById'])->name('company.employee_qualification.getById');
+
+
+    //==============================================================================================================================
+    // Employee Job History
+    //==============================================================================================================================
+
+    Route::get('/employee/jobhistory', [JobHistoryController::class, 'index'])->name('employee.jobhistory.index');
+
+    Route::get('/employee/jobhistory/dropdown', [JobHistoryController::class, 'getJobHistoryDropdownData'])->name('employee.jobhistory.dropdown');
+    Route::post('/employee/jobhistory/create', [JobHistoryController::class, 'createJobHistory'])->name('employee.jobhistory.create');
+    Route::put('/employee/jobhistory/update/{id}', [JobHistoryController::class, 'updateJobHistory'])->name('employee.jobhistory.update');
+    Route::delete('/employee/jobhistory/delete/{id}', [JobHistoryController::class, 'deleteJobHistory'])->name('employee.jobhistory.delete');
+    Route::get('/employee/jobhistory/{id}', [JobHistoryController::class, 'getJobHistoryByEmployeeId'])->name('employee.jobhistory.getById');
+
 
 
 });

@@ -16,8 +16,9 @@ class JobHistoryController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view employee job history', ['only' => [
-            'index', 
-            'getJobHistoryByEmployeeId', 
+            'index',
+            'getJobHistoryByEmployeeId',
+            'getJobHistoryDropdownData',
         ]]);
         $this->middleware('permission:create employee job history', ['only' => ['createJobHistory']]);
         $this->middleware('permission:update employee job history', ['only' => ['updateJobHistory']]);
@@ -26,14 +27,139 @@ class JobHistoryController extends Controller
         $this->common = new CommonModel();
     }
 
+
+    //pawanee(2024-10-28)
     public function index()
     {
         return view('employee.job_history');
     }
 
-    public function getJobHistoryByEmployeeId(){}
-    public function createJobHistory(){}
-    public function updateJobHistory(){}
-    public function deleteJobHistory(){}
+
+    //pawanee(2024-10-28)
+    public function getJobHistoryDropdownData(){
+        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $branches = $this->common->commonGetAll('com_branches', '*');
+        $departments = $this->common->commonGetAll('com_departments', '*');
+        $designations = $this->common->commonGetAll('com_employee_designations', '*');
+        return response()->json([
+            'data' => [
+                'employees' => $employees,
+                'branches' => $branches,
+                'departments' => $departments,
+                'designations' => $designations,
+            ]
+        ], 200);
+    }
+
+
+
+    //pawanee(2024-10-28)
+    public function createJobHistory(Request $request)
+    {
+        try {
+            return DB::transaction(function () use ($request) {
+                $request->validate([
+                    'employee_id' => 'required|integer',
+                    'branch_id' => 'required|integer',
+                    'department_id' => 'required|integer',
+                    'designation_id' => 'required|integer',
+                    'first_worked_date' => 'required|date',
+                    'last_worked_date' => 'required|date',
+                    'note' => 'required|string|max:65535',
+                ]);
+
+                $table = 'emp_job_history';
+                $inputArr = [
+                    'employee_id' => $request->employee_id,
+                    'branch_id' => $request->branch_id,
+                    'department_id' => $request->department_id,
+                    'designation_id' => $request->designation_id,
+                    'first_worked_date' => $request->first_worked_date,
+                    'last_worked_date' => $request->last_worked_date,
+                    'note' => $request->note,
+                    'created_by' => Auth::user()->id,
+                    'updated_by' => Auth::user()->id,
+                ];
+
+                $insertId = $this->common->commonSave($table, $inputArr);
+
+                if ($insertId) {
+                    return response()->json(['status' => 'success', 'message' => 'Job History added successfully', 'data' => ['id' => $insertId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed to add Job History', 'data' => []], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
+        }
+    }
+
+
+    //pawanee(2024-10-28)
+    public function updateJobHistory(Request $request, $id){
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                $request->validate([
+                    'employee_id' => 'required|integer',
+                    'branch_id' => 'required|integer',
+                    'department_id' => 'required|integer',
+                    'designation_id' => 'required|integer',
+                    'first_worked_date' => 'required|date',
+                    'last_worked_date' => 'required|date',
+                    'note' => 'required|string|max:65535',
+                ]);
+
+                $table = 'emp_job_history';
+                $idColumn = 'id';
+                $inputArr = [
+                    'employee_id' => $request->employee_id,
+                    'branch_id' => $request->branch_id,
+                    'department_id' => $request->department_id,
+                    'designation_id' => $request->designation_id,
+                    'first_worked_date' => $request->first_worked_date,
+                    'last_worked_date' => $request->last_worked_date,
+                    'note' => $request->note,
+                    'updated_by' => Auth::user()->id,
+                ];
+
+                $insertId = $this->common->commonSave($table, $inputArr, $idColumn, $id);
+
+                if ($insertId) {
+                    return response()->json(['status' => 'success', 'message' => 'Job History updateded successfully', 'data' => ['id' => $insertId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed to update Job History', 'data' => []], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
+        }
+    }
+
+
+
+    //pawanee(2024-10-28)
+    public function deleteJobHistory($id){
+        $whereArr = ['id' => $id];
+        $title = 'Employee Job History';
+        $table = 'emp_job_history';
+
+        return $this->common->commonDelete($id, $whereArr, $title, $table);
+    }
+
+
+
+    //pawanee(2024-10-28)
+    public function getJobHistoryByEmployeeId($id){
+        $idColumn = 'employee_id';
+        $table = 'emp_job_history';
+        $fields = ['emp_job_history.*','branch_name', 'department_name', 'emp_designation_name'];
+        $joinArr = [
+            'com_branches'=>['com_branches.id', '=', 'emp_job_history.branch_id'],
+            'com_departments'=>['com_departments.id', '=', 'emp_job_history.department_id'],
+            'com_employee_designations'=>['com_employee_designations.id', '=', 'emp_job_history.designation_id'],
+        ];
+        $jobhistory = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
+        return response()->json(['data' => $jobhistory], 200);
+    }
 
 }
