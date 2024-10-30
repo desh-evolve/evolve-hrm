@@ -177,7 +177,14 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Employees
     //==============================================================================================================================
         Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
-        Route::get('/employee/create', [EmployeeController::class, 'employee_form'])->name('employee.create');
+        Route::get('/employee/form', [EmployeeController::class, 'employee_form'])->name('employee.form');
+        Route::get('/employee/profile', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
+
+        Route::get('/employee/create', [EmployeeController::class, 'createEmployee'])->name('employee.create');
+        Route::get('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');
+        Route::delete('/employee/delete/{id}', [EmployeeController::class, 'deleteEmployee'])->name('employee.delete');
+        Route::get('/employees', [EmployeeController::class, 'getAllEmployees'])->name('employee.all');
+        Route::get('/employee/{id}', [EmployeeController::class, 'getEmployeeByEmployeeId'])->name('employee.getById');
 
 
 
