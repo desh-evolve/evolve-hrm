@@ -13,9 +13,10 @@ use App\Http\Controllers\Company\EmployeeGroupController;
 use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 
-use App\Http\Controllers\Employee\EmployeeController;
+// use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
 use App\Http\Controllers\Employee\JobHistoryController;
+use App\Http\Controllers\Employee\EmployeeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -166,20 +167,20 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/allcurrency', [CurrencyController::class, 'getAllCurrency'])->name('company.currency.all');
     Route::get('/company/currency/{id}', [CurrencyController::class, 'getCurrencyById'])->name('company.currency.getById');
 
-        
+
     //==============================================================================================================================
-    // Employee qulification
+    // Employee Qualification
     //==============================================================================================================================
     Route::get('/company/employee_qualification/index', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification.index');
     // Route::get('/company/employee_qualification', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification');
 
-    // Currency routes
-    Route::post('/company/employee_qualification/create', [EmployeeQualificationController::class, 'createEmployeeQulification'])->name('company.employee_qualification.create');
-    Route::put('/company/employee_qualification/update/{id}', [EmployeeQualificationController::class, 'updateEmployeeQulification'])->name('company.employee_qualification.update');
-    Route::delete('/company/employee_qualification/delete/{id}', [EmployeeQualificationController::class, 'deleteEmployeeQulification'])->name('company.employee_qualification.delete');
-    Route::get('/company/allemployee_qualifications', [EmployeeQualificationController::class, 'getAllEmployeeQulification'])->name('company.employee_qualification.all');
-    Route::get('/company/employee_qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQulificationById'])->name('company.employee_qualification.getById');
-
+    // Employee Qualification routes
+    Route::post('/company/employee_qualification/create', [EmployeeQualificationController::class, 'createEmployeeQualification'])->name('company.employee_qualification.create');
+    Route::put('/company/employee_qualification/update/{id}', [EmployeeQualificationController::class, 'updateEmployeeQualification'])->name('company.employee_qualification.update');
+    Route::delete('/company/employee_qualification/delete/{id}', [EmployeeQualificationController::class, 'deleteEmployeeQualification'])->name('company.employee_qualification.delete');
+    Route::get('/company/single_employee_qualification/{id}', [EmployeeQualificationController::class, 'getSingleEmployeeQualification'])->name('company.employee_qualification.single');
+    Route::get('/company/employee_qualification/dropdown', [EmployeeQualificationController::class, 'getEmployeeList'])->name('company.employee_qualification.dropdown');
+    Route::get('/company/employee_qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQualificationById'])->name('company.employee_qualification.getById');
 
     //==============================================================================================================================
     // Employee Job History
@@ -192,6 +193,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::put('/employee/jobhistory/update/{id}', [JobHistoryController::class, 'updateJobHistory'])->name('employee.jobhistory.update');
     Route::delete('/employee/jobhistory/delete/{id}', [JobHistoryController::class, 'deleteJobHistory'])->name('employee.jobhistory.delete');
     Route::get('/employee/jobhistory/{id}', [JobHistoryController::class, 'getJobHistoryByEmployeeId'])->name('employee.jobhistory.getById');
+
+
 
     //==============================================================================================================================
     // Employees
@@ -213,7 +216,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
     Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
     Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
-
 });
 
 require __DIR__ . '/auth.php';

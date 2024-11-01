@@ -122,6 +122,12 @@
                                     Employee Job History
                                 </a>
                             </li>
+                            
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_qualification.index') }}" class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
+                                    Employee Qulifications
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
@@ -230,11 +236,6 @@
                             <li class="nav-item">
                                 <a href="{{ route('company.employee_group.index') }}" class="nav-link {{ request()->routeIs('company.employee_group.index') ? 'active' : '' }}">
                                     Employee Groups
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('company.employee_qualification.index') }}" class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
-                                    Employee Qulifications
                                 </a>
                             </li>
                             <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>

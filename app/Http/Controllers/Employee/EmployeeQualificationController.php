@@ -13,14 +13,15 @@ use App\Models\CommonModel;
 class EmployeeQualificationController extends Controller
 {
     private $common = null;
-    
+
     public function __construct()
     {
         $this->middleware('permission:view employee qualification', ['only' => [
             'index',
-            // 'employee_form',
             'getAllEmployeeQualification',
+            'getAllEmployeeList',
             'getEmployeeQualificationById',
+            'getSingleEmployeeQualification',
         ]]);
         $this->middleware('permission:create employee qualification', ['only' => ['createEmployeeQualification']]);
         $this->middleware('permission:update employee qualification', ['only' => ['updateEmployeeQualification']]);
@@ -43,6 +44,7 @@ class EmployeeQualificationController extends Controller
                     'qualification' => 'required',
                     'institute' => 'required',
                     'year' => 'required',
+                    'qualification_status' => 'required',
                 ]);
 
                 $table = 'emp_qualifications';
@@ -50,6 +52,9 @@ class EmployeeQualificationController extends Controller
                     'employee_id' => $request->employee_id,
                     'qualification' => $request->qualification,
                     'institute' => $request->institute,
+                    'remarks' => $request->remarks,
+                    'year' => $request->year,
+                    'status' => $request->qualification_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
@@ -57,7 +62,7 @@ class EmployeeQualificationController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Qualification  added successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Qualification  added successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
                     return response()->json(['status' => 'error', 'message' => 'Failed adding Qualification', 'data' => []], 500);
                 }
@@ -67,27 +72,34 @@ class EmployeeQualificationController extends Controller
         }
     }
 
-    public function updateEmployeeDesignation(Request $request, $id)
+    public function updateEmployeeQualification(Request $request, $id)
     {
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                   'emp_designation_name' => 'required',
-                   'designation_status' => 'required',
+                    'employee_id' => 'required',
+                    'qualification' => 'required',
+                    'institute' => 'required',
+                    'year' => 'required',
+                    'qualification_status' => 'required',
                 ]);
 
                 $table = 'emp_qualifications';
                 $idColumn = 'id';
                 $inputArr = [
-                    'emp_designation_name' => $request->emp_designation_name,
-                    'status' => $request->designation_status,
+                    'employee_id' => $request->employee_id,
+                    'qualification' => $request->qualification,
+                    'institute' => $request->institute,
+                    'year' => $request->year,
+                    'remarks' => $request->remarks,
+                    'status' => $request->qualification_status,
                     'updated_by' => Auth::user()->id,
-                ];
 
+                ];
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Qualification updated successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Qualification updated successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
                     return response()->json(['status' => 'error', 'message' => 'Failed updating Qualification', 'data' => []], 500);
                 }
@@ -97,7 +109,7 @@ class EmployeeQualificationController extends Controller
         }
     }
 
-    public function deleteEmployeeDesignation($id)
+    public function deleteEmployeeQualification($id)
     {
         $whereArr = ['id' => $id];
         $title = 'Employee Qualifications';
@@ -106,7 +118,7 @@ class EmployeeQualificationController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
-    public function getAllEmployeeDesignations()
+    public function getAllEmployeeQualification()
     {
         $table = 'emp_qualifications';
         $fields = '*';
@@ -114,11 +126,33 @@ class EmployeeQualificationController extends Controller
         return response()->json(['data' => $employee_qualifications], 200);
     }
 
-    public function getEmployeeDesignationById($id){
-        $idColumn = 'id';
+    public function getEmployeeQualificationById($id)
+    {
+        $idColumn = 'employee_id';
         $table = 'emp_qualifications';
         $fields = '*';
         $employee_qualifications = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $employee_qualifications], 200);
+    }
+    public function getEmployeeList()
+    {
+
+        $employees = $this->common->commonGetAll('emp_employees', '*');
+        // $employees = $this->common->commonGetAll($table, $fields);
+        return response()->json([
+            // 'data' => [
+            //     'employees' => $employees,
+            // ]
+            'data' => $employees,
+        ], 200);
+    }
+
+    public function getSingleEmployeeQualification($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_qualifications';
+        $fields = '*';
+        $employee_qualification = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $employee_qualification], 200);
     }
 }
