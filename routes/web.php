@@ -18,6 +18,8 @@ use App\Http\Controllers\Employee\EmployeeQualificationController;
 use App\Http\Controllers\Employee\JobHistoryController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeWorkExperienceController;
+use App\Http\Controllers\Employee\EmployeePromotionController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -193,6 +195,16 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/single_employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getSingleEmployeeWorkExperience'])->name('company.employee_work_experience.single');
     Route::get('/company/employee_work_experience/dropdown', [EmployeeWorkExperienceController::class, 'getEmployeeList'])->name('company.employee_work_experience.dropdown');
     Route::get('/company/employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getEmployeeWorkExperienceById'])->name('company.employee_work_experience.getById');
+
+    // Employee employee_promotion  routes
+    Route::get('/company/employee_promotion/index', [EmployeePromotionController::class, 'index'])->name('company.employee_promotion.index');
+    
+    Route::post('/company/employee_promotion/create', [EmployeePromotionController::class, 'createEmployeePromotion'])->name('company.employee_promotion.create');
+    Route::put('/company/employee_promotion/update/{id}', [EmployeePromotionController::class, 'updateEmployeePromotion'])->name('company.employee_promotion.update');
+    Route::delete('/company/employee_promotion/delete/{id}', [EmployeePromotionController::class, 'deleteEmployeePromotion'])->name('company.employee_promotion.delete');
+    Route::get('/company/employee_promotion/{id}', [EmployeePromotionController::class, 'getSingleEmployeePromotion'])->name('company.employee_promotion.single');
+    Route::get('/company/employee_promotion/dropdown', [EmployeePromotionController::class, 'getEmployeeList'])->name('company.employee_promotion.dropdown');
+    Route::get('/company/employee_promotion/{id}', [EmployeePromotionController::class, 'getEmployeePromotioneById'])->name('company.employee_promotion.getById');
 
     //==============================================================================================================================
     // Employee Job History
