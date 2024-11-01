@@ -17,6 +17,7 @@ use App\Http\Controllers\Company\CurrencyController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
 use App\Http\Controllers\Employee\JobHistoryController;
 use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Employee\EmployeeWorkExperienceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -181,6 +182,17 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/single_employee_qualification/{id}', [EmployeeQualificationController::class, 'getSingleEmployeeQualification'])->name('company.employee_qualification.single');
     Route::get('/company/employee_qualification/dropdown', [EmployeeQualificationController::class, 'getEmployeeList'])->name('company.employee_qualification.dropdown');
     Route::get('/company/employee_qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQualificationById'])->name('company.employee_qualification.getById');
+
+    // Employee employee_work_experience  routes
+    Route::get('/company/employee_work_experience/index', [EmployeeWorkExperienceController::class, 'index'])->name('company.employee_work_experience.index');
+    // Route::get('/company/employee_qualification', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification');
+
+    Route::post('/company/employee_work_experience/create', [EmployeeWorkExperienceController::class, 'createEmployeeWorkExperience'])->name('company.employee_work_experience.create');
+    Route::put('/company/employee_work_experience/update/{id}', [EmployeeWorkExperienceController::class, 'updateEmployeeWorkExperience'])->name('company.employee_work_experience.update');
+    Route::delete('/company/employee_work_experience/delete/{id}', [EmployeeWorkExperienceController::class, 'deleteEmployeeWorkExperience'])->name('company.employee_work_experience.delete');
+    Route::get('/company/single_employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getSingleEmployeeWorkExperience'])->name('company.employee_work_experience.single');
+    Route::get('/company/employee_work_experience/dropdown', [EmployeeWorkExperienceController::class, 'getEmployeeList'])->name('company.employee_work_experience.dropdown');
+    Route::get('/company/employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getEmployeeWorkExperienceById'])->name('company.employee_work_experience.getById');
 
     //==============================================================================================================================
     // Employee Job History

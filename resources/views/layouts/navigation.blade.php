@@ -128,6 +128,11 @@
                                     Employee Qulifications
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_work_experience.index') }}" class="nav-link {{ request()->routeIs('company.employee_work_experience.index') ? 'active' : '' }}">
+                                    Employee Work Experience
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
