@@ -122,6 +122,12 @@
                                     Employee Job History
                                 </a>
                             </li>
+                            
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_qualification.index') }}" class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
+                                    Employee Qulifications
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
