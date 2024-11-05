@@ -68,7 +68,7 @@
                             <tbody id="table_body">
 
                                 <tr>
-                                    <td colspan="6" class="text-center text-warning">Select Employee Name Display their Job History</td>
+                                    <td colspan="8" class="text-center text-info">Please Select a Employee</td>
                                 </tr>
 
                             </tbody>
@@ -180,7 +180,7 @@ let dropdownData = [];
 
                     if (employee_Id === "") {
 
-                        $('#table_body').html('<tr><td colspan="6" class="text-center text-warning">Select Employee Name to Display Job History</td></tr>');
+                        $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
                         $('#employee_name').val('');
                         $('#employee_id').val('');
                     } else {
@@ -198,7 +198,7 @@ let dropdownData = [];
                 jobs.map((job, i) => {
                     list += `
                         <tr jobhistory_id="${job.id}">
-                            <td>"${i + 1}"</td>
+                            <td>${i + 1}</td>
                             <td>${job.branch_name}</td>
                             <td>${job.department_name}</td>
                             <td>${job.emp_designation_name}</td>
@@ -217,7 +217,7 @@ let dropdownData = [];
                     `;
                 })
             }else{
-                list = '<tr><td colspan="6" class="text-center">No Employee Job History Found!</td></tr>';
+                list = '<tr><td colspan="8" class="text-center text-danger">No Job History Found!</td></tr>';
             }
 
 
