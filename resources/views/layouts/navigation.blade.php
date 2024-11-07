@@ -122,6 +122,27 @@
                                     Employee Job History
                                 </a>
                             </li>
+                            
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_qualification.index') }}" class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
+                                    Employee Qulifications
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_work_experience.index') }}" class="nav-link {{ request()->routeIs('company.employee_work_experience.index') ? 'active' : '' }}">
+                                    Employee Work Experience
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_promotion.index') }}" class="nav-link {{ request()->routeIs('company.employee_promotion.index') ? 'active' : '' }}">
+                                    Employee Promotion
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_family.index') }}" class="nav-link {{ request()->routeIs('company.employee_family.index') ? 'active' : '' }}">
+                                    Employee Family
+                                </a>
+                            </li>
 
                         </ul>
                     </div>

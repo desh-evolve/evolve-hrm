@@ -71,7 +71,7 @@
                 cursor: pointer;
             }
             .select2-container {
-                z-index: 9999;
+                /* z-index: 9999; */
             }
 
         </style>

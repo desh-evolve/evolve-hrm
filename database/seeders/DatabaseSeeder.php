@@ -10,5 +10,10 @@ class DatabaseSeeder extends Seeder
     {
         // Register your seeder here
         $this->call(IndustrySeeder::class);
+
+        $this->call([
+            IndustrySeeder::class,
+            EmpEmployeesTableSeeder::class,
+        ]);
     }
 }
