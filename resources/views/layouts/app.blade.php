@@ -1,7 +1,7 @@
 <!-- desh(2024-10-14) -->
 <!DOCTYPE html>
 
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="enable" data-theme="default" data-theme-colors="default">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -239,6 +239,22 @@
                 });
                 
             }
+
+            //show & hide preloader
+            function showPreloader() {
+                $('#preloader').css({
+                    'opacity': '1',
+                    'visibility': 'visible'
+                });
+            }
+
+            function hidePreloader() {
+                $('#preloader').css({
+                    'opacity': '0',
+                    'visibility': 'hidden'
+                });
+            }
+
 
             /*
             //==============================================================
