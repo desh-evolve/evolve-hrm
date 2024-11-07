@@ -138,6 +138,11 @@
                                     Employee Promotion
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_family.index') }}" class="nav-link {{ request()->routeIs('company.employee_family.index') ? 'active' : '' }}">
+                                    Employee Family
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
