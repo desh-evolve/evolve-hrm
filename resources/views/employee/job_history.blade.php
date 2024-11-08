@@ -39,11 +39,11 @@
 
                         <div class="row mb-3 mb-4">
                             <div class="col-lg-2">
-                                <label for="employee_idname" class="form-label mb-1 req">Employee Name</label>
+                                <label for="employee_id" class="form-label mb-1 req">Employee Name</label>
                             </div>
 
                             <div class="col-lg-10">
-                                <select class="form-select form-select-sm" id="employee_idname" >
+                                <select class="form-select form-select-sm" id="employee_id" >
 
                                 </select>
                             </div>
@@ -54,11 +54,13 @@
                         <table class="table table-nowrap" id="jobhistory_table">
                             <thead class="table-light" id="table_head">
                                 <tr>
+                                    <th scope="col">#</th>
                                     <th scope="col">Branch</th>
                                     <th scope="col">Department</th>
                                     <th scope="col">Designation</th>
                                     <th scope="col">First Worked Date</th>
                                     <th scope="col">Last Worked Date</th>
+                                    <th scope="col">Note</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -66,7 +68,7 @@
                             <tbody id="table_body">
 
                                 <tr>
-                                    <td colspan="6" class="text-center text-warning">Select Employee Name Display their Job History</td>
+                                    <td colspan="8" class="text-center text-info">Please Select a Employee</td>
                                 </tr>
 
                             </tbody>
@@ -81,7 +83,7 @@
 
 
 
-<!-- wageGroup form modal -->
+<!-- form modal -->
 
 
 <div id="jobhistory_form_modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" >
@@ -98,6 +100,7 @@
                     <div class="col-xxl-3 col-md-12 mb-3">
                         <label for="employee_name" class="form-label mb-1">Employee Name</label>
                         <input type="text" class="form-control" id="employee_name" value="" disabled>
+                        <input type="hidden" class="form-control" id="employee_id" value="" disabled>
                     </div>
 
                     <div class="col-xxl-4 col-md-4 mb-3">
@@ -140,7 +143,7 @@
                 <div id="error-msg"></div>
 
                 <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
-                    <input type="hidden" id="employee_id" value="">
+                    <input type="hidden" id="jobhistory_id" value="">
                     <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn w-sm btn-primary" id="job-history-submit-confirm">Submit</button>
                 </div>
@@ -158,46 +161,50 @@
 //======================================================================================================
 // RENDER TABLE
 //======================================================================================================
+let employee_Id = '';
 
 let dropdownData = [];
 
-        $(document).ready(function(){
-            getDropdownData();
+
+        $(document).ready(async function(){
+            await getDropdownData();
 
         });
 
+        // Get employee data when selecting employee name
+                $(document).on('change', '#employee_id', async function () {
+                        employee_Id = $(this).val();
+                        let employeeName = $('#employee_id option:selected').text();
+                        $('#employee_name').val(employeeName);
+                        $('#employee_id').val(employee_Id);
 
+                    if (employee_Id === "") {
 
-        //get employee data click employee name
-        $(document).on('change', '#employee_idname', function () {
-            let employee_id = $(this).val();
-
-                if (employee_id === "") {
-                    $('#table_body').html('<tr><td colspan="6" class="text-center text-warning">Select Employee Name Display their Job History</td></tr>');
-                } else {
-                    //Render the job history
-                    renderJobHistoryTable(employee_id);
-                }
-        });
-
-
-
+                        $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
+                        $('#employee_name').val('');
+                        $('#employee_id').val('');
+                    } else {
+                        await renderJobHistoryTable();
+                    }
+                });
 
         //render table using employee Id
-        async function renderJobHistoryTable(employee_id){
+          async function renderJobHistoryTable(){
             let list = '';
 
-            const employees = await commonFetchData(`/employee/jobhistory/${employee_id}`);
+            const jobs = await commonFetchData(`/employee/jobhistory/${employee_Id}`);
 
-            if(employees && employees.length === 1){
-                employees.map((employee) => {
+            if(jobs && jobs.length > 0){
+                jobs.map((job, i) => {
                     list += `
-                        <tr employee_id="${employee.id}">
-                            <td>${employee.branch_name}</td>
-                            <td>${employee.department_name}</td>
-                            <td>${employee.emp_designation_name}</td>
-                            <td>${employee.first_worked_date}</td>
-                            <td>${employee.last_worked_date}</td>
+                        <tr jobhistory_id="${job.id}">
+                            <td>${i + 1}</td>
+                            <td>${job.branch_name}</td>
+                            <td>${job.department_name}</td>
+                            <td>${job.emp_designation_name}</td>
+                            <td>${job.first_worked_date}</td>
+                            <td>${job.last_worked_date}</td>
+                            <td>${job.note}</td>
                             <td>
                                 <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit">
                                     <i class="ri-pencil-fill"></i>
@@ -210,13 +217,12 @@ let dropdownData = [];
                     `;
                 })
             }else{
-                list = '<tr><td colspan="6" class="text-center">No Employee Job History Found!</td></tr>';
+                list = '<tr><td colspan="8" class="text-center text-danger">No Job History Found!</td></tr>';
             }
 
 
             $('#table_body').html(list);
         }
-
 
 //======================================================================================================
 //get dropdown data
@@ -224,13 +230,13 @@ let dropdownData = [];
 
 async function getDropdownData() {
             try {
-                dropdownData = await commonFetchData('/employee/jobhistory/dropdown');
+              let dropdownData = await commonFetchData('/employee/jobhistory/dropdown');
 
                 // Populate employee name dropdown
                 let employeeList = (dropdownData?.employees || [])
                     .map(employee => `<option value="${employee.id}">${employee.name_with_initials}</option>`)
                     .join('');
-                $('#employee_idname').html('<option value="">Select Employee Name</option>' + employeeList);
+                $('#employee_id').html('<option value="">Select Employee Name</option>' + employeeList);
 
 
                 // Populate branch dropdown
@@ -259,16 +265,13 @@ async function getDropdownData() {
             }
         }
 
-
-
-
 //======================================================================================================
 // DELETE FUNCTION
 //======================================================================================================
 
 $(document).on('click', '.click_delete', function() {
         const $row = $(this).closest('tr');
-        const id = $row.attr('employee_id');
+        const id = $row.attr('jobhistory_id');
 
             deleteItem(id, $row);
 
@@ -277,8 +280,6 @@ $(document).on('click', '.click_delete', function() {
     async function deleteItem(id, $row) {
         const url ='/employee/jobhistory/delete';
         const title ='Employee Job History';
-
-
         try {
                     const res = await commonDeleteFunction(id, url, title, $row);
                     if(res){
@@ -289,41 +290,40 @@ $(document).on('click', '.click_delete', function() {
                 }
     }
 
-
-
 //==================================================================================================
 // ADD & EDIT FUNCTION
 //==================================================================================================
 
     // Add job history
     $(document).on('click', '#add_new_btn', function () {
-        resetForm(); // Reset the form
-        $('.modal-title').text('Add Employee Job History');  // Set modal title for adding
-        $('#jobhistory_form_modal').modal('show'); // Show the modal for adding a new job history
+        resetForm();
+        title = `Add Job History`;
+        $('.modal-title').html(title);
+        $('#jobhistory_form_modal').modal('show');
     });
 
 
      // Edit job history
     $(document).on('click', '.click_edit', async function () {
         resetForm();
+        title = `Edit Job History`;
+        $('.modal-title').html(title);
 
-        // Corrected variable name to employee_id
-        let employee_id = $(this).closest('tr').attr('employee_id');
+        let jobhistory_id = $(this).closest('tr').attr('jobhistory_id');
 
-        // Fetch employee job history data by ID
         try {
-            let employees_data = await commonFetchData(`/employee/jobhistory/${employee_id}`);
-                employees_data = employees_data[0]; // Assuming it returns an array with one object
-                console.log('employees_data', employees_data);
+            let job_data = await commonFetchData(`/employee/single_jobhistory/${jobhistory_id}`);
+            job_data = job_data[0];
+                console.log('employees_data', job_data);
 
                 // Set form values with fetched data
-                $('#employee_id').val(employee_id);
-                $('#branch_id').val(employees_data?.branch_id || '');
-                $('#department_id').val(employees_data?.department_id || '');
-                $('#designation_id').val(employees_data?.designation_id || '');
-                $('#first_worked_date').val(employees_data?.first_worked_date || '');
-                $('#last_worked_date').val(employees_data?.last_worked_date || '');
-                $('#note').val(employees_data?.note || '');
+                $('#jobhistory_id').val(jobhistory_id);
+                $('#branch_id').val(job_data?.branch_id || '');
+                $('#department_id').val(job_data?.department_id || '');
+                $('#designation_id').val(job_data?.designation_id || '');
+                $('#first_worked_date').val(job_data?.first_worked_date || '');
+                $('#last_worked_date').val(job_data?.last_worked_date || '');
+                $('#note').val(job_data?.note || '');
 
             } catch (error) {
                 console.error('Error at getJobHistoryById:', error);
@@ -336,10 +336,11 @@ $(document).on('click', '.click_delete', function() {
 
     // Submit (Add/Edit)
     $(document).on('click', '#job-history-submit-confirm', async function () {
-        const employee_id = $('#employee_id').val();
+        const jobhistory_id = $('#jobhistory_id').val();
 
-        let createUrl = `/employee/jobhistory/create`;
-        let updateUrl = `/employee/jobhistory/update/${employee_id}`;
+        const isUpdating = Boolean(jobhistory_id);
+        const url = isUpdating ? `/employee/jobhistory/update/${jobhistory_id}` : `/employee/jobhistory/create`;
+        const method = isUpdating ? 'PUT' : 'POST';
 
         const formFields = {
             branch_id: 'required',
@@ -353,44 +354,27 @@ $(document).on('click', '.click_delete', function() {
         let formData = new FormData();
         let missingFields = [];
 
-        // Validate only required fields
         for (const key in formFields) {
-            const fieldId = key;
-            const value = $('#' + fieldId).val(); // Fetch value using the ID
-
-            // Check only required fields
+            const value = $('#' + key).val();
             if (formFields[key] === 'required' && !value) {
-                missingFields.push(fieldId);
+                missingFields.push(key);
             }
-
-            // Append all fields to formData
-            formData.append(key, value || ''); // Append empty string if no value for optional fields
+            formData.append(key, value || ''); // Append all fields to formData
         }
 
-
-        // If there are missing required fields, display an error message
         if (missingFields.length > 0) {
-            let errorMsg = '<p class="text-danger">The following fields are required: ';
-            errorMsg += missingFields.map(field => field.replace('_', ' ')).join(', ') + '.</p>';
-            $('#error-msg').html(errorMsg);
+            $('#error-msg').html('<p class="text-danger">The following fields are required: ' +
+                missingFields.map(field => field.replace('_', ' ')).join(', ') + '.</p>');
             return;
         } else {
-            $('#error-msg').html(''); // Clear error message if no issues
+            $('#error-msg').html('');
         }
 
-
-        // Check if updating
-        const isUpdating = Boolean(employee_id);
-        let url = isUpdating ? updateUrl : createUrl;
-        let method = isUpdating ? 'PUT' : 'POST'; // Set method based on update/create
-
-        if (isUpdating) {
-            formData.append('id', employee_id); // Append ID if updating
-        }
+            formData.append('employee_id', employee_Id);
 
         try {
-            // Send data and handle response
             let res = await commonSaveData(url, formData, method);
+            console.log('Response:', res); // Debugging response data
             await commonAlert(res.status, res.message);
 
             if (res.status === 'success') {
@@ -399,17 +383,17 @@ $(document).on('click', '.click_delete', function() {
             } else {
                 $('#error-msg').html('<p class="text-danger">' + res.message + '</p>');
             }
-
         } catch (error) {
             console.error('Error:', error);
             $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
         }
     });
 
+
     // Reset Function
     function resetForm() {
-        $('#employee_id').val('');
-        $('#employee_name').val('');
+
+        $('#jobhistory_id').val('');
         $('#branch_id').val('');
         $('#department_id').val('');
         $('#designation_id').val('');
@@ -418,78 +402,6 @@ $(document).on('click', '.click_delete', function() {
         $('#note').val('');
         $('#error-msg').html('');
     }
-
-
-
-    // Submit function for Add/Edit Job History
-$(document).on('click', '#job-history-submit-confirm', async function () {
-    const employee_id = $('#employee_id').val();
-
-    let createUrl = `/employee/jobhistory/create`;
-    let updateUrl = `/employee/jobhistory/update/${employee_id}`;
-
-    // Determine if updating or creating
-    const isUpdating = Boolean(employee_id);
-    let url = isUpdating ? updateUrl : createUrl;
-    let method = isUpdating ? 'PUT' : 'POST'; // Use 'PUT' for updates, 'POST' for new entries
-
-    let formData = new FormData();
-    let missingFields = [];
-
-    // Form fields required for validation
-    const formFields = {
-        branch_id: 'required',
-        department_id: 'required',
-        designation_id: 'required',
-        first_worked_date: 'required',
-        last_worked_date: 'required',
-        note: 'required',
-    };
-
-    // Loop through each field to validate
-    for (const field in formFields) {
-        const value = $('#' + field).val();
-
-        if (formFields[field] === 'required' && !value) {
-            missingFields.push(field); // Add to missing fields if required and empty
-        }
-
-        // Append field data to formData
-        formData.append(field, value || '');
-    }
-
-    // If fields are missing, show an error and prevent submission
-    if (missingFields.length > 0) {
-        const errorMsg = `<p class="text-danger">The following fields are required: ${missingFields.map(f => f.replace('_', ' ')).join(', ')}.</p>`;
-        $('#error-msg').html(errorMsg);
-        return;
-    } else {
-        $('#error-msg').html(''); // Clear error message if validation passes
-    }
-
-    // Append ID if updating
-    if (isUpdating) {
-        formData.append('id', employee_id);
-    }
-
-    try {
-        // Save data and handle response
-        let res = await commonSaveData(url, formData, method);
-        await commonAlert(res.status, res.message); // Show status alert
-
-        if (res.status === 'success') {
-            renderJobHistoryTable(); // Reload table on success
-            $('#jobhistory_form_modal').modal('hide'); // Close modal
-        } else {
-            $('#error-msg').html(`<p class="text-danger">${res.message}</p>`);
-        }
-
-    } catch (error) {
-        console.error('Error:', error);
-        $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
-    }
-});
-
 
 </script>
 

@@ -19,6 +19,7 @@ class JobHistoryController extends Controller
             'index',
             'getJobHistoryByEmployeeId',
             'getJobHistoryDropdownData',
+            'getJobHistoryBySingleEmployee',
         ]]);
         $this->middleware('permission:create employee job history', ['only' => ['createJobHistory']]);
         $this->middleware('permission:update employee job history', ['only' => ['updateJobHistory']]);
@@ -59,13 +60,13 @@ class JobHistoryController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required|integer',
-                    'branch_id' => 'required|integer',
-                    'department_id' => 'required|integer',
-                    'designation_id' => 'required|integer',
+                    'employee_id' => 'required',
+                    'branch_id' => 'required',
+                    'department_id' => 'required',
+                    'designation_id' => 'required',
                     'first_worked_date' => 'required|date',
                     'last_worked_date' => 'required|date',
-                    'note' => 'required|string|max:65535',
+                    'note' => 'required',
                 ]);
 
                 $table = 'emp_job_history';
@@ -100,13 +101,13 @@ class JobHistoryController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required|integer',
-                    'branch_id' => 'required|integer',
-                    'department_id' => 'required|integer',
-                    'designation_id' => 'required|integer',
+                    'employee_id' => 'required',
+                    'branch_id' => 'required',
+                    'department_id' => 'required',
+                    'designation_id' => 'required',
                     'first_worked_date' => 'required|date',
                     'last_worked_date' => 'required|date',
-                    'note' => 'required|string|max:65535',
+                    'note' => 'required',
                 ]);
 
                 $table = 'emp_job_history';
@@ -122,7 +123,7 @@ class JobHistoryController extends Controller
                     'updated_by' => Auth::user()->id,
                 ];
 
-                $insertId = $this->common->commonSave($table, $inputArr, $idColumn, $id);
+                $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
                 if ($insertId) {
                     return response()->json(['status' => 'success', 'message' => 'Job History updateded successfully', 'data' => ['id' => $insertId]], 200);
@@ -157,9 +158,22 @@ class JobHistoryController extends Controller
             'com_branches'=>['com_branches.id', '=', 'emp_job_history.branch_id'],
             'com_departments'=>['com_departments.id', '=', 'emp_job_history.department_id'],
             'com_employee_designations'=>['com_employee_designations.id', '=', 'emp_job_history.designation_id'],
+
         ];
         $jobhistory = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
         return response()->json(['data' => $jobhistory], 200);
     }
+
+
+    //pawanee(2024-10-28)
+    public function getJobHistoryBySingleEmployee($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_job_history';
+        $fields = '*';
+        $employee_qualification = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $employee_qualification], 200);
+    }
+
 
 }
