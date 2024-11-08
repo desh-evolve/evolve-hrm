@@ -241,7 +241,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/dropdown', [EmployeeController::class, 'getEmployeeDropdownData'])->name('employee.dropdown');
     Route::get('/employee/next_employee_id', [EmployeeController::class, 'getNextEmployeeId'])->name('employee.nextEmployeeId');
 
-    Route::get('/employee/create', [EmployeeController::class, 'createEmployee'])->name('employee.create');
+    Route::post('/employee/create', [EmployeeController::class, 'createEmployee'])->name('employee.create');
     Route::get('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');
     Route::delete('/employee/delete/{id}', [EmployeeController::class, 'deleteEmployee'])->name('employee.delete');
     Route::get('/employees', [EmployeeController::class, 'getAllEmployees'])->name('employee.all');

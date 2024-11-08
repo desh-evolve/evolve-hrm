@@ -24,7 +24,9 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <form action="#" class="form-steps" autocomplete="off">
+                <form action="{{ url('/employee/create') }}" method="POST" class="form-steps" autocomplete="on" enctype="multipart/form-data">
+                    @csrf
+
                     <div class="card-header">
                         <div class="step-arrow-nav mb-4">
                             <ul class="nav nav-pills custom-nav nav-justified" role="tablist">
@@ -32,7 +34,7 @@
                                     <button class="nav-link active" id="steparrow-basic-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-basic-info" type="button" role="tab" aria-controls="steparrow-basic-info" aria-selected="true">Employee Identification</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="steparrow-gen-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-contact-info" type="button" role="tab" aria-controls="steparrow-contact-info" aria-selected="true">Contact Information</button>
+                                    <button class="nav-link" id="steparrow-contact-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-contact-info" type="button" role="tab" aria-controls="steparrow-contact-info" aria-selected="true">Contact Information</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="steparrow-document-info-tab" data-bs-toggle="pill" data-bs-target="#steparrow-document-info" type="button" role="tab" aria-controls="steparrow-document-info" aria-selected="false">Documents</button>
@@ -45,7 +47,7 @@
 
                             <!-- start employee identification tab pane -->
                             <div class="tab-pane fade show active" id="steparrow-basic-info" role="tabpanel" aria-labelledby="steparrow-basic-info-tab">
-                                <div class="row border-bottom">
+                                <div class="row">
                                     <div class="col-lg-6 border-end">
                                         <div class="row">
                                             <div class="col-lg-6">
@@ -57,8 +59,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label req" for="punch_machine_user_id">Punch Machine User ID</label>
-                                                    <input type="text" class="form-control" id="punch_machine_user_id" name="punch_machine_user_id" placeholder="Enter Punch Machine User ID" required />
+                                                    <label class="form-label" for="punch_machine_user_id">Punch Machine User ID</label>
+                                                    <input type="text" class="form-control" id="punch_machine_user_id" name="punch_machine_user_id" placeholder="Enter Punch Machine User ID" />
                                                     <div class="invalid-feedback">Please enter a punch machine user ID</div>
                                                 </div>
                                             </div>
@@ -140,9 +142,7 @@
                                             </div>
                                             
                                         </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <div class="row border-bottom">
+                                        <div class="row border-top pt-2">
                                             <div class="col-lg-6 border-end">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="appointment_date">Appointment Date</label>
@@ -168,6 +168,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="col-lg-6">
 
                                         <div class="row">
                                             <div class="col-lg-6">
@@ -187,10 +189,10 @@
                                             </div>
                                         </div>
 
-                                        <div class="row border-top">
+                                        <div class="row border-bottom">
                                             <div class="col-lg-6">
                                                 <div class="mt-3 mb-3">
-                                                    <label class="form-label" for="employee_status">Basis of Employment</label>
+                                                    <label class="form-label req" for="employee_status">Basis of Employment</label>
                                                     <div id="employment_types">
                                                         
                                                     </div>
@@ -206,37 +208,37 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <label class="form-label req" for="permission_group_id">Permission Group</label>
-                                            <select class="form-select" id="permission_group_id" name="permission_group_id" required>
-                                                <option value="">Select</option>
-                                            </select>
-                                            <div class="invalid-feedback">Please enter a permission group</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <label class="form-label req" for="email">Email</label>
-                                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required autocomplete="new-password" >
-                                            <div class="invalid-feedback">Please enter an email address</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <label class="form-label req" for="password">Password</label>
-                                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required autocomplete="new-password" >
-                                            <div class="invalid-feedback">Please enter a password</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-                                            <label class="form-label req" for="confirm_password">Confirm Password</label>
-                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter confirm password" required >
-                                            <div class="invalid-feedback">Please enter a confirm password</div>
+                                        <div class="row mt-3">
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label req" for="permission_group_id">Permission Group</label>
+                                                    <select class="form-select" id="permission_group_id" name="permission_group_id" required>
+                                                        <option value="">Select</option>
+                                                    </select>
+                                                    <div class="invalid-feedback">Please enter a permission group</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label req" for="email">Email</label>
+                                                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required autocomplete="new-password" >
+                                                    <div class="invalid-feedback">Please enter an email address</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label req" for="password">Password</label>
+                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required autocomplete="new-password" >
+                                                    <div class="invalid-feedback">Please enter a password</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label req" for="confirm_password">Confirm Password</label>
+                                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter confirm password" required >
+                                                    <div class="invalid-feedback">Please enter a confirm password</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -364,6 +366,12 @@
                                                     <label class="form-label" for="contact_2">Contact 2</label>
                                                     <input type="text" class="form-control" id="contact_2" name="contact_2" placeholder="Enter Contact 2" />
                                                     <div class="invalid-feedback">Please enter a contact number</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="employee_photo">Employee Photo</label>
+                                                    <input type="file" class="form-control" id="employee_photo" name="employee_photo" />
                                                 </div>
                                             </div>
                                         </div>
@@ -530,8 +538,9 @@
                                 </table>
 
                                 <div class="d-flex align-items-start gap-3 mt-4">
+                                    <input type="hidden" name="employee_id" id="employee_id" />
                                     <button type="button" class="btn btn-light btn-label previestab" data-previous="steparrow-gen-info-tab"><i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to General</button>
-                                    <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="pills-experience-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Submit</button>
+                                    <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab emp_form_submit" data-nexttab="steparrow-document-info-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Submit</button>
                                 </div>
                             </div>
                             <!-- end tab pane -->

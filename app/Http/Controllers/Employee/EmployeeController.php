@@ -158,11 +158,11 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-
     public function createEmployee(Request $request)
     {
         try {
             return DB::transaction(function () use ($request) {
+                // Validate input fields
                 $request->validate([
                     'user_id' => 'required|integer',
                     'title' => 'required|string|max:20',
@@ -177,7 +177,7 @@ class EmployeeController extends Controller
                     'country_id' => 'required|integer',
                     'province_id' => 'required|integer',
                     'city_id' => 'required|integer',
-                    'postal_code' => 'nullable|string|max:255',
+                    'postal_code' => 'nullable|string|max:25',
                     'contact_1' => 'required|string|max:20',
                     'contact_2' => 'nullable|string|max:20',
                     'work_contact' => 'nullable|string|max:20',
@@ -210,9 +210,9 @@ class EmployeeController extends Controller
                     'currency_id' => 'nullable|integer',
                     'pay_period_id' => 'nullable|integer',
                     'role_id' => 'nullable|integer',
-                    'email' => 'required|email|max:255|unique:users,email', // Validate email in users table
+                    'email' => 'required|email|max:255|unique:users,email',
                 ]);
-
+    
                 // Check if employee with the given work_email already exists
                 if (
                     ($request->work_email && DB::table('emp_employees')->where('work_email', $request->work_email)->exists()) ||
@@ -220,23 +220,22 @@ class EmployeeController extends Controller
                 ) {
                     return response()->json(['status' => 'error', 'message' => 'Employee with this email already exists'], 409);
                 }
-
+    
+                // Prepare user data and insert into the 'users' table
                 $table = 'users';
-
                 $userArr = [
                     'name' => $request->full_name,
                     'email' => $request->email,
-                    'password' => Hash::make($request->password ?? 'password'),
+                    'password' => Hash::make($request->password ?? 'password'), // Default password should be more secure
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
-
+    
                 $userId = $this->common->commonSave($table, $userArr);
-
+    
                 if ($userId) {
-
+                    // Prepare employee data and insert into the 'emp_employees' table
                     $table = 'emp_employees';
-
                     $inputArr = [
                         'user_id' => $userId,
                         'title' => $request->title,
@@ -284,14 +283,12 @@ class EmployeeController extends Controller
                         'currency_id' => $request->currency_id,
                         'pay_period_id' => $request->pay_period_id,
                         'role_id' => $request->role_id,
-
-                        'status' => $request->employee_status,
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ];
-
+    
                     $insertId = $this->common->commonSave($table, $inputArr);
-
+    
                     return response()->json(['status' => 'success', 'message' => 'Employee added successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
                     return response()->json(['status' => 'error', 'message' => 'Failed to add Employee'], 500);
@@ -301,6 +298,8 @@ class EmployeeController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage()], 500);
         }
     }
+    
+
     public function updateEmployeeDesignation(Request $request, $id)
     {
         try {
