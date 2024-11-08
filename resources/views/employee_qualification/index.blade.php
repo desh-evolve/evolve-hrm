@@ -137,8 +137,8 @@
                     <td>${item.institute}</td>
                     <td>${item.year}</td>
                     <td>${item.remarks}</td>
-                    <td class="text-capitalize">${item.status === 'active' 
-                        ? `<span class="badge border border-success text-success">${item.status}</span>` 
+                    <td class="text-capitalize">${item.status === 'active'
+                        ? `<span class="badge border border-success text-success">${item.status}</span>`
                         : `<span class="badge border border-warning text-warning">${item.status}</span>`}</td>
                     <td>
                         <button type="button" class="btn btn-info waves-effect waves-light btn-sm click-edit-qualification" title="Edit" data-tooltip="tooltip" data-bs-placement="top">
@@ -222,8 +222,8 @@
                 } else {
                     $('#error-msg').html(''); // Clear error message if no issues
                 }
-                console.log('Remarks:', remarks); 
-                
+                console.log('Remarks:', remarks);
+
                 formData.append('employee_id', employeeId);
                 formData.append('qualification', qualification);
                 formData.append('institute', institute);
@@ -306,5 +306,14 @@
                 $('#qualification_status').val('active'); // Reset status to default
                 $('#error-msg').html(''); // Clear error messages
             }
+
+
+
+
+
+
         </script>
+
+
+
 </x-app-layout>
