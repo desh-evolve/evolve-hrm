@@ -17,10 +17,10 @@ class IndustryController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user', ['only' => ['index']]);
-        $this->middleware('permission:create user', ['only' => ['create','store']]);
-        $this->middleware('permission:update user', ['only' => ['update','edit']]);
-        $this->middleware('permission:delete user', ['only' => ['destroy']]);
+        $this->middleware('permission:view industry', ['only' => ['index']]);
+        $this->middleware('permission:create industry', ['only' => ['create','store']]);
+        $this->middleware('permission:update industry', ['only' => ['update','edit']]);
+        $this->middleware('permission:delete industry', ['only' => ['destroy']]);
 
         $this->industry = new Industry();
         $this->common = new CommonModel();

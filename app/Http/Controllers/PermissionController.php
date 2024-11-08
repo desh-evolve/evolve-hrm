@@ -30,24 +30,31 @@ class PermissionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'unique:permissions,name'
-            ],
             'type' => [
                 'required',
-                'string'
-            ]
+                'string',
+            ],
+            'names' => [
+                'required',
+                'array',
+                'min:1', // Ensure there is at least one permission
+            ],
+            'names.*' => [
+                'required',
+                'string',
+                'unique:permissions,name',
+            ],
         ]);
-
-        Permission::create([
-            'name' => $request->name,
-            'type' => $request->type, 
-        ]);
-
-        return redirect('permissions')->with('status','Permission Created Successfully');
-    }
+    
+        foreach ($request->names as $name) {
+            Permission::create([
+                'name' => $name,
+                'type' => $request->type,
+            ]);
+        }
+    
+        return redirect('permissions')->with('status', 'Permissions Created Successfully');
+    }       
 
     public function edit(Permission $permission)
     {

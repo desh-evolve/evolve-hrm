@@ -45,7 +45,22 @@ class EmployeeController extends Controller
 
     public function getEmployeeDropdownData(){
         $branches = $this->common->commonGetAll('com_branches', '*');
-        $departments = $this->common->commonGetAll('com_departments', '*');
+
+        // Define connections to other tables
+        $connections = [
+            'com_branch_departments' => [
+                'con_fields' => ['branch_id', 'department_id', 'branch_name'],  // Fields to select from connected table
+                'con_where' => ['com_branch_departments.department_id' => 'id'],  // Link to the main table (department_id)
+                'con_joins' => [
+                    'com_branches' => ['com_branches.id', '=', 'com_branch_departments.branch_id'],
+                ],
+                'con_name' => 'branch_departments',  // Alias to store connected data in the result
+                'except_deleted' => false,  // Filter out soft-deleted records
+            ],
+        ];
+    
+        // Fetch the department with connections
+        $departments = $this->common->commonGetAll('com_departments', ['com_departments.*'], [], [], false, $connections);
         $employee_groups = $this->common->commonGetAll('com_employee_groups', '*');
         $employee_designations = $this->common->commonGetAll('com_employee_designations', '*');
         //policy groups => create table
@@ -103,6 +118,14 @@ class EmployeeController extends Controller
         $countries = $this->common->commonGetAll('loc_countries', '*');
         $provinces = $this->common->commonGetAll('loc_provinces', '*');
         $cities = $this->common->commonGetAll('loc_cities', '*');
+
+        $doc_types = [
+            [ 'id' => 1, 'name' => 'GS Certificate' ],
+            [ 'id' => 2, 'name' => 'Doc 2' ],
+            [ 'id' => 3, 'name' => 'Doc 3' ],
+            [ 'id' => 4, 'name' => 'Doc 4' ],
+        ];
+
         return response()->json([
             'data' => [
                 'branches' => $branches,
@@ -111,6 +134,7 @@ class EmployeeController extends Controller
                 'employee_designations' => $employee_designations,
                 'policy_groups' => $policy_groups,
                 'employee_status' => $employee_status,
+                'currencies' => $currencies,
                 'pay_period' => $pay_period,
                 'roles' => $roles,
                 'religion' => $religion,
@@ -118,9 +142,22 @@ class EmployeeController extends Controller
                 'countries' => $countries,
                 'provinces' => $provinces,
                 'cities' => $cities,
+                'doc_types' => $doc_types,
             ]
         ], 200);
     }
+
+    public function getNextEmployeeId()
+    {
+        // Using raw SQL to get the next auto-increment ID
+        $nextId = DB::select("SHOW TABLE STATUS LIKE 'emp_employees'")[0]->Auto_increment;
+
+        // Return the next ID
+        return response()->json([
+            'data' => $nextId
+        ], 200);
+    }
+
 
     public function createEmployee(Request $request)
     {

@@ -138,6 +138,11 @@
                                     Employee Promotion
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_family.index') }}" class="nav-link {{ request()->routeIs('company.employee_family.index') ? 'active' : '' }}">
+                                    Employee Family
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
@@ -213,6 +218,11 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route('company.currency.index') }}" class="nav-link {{ request()->routeIs('company.currency.index') ? 'active' : '' }}">
+                                    Currencies
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('company.info') }}" class="nav-link {{ request()->routeIs('company.info') ? 'active' : '' }}">
                                     Company Information
                                 </a>
@@ -235,11 +245,6 @@
                             <li class="nav-item">
                                 <a href="{{ route('company.wagegroups.index') }}" class="nav-link {{ request()->routeIs('company.wagegroups.index') ? 'active' : '' }}">
                                     Wage Groups
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('company.currency.index') }}" class="nav-link {{ request()->routeIs('company.currency.index') ? 'active' : '' }}">
-                                    Currencies
                                 </a>
                             </li>
 

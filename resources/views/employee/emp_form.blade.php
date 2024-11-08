@@ -50,22 +50,22 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="employee_no">Employee Number</label>
-                                                    <input type="text" class="form-control" id="employee_no" placeholder="Enter Employee Number" />
+                                                    <label class="form-label req" for="employee_no">Employee Number</label>
+                                                    <input type="text" class="form-control" id="employee_no" name="employee_no" placeholder="Enter Employee Number" required />
                                                     <div class="invalid-feedback">Please enter an employee number</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="punch_machine_user_id">Punch Machine User ID</label>
-                                                    <input type="text" class="form-control" id="punch_machine_user_id" placeholder="Enter Punch Machine User ID" />
+                                                    <label class="form-label req" for="punch_machine_user_id">Punch Machine User ID</label>
+                                                    <input type="text" class="form-control" id="punch_machine_user_id" name="punch_machine_user_id" placeholder="Enter Punch Machine User ID" required />
                                                     <div class="invalid-feedback">Please enter a punch machine user ID</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Branch</label>
-                                                    <select class="form-select" id="branch_id">
+                                                    <label class="form-label req" for="branch_id">Branch</label>
+                                                    <select class="form-select" id="branch_id" name="branch_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter a branch</div>
@@ -73,8 +73,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="department_id">Department</label>
-                                                    <select class="form-select" id="department_id">
+                                                    <label class="form-label req" for="department_id">Department</label>
+                                                    <select class="form-select" id="department_id" name="department_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter a department</div>
@@ -82,8 +82,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="employment_group_id">Employment Group</label>
-                                                    <select class="form-select" id="employment_group_id">
+                                                    <label class="form-label req" for="employment_group_id">Employment Group</label>
+                                                    <select class="form-select" id="employment_group_id" name="employment_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter an employment group</div>
@@ -91,8 +91,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="designation_id">Designation</label>
-                                                    <select class="form-select" id="designation_id">
+                                                    <label class="form-label req" for="designation_id">Designation</label>
+                                                    <select class="form-select" id="designation_id" name="designation_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter a designation</div>
@@ -100,8 +100,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="policy_group_id">Policy Group</label>
-                                                    <select class="form-select" id="policy_group_id">
+                                                    <label class="form-label req" for="policy_group_id">Policy Group</label>
+                                                    <select class="form-select" id="policy_group_id" name="policy_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter a policy_group</div>
@@ -109,8 +109,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="employee_status">Employee Status</label>
-                                                    <select class="form-select" id="employee_status">
+                                                    <label class="form-label req" for="employee_status">Employee Status</label>
+                                                    <select class="form-select" id="employee_status" name="employee_status" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter an employee status</div>
@@ -121,8 +121,8 @@
                                         <div class="row">    
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="currency_id">Currency</label>
-                                                    <select class="form-select" id="currency_id">
+                                                    <label class="form-label req" for="currency_id">Currency</label>
+                                                    <select class="form-select" id="currency_id" name="currency_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter a currency</div>
@@ -131,8 +131,8 @@
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="pay_period_schedule_id">Pay Period Schedule</label>
-                                                    <select class="form-select" id="pay_period_schedule_id">
+                                                    <label class="form-label req" for="pay_period_schedule_id">Pay Period Schedule</label>
+                                                    <select class="form-select" id="pay_period_schedule_id" name="pay_period_schedule_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter a Pay Period</div>
@@ -145,25 +145,25 @@
                                         <div class="row border-bottom">
                                             <div class="col-lg-6 border-end">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="appointment_date">Appointment Date</label>
-                                                    <input type="date" class="form-control" id="appointment_date" />
+                                                    <label class="form-label req" for="appointment_date">Appointment Date</label>
+                                                    <input type="date" class="form-control" id="appointment_date" name="appointment_date" required />
                                                     <div class="invalid-feedback">Please enter an appointment date</div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="appointment_note">Appointment Note</label>
-                                                    <textarea class="form-control" id="appointment_note" placeholder="Enter Appointment Note"></textarea>
+                                                    <textarea class="form-control" id="appointment_note" name="appointment_note" placeholder="Enter Appointment Note"></textarea>
                                                     <div class="invalid-feedback">Please enter an appointment note</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="termination_date">Termination Date</label>
-                                                    <input type="date" class="form-control" id="termination_date" />
+                                                    <input type="date" class="form-control" id="termination_date" name="termination_date" />
                                                     <div class="invalid-feedback">Please enter an termination date</div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="termination_note">Termination Note</label>
-                                                    <textarea class="form-control" id="termination_note" placeholder="Enter Termination Note"></textarea>
+                                                    <textarea class="form-control" id="termination_note" name="termination_note" placeholder="Enter Termination Note"></textarea>
                                                     <div class="invalid-feedback">Please enter an termination note</div>
                                                 </div>
                                             </div>
@@ -173,7 +173,7 @@
                                             <div class="col-lg-6">
                                                 <div class="mt-3 mb-3">
                                                     <label class="form-label" for="confirmed_date">Confirmed Date</label>
-                                                    <input type="date" class="form-control" id="confirmed_date" />
+                                                    <input type="date" class="form-control" id="confirmed_date" name="confirmed_date" />
                                                     <div class="invalid-feedback">Please enter a confirmed date</div>
                                                 </div>
                                             </div>
@@ -181,7 +181,7 @@
                                             <div class="col-lg-6">
                                                 <div class="mt-3 mb-3">
                                                     <label class="form-label" for="retirement_date">Retirement Date</label>
-                                                    <input type="date" class="form-control" id="retirement_date" />
+                                                    <input type="date" class="form-control" id="retirement_date" name="retirement_date" />
                                                     <div class="invalid-feedback">Please enter a retirement date</div>
                                                 </div>
                                             </div>
@@ -191,32 +191,8 @@
                                             <div class="col-lg-6">
                                                 <div class="mt-3 mb-3">
                                                     <label class="form-label" for="employee_status">Basis of Employment</label>
-                                                    <div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="employment_type" id="contract" value="Contract">
-                                                            <label class="form-check-label" for="contract">Contract</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="employment_type" id="training" value="Training">
-                                                            <label class="form-check-label" for="training">Training</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="employment_type" id="permanentProbation" value="PermanentProbation">
-                                                            <label class="form-check-label" for="permanentProbation">Permanent (With Probation)</label>
-                                                        </div>
-                                                        <hr class="mt-1 mb-1">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="employment_type" id="permanentConfirmed" value="PermanentConfirmed">
-                                                            <label class="form-check-label" for="permanentConfirmed">Permanent (Confirmed)</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="employment_type" id="resign" value="Resign">
-                                                            <label class="form-check-label" for="resign">Resign</label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="employment_type" id="external" value="External">
-                                                            <label class="form-check-label" for="external">External</label>
-                                                        </div>
+                                                    <div id="employment_types">
+                                                        
                                                     </div>
                                                     <div class="invalid-feedback">Please enter an employee status</div>
                                                 </div>
@@ -235,8 +211,8 @@
                                 <div class="row mt-3">
                                     <div class="col-lg-3">
                                         <div class="mb-3">
-                                            <label class="form-label" for="permission_group_id">Permission Group</label>
-                                            <select class="form-select" id="permission_group_id">
+                                            <label class="form-label req" for="permission_group_id">Permission Group</label>
+                                            <select class="form-select" id="permission_group_id" name="permission_group_id" required>
                                                 <option value="">Select</option>
                                             </select>
                                             <div class="invalid-feedback">Please enter a permission group</div>
@@ -244,22 +220,22 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="mb-3">
-                                            <label class="form-label" for="email">Email</label>
-                                            <input type="email" class="form-control" id="email" placeholder="Enter email" required autocomplete="new-password" >
+                                            <label class="form-label req" for="email">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required autocomplete="new-password" >
                                             <div class="invalid-feedback">Please enter an email address</div>
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="mb-3">
-                                            <label class="form-label" for="password">Password</label>
-                                            <input type="password" class="form-control" id="password" placeholder="Enter password" required autocomplete="new-password" >
+                                            <label class="form-label req" for="password">Password</label>
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required autocomplete="new-password" >
                                             <div class="invalid-feedback">Please enter a password</div>
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="mb-3">
-                                            <label class="form-label" for="confirm_password">Confirm Password</label>
-                                            <input type="password" class="form-control" id="confirm_password" placeholder="Enter confirm password" required >
+                                            <label class="form-label req" for="confirm_password">Confirm Password</label>
+                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter confirm password" required >
                                             <div class="invalid-feedback">Please enter a confirm password</div>
                                         </div>
                                     </div>
@@ -277,8 +253,8 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="title">Title</label>
-                                                    <select class="form-select" id="title">
+                                                    <label class="form-label req" for="title">Title</label>
+                                                    <select class="form-select" id="title" name="title" required>
                                                         <option value="">Select</option>
                                                         <option value="Mr">Mr</option>
                                                         <option value="Mrs">Mrs</option>
@@ -290,104 +266,104 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="name_with_initials">Name with initials</label>
-                                                    <input type="text" class="form-control" id="name_with_initials" placeholder="Enter Name with initials" />
+                                                    <label class="form-label req" for="name_with_initials">Name with initials</label>
+                                                    <input type="text" class="form-control" id="name_with_initials" name="name_with_initials" placeholder="Enter Name with initials" required />
                                                     <div class="invalid-feedback">Please enter name with initials</div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="first_name">First Name</label>
-                                                    <input type="text" class="form-control" id="first_name" placeholder="Enter First Name" />
+                                                    <label class="form-label req" for="first_name">First Name</label>
+                                                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter First Name" required />
                                                     <div class="invalid-feedback">Please enter first name</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="last_name">Last Name</label>
-                                                    <input type="text" class="form-control" id="last_name" placeholder="Enter Last Name" />
+                                                    <label class="form-label req" for="last_name">Last Name</label>
+                                                    <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter Last Name" required />
                                                     <div class="invalid-feedback">Please enter last name</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="full_name">Full Name</label>
-                                                    <textarea class="form-control" id="full_name" placeholder="Enter Full Name" ></textarea>
+                                                    <label class="form-label req" for="full_name">Full Name</label>
+                                                    <textarea class="form-control" id="full_name" name="full_name" placeholder="Enter Full Name" required ></textarea>
                                                     <div class="invalid-feedback">Please enter full name</div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">DOB</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter full name</div>
+                                                    <label class="form-label req" for="dob">DOB</label>
+                                                    <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter DOB" required />
+                                                    <div class="invalid-feedback">Please enter date of birth</div>
                                                 </div>
                                             </div>
                                             
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">NIC</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter full name</div>
+                                                    <label class="form-label req" for="nic">NIC</label>
+                                                    <input type="text" class="form-control" id="nic" name="nic" placeholder="Enter NIC" required />
+                                                    <div class="invalid-feedback">Please enter NIC</div>
                                                 </div>
                                             </div>
                                             
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="employee_status">Gender</label>
-                                                    <select class="form-select" id="title">
+                                                    <label class="form-label req" for="gender">Gender</label>
+                                                    <select class="form-select" id="gender" name="gender" required>
                                                         <option value="">Select</option>
                                                         <option value="male">Male</option>
                                                         <option value="female">Female</option>
                                                         <option value="other">Other</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter full name</div>
+                                                    <div class="invalid-feedback">Please select gender</div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="title">Religion</label>
-                                                    <select class="form-select" id="title">
+                                                    <label class="form-label" for="religion_id">Religion</label>
+                                                    <select class="form-select" id="religion_id" name="religion_id">
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <div class="invalid-feedback">Please select religion</div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="title">Marital Status</label>
-                                                    <select class="form-select" id="title">
+                                                    <label class="form-label" for="marital_status">Marital Status</label>
+                                                    <select class="form-select" id="marital_status" name="marital_status">
                                                         <option value="">Select</option>
                                                         <option value="single">Single</option>
                                                         <option value="married">Married</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <div class="invalid-feedback">Please select marital status</div>
                                                 </div>
                                             </div>
                                             
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Personal Email</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label req" for="personal_email">Personal Email</label>
+                                                    <input type="text" class="form-control" id="personal_email" name="personal_email" placeholder="Enter Personal Email" required />
+                                                    <div class="invalid-feedback">Please enter an email</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Contact 1</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label req" for="contact_1">Contact 1</label>
+                                                    <input type="text" class="form-control" id="contact_1" name="contact_1" placeholder="Enter Contact 1" required />
+                                                    <div class="invalid-feedback">Please enter a contact number</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Contact 2</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label" for="contact_2">Contact 2</label>
+                                                    <input type="text" class="form-control" id="contact_2" name="contact_2" placeholder="Enter Contact 2" />
+                                                    <div class="invalid-feedback">Please enter a contact number</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -397,105 +373,105 @@
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Address Line 1</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label req" for="address_1">Address Line 1</label>
+                                                    <input type="text" class="form-control" id="address_1" name="address_1" placeholder="Enter Address Line 1" required />
+                                                    <div class="invalid-feedback">Please enter a address</div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Address Line 2</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label" for="address_2">Address Line 2</label>
+                                                    <input type="text" class="form-control" id="address_2" name="address_2" placeholder="Enter Address Line 2" />
+                                                    <div class="invalid-feedback">Please enter a address</div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Address Line 3</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label" for="address_3">Address Line 3</label>
+                                                    <input type="text" class="form-control" id="address_3" name="address_3" placeholder="Enter Address Line 3" />
+                                                    <div class="invalid-feedback">Please enter a address</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Postal Code</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label" for="postal_code">Postal Code</label>
+                                                    <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="Enter Postal Code" />
+                                                    <div class="invalid-feedback">Please enter a postal code</div>
                                                 </div>
                                             </div>
                                             
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="title">Country</label>
-                                                    <select class="form-select" id="title">
+                                                    <label class="form-label req" for="country_id">Country</label>
+                                                    <select class="form-select" id="country_id" name="country_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <div class="invalid-feedback">Please select a country</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="title">Province</label>
-                                                    <select class="form-select" id="title">
+                                                    <label class="form-label req" for="province_id">Province</label>
+                                                    <select class="form-select" id="province_id" name="province_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <div class="invalid-feedback">Please select a province</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="title">City</label>
-                                                    <select class="form-select" id="title">
+                                                    <label class="form-label req" for="city_id">City</label>
+                                                    <select class="form-select" id="city_id" name="city_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <div class="invalid-feedback">Please select a city</div>
                                                 </div>
                                             </div>
                                             <hr>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Work Email</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label" for="work_email">Work Email</label>
+                                                    <input type="text" class="form-control" id="work_email" name="work_email" placeholder="Enter Work Email" />
+                                                    <div class="invalid-feedback">Please enter work email</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Work Contact</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Immediate Contact Person</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Immediate Contact No</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">Home Contact</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
+                                                    <label class="form-label" for="work_contact">Work Contact</label>
+                                                    <input type="text" class="form-control" id="work_contact" name="work_contact" placeholder="Enter Work Contact" />
                                                     <div class="invalid-feedback">Please enter a title</div>
                                                 </div>
                                             </div>
                                             
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="branch_id">EPF Reg No</label>
-                                                    <input type="text" class="form-control" id="full_name" placeholder="Enter Full Name" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <label class="form-label" for="immediate_contact_person">Immediate Contact Person</label>
+                                                    <input type="text" class="form-control" id="immediate_contact_person" name="immediate_contact_person" placeholder="Enter Immediate Contact Person" />
+                                                    <div class="invalid-feedback">Please enter an immediate contact person</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="immediate_contact_no">Immediate Contact No</label>
+                                                    <input type="text" class="form-control" id="immediate_contact_no" name="immediate_contact_no" placeholder="Enter Immediate Contact No" />
+                                                    <div class="invalid-feedback">Please enter an immediate contact number</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="home_contact">Home Contact</label>
+                                                    <input type="text" class="form-control" id="home_contact" name="home_contact" placeholder="Enter Home Contact" />
+                                                    <div class="invalid-feedback">Please enter home contact</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="epf_no">EPF Reg No</label>
+                                                    <input type="text" class="form-control" id="epf_no" name="epf_no" placeholder="Enter EPF Reg No" />
+                                                    <div class="invalid-feedback">Please enter EPF Reg No</div>
                                                 </div>
                                             </div>
 
@@ -514,35 +490,27 @@
                                 <div class="row">
                                     <div class="col-lg-3">
                                         <div class="mb-3">
-                                            <label class="form-label" for="title">Document Type</label>
-                                            <select class="form-select" id="title">
+                                            <label class="form-label" for="doc_type_id">Document Type</label>
+                                            <select class="form-select" id="doc_type_id">
                                                 <option value="">Select</option>
-                                                <option value="1">Appointment Letter</option>
-                                                <option value="2">Personal Files</option>
-                                                <option value="3">ID Copy</option>
-                                                <option value="4">Birth Certificate</option>
-                                                <option value="5">GS Letter</option>
-                                                <option value="6">Police Report</option>
-                                                <option value="7">NDA</option>
-                                                <option value="8">Bond</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="mb-3">
-                                            <label class="form-label" for="name_with_initials">Title</label>
-                                            <input type="text" class="form-control" id="name_with_initials" placeholder="Enter Document Title" />
+                                            <label class="form-label" for="doc_title">Title</label>
+                                            <input type="text" class="form-control" id="doc_title" placeholder="Enter Document Title" />
                                         </div>
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="mb-3">
-                                            <label for="formFile" class="form-label">Select File</label>
-                                            <input class="form-control" type="file" id="formFile" />
+                                            <label for="doc_file" class="form-label">Select File</label>
+                                            <input class="form-control" type="file" id="doc_file" />
                                         </div>
                                     </div>
                                     <div class="col-lg-2 d-flex align-items-end mb-3">
                                         <div>
-                                            <button class="btn btn-primary"><i class="ri-add-line"></i></button>
+                                            <button type="button" class="btn btn-primary add_doc_to_list"><i class="ri-add-line"></i></button>
                                         </div>
                                     </div>
                                 </div>
@@ -550,7 +518,6 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
                                             <th>Document Type</th>
                                             <th>Document Title</th>
                                             <th>Document</th>
@@ -558,23 +525,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="document_tbody">
-                                        <tr>
-                                            <td colspan="5" class="text-center">No Documents Selected</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Appointment Letter</td>
-                                            <td>Appointment Letter</td>
-                                            <td>file.pdf</td>
-                                            <td>
-                                                <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_download_document" title="Download Document" data-tooltip="tooltip" data-bs-placement="top">
-                                                    <i class="ri-download-2-line"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_document" title="Remove Document" data-tooltip="tooltip" data-bs-placement="top">
-                                                    <i class="ri-delete-bin-fill"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        <!-- Documents will be appended here -->
                                     </tbody>
                                 </table>
 

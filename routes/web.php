@@ -19,6 +19,7 @@ use App\Http\Controllers\Employee\JobHistoryController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeWorkExperienceController;
 use App\Http\Controllers\Employee\EmployeePromotionController;
+use App\Http\Controllers\Employee\EmployeeFamilyController;
 
 
 Route::get('/', function () {
@@ -202,10 +203,21 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::post('/company/employee_promotion/create', [EmployeePromotionController::class, 'createEmployeePromotion'])->name('company.employee_promotion.create');
     Route::put('/company/employee_promotion/update/{id}', [EmployeePromotionController::class, 'updateEmployeePromotion'])->name('company.employee_promotion.update');
     Route::delete('/company/employee_promotion/delete/{id}', [EmployeePromotionController::class, 'deleteEmployeePromotion'])->name('company.employee_promotion.delete');
-    Route::get('/company/employee_promotion/{id}', [EmployeePromotionController::class, 'getSingleEmployeePromotion'])->name('company.employee_promotion.single');
+    Route::get('/company/single_employee_promotion/{id}', [EmployeePromotionController::class, 'getSingleEmployeePromotion'])->name('company.employee_promotion.single');
     Route::get('/company/employee_promotion/dropdown', [EmployeePromotionController::class, 'getEmployeeList'])->name('company.employee_promotion.dropdown');
     Route::get('/company/employee_promotion/{id}', [EmployeePromotionController::class, 'getEmployeePromotioneById'])->name('company.employee_promotion.getById');
 
+
+     // Employee employee_promotion  routes
+     Route::get('/company/employee_family/index', [EmployeeFamilyController::class, 'index'])->name('company.employee_family.index');
+    
+     Route::post('/company/employee_family/create', [EmployeeFamilyController::class, 'createEmployeeFamily'])->name('company.employee_family.create');
+     Route::put('/company/employee_family/update/{id}', [EmployeeFamilyController::class, 'updateEmployeeFamily'])->name('company.employee_family.update');
+     Route::delete('/company/employee_family/delete/{id}', [EmployeeFamilyController::class, 'deleteEmployeeFamily'])->name('company.employee_family.delete');
+     Route::get('/company/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
+     Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
+     Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
+ 
     //==============================================================================================================================
     // Employee Job History
     //==============================================================================================================================
@@ -228,6 +240,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/form', [EmployeeController::class, 'employee_form'])->name('employee.form');
     Route::get('/employee/profile', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
     Route::get('/employee/dropdown', [EmployeeController::class, 'getEmployeeDropdownData'])->name('employee.dropdown');
+    Route::get('/employee/next_employee_id', [EmployeeController::class, 'getNextEmployeeId'])->name('employee.nextEmployeeId');
 
     Route::get('/employee/create', [EmployeeController::class, 'createEmployee'])->name('employee.create');
     Route::get('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');
