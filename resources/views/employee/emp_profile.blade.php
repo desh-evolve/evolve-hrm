@@ -14,11 +14,11 @@
             </div>
             <div class="col">
                 <div class="p-2">
-                    <h3 class="text-white mb-1">Deshan Dissanayake</h3>
-                    <p class="text-white text-opacity-75">Admin</p>
+                    <h3 class="text-white mb-1" id="title-name"></h3>
+                    <p class="text-white text-opacity-75" id="title-role"></p>
                     <div class="text-white-50 gap-1">
-                        <div><i class="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>Evolve Technologies Pvt Ltd - Colombo Branch</div>
-                        <div class="me-2"><i class="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>Evolve Tower, 82 W A D Ramanayake Mawatha, Colombo</div>
+                        <div class="me-2"><i class="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle" id="title-company"></i></div>
+                        <div class="me-2"><i class="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-16 align-middle" id="title-company-address"></i></div>
                     </div>
                 </div>
             </div>
@@ -27,7 +27,7 @@
                     <div class="col-lg-12 col-12">
                         <div class="p-2">
                             <p class="fs-14 mb-0">Employee No</p>
-                            <h4 class="text-white mb-1">#243</h4>
+                            <h4 class="text-white mb-1" id="title-employee-no">#243</h4>
                         </div>
                     </div>
                 </div>
@@ -120,199 +120,192 @@
                     <div class="tab-pane active" id="overview-tab" role="tabpanel">
                         <div class="row">
                             <div class="col-xxl-6">
-
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Basic Contact Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0">
+                                            <table class="table table-bordered mb-0" id="basic-contact-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Name :</th>
-                                                        <td class="text-muted">Mr Deshan Dissanayake</td>
+                                                        <td class="text-muted" id="name">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Full Name :</th>
-                                                        <td class="text-muted">Deshan Dissanayake</td>
+                                                        <td class="text-muted" id="full-name">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Name with Initials :</th>
-                                                        <td class="text-muted">D.M.D. Dissanayake</td>
+                                                        <td class="text-muted" id="name-initials">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Mobile :</th>
-                                                        <td class="text-muted">+(1) 987 6543 /+(1) 987 6543 </td>
+                                                        <td class="text-muted" id="mobile">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">E-mail :</th>
-                                                        <td class="text-muted">deshan@evolve-sl.com</td>
+                                                        <td class="text-muted" id="email">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Address :</th>
-                                                        <td class="text-muted">No. 123, Kottawa, 10000
-                                                        </td>
+                                                        <td class="text-muted" id="address">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Location :</th>
-                                                        <td class="text-muted">Kottawa, Colombo, Sri Lanka
-                                                        </td>
+                                                        <td class="text-muted" id="location">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">NIC :</th>
-                                                        <td class="text-muted">980456789V</td>
+                                                        <td class="text-muted" id="nic">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">DOB :</th>
-                                                        <td class="text-muted">1998-02-29</td>
+                                                        <td class="text-muted" id="dob">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Gender :</th>
-                                                        <td class="text-muted">Male</td>
+                                                        <td class="text-muted" id="gender">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Religion :</th>
-                                                        <td class="text-muted">None</td>
+                                                        <td class="text-muted" id="religion">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Marital Status :</th>
-                                                        <td class="text-muted">Single</td>
+                                                        <td class="text-muted" id="marital-status">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                    </div><!-- end card body -->
-                                </div><!-- end card -->
-
+                                    </div>
+                                </div>
+                    
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Other Contact Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0">
+                                            <table class="table table-bordered mb-0" id="other-contact-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Work Contact :</th>
-                                                        <td class="text-muted">+(1) 987 6543 /+(1) 987 6543 </td>
+                                                        <td class="text-muted" id="work-contact">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Work E-mail :</th>
-                                                        <td class="text-muted">deshan@evolve-sl.com</td>
+                                                        <td class="text-muted" id="work-email">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Immediate Contact Person :</th>
-                                                        <td class="text-muted">Mr Deshan Dissanayake</td>
+                                                        <td class="text-muted" id="immediate-contact-person">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Immediate Contact :</th>
-                                                        <td class="text-muted">+(1) 987 6543 /+(1) 987 6543 </td>
+                                                        <td class="text-muted" id="immediate-contact">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Home Contact :</th>
-                                                        <td class="text-muted">+(1) 987 6543 /+(1) 987 6543 </td>
+                                                        <td class="text-muted" id="home-contact">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">EPF Reg No :</th>
-                                                        <td class="text-muted">980456789V</td>
+                                                        <td class="text-muted" id="epf-reg-no">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                    </div><!-- end card body -->
-                                </div><!-- end card -->
-
+                                    </div>
+                                </div>
                             </div>
-                            <!--end col-->
+                    
                             <div class="col-xxl-6">
-
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Basic Employment Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0">
+                                            <table class="table table-bordered mb-0" id="basic-employment-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Employee Status :</th>
-                                                        <td class="text-muted"><span class="badge rounded-pill border border-success text-success">Active</span></td>
+                                                        <td class="text-muted" id="employee-status">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Employee Number :</th>
-                                                        <td class="text-muted">245 </td>
+                                                        <td class="text-muted" id="employee-number">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Punch Machine User ID :</th>
-                                                        <td class="text-muted">245</td>
+                                                        <td class="text-muted" id="punch-id">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Branch :</th>
-                                                        <td class="text-muted">Evolve Colombo</td>
+                                                        <td class="text-muted" id="branch">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Department :</th>
-                                                        <td class="text-muted">Software Department </td>
+                                                        <td class="text-muted" id="department">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Employment Group :</th>
-                                                        <td class="text-muted">Permanent Staff </td>
+                                                        <td class="text-muted" id="employment-group">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Designation :</th>
-                                                        <td class="text-muted">Software Engineer</td>
+                                                        <td class="text-muted" id="designation">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Basis of Employment :</th>
-                                                        <td class="text-muted">Permanent (with Probation) </td>
+                                                        <td class="text-muted" id="basis-employment">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Currency :</th>
-                                                        <td class="text-muted">LKR </td>
+                                                        <td class="text-muted" id="currency">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Pay Period Schedule :</th>
-                                                        <td class="text-muted">Monthly </td>
+                                                        <td class="text-muted" id="pay-period">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                    </div><!-- end card body -->
-                                </div><!-- end card -->
-
+                                    </div>
+                                </div>
+                    
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Other Employment Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0">
+                                            <table class="table table-bordered mb-0" id="other-employment-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Appointment Date :</th>
-                                                        <td class="text-muted">2024-10-23 </td>
+                                                        <td class="text-muted" id="appointment-date">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Appointment Note :</th>
-                                                        <td class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Perferendis, mollitia!</td>
+                                                        <td class="text-muted" id="appointment-note">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Termination Date :</th>
-                                                        <td class="text-muted">2024-10-23 </td>
+                                                        <td class="text-muted" id="termination-date">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Termination Note :</th>
-                                                        <td class="text-muted">Lorem ipsum, dolor sit amet consectetur adipisicing.</td>
+                                                        <td class="text-muted" id="termination-note">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Confirmed Date :</th>
-                                                        <td class="text-muted">2024-10-23 </td>
+                                                        <td class="text-muted" id="confirmed-date">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Retirement Date :</th>
-                                                        <td class="text-muted">2024-10-23 </td>
+                                                        <td class="text-muted" id="retirement-date">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                    </div><!-- end card body -->
-                                </div><!-- end card -->
-
+                                    </div>
+                                </div>
                             </div>
-                            <!--end col-->
                         </div>
                         <!--end row-->
                     </div>

@@ -84,8 +84,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label req" for="employment_group_id">Employment Group</label>
-                                                    <select class="form-select" id="employment_group_id" name="employment_group_id" required>
+                                                    <label class="form-label req" for="employee_group_id">Employment Group</label>
+                                                    <select class="form-select" id="employee_group_id" name="employee_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter an employment group</div>
@@ -242,6 +242,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="error-msgs text-end"></div>
                                 <div class="d-flex align-items-start gap-3 mt-4">
                                     <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="steparrow-contact-info-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to contact info</button>
                                 </div>

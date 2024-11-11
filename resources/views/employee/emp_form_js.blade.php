@@ -27,7 +27,7 @@ async function getDropdownData() {
         let empGroupList = (dropdownData?.employee_groups || [])
             .map(empGroup => `<option value="${empGroup.id}">${empGroup.emp_group_name}</option>`)
             .join('');
-        $('#employment_group_id').html('<option value="">Select an employee group</option>' + empGroupList);
+        $('#employee_group_id').html('<option value="">Select an employee group</option>' + empGroupList);
 
         // Populate employee designation dropdown
         let designationList = (dropdownData?.employee_designations || [])
@@ -61,7 +61,7 @@ async function getDropdownData() {
 
         // Populate permission group dropdown
         let permGroupList = (dropdownData?.roles || [])
-            .map(permGroup => `<option value="${permGroup.id}">${permGroup.name}</option>`)
+            .map(permGroup => `<option value="${permGroup.value}">${permGroup.name}</option>`)
             .join('');
         $('#permission_group_id').html('<option value="">Select a permission group</option>' + permGroupList);
 
@@ -291,13 +291,29 @@ $(document).on('change', '#branch_id', function() {
     $('#department_id').html('<option value="">Select a department</option>' + departmentList);
 });
 
+// check whether password and confirm password matches
+$(document).on('keyup', '#password, #confirm_password', function(e) {
+    let password = $('#password').val();
+    let confirm_password = $('#confirm_password').val();
+    
+    if (password !== confirm_password) {
+        $('[data-nexttab="steparrow-contact-info-tab"]').prop('disabled', true);
+        if ($('.password_error').length === 0) { // Check if the message already exists
+            $('.error-msgs').html('<p class="text-danger password_error m-0">Passwords don\'t match</p>');
+        }
+    } else {
+        $('[data-nexttab="steparrow-contact-info-tab"]').prop('disabled', false);
+        $('.error-msgs').html('');
+    }
+});
+
+//submit the form
 $(document).on('click', '.emp_form_submit', async function(e) {
     e.preventDefault(); // Prevent default form submission
 
-    const employee_id = $('#employee_id').val();
-
-    let createUrl = `/employee/create`;
-    let updateUrl = `/employee/update/${employee_id}`;
+    const employeeId = $('#employee_id').val();
+    const createUrl = `/employee/create`;
+    const updateUrl = `/employee/update/${employeeId}`;
 
     // Get the password and confirm_password values
     const password = $('#password').val();
@@ -312,40 +328,20 @@ $(document).on('click', '.emp_form_submit', async function(e) {
     // Create a FormData object to gather form data, including files
     const formData = new FormData();
 
-    formData.append('employee_no', $('#employee_no').val());
-    formData.append('punch_machine_user_id', $('#punch_machine_user_id').val());
-    formData.append('branch_id', $('#branch_id').val());
-    formData.append('department_id', $('#department_id').val());
-    formData.append('employment_group_id', $('#employment_group_id').val());
-    formData.append('designation_id', $('#designation_id').val());
-    formData.append('policy_group_id', $('#policy_group_id').val());
-    formData.append('employee_status', $('#employee_status').val());
-    formData.append('currency_id', $('#currency_id').val());
-    formData.append('pay_period_schedule_id', $('#pay_period_schedule_id').val());
-    formData.append('appointment_date', $('#appointment_date').val());
-    formData.append('appointment_note', $('#appointment_note').val());
-    formData.append('termination_date', $('#termination_date').val());
-    formData.append('confirmed_date', $('#confirmed_date').val());
-    formData.append('retirement_date', $('#retirement_date').val());
-    formData.append('employment_type', $("input[name='employment_type']:checked").val());
-    formData.append('months', $('#months').val());
-    formData.append('permission_group_id', $('#permission_group_id').val());
-    formData.append('email', $('#email').val());
-    formData.append('password', password);
+    // Append standard form fields
+    const fields = [
+        'employee_no', 'punch_machine_user_id', 'branch_id', 'department_id', 'employee_group_id', 'designation_id', 'policy_group_id', 'employee_status', 'currency_id', 'pay_period_schedule_id', 'appointment_date', 'appointment_note', 'termination_date', 'confirmed_date', 'retirement_date', 'months', 'permission_group_id', 'email', 'password', 'title', 'name_with_initials', 'first_name', 'last_name', 'full_name', 'dob', 'nic', 'gender', 'religion_id', 'marital_status', 'personal_email', 'contact_1', 'contact_2', 'address_1', 'address_2', 'address_3', 'postal_code', 'country_id', 'province_id', 'city_id', 'work_email', 'work_contact', 'immediate_contact_person', 'immediate_contact_no', 'home_contact', 'epf_no'
+    ];
 
-    formData.append('title', $('#title').val());
-    formData.append('name_with_initials', $('#name_with_initials').val());
-    formData.append('first_name', $('#first_name').val());
-    formData.append('last_name', $('#last_name').val());
-    formData.append('full_name', $('#full_name').val());
-    formData.append('dob', $('#dob').val());
-    formData.append('nic', $('#nic').val());
-    formData.append('gender', $('#gender').val());
-    formData.append('religion_id', $('#religion_id').val());
-    formData.append('marital_status', $('#marital_status').val());
-    formData.append('personal_email', $('#personal_email').val());
-    formData.append('contact_1', $('#contact_1').val());
-    formData.append('contact_2', $('#contact_2').val());
+    fields.forEach(field => {
+        const value = $(`#${field}`).val();
+        if (value) {
+            formData.append(field, value);
+        }
+    });
+
+    // Append employment type (radio/checkbox)
+    formData.append('employment_type_id', $("input[name='employment_type']:checked").val());
 
     // Append employee photo (if a file is selected)
     const employeePhoto = $('#employee_photo')[0].files[0];
@@ -355,20 +351,18 @@ $(document).on('click', '.emp_form_submit', async function(e) {
 
     // Append the files stored in filesArray to FormData
     filesArray.forEach((doc, index) => {
-        formData.append('doc_file[]', doc.file); // Add file to FormData
-        formData.append('doc_type_id[]', doc.doc_type_id); // Add doc_type_id to FormData
-        formData.append('doc_title[]', doc.doc_title); // Add doc_title to FormData
+        formData.append(`doc_file[${index}]`, doc.file); // Add file to FormData
+        formData.append(`doc_type_id[${index}]`, doc.doc_type_id); // Add doc_type_id to FormData
+        formData.append(`doc_title[${index}]`, doc.doc_title); // Add doc_title to FormData
     });
 
-
-    // Append employee_id if updating
-    const isUpdating = Boolean(employee_id);
-    let url = isUpdating ? updateUrl : createUrl;
-    let method = 'POST';
+    // Determine if it's an update or create operation
+    const isUpdating = Boolean(employeeId);
+    const url = isUpdating ? updateUrl : createUrl;
+    const method = isUpdating ? 'PUT' : 'POST';
 
     if (isUpdating) {
-        formData.append('employee_id', employee_id);
-        method = 'PUT';
+        formData.append('employee_id', employeeId);
     }
 
     try {
@@ -377,15 +371,14 @@ $(document).on('click', '.emp_form_submit', async function(e) {
         await commonAlert(res.status, res.message);
 
         if (res.status === 'success') {
-            renderBranchTable();
-            $('#branch-form-modal').modal('hide');
+            window.location.href = '/employee/profile?emp='+res.data.id;
         }
     } catch (error) {
         console.error('Error:', error);
         $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
     }
-
 });
+
 
 
 

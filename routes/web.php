@@ -255,6 +255,10 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
     Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
     Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
+
+    Route::get('/error', function () {
+        return view('layouts.error');
+    })->name('error');
 });
 
 require __DIR__ . '/auth.php';

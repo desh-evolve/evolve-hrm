@@ -241,9 +241,9 @@
             }
 
             //show & hide preloader
-            function showPreloader() {
+            function showPreloader(opacity = 1) {
                 $('#preloader').css({
-                    'opacity': '1',
+                    'opacity': opacity,
                     'visibility': 'visible'
                 });
             }
