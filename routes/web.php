@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// controller
 use App\Http\Controllers\Company\IndustryController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Company\LocationController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Company\EmployeeGroupController;
 use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 
+// employee
 // use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
 use App\Http\Controllers\Employee\JobHistoryController;
@@ -22,6 +24,8 @@ use App\Http\Controllers\Employee\EmployeePromotionController;
 use App\Http\Controllers\Employee\EmployeeFamilyController;
 use App\Http\Controllers\Employee\EmpWageController;
 
+// policies
+use App\Http\Controllers\Policy\ExceptionPolicyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -49,8 +53,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::get('users/{userId}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
-
-
 
     //==============================================================================================================================
     // Industry
@@ -224,7 +226,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
 
      // Employee employee_promotion  routes
-     Route::get('/company/employee_wage/index', [EmpWageController::class, 'index'])->name('company.employee_wage.index');
+     Route::get('/company/employee_wage/index', [EmpWageController::class, 'index'])->name('employee_wage.index');
     
      Route::post('/company/employee_wage/create', [EmpWageController::class, 'createEmployeeWage'])->name('company.employee_wage.create');
      Route::put('/company/employee_wage/update/{id}', [EmpWageController::class, 'updateEmployeeWage'])->name('company.employee_wage.update');
@@ -256,12 +258,19 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/profile', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
     Route::get('/employee/dropdown', [EmployeeController::class, 'getEmployeeDropdownData'])->name('employee.dropdown');
     Route::get('/employee/next_employee_id', [EmployeeController::class, 'getNextEmployeeId'])->name('employee.nextEmployeeId');
-
+    
     Route::post('/employee/create', [EmployeeController::class, 'createEmployee'])->name('employee.create');
     Route::get('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');
     Route::delete('/employee/delete/{id}', [EmployeeController::class, 'deleteEmployee'])->name('employee.delete');
     Route::get('/employees', [EmployeeController::class, 'getAllEmployees'])->name('employee.all');
     Route::get('/employee/{id}', [EmployeeController::class, 'getEmployeeByEmployeeId'])->name('employee.getById');
+    
+    //==============================================================================================================================
+    // Policies
+    //==============================================================================================================================
+    Route::get('/policy/exception', [ExceptionPolicyController::class, 'index'])->name('policy.exception');
+    Route::get('/policy/exceptions', [ExceptionPolicyController::class, 'getAllExceptionPolicies'])->name('policy.exceptions.all');
+
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page

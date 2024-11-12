@@ -72,12 +72,27 @@
                 </li>
 
                 <!-- Policies -->
+                @php
+                    $checkPolicyNav = request()->routeIs('policy.*');
+                @endphp
+
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#policies" data-bs-toggle="collapse" role="button" aria-expanded="false">
+                    <a 
+                        class="nav-link menu-link {{ $checkPolicyNav ? 'active' : '' }}"
+                        href="#policyMultiLevel"
+                        data-bs-toggle="collapse"
+                        role="button"
+                        aria-expanded="{{ $checkPolicyNav ? 'true' : 'false' }}"
+                        aria-controls="policyMultiLevel"
+                    >
                         <i class="ri-file-paper-line"></i> <span>Policies</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="policies">
+                    <div class="collapse menu-dropdown {{ $checkPolicyNav ? 'show' : '' }}" id="policyMultiLevel">
                         <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('policy.exception') }}" class="nav-link {{ request()->routeIs('policy.exception') ? 'active' : '' }}">Exception Policy</a>
+                            </li>
+
                             <li class="nav-item"><a href="#" class="nav-link">Policy Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Schedule Policies</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Rounding Policies</a></li>
@@ -144,7 +159,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_wage.index') }}" class="nav-link {{ request()->routeIs('company.employee_family.index') ? 'active' : '' }}">
+                                <a href="{{ route('employee_wage.index') }}" class="nav-link {{ request()->routeIs('employee_family.index') ? 'active' : '' }}">
                                     Employee Wage
                                 </a>
                             </li>
