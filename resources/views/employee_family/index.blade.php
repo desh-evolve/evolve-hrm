@@ -130,7 +130,7 @@
 
                         <div class="col-xxl-3 col-md-12 mb-3">
                             <label for="notes" class="form-label">Note</label>
-                            <input type="text" class="form-control" id="notes" rows="3">
+                            <textarea type="text" class="form-control" id="notes" rows="3"></textarea>
                         </div>
 
                         <div id="error-msg"></div>
