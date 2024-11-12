@@ -22,10 +22,6 @@ return new class extends Migration
             $table->integer('created_by')->default(0)->nullable();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->integer('updated_by')->default(0)->nullable();
-
-            $table->index('date_stamp', 'user_date_date_stamp');
-            $table->index('pay_period_id', 'user_date_pay_period_id');
-            $table->index('user_id', 'user_date_user_id');
         });
     }
 

@@ -30,8 +30,6 @@ return new class extends Migration
             $table->integer('created_by')->default(0)->nullable();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->integer('updated_by')->default(0)->nullable();
-
-            $table->index('punch_control_id', 'punch_punch_control_id');
         
         });
     }
