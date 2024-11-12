@@ -143,7 +143,11 @@
                                     Employee Family
                                 </a>
                             </li>
-
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_wage.index') }}" class="nav-link {{ request()->routeIs('company.employee_family.index') ? 'active' : '' }}">
+                                    Employee Wage
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>

@@ -20,6 +20,7 @@ use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeWorkExperienceController;
 use App\Http\Controllers\Employee\EmployeePromotionController;
 use App\Http\Controllers\Employee\EmployeeFamilyController;
+use App\Http\Controllers\Employee\EmpWageController;
 
 
 Route::get('/', function () {
@@ -217,6 +218,20 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
      Route::get('/company/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
      Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
      Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
+ 
+    //==============================================================================================================================
+    // Employee Wage
+    //==============================================================================================================================
+
+     // Employee employee_promotion  routes
+     Route::get('/company/employee_wage/index', [EmpWageController::class, 'index'])->name('company.employee_wage.index');
+    
+     Route::post('/company/employee_wage/create', [EmpWageController::class, 'createEmployeeWage'])->name('company.employee_wage.create');
+     Route::put('/company/employee_wage/update/{id}', [EmpWageController::class, 'updateEmployeeWage'])->name('company.employee_wage.update');
+     Route::delete('/company/employee_wage/delete/{id}', [EmpWageController::class, 'deleteEmployeeWage'])->name('company.employee_wage.delete');
+     Route::get('/company/single_employee_wage/{id}', [EmpWageController::class, 'getSingleEmployeeWage'])->name('company.employee_wage.single');
+     Route::get('/company/employee_wage/dropdown', [EmpWageController::class, 'getDropDownList'])->name('company.employee_wage.dropdown');
+     Route::get('/company/employee_wage/{id}', [EmpWageController::class, 'getEmployeeWageById'])->name('company.employee_wage.getById');
  
     //==============================================================================================================================
     // Employee Job History
