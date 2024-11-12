@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('com_employee_groups', function (Blueprint $table) {
+        Schema::create('exception_policy_control', function (Blueprint $table) {
             $table->id();
-            $table->string('emp_group_name');
-
+            $table->integer('company_id');
+            $table->string('name', 250);
+            
             $table->string('status')->default('active')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->default(0)->nullable();
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('com_employee_groups');
+        Schema::dropIfExists('exception_policy_control');
     }
 };

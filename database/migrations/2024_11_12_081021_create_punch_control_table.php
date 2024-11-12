@@ -11,15 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('com_employee_groups', function (Blueprint $table) {
+        Schema::create('punch_control', function (Blueprint $table) {
             $table->id();
-            $table->string('emp_group_name');
+            $table->integer('employee_date_id');
+            $table->integer('branch_id')->nullable();
+            $table->integer('department_id')->nullable();
+            $table->integer('total_time')->default(0);
+            $table->integer('actual_total_time')->default(0);
+            $table->integer('meal_policy_id')->nullable();
+            $table->boolean('overlap')->default(0);
+            $table->string('note', 1024)->nullable();
 
             $table->string('status')->default('active')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->default(0)->nullable();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->integer('updated_by')->default(0)->nullable();
+            
+            $table->index('user_date_id', 'punch_control_user_date_id');
         });
     }
 
@@ -28,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('com_employee_groups');
+        Schema::dropIfExists('punch_control');
     }
 };

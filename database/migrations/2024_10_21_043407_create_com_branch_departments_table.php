@@ -15,9 +15,9 @@ class CreateComBranchDepartmentsTable extends Migration
             
             $table->string('status')->default('active')->nullable();
             $table->timestamp('created_at')->useCurrent();
-            $table->integer('created_by')->nullable();
+            $table->integer('created_by')->default(0)->nullable();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-            $table->integer('updated_by')->nullable();
+            $table->integer('updated_by')->default(0)->nullable();
         });
     }
 

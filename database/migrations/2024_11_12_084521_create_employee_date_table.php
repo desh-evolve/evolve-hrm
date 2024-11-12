@@ -11,15 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('com_employee_groups', function (Blueprint $table) {
+        Schema::create('employee_date', function (Blueprint $table) {
             $table->id();
-            $table->string('emp_group_name');
+            $table->integer('employee_id')->comment('emp_employee table id');
+            $table->integer('pay_period_id');
+            $table->date('date_stamp');
 
             $table->string('status')->default('active')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->default(0)->nullable();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->integer('updated_by')->default(0)->nullable();
+
+            $table->index('date_stamp', 'user_date_date_stamp');
+            $table->index('pay_period_id', 'user_date_pay_period_id');
+            $table->index('user_id', 'user_date_user_id');
         });
     }
 
@@ -28,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('com_employee_groups');
+        Schema::dropIfExists('employee_date');
     }
 };
