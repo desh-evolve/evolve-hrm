@@ -269,7 +269,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Policies
     //==============================================================================================================================
     Route::get('/policy/exception', [ExceptionPolicyController::class, 'index'])->name('policy.exception');
+    Route::get('/policy/exception/form', [ExceptionPolicyController::class, 'form'])->name('policy.exception.form');
     Route::get('/policy/exceptions', [ExceptionPolicyController::class, 'getAllExceptionPolicies'])->name('policy.exceptions.all');
+    Route::delete('/policy/exception/delete/{id}', [ExceptionPolicyController::class, 'deleteExceptionPolicy'])->name('policy.exception.delete');
 
 
     //==============================================================================================================================
