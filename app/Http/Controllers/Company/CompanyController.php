@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Company;
 
-use App\Models\company;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +19,6 @@ class CompanyController extends Controller
         $this->middleware('permission:view company', ['only' => ['index', 'getCompanyByCompanyId']]);
         $this->middleware('permission:update company', ['only' => ['updateCompany']]);
 
-        $this->company = new Company();
         $this->common = new CommonModel();
     }
 

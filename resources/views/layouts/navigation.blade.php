@@ -90,7 +90,16 @@
                     <div class="collapse menu-dropdown {{ $checkPolicyNav ? 'show' : '' }}" id="policyMultiLevel">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
+                                <a href="{{ route('policy.rounding') }}" class="nav-link {{ request()->routeIs('policy.rounding') ? 'active' : '' }}">Rounding Policy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.meal') }}" class="nav-link {{ request()->routeIs('policy.meal') ? 'active' : '' }}">Meal Policy</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('policy.exception') }}" class="nav-link {{ request()->routeIs('policy.exception') ? 'active' : '' }}">Exception Policy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.overtime') }}" class="nav-link {{ request()->routeIs('policy.overtime') ? 'active' : '' }}">Overtime Policy</a>
                             </li>
 
                             <li class="nav-item"><a href="#" class="nav-link">Policy Groups</a></li>
