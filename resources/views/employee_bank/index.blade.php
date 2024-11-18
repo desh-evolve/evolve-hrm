@@ -176,7 +176,7 @@ $(document).on('click', '#click_delete', async function () {
             resetForm();
             $('#form_modal').modal('hide');
             await renderTableBody();
-        } 
+        }
     } catch (error) {
         console.error(`Error during Bank Details deletion:`, error);
     }
@@ -303,6 +303,7 @@ $(document).on('click', '#click_delete', async function () {
     function resetForm() {
             $('#emp_id').val('');
             $('#bank_name').val('');
+            $('#employee_id').val('');
             $('#bank_code').val('');
             $('#bank_branch').val('');
             $('#account_number').val('');
