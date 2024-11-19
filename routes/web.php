@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,9 +14,11 @@ use App\Http\Controllers\Company\EmployeeDesignationController;
 use App\Http\Controllers\Company\EmployeeGroupController;
 use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
-use App\Http\Controllers\Employee\EmployeeBankDetailsController;
+use App\Http\Controllers\Company\BranchBankDetailsController;
+
 // use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
+use App\Http\Controllers\Employee\EmployeeBankDetailsController;
 use App\Http\Controllers\Employee\JobHistoryController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeWorkExperienceController;
@@ -104,6 +107,18 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/branches', [BranchController::class, 'getAllBranches'])->name('company.branches.all');
     Route::get('/company/branch/{id}', [BranchController::class, 'getBranchByBranchId'])->name('company.branch.getById');
 
+
+    //==============================================================================================================================
+    // Branch Bank Details
+    //==============================================================================================================================
+
+    Route::get('/branch/bank/details/{id}', [BranchBankDetailsController::class, 'index'])->name('employee.bank.details');
+    Route::post('/branch/bank/create', [BranchBankDetailsController::class, 'createBankDetails'])->name('branch.bank.create');
+    Route::put('/branch/bank/update/{id}', [BranchBankDetailsController::class, 'updateBankDetails'])->name('branch.bank.update');
+    Route::delete('/branch/bank/delete/{id}', [BranchBankDetailsController::class, 'deleteBankDetails'])->name('branch.bank.delete');
+    Route::get('/branch/bank/{id}', [BranchBankDetailsController::class, 'getBankDetailsByBanchId'])->name('branch.bank.getById');
+    Route::get('/branch/single_bankdetail/{id}', [BranchBankDetailsController::class, 'getBankDetailsSingleBranch'])->name('branch.bank.single');
+
     //==============================================================================================================================
     // Departments
     //==============================================================================================================================
@@ -172,6 +187,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/employee/bank/delete/{id}', [EmployeeBankDetailsController::class, 'deleteBankDetails'])->name('employee.bank.delete');
     Route::get('/employee/bank/{id}', [EmployeeBankDetailsController::class, 'getBankDetailsByEmpId'])->name('employee.bank.getById');
     Route::get('/company/allemplyee', [EmployeeBankDetailsController::class, 'getAllEmployee'])->name('company.employee.all');
+
 
     //==============================================================================================================================
     // Currencies

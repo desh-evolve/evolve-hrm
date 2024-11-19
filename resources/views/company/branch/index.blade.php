@@ -154,6 +154,7 @@
                                 <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_branch" title="Delete Branch" data-tooltip="tooltip" data-bs-placement="top">
                                     <i class="ri-delete-bin-fill"></i>
                                 </button>
+                                <button type="button" class="btn btn-success btn-sm manage-bank" data-id="${branch.id}">Manage Bank Details</button>
                             </td>
                         </tr>
                     `;
@@ -167,6 +168,14 @@
             $('[data-tooltip="tooltip"]').tooltip();
         }
 
+
+        // Navigate to Branch Bank Details Page
+        $(document).on('click', '.manage-bank', function () {
+            const branch_Id = $(this).data('id');
+            window.location.href = `/branch/bank/details/${branch_Id}`;
+        });
+
+        
         //=====================================================================================
         async function getDropdownData() {
             try {
@@ -237,6 +246,8 @@
             // Populate the city dropdown
             $('#city_id').html('<option value="">Select a city</option>' + cityList);
         }
+
+
         //=====================================================================================
 
         $(document).on('click', '#click_add_branch', function(){

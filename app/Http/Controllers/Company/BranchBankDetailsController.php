@@ -1,58 +1,74 @@
 <?php
 
-namespace App\Http\Controllers\Employee;
+namespace App\Http\Controllers\Company;
 
 use App\Models\CommonModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class EmployeeBankDetailsController extends Controller
+class BranchBankDetailsController extends Controller
 {
     private $common = null;
 
     public function __construct()
     {
-        $this->middleware('permission:view employee bank details', ['only' => [
+        $this->middleware('permission:view branch bank details', ['only' => [
             'index',
-            'getBankDetailsByEmpId',
-            'getAllEmployee',
+            'getBankDetailsByBranchId',
+            'getBankDetailsSingleBranch',
             ]]);
 
-        $this->middleware('permission:create employee bank details', ['only' => ['createBankDetails']]);
-        $this->middleware('permission:update employee bank details', ['only' => ['updateBankDetails']]);
-        $this->middleware('permission:delete employee bank details', ['only' => ['deleteBankDetails']]);
+        $this->middleware('permission:create branch bank details', ['only' => ['createBankDetails']]);
+        $this->middleware('permission:update branch bank details', ['only' => ['updateBankDetails']]);
+        $this->middleware('permission:delete branch bank details', ['only' => ['deleteBankDetails']]);
 
         $this->common = new CommonModel();
     }
 
 
-     //pawanee(2024-11-08)
-     public function index()
-     {
-         return view('employee_bank.index');
-     }
+
+     //pawanee(2024-11-18)
+     public function index($id)
+    {
+        $idColumn = 'id';
+        $table = 'com_branches';
+        $fields = '*';
+        $branch = $this->common->commonGetById($id, $idColumn, $table, $fields);
 
 
-     //pawanee(2024-11-08)
+        // Check if the branch exists
+        if (!$branch || count($branch) === 0) {
+            abort(404, 'Branch not found.');
+        }
+
+        // Fetch bank details associated with the branch
+        $bankDetails = $this->common->commonGetById($id, 'branch_id', 'com_branch_bank_details', '*');
+
+        // Pass the branch and bank details to the view
+        return view('company.branch.branch_bank', ['branch' => $branch[0], 'bankDetails' => $bankDetails, ]);
+    }
+
+
+    //pawanee(2024-11-18)
     public function createBankDetails(Request $request){
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'branch_id' => 'required',
                     'bank_code' => 'required',
                     'bank_name' => 'required|string',
                     'bank_branch' => 'required',
-                    'account_number' => 'required|numeric',
+                    'bank_account' => 'required|numeric',
                 ]);
 
-                $table = 'emp_bank_details';
+                $table = 'com_branch_bank_details';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'branch_id' => $request->branch_id,
                     'bank_code' => $request->bank_code,
                     'bank_name' => $request->bank_name,
                     'bank_branch' => $request->bank_branch,
-                    'account_number' => $request->account_number,
+                    'bank_account' => $request->bank_account,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
@@ -72,26 +88,26 @@ class EmployeeBankDetailsController extends Controller
 
 
 
-    //pawanee(2024-11-08)
+    //pawanee(2024-11-18)
     public function updateBankDetails(Request $request, $id){
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'branch_id' => 'required',
                     'bank_code' => 'required',
                     'bank_name' => 'required|string',
                     'bank_branch' => 'required',
-                    'account_number' => 'required|numeric',
+                    'bank_account' => 'required|numeric',
                 ]);
 
-                $table = 'emp_bank_details';
+                $table = 'com_branch_bank_details';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'branch_id' => $request->branch_id,
                     'bank_code' => $request->bank_code,
                     'bank_name' => $request->bank_name,
                     'bank_branch' => $request->bank_branch,
-                    'account_number' => $request->account_number,
+                    'bank_account' => $request->bank_account,
                     'updated_by' => Auth::user()->id,
                 ];
 
@@ -110,21 +126,21 @@ class EmployeeBankDetailsController extends Controller
 
 
 
-    //pawanee(2024-11-08)
+    //pawanee(2024-11-18)
     public function deleteBankDetails($id){
         $whereArr = ['id' => $id];
-        $title = 'Employee Bank Details';
-        $table = 'emp_bank_details';
+        $title = 'Branch Bank Details';
+        $table = 'com_branch_bank_details';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
 
 
-    //pawanee(2024-11-08)
-    public function getBankDetailsByEmpId($id){
-        $idColumn = 'employee_id';
-        $table = 'emp_bank_details';
+    //pawanee(2024-11-18)
+    public function getBankDetailsByBanchId($id){
+        $idColumn = 'branch_id';
+        $table = 'com_branch_bank_details';
         $fields = '*';
         $bankDetails = $this->common->commonGetById($id, $idColumn, $table, $fields);
 
@@ -133,12 +149,16 @@ class EmployeeBankDetailsController extends Controller
 
 
 
-    public function getAllEmployee()
-    {
-        $table = 'emp_employees';
-        $fields = '*';
-        $employees = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employees], 200);
-    }
+     //pawanee(2024-11-18)
+     public function getBankDetailsSingleBranch($id)
+     {
+         $idColumn = 'id';
+         $table = 'com_branch_bank_details';
+         $fields = '*';
+         $bankDetails = $this->common->commonGetById($id, $idColumn, $table, $fields);
+         return response()->json(['data' => $bankDetails], 200);
+     }
+
 
 }
+
