@@ -9,7 +9,7 @@
                         <h5 class="mb-0">Exception Policy List</h5>
                     </div>
                     <div>
-                        <a type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" href="/policy/exception/form">New Exception <i class="ri-add-line"></i></a>
+                        <a type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" href="/policy/exception/form">New Exception Policy<i class="ri-add-line"></i></a>
                     </div>
                 </div>
                 <div class="card-body">
