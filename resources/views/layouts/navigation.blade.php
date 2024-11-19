@@ -96,6 +96,12 @@
                                 <a href="{{ route('policy.meal') }}" class="nav-link {{ request()->routeIs('policy.meal') ? 'active' : '' }}">Meal Policy</a>
                             </li>
                             <li class="nav-item">
+                                <a href="{{ route('policy.break') }}" class="nav-link {{ request()->routeIs('policy.break') ? 'active' : '' }}">Break Policy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.accrual') }}" class="nav-link {{ request()->routeIs('policy.accrual') ? 'active' : '' }}">Accrual Policy</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('policy.exception') }}" class="nav-link {{ request()->routeIs('policy.exception') ? 'active' : '' }}">Exception Policy</a>
                             </li>
                             <li class="nav-item">

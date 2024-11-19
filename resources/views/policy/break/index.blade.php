@@ -5,10 +5,10 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-0">Meal Policy List</h5>
+                        <h5 class="mb-0">Break Policy List</h5>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="new_meal_click">New Meal Policy<i class="ri-add-line"></i></button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="new_break_click">New Break Policy <i class="ri-add-line"></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -18,11 +18,11 @@
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
                                 <th class="col">Type</th>
-                                <th class="col">Meal Time</th>
+                                <th class="col">Break Time</th>
                                 <th class="col">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="meal_pol_table_body">
+                        <tbody id="break_pol_table_body">
                             <tr><td colspan="5" class="text-center">Loading...</td></tr>
                         </tbody>
                     </table>
@@ -32,15 +32,15 @@
     </div>
 
     <!-- form modal -->
-    <div id="meal-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div id="break-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="meal-form-title">Add Meal Policy</h4>
+                    <h4 class="modal-title" id="break-form-title">Add Break Policy</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="meal-form-body">
+                    <div id="break-form-body">
                         <div class="row mb-3">
                             <label for="name" class="form-label mb-1 col-md-3">Name</label>
                             <div class="col-md-9">
@@ -70,7 +70,7 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="auto_detect_type" class="form-label mb-1 col-md-3">Auto-Detect Meals By</label>
+                            <label for="auto_detect_type" class="form-label mb-1 col-md-3">Auto-Detect Breaks By</label>
                             <div class="col-md-9">
                                 <select class="form-select" id="auto_detect_type">
                                     <option value="time_window">Time Window</option>
@@ -106,18 +106,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="include_lunch_punch_time" class="form-label mb-1 col-md-3">Include Any Punched Time for Lunch</label>
-                            <div class="col-md-9">
-                                <input type="checkbox" class="form-check-input" id="include_lunch_punch_time">
+
+                        <div class="checkbox_section">
+                            <div class="row mb-3">
+                                <label for="include_lunch_punch_time" class="form-label mb-1 col-md-3">Include Any Punched Time for Lunch</label>
+                                <div class="col-md-9">
+                                    <input type="checkbox" class="form-check-input" id="include_lunch_punch_time">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="include_multiple_breaks" class="form-label mb-1 col-md-3">Include Multiple Breaks</label>
+                                <div class="col-md-9">
+                                    <input type="checkbox" class="form-check-input" id="include_multiple_breaks">
+                                </div>
                             </div>
                         </div>
                     </div>                    
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
-                        <input type="hidden" id="meal_id" value=""></button>
+                        <input type="hidden" id="break_id" value=""></button>
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-primary" id="meal-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-primary" id="break-submit-confirm">Submit</button>
                     </div>
                 </div>
             </div>
@@ -127,30 +136,30 @@
     <script>
 
         $(document).ready(function(){
-            getAllMeals();
+            getAllBreaks();
 
             $('.time_window_section').show();
             $('.punch_time_section').hide();
         })
 
-        async function getAllMeals(){
+        async function getAllBreaks(){
             try {
-                const meals = await commonFetchData('/policy/meals');
+                const breaks = await commonFetchData('/policy/breaks');
                 let list = '';
-                if(meals && meals.length > 0){
-                    meals.map((meal, i) => {
-                        let interval = convertSecondsToHoursAndMinutes(meal.window_length);
+                if(breaks && breaks.length > 0){
+                    breaks.map((brk, i) => {
+                        let interval = convertSecondsToHoursAndMinutes(brk.window_length);
                         list += `
-                            <tr meal_policy_id="${meal.id}">
+                            <tr break_policy_id="${brk.id}">
                                 <td>${i+1}</td>    
-                                <td>${meal.name}</td>    
-                                <td>${meal.type == 'auto_deduct' ? 'Auto Deduct' : meal.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>    
+                                <td>${brk.name}</td>    
+                                <td>${brk.type == 'auto_deduct' ? 'Auto Deduct' : brk.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>    
                                 <td>${interval}</td>    
                                 <td>
-                                    <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_meal_pol" title="Edit Meal Policy" data-tooltip="tooltip" data-bs-placement="top">
+                                    <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_break_pol" title="Edit Break Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
-                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_meal_pol" title="Delete Meal Policy" data-tooltip="tooltip" data-bs-placement="top">
+                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_break_pol" title="Delete Break Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
                                     </button>    
                                 </td>    
@@ -158,37 +167,37 @@
                         `;
                     })
                 }else{
-                    list += `<tr><td colspan="3" class="text-center">No Meal Policies Found!</td></tr>`;
+                    list += `<tr><td colspan="3" class="text-center">No Break Policies Found!</td></tr>`;
                 }
 
-                $('#meal_pol_table_body').html(list);
+                $('#break_pol_table_body').html(list);
                 $('[data-tooltip="tooltip"]').tooltip();
             } catch (error) {
-                console.error('error at policy->meal->index->getAllExeptions: ', error);
+                console.error('error at policy->break->index->getAllExeptions: ', error);
             }
         }
 
-        $(document).on('click', '.click_delete_meal_pol', async function(){
-            let meal_pol_id = $(this).closest('tr').attr('meal_policy_id');
+        $(document).on('click', '.click_delete_break_pol', async function(){
+            let break_pol_id = $(this).closest('tr').attr('break_policy_id');
 
             try {
-                let url = `/policy/meal/delete`;
-                const res = await commonDeleteFunction(meal_pol_id, url, 'Meal Policy');  // Await the promise here
+                let url = `/policy/break/delete`;
+                const res = await commonDeleteFunction(break_pol_id, url, 'Break Policy');  // Await the promise here
 
                 if (res) {
                     $(this).closest('tr').remove();
                 }
             } catch (error) {
-                console.error(`Error during meal policy deletion:`, error);
+                console.error(`Error during break policy deletion:`, error);
             }
         })
 
         $(document).on('change', '#type', function(){
             if($(this).val() == 'normal'){
-                $('#include_lunch_punch_time').closest('.row').hide();
-                $('label[for="amount"]').text('Meal Time');
+                $('.checkbox_section').hide();
+                $('label[for="amount"]').text('Break Time');
             } else {
-                $('#include_lunch_punch_time').closest('.row').show();
+                $('.checkbox_section').show();
                 $('label[for="amount"]').text('Deduction/Addition Time');
             }
         })
@@ -207,15 +216,15 @@
 
     <script>
 
-        $(document).on('click', '#new_meal_click', function(){
+        $(document).on('click', '#new_break_click', function(){
             resetForm();
-            $('#meal-form-modal').modal('show');
+            $('#break-form-modal').modal('show');
         })
 
-        $(document).on('click', '.click_edit_meal_pol', function(){
+        $(document).on('click', '.click_edit_break_pol', function(){
             resetForm();
-            let meal_policy_id = $(this).closest('tr').attr('meal_policy_id');
-            $('#meal-form-modal').modal('show');
+            let break_policy_id = $(this).closest('tr').attr('break_policy_id');
+            $('#break-form-modal').modal('show');
         })
 
         function resetForm(){

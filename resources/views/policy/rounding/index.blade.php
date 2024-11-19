@@ -8,7 +8,7 @@
                         <h5 class="mb-0">Rounding Policy List</h5>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="new_rounding_click">New Rounding <i class="ri-add-line"></i></button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="new_rounding_click">New Rounding Policy<i class="ri-add-line"></i></button>
                     </div>
                 </div>
                 <div class="card-body">

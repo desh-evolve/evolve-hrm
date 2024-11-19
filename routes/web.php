@@ -27,6 +27,8 @@ use App\Http\Controllers\Employee\EmpWageController;
 // policies
 use App\Http\Controllers\Policy\RoundingPolicyController;
 use App\Http\Controllers\Policy\MealPolicyController;
+use App\Http\Controllers\Policy\BreakPolicyController;
+use App\Http\Controllers\Policy\AccrualPolicyController;
 use App\Http\Controllers\Policy\ExceptionPolicyController;
 use App\Http\Controllers\Policy\OvertimePolicyController;
 
@@ -274,17 +276,28 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     // rounding policy
     Route::get('/policy/rounding', [RoundingPolicyController::class, 'index'])->name('policy.rounding');
-    Route::get('/policy/rounding/form', [RoundingPolicyController::class, 'form'])->name('policy.rounding.form');
     Route::get('/policy/rounding/dropdown', [RoundingPolicyController::class, 'getRoundingDropdownData'])->name('policy.rounding.dropdown');
     Route::get('/policy/roundings', [RoundingPolicyController::class, 'getAllRoundingPolicies'])->name('policy.roundings.all');
     Route::delete('/policy/rounding/delete/{id}', [RoundingPolicyController::class, 'deleteRoundingPolicy'])->name('policy.rounding.delete');
 
     // meal policy
     Route::get('/policy/meal', [MealPolicyController::class, 'index'])->name('policy.meal');
-    Route::get('/policy/meal/form', [MealPolicyController::class, 'form'])->name('policy.meal.form');
     Route::get('/policy/meal/dropdown', [MealPolicyController::class, 'getMealDropdownData'])->name('policy.meal.dropdown');
     Route::get('/policy/meals', [MealPolicyController::class, 'getAllMealPolicies'])->name('policy.meals.all');
     Route::delete('/policy/meal/delete/{id}', [MealPolicyController::class, 'deleteMealPolicy'])->name('policy.meal.delete');
+
+    // break policy
+    Route::get('/policy/break', [BreakPolicyController::class, 'index'])->name('policy.break');
+    Route::get('/policy/break/dropdown', [BreakPolicyController::class, 'getBreakDropdownData'])->name('policy.break.dropdown');
+    Route::get('/policy/breaks', [BreakPolicyController::class, 'getAllBreakPolicies'])->name('policy.breaks.all');
+    Route::delete('/policy/break/delete/{id}', [BreakPolicyController::class, 'deleteBreakPolicy'])->name('policy.break.delete');
+
+    // accrual policy
+    Route::get('/policy/accrual', [AccrualPolicyController::class, 'index'])->name('policy.accrual');
+    Route::get('/policy/accrual/form', [AccrualPolicyController::class, 'form'])->name('policy.accrual.form');
+    Route::get('/policy/accrual/dropdown', [AccrualPolicyController::class, 'getAccrualDropdownData'])->name('policy.accrual.dropdown');
+    Route::get('/policy/accruals', [AccrualPolicyController::class, 'getAllAccrualPolicies'])->name('policy.accruals.all');
+    Route::delete('/policy/accrual/delete/{id}', [AccrualPolicyController::class, 'deleteAccrualPolicy'])->name('policy.accrual.delete');
 
     // exception policy
     Route::get('/policy/exception', [ExceptionPolicyController::class, 'index'])->name('policy.exception');
