@@ -35,9 +35,9 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="include_multiple_breaks" class="form-label mb-1 col-md-3">Display Balance on Pay Stub</label>
+                                <label for="enable_pay_stub_balance_display" class="form-label mb-1 col-md-3">Display Balance on Pay Stub</label>
                                 <div class="col-md-9">
-                                    <input type="checkbox" class="form-check-input" id="include_multiple_breaks">
+                                    <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
                                 </div>
                             </div>
                         </div>
@@ -58,15 +58,15 @@
                             </div>
                             <div>
                                 <div class="row mb-3" id="appointment_date_section">
-                                    <label for="include_multiple_breaks" class="form-label mb-1 col-md-3">Employee's Appointment Date</label>
+                                    <label for="apply_frequency_month" class="form-label mb-1 col-md-3">Employee's Appointment Date</label>
                                     <div class="col-md-9">
-                                        <input type="checkbox" class="form-check-input" id="include_multiple_breaks">
+                                        <input type="checkbox" class="form-check-input" id="apply_frequency_month">
                                     </div>
                                 </div>
                                 <div class="row mb-3" id="day_of_month_section">
-                                    <label for="type" class="form-label mb-1 col-md-3">Day Of Month</label>
+                                    <label for="apply_frequency_day_of_month" class="form-label mb-1 col-md-3">Day Of Month</label>
                                     <div class="col-md-9">
-                                        <select class="form-select" id="type">
+                                        <select class="form-select" id="apply_frequency_day_of_month">
                                             <?php for ($i=1; $i < 31; $i++) { ?>
                                                 <option value="<?=$i?>"><?=$i?></option>
                                             <?php } ?>
@@ -74,9 +74,9 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3" id="day_of_week_section">
-                                    <label for="type" class="form-label mb-1 col-md-3">Day Of Week</label>
+                                    <label for="apply_frequency_day_of_week" class="form-label mb-1 col-md-3">Day Of Week</label>
                                     <div class="col-md-9">
-                                        <select class="form-select" id="type">
+                                        <select class="form-select" id="apply_frequency_day_of_week">
                                             <option value="sunday>">Sunday</option>
                                             <option value="monday>">Monday</option>
                                             <option value="tuesday>">Tuesday</option>
@@ -89,9 +89,9 @@
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="name" class="form-label mb-1 col-md-3">After Minimum Employed Days</label>
+                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">After Minimum Employed Days</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control numonly" id="name" placeholder="Enter Name" value="">
+                                    <input type="text" class="form-control numonly" id="minimum_employed_days" placeholder="Enter Name" value="">
                                 </div>
                             </div>
 
@@ -103,14 +103,14 @@
                             <div class="row mb-3">
                                 <label for="milestone_rollover_hire_date" class="form-label mb-1 col-md-3">Employee's Appointment Date</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control numonly" id="milestone_rollover_hire_date" placeholder="Enter Name" value="">
+                                    <input type="checkbox" class="form-check-input" id="milestone_rollover_hire_date">
                                 </div>
                             </div>
 
                             <div class="row mb-3" id="rollover_month_section">
-                                <label for="type" class="form-label mb-1 col-md-3">Month</label>
+                                <label for="milestone_rollover_month" class="form-label mb-1 col-md-3">Month</label>
                                 <div class="col-md-9">
-                                    <select class="form-select" id="type">
+                                    <select class="form-select" id="milestone_rollover_month">
                                         <option value="january">January</option>
                                         <option value="february">February</option>
                                         <option value="march">March</option>
@@ -127,9 +127,9 @@
                                 </div>
                             </div>
                             <div class="row mb-3" id="rollover_date_section">
-                                <label for="type" class="form-label mb-1 col-md-3">Day Of Month</label>
+                                <label for="milestone_rollover_day_of_month" class="form-label mb-1 col-md-3">Day Of Month</label>
                                 <div class="col-md-9">
-                                    <select class="form-select" id="type">
+                                    <select class="form-select" id="milestone_rollover_day_of_month">
                                         <?php for ($i=1; $i < 31; $i++) { ?>
                                             <option value="<?=$i?>"><?=$i?></option>
                                         <?php } ?>
