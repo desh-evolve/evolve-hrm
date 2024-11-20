@@ -199,7 +199,7 @@ $(document).ready(function () {
 //======================================================================================================
 
 $(document).on('click', '#click-delete', async function () {
-    const bankRecordId = $('#emp_id').val(); 
+    const bankRecordId = $('#emp_id').val();
     const employeeId = $('#employee_id').val();
 
     if (!bankRecordId) {
@@ -211,7 +211,7 @@ $(document).on('click', '#click-delete', async function () {
     try {
         // Perform the delete operation
         let url = `/employee/bank/delete`;
-        const title ='Bank Details';
+        const title ='Employee Bank Details';
 
         const res = await commonDeleteFunction(bankRecordId,url,title);
 

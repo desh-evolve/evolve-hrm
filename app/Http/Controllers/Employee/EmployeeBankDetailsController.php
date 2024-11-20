@@ -136,7 +136,7 @@ class EmployeeBankDetailsController extends Controller
     //pawanee(2024-11-08)
     public function deleteBankDetails($id){
         $whereArr = ['id' => $id];
-        $title = 'Employee Bank Details';
+        $title = 'Bank Details';
         $table = 'emp_bank_details';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
