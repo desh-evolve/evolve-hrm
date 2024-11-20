@@ -17,6 +17,7 @@ class EmployeeBankDetailsController extends Controller
             'index',
             'getBankDetailsByEmpId',
             'getAllEmployee',
+            'showBankDetails',
             ]]);
 
         $this->middleware('permission:create employee bank details', ['only' => ['createBankDetails']]);
@@ -27,14 +28,36 @@ class EmployeeBankDetailsController extends Controller
     }
 
 
-     //pawanee(2024-11-08)
-     public function index()
-     {
-         return view('employee_bank.index');
-     }
+    //pawanee(2024-11-08)
+    public function index()
+    {
+        return view('employee_bank.new_index');
+    }
 
 
-     //pawanee(2024-11-08)
+    //pawanee(2024-11-08)
+    public function showBankDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $employee = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+
+        // Check if the employee exists
+        if (!$employee || count($employee) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        // Fetch bank details associated with the employee
+        $bankDetails = $this->common->commonGetById($id, 'employee_id', 'emp_bank_details', '*');
+
+        // Pass the employee and bank details to the view
+        return view('employee_bank.edit', ['employee' => $employee[0], 'bankDetails' => $bankDetails, ]);
+    }
+
+
+    //pawanee(2024-11-08)
     public function createBankDetails(Request $request){
         try {
             return DB::transaction(function () use ($request) {
