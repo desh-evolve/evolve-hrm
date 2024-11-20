@@ -17,6 +17,8 @@
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
+                                <th class="col">Type</th>
+                                <th class="col">Active After</th>
                                 <th class="col">Action</th>
                             </tr>
                         </thead>
@@ -28,5 +30,9 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document)
+    </script>
 
 </x-app-layout>

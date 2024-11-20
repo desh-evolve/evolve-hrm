@@ -102,10 +102,10 @@
                                 <a href="{{ route('policy.accrual') }}" class="nav-link {{ request()->routeIs('policy.accrual') ? 'active' : '' }}">Accrual Policy</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('policy.exception') }}" class="nav-link {{ request()->routeIs('policy.exception') ? 'active' : '' }}">Exception Policy</a>
+                                <a href="{{ route('policy.overtime') }}" class="nav-link {{ request()->routeIs('policy.overtime') ? 'active' : '' }}">Overtime Policy</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('policy.overtime') }}" class="nav-link {{ request()->routeIs('policy.overtime') ? 'active' : '' }}">Overtime Policy</a>
+                                <a href="{{ route('policy.exception') }}" class="nav-link {{ request()->routeIs('policy.exception') ? 'active' : '' }}">Exception Policy</a>
                             </li>
 
                             <li class="nav-item"><a href="#" class="nav-link">Policy Groups</a></li>
