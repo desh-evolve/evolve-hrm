@@ -50,7 +50,11 @@
                     <div class="collapse menu-dropdown" id="attendance">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item"><a href="#" class="nav-link">My Time Sheet</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Punches</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_punch.index') }}" class="nav-link {{ request()->routeIs('company.employee_punch.index') ? 'active' : '' }}">
+                                    Punches
+                                </a>
+                            </li>
                             <li class="nav-item"><a href="#" class="nav-link">Mass Punch</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Requests</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Apply Leaves</a></li>
