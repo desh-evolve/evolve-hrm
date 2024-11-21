@@ -33,6 +33,8 @@ use App\Http\Controllers\Policy\BreakPolicyController;
 use App\Http\Controllers\Policy\AccrualPolicyController;
 use App\Http\Controllers\Policy\ExceptionPolicyController;
 use App\Http\Controllers\Policy\OvertimePolicyController;
+use App\Http\Controllers\Policy\PremiumPolicyController;
+use App\Http\Controllers\Policy\AbsencePolicyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -331,6 +333,19 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/overtime/dropdown', [OvertimePolicyController::class, 'getOvertimeDropdownData'])->name('policy.overtime.dropdown');
     Route::get('/policy/overtimes', [OvertimePolicyController::class, 'getAllOvertimePolicies'])->name('policy.overtimes.all');
     Route::delete('/policy/overtime/delete/{id}', [OvertimePolicyController::class, 'deleteOvertimePolicy'])->name('policy.overtime.delete');
+
+    // premium policy
+    Route::get('/policy/premium', [PremiumPolicyController::class, 'index'])->name('policy.premium');
+    Route::get('/policy/premium/form', [PremiumPolicyController::class, 'form'])->name('policy.premium.form');
+    Route::get('/policy/premium/dropdown', [PremiumPolicyController::class, 'getPremiumDropdownData'])->name('policy.premium.dropdown');
+    Route::get('/policy/premiums', [PremiumPolicyController::class, 'getAllPremiumPolicies'])->name('policy.premiums.all');
+    Route::delete('/policy/premium/delete/{id}', [PremiumPolicyController::class, 'deletePremiumPolicy'])->name('policy.premium.delete');
+
+    // absence policy
+    Route::get('/policy/absence', [AbsencePolicyController::class, 'index'])->name('policy.absence');
+    Route::get('/policy/absence/dropdown', [AbsencePolicyController::class, 'getAbsenceDropdownData'])->name('policy.absence.dropdown');
+    Route::get('/policy/absences', [AbsencePolicyController::class, 'getAllAbsencePolicies'])->name('policy.absences.all');
+    Route::delete('/policy/absence/delete/{id}', [AbsencePolicyController::class, 'deleteAbsencePolicy'])->name('policy.absence.delete');
 
 
     //==============================================================================================================================

@@ -107,6 +107,12 @@
                             <li class="nav-item">
                                 <a href="{{ route('policy.exception') }}" class="nav-link {{ request()->routeIs('policy.exception') ? 'active' : '' }}">Exception Policy</a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.premium') }}" class="nav-link {{ request()->routeIs('policy.premium') ? 'active' : '' }}">Premium Policy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.absence') }}" class="nav-link {{ request()->routeIs('policy.absence') ? 'active' : '' }}">Absence Policy</a>
+                            </li>
 
                             <li class="nav-item"><a href="#" class="nav-link">Policy Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Schedule Policies</a></li>

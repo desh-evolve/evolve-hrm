@@ -35,15 +35,25 @@ class OvertimePolicyController extends Controller
 
     public function getOvertimeDropdownData(){
         $ot_types = $this->common->commonGetAll('overtime_types', '*');
+        $wage_groups = $this->common->commonGetAll('com_wage_groups', ['id', 'wage_group_name AS name']);
+        $pay_stubs = $this->common->commonGetAll('pay_stub_entry_account', '*');
+        $accrual_policies = $this->common->commonGetAll('accrual_policy', '*');
         return response()->json([
             'data' => [
                 'ot_types' => $ot_types,
+                'wage_groups' => $wage_groups,
+                'pay_stubs' => $pay_stubs,
+                'accrual_policies' => $accrual_policies,
             ]
         ], 200);
     }
 
     public function getAllOvertimePolicies(){
-        $overtimes = $this->common->commonGetAll('overtime_policy', '*');
+        $fields = ['overtime_policy.id', 'overtime_policy.name', 'trigger_time', 'max_time', 'rate', 'accrual_policy_id', 'accrual_rate', 'overtime_policy.type_id', 'overtime_types.name AS type'];
+        $joinArr = [
+            'overtime_types' => ['overtime_types.id', '=', 'overtime_policy.type_id']
+        ];
+        $overtimes = $this->common->commonGetAll('overtime_policy', $fields, $joinArr);
         return response()->json(['data' => $overtimes], 200);
     }
 

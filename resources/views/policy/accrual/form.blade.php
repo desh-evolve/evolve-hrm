@@ -160,7 +160,10 @@
                                 <button type="button" class="btn btn-info btn-sm add_milestone">Add Milestone</button>
                             </div>
                         </div>
-
+                        
+                        <div>
+                            <button class="btn btn-primary">Submit</button>
+                        </div>
                     </form>
                 </div>
             </div>
