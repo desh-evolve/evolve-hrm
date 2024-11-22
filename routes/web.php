@@ -38,6 +38,10 @@ use App\Http\Controllers\Policy\HolidayPolicyController;
 use App\Http\Controllers\Policy\AbsencePolicyController;
 use App\Http\Controllers\Policy\SchedulePolicyController;
 
+// Attendance
+use App\Http\Controllers\Attendance\PunchController;
+ 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -258,6 +262,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
      Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
      Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
 
+
+     Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
+     //  Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
+      Route::get('/company/employee_punch/dropdown', [PunchController::class, 'getDropdownData'])->name('company.employee_punch.dropdown');
+      Route::post('/company/employee_punch/create', [PunchController::class, 'createEmployeePunch'])->name('company.employee_punch.create');
+      Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
+      Route::get('/company/single_employee_punch/{id}', [PunchController::class, 'getSingleEmployeePunch'])->name('company.employee_punch.single');
+      Route::put('/company/employee_punch/update/{id}', [PunchController::class, 'updateEmployeePunch'])->name('company.employee_punch.update');
+    
     //==============================================================================================================================
     // Employee Job History
     //==============================================================================================================================
