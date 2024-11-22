@@ -37,11 +37,17 @@ class PremiumPolicyController extends Controller
         $wage_groups = $this->common->commonGetAll('com_wage_groups', ['id', 'wage_group_name AS name']);
         $pay_stubs = $this->common->commonGetAll('pay_stub_entry_account', '*');
         $accrual_policies = $this->common->commonGetAll('accrual_policy', '*');
+        $branches = $this->common->commonGetAll('com_branches', ['id', 'branch_name AS name']);
+        $departments = $this->common->commonGetAll('com_departments', ['id', 'department_name AS name']);
+        $br_deps = $this->common->commonGetAll('com_branch_departments', '*');
         return response()->json([
             'data' => [
                 'wage_groups' => $wage_groups,
                 'pay_stubs' => $pay_stubs,
                 'accrual_policies' => $accrual_policies,
+                'branches' => $branches,
+                'departments' => $departments,
+                'br_deps' => $br_deps,
             ]
         ], 200);
     }

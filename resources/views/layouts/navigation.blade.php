@@ -113,11 +113,15 @@
                             <li class="nav-item">
                                 <a href="{{ route('policy.absence') }}" class="nav-link {{ request()->routeIs('policy.absence') ? 'active' : '' }}">Absence Policy</a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.holiday') }}" class="nav-link {{ request()->routeIs('policy.holiday') ? 'active' : '' }}">Holiday Policy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.schedule') }}" class="nav-link {{ request()->routeIs('policy.schedule') ? 'active' : '' }}">Schedule Policy</a>
+                            </li>
 
                             <li class="nav-item"><a href="#" class="nav-link">Policy Groups</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Schedule Policies</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Rounding Policies</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Meal Policies</a></li>
                         </ul>
                     </div>
                 </li>

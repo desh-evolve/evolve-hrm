@@ -34,7 +34,9 @@ use App\Http\Controllers\Policy\AccrualPolicyController;
 use App\Http\Controllers\Policy\ExceptionPolicyController;
 use App\Http\Controllers\Policy\OvertimePolicyController;
 use App\Http\Controllers\Policy\PremiumPolicyController;
+use App\Http\Controllers\Policy\HolidayPolicyController;
 use App\Http\Controllers\Policy\AbsencePolicyController;
+use App\Http\Controllers\Policy\SchedulePolicyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -341,11 +343,24 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/premiums', [PremiumPolicyController::class, 'getAllPremiumPolicies'])->name('policy.premiums.all');
     Route::delete('/policy/premium/delete/{id}', [PremiumPolicyController::class, 'deletePremiumPolicy'])->name('policy.premium.delete');
 
+    // holiday policy
+    Route::get('/policy/holiday', [HolidayPolicyController::class, 'index'])->name('policy.holiday');
+    Route::get('/policy/holiday/form', [HolidayPolicyController::class, 'form'])->name('policy.holiday.form');
+    Route::get('/policy/holiday/dropdown', [HolidayPolicyController::class, 'getHolidayDropdownData'])->name('policy.holiday.dropdown');
+    Route::get('/policy/holidays', [HolidayPolicyController::class, 'getAllHolidayPolicies'])->name('policy.holidays.all');
+    Route::delete('/policy/holiday/delete/{id}', [HolidayPolicyController::class, 'deleteHolidayPolicy'])->name('policy.holiday.delete');
+
     // absence policy
     Route::get('/policy/absence', [AbsencePolicyController::class, 'index'])->name('policy.absence');
     Route::get('/policy/absence/dropdown', [AbsencePolicyController::class, 'getAbsenceDropdownData'])->name('policy.absence.dropdown');
     Route::get('/policy/absences', [AbsencePolicyController::class, 'getAllAbsencePolicies'])->name('policy.absences.all');
     Route::delete('/policy/absence/delete/{id}', [AbsencePolicyController::class, 'deleteAbsencePolicy'])->name('policy.absence.delete');
+
+    // schedule policy
+    Route::get('/policy/schedule', [SchedulePolicyController::class, 'index'])->name('policy.schedule');
+    Route::get('/policy/schedule/dropdown', [SchedulePolicyController::class, 'getScheduleDropdownData'])->name('policy.schedule.dropdown');
+    Route::get('/policy/schedules', [SchedulePolicyController::class, 'getAllSchedulePolicies'])->name('policy.schedules.all');
+    Route::delete('/policy/schedule/delete/{id}', [SchedulePolicyController::class, 'deleteSchedulePolicy'])->name('policy.schedule.delete');
 
 
     //==============================================================================================================================
