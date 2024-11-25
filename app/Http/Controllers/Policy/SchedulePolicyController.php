@@ -15,9 +15,9 @@ class SchedulePolicyController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:view schedule policy', ['only' => ['index', 'getAllSchedulePolicies']]);
-        $this->middleware('permission:create schedule policy', ['only' => ['form', 'getScheduleDropdownData', '']]);
-        $this->middleware('permission:update schedule policy', ['only' => ['form', 'getScheduleDropdownData', '']]);
+        $this->middleware('permission:view schedule policy', ['only' => ['index', 'getAllSchedulePolicies', 'getScheduleDropdownData']]);
+        $this->middleware('permission:create schedule policy', ['only' => ['', '', '']]);
+        $this->middleware('permission:update schedule policy', ['only' => ['', '', '']]);
         $this->middleware('permission:delete schedule policy', ['only' => ['deleteSchedulePolicy']]);
 
         $this->common = new CommonModel();
@@ -29,20 +29,28 @@ class SchedulePolicyController extends Controller
     }
 
     public function getScheduleDropdownData(){
-        $punch_types = $this->common->commonGetAll('round_interval_punch_types', '*');
+        $absence_policy = $this->common->commonGetAll('absence_policy', '*');
+        $break_policy = $this->common->commonGetAll('break_policy', '*');
+        $meal_policy = $this->common->commonGetAll('meal_policy', '*');
+        $overtime_policy = $this->common->commonGetAll('overtime_policy', '*');
         return response()->json([
             'data' => [
-                'punch_types' => $punch_types,
+                'absence_policy' => $absence_policy,
+                'break_policy' => $break_policy,
+                'meal_policy' => $meal_policy,
+                'overtime_policy' => $overtime_policy,
             ]
         ], 200);
     }
 
     public function getAllSchedulePolicies(){
-        $fields = ['round_interval_policy.id', 'round_interval_policy.name', 'round_interval_policy.punch_type_id', 'round_type', 'round_interval', 'strict', 'grace', 'round_interval_punch_types.name AS punch_type'];
+        $fields = ['schedule_policy.*', 'meal_policy.name AS meal_policy', 'overtime_policy.name AS overtime_policy', 'absence_policy.name AS absence_policy'];
         $joinArr = [
-            'round_interval_punch_types' => ['round_interval_punch_types.id', '=', 'round_interval_policy.punch_type_id']
+            'meal_policy' => ['meal_policy.id', '=', 'schedule_policy.meal_policy_id'],
+            'overtime_policy' => ['overtime_policy.id', '=', 'schedule_policy.over_time_policy_id'],
+            'absence_policy' => ['absence_policy.id', '=', 'schedule_policy.absence_policy_id'],
         ];
-        $schedules = $this->common->commonGetAll('round_interval_policy', $fields, $joinArr);
+        $schedules = $this->common->commonGetAll('schedule_policy', $fields, $joinArr);
         return response()->json(['data' => $schedules], 200);
     }
 

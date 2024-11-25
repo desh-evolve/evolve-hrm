@@ -37,6 +37,7 @@ use App\Http\Controllers\Policy\PremiumPolicyController;
 use App\Http\Controllers\Policy\HolidayPolicyController;
 use App\Http\Controllers\Policy\AbsencePolicyController;
 use App\Http\Controllers\Policy\SchedulePolicyController;
+use App\Http\Controllers\Policy\PolicyGroupsController;
 
 // Attendance
 use App\Http\Controllers\Attendance\PunchController;
@@ -375,6 +376,12 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/schedules', [SchedulePolicyController::class, 'getAllSchedulePolicies'])->name('policy.schedules.all');
     Route::delete('/policy/schedule/delete/{id}', [SchedulePolicyController::class, 'deleteSchedulePolicy'])->name('policy.schedule.delete');
 
+    // policy groups
+    Route::get('/policy/policy_group', [PolicyGroupsController::class, 'index'])->name('policy.policy_group');
+    Route::get('/policy/policy_group/form', [PolicyGroupsController::class, 'form'])->name('policy.policy_group.form');
+    Route::get('/policy/policy_group/dropdown', [PolicyGroupsController::class, 'getPolicyGroupDropdownData'])->name('policy.policy_group.dropdown');
+    Route::get('/policy/policy_groups', [PolicyGroupsController::class, 'getAllPolicyGroups'])->name('policy.policy_groups.all');
+    Route::delete('/policy/policy_group/delete/{id}', [PolicyGroupsController::class, 'deletePolicyGroup'])->name('policy.policy_group.delete');
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page
