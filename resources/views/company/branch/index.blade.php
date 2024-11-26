@@ -264,7 +264,6 @@
             try {
                 let branch_data = await commonFetchData(`/company/branch/${branch_id}`);
                 branch_data = branch_data[0];
-                console.log('branch_data', branch_data);
 
                 // Set initial form values
                 $('#branch_id').val(branch_id);
