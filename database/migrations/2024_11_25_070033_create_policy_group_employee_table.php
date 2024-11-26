@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('policy_group_user', function (Blueprint $table) {
+        Schema::create('policy_group_employees', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('policy_group_id')->default(0);
             $table->unsignedInteger('employee_id')->default(0);
@@ -20,7 +20,7 @@ return new class extends Migration {
 
     public function down()
     {
-        Schema::dropIfExists('policy_group_user');
+        Schema::dropIfExists('policy_group_employees');
     }
 };
 
