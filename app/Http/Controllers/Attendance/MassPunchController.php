@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
 use Termwind\Components\Dd;
+use Carbon\Carbon;
 
-class PunchController extends Controller
+class MassPunchController extends Controller
 {
     private $common = null;
 
@@ -35,7 +36,7 @@ class PunchController extends Controller
 
     public function index()
     {
-        return view('attendance.punch.index');
+        return view('attendance.mass_punch.index');
     }
 
     public function createEmployeePunch(Request $request)
@@ -43,101 +44,131 @@ class PunchController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    //     'employee_date_id' => 'required',
-                    //     // 'total_time' => 'required',
-                    //     // 'actual_total_time' => 'required',
-                    //     // 'overlap' => 'required',
                     'punch_type' => 'required',
                     'punch_status' => 'required',
                 ]);
+
+                $employees = $request->employees;
+                $startDate = Carbon::parse($request->start_date);
+                $endDate = Carbon::parse($request->end_date);
+                $selectedDays = json_decode($request->selectedDays, true);
+
+                $daysOfWeek = [
+                    'Sun' => 0,
+                    'Mon' => 1,
+                    'Tue' => 2,
+                    'Wed' => 3,
+                    'Thu' => 4,
+                    'Fri' => 5,
+                    'Sat' => 6,
+                ];
+
+                $validDays = collect($selectedDays)
+                    ->filter(fn($value) => $value == 1)
+                    ->keys()
+                    ->map(fn($day) => $daysOfWeek[$day]);
+
+                $dates = [];
+                for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+                    if ($validDays->contains($date->dayOfWeek)) {
+                        $dates[] = $date->toDateString();
+                    }
+                }
+
+
                 //-------------------for check if punch_controll insert for given employee , date-----------------
-                $employeeId = $request->employee_id;
-                $employeeDateId = DB::table('employee_date')
-                    ->select('employee_date.id as employee_date_id')
-                    ->where('employee_date.employee_id', $employeeId)
-                    ->where('employee_date.date_stamp', $request->date)
-                    ->groupBy('employee_date.id')
-                    ->first();
 
-                if ($employeeDateId) {
-                    $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
+                foreach ($employees as $employeeId) {
+                    foreach ($dates as $date) {
+                        $dateTime = Carbon::parse("$date $request->time");
+                        // $employeeId = $request->employee_id;
+                        $employeeDateId = DB::table('employee_date')
+                            ->select('employee_date.id as employee_date_id')
+                            ->where('employee_date.employee_id', $employeeId)
+                            ->where('employee_date.date_stamp', $date)
+                            ->groupBy('employee_date.id')
+                            ->first();
+                        // }
 
-                    // Check if punch_control exists
-                    $countRaw = DB::table('punch_control')
-                        ->select('punch_control.*')
-                        ->where('punch_control.employee_date_id', $employeeDateId)
-                        ->first();
+                        if ($employeeDateId) {
+                            $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
 
-                    if (!$countRaw) { // Check if record doesn't exist
-                        $table_1 = 'punch_control';
-                        // Insert new record into punch_control
-                        $punchControlInputArr = [
-                            'employee_date_id' => $employeeDateId,
-                            'branch_id' => $request->branch_id,
-                            'department_id' => $request->department_id,
-                            'total_time' => 0,
-                            'actual_total_time' => 0,
-                            'meal_policy_id' => 1,
-                            'overlap' => 1,
-                            'note' => $request->note,
-                            'status' => $request->punch_status,
-                            'created_by' => Auth::user()->id,
-                            'updated_by' => Auth::user()->id,
-                        ];
-                        $punchControlInsertId = $this->common->commonSave($table_1, $punchControlInputArr);
-                    } else {
-                        // Calculate total_time
-                        $punchControlInsertId = $countRaw->id;
-                        $totalTime = DB::table(DB::raw('(SELECT TIMESTAMPDIFF(SECOND, MIN(time_stamp), MAX(time_stamp)) as time_diff 
+                            // Check if punch_control exists
+                            $countRaw = DB::table('punch_control')
+                                ->select('punch_control.*')
+                                ->where('punch_control.employee_date_id', $employeeDateId)
+                                ->first();
+
+                            if (!$countRaw) { // Check if record doesn't exist
+                                $table_1 = 'punch_control';
+                                // Insert new record into punch_control
+                                $punchControlInputArr = [
+                                    'employee_date_id' => $employeeDateId,
+                                    'branch_id' => $request->branch_id,
+                                    'department_id' => $request->department_id,
+                                    'total_time' => 0,
+                                    'actual_total_time' => 0,
+                                    'meal_policy_id' => 1,
+                                    'overlap' => 1,
+                                    'note' => $request->note,
+                                    'status' => $request->punch_status,
+                                    'created_by' => Auth::user()->id,
+                                    'updated_by' => Auth::user()->id,
+                                ];
+                                $punchControlInsertId = $this->common->commonSave($table_1, $punchControlInputArr);
+                            } else {
+                                // Calculate total_time
+                                $punchControlInsertId = $countRaw->id;
+                                $totalTime = DB::table(DB::raw('(SELECT TIMESTAMPDIFF(SECOND, MIN(time_stamp), MAX(time_stamp)) as time_diff 
                                 FROM punch 
                                 WHERE punch_control_id = ' . $punchControlInsertId . ' 
                                 GROUP BY punch_control_id) as time_differences'))
-                            ->select(DB::raw('SEC_TO_TIME(SUM(time_diff)) as total_time'))
-                            ->first();
-                        // dd('$totalTime', $totalTime);
-                        // dd($totalTime);
-                        $totalTime = $totalTime->total_time;
+                                    ->select(DB::raw('SEC_TO_TIME(SUM(time_diff)) as total_time'))
+                                    ->first();
+                                $totalTime = $totalTime->total_time;
 
-                        // Update punch_control
-                        DB::table('punch_control')
-                            ->where('id', $punchControlInsertId)
-                            ->update([
-                                'total_time' => $totalTime,
-                                'actual_total_time' => $totalTime,
+                                // Update punch_control
+                                DB::table('punch_control')
+                                    ->where('id', $punchControlInsertId)
+                                    ->update([
+                                        'total_time' => $totalTime,
+                                        'actual_total_time' => $totalTime,
+                                        'updated_by' => Auth::user()->id,
+                                        'updated_at' => now(),
+                                    ]);
+                            }
+                        } else {
+                            // Handle case where no employee_date record is found
+                            return response()->json(['message' => 'Employee Date not found'], 404);
+                        }
+
+                        if ($punchControlInsertId) {
+                            $table_2 = 'punch';
+                            $punchInputArr = [
+                                'punch_control_id' => $punchControlInsertId,
+                                'station_id' => $request->station_id,
+                                'punch_type' => $request->punch_type,
+                                'punch_status' => $request->punch_status,
+                                'time_stamp' => $dateTime->toDateTimeString(),
+                                'original_time_stamp' => $dateTime->toDateTimeString(),
+                                'actual_time_stamp' => $dateTime->toDateTimeString(),
+                                'transfer' => 1,
+                                'longitude' => $request->longitude,
+                                'latitude' => $request->latitude,
+                                'status' => $request->emp_punch_status,
+                                'created_by' => Auth::user()->id,
                                 'updated_by' => Auth::user()->id,
-                                'updated_at' => now(),
-                            ]);
+                            ];
+                            $punchInsertId = $this->common->commonSave($table_2, $punchInputArr);
+                            if ($punchInsertId) {
+                                return response()->json(['status' => 'success', 'message' => 'Insert successfully', 'data' => ['id' => $punchInsertId]], 200);
+                            } else {
+                                return response()->json(['status' => 'error', 'message' => 'error insert punch', 'data' => []], 500);
+                            }
+                        } else {
+                            return response()->json(['status' => 'error', 'message' => 'Failed adding Work Experience', 'data' => []], 500);
+                        }
                     }
-                } else {
-                    // Handle case where no employee_date record is found
-                    return response()->json(['message' => 'Employee Date not found'], 404);
-                }
-
-                if ($punchControlInsertId) {
-                    $table_2 = 'punch';
-                    $punchInputArr = [
-                        'punch_control_id' => $punchControlInsertId,
-                        'station_id' => $request->station_id,
-                        'punch_type' => $request->punch_type,
-                        'punch_status' => $request->punch_status,
-                        'time_stamp' => $request->time_stamp,
-                        'original_time_stamp' => $request->time_stamp,
-                        'actual_time_stamp' => $request->time_stamp,
-                        'transfer' => 1,
-                        'longitude' => $request->longitude,
-                        'latitude' => $request->latitude,
-                        'status' => $request->emp_punch_status,
-                        'created_by' => Auth::user()->id,
-                        'updated_by' => Auth::user()->id,
-                    ];
-                    $punchInsertId = $this->common->commonSave($table_2, $punchInputArr);
-                    if ($punchInsertId) {
-                        return response()->json(['status' => 'success', 'message' => 'Insert successfully', 'data' => ['id' => $punchInsertId]], 200);
-                    } else {
-                        return response()->json(['status' => 'error', 'message' => 'error insert punch', 'data' => []], 500);
-                    }
-                } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed adding Work Experience', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -150,9 +181,7 @@ class PunchController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    // 'total_time' => 'required',
-                    // 'actual_total_time' => 'required',
-                    // 'overlap' => 'required',
+
                     'punch_type' => 'required',
                     'punch_status' => 'required',
                 ]);
