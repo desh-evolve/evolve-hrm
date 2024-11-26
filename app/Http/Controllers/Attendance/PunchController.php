@@ -19,23 +19,21 @@ class PunchController extends Controller
     {
         // ========= need to develop getEmployeeList login as a staff =========== //
 
-        $this->middleware('permission:view punch', ['only' => [
+        $this->middleware('permission:view mass punch', ['only' => [
             'index',
             // 'getAllEmployeePunch',
             'getAllEmployeeList',
             'getEmployeePunchById',
             'getSingleEmployeePunch',
         ]]);
-        $this->middleware('permission:create punch', ['only' => ['createEmployeePunch']]);
-        $this->middleware('permission:update punch', ['only' => ['updateEmployeePunch']]);
-        $this->middleware('permission:delete punch', ['only' => ['deleteEmployeePunch']]);
+        $this->middleware('permission:create mass punch', ['only' => ['createEmployeePunch']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('attendance.punch.index');
+        return view('attendance.mass_punch.index');
     }
 
     public function createEmployeePunch(Request $request)
@@ -145,74 +143,74 @@ class PunchController extends Controller
         }
     }
 
-    public function updateEmployeePunch(Request $request, $id)
-    {
-        try {
-            return DB::transaction(function () use ($request, $id) {
-                $request->validate([
-                    // 'total_time' => 'required',
-                    // 'actual_total_time' => 'required',
-                    // 'overlap' => 'required',
-                    'punch_type' => 'required',
-                    'punch_status' => 'required',
-                ]);
-                $employeeId = $request->employee_id;
-                $employeeDateId = DB::table('employee_date')
-                    ->select('employee_date.id as employee_date_id')
-                    ->where('employee_date.employee_id', $employeeId)
-                    ->where('employee_date.date_stamp', $request->date)
-                    ->groupBy('employee_date.id')
-                    ->first();
+    // public function updateEmployeePunch(Request $request, $id)
+    // {
+    //     try {
+    //         return DB::transaction(function () use ($request, $id) {
+    //             $request->validate([
+    //                 // 'total_time' => 'required',
+    //                 // 'actual_total_time' => 'required',
+    //                 // 'overlap' => 'required',
+    //                 'punch_type' => 'required',
+    //                 'punch_status' => 'required',
+    //             ]);
+    //             $employeeId = $request->employee_id;
+    //             $employeeDateId = DB::table('employee_date')
+    //                 ->select('employee_date.id as employee_date_id')
+    //                 ->where('employee_date.employee_id', $employeeId)
+    //                 ->where('employee_date.date_stamp', $request->date)
+    //                 ->groupBy('employee_date.id')
+    //                 ->first();
 
-                if ($employeeDateId) {
-                    $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
+    //             if ($employeeDateId) {
+    //                 $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
 
-                    // Check if punch_control exists
-                    $countRaw = DB::table('punch_control')
-                        ->select('punch_control.*')
-                        ->where('punch_control.employee_date_id', $employeeDateId)
-                        ->first();
-                }
-                $punchControlInsertId = $countRaw->id;
+    //                 // Check if punch_control exists
+    //                 $countRaw = DB::table('punch_control')
+    //                     ->select('punch_control.*')
+    //                     ->where('punch_control.employee_date_id', $employeeDateId)
+    //                     ->first();
+    //             }
+    //             $punchControlInsertId = $countRaw->id;
 
-                $table = 'punch';
-                $idColumn = 'id';
-                $inputArr = [
-                    'punch_control_id' => $punchControlInsertId,
-                    'station_id' => $request->station_id,
-                    'punch_type' => $request->punch_type,
-                    'punch_status' => $request->punch_status,
-                    'time_stamp' => $request->time_stamp,
-                    'original_time_stamp' => $request->original_time_stamp,
-                    'actual_time_stamp' => $request->actual_time_stamp,
-                    'transfer' => 1,
-                    'longitude' => $request->longitude,
-                    'latitude' => $request->latitude,
-                    'status' => $request->emp_punch_status,
-                    'updated_by' => Auth::user()->id,
+    //             $table = 'punch';
+    //             $idColumn = 'id';
+    //             $inputArr = [
+    //                 'punch_control_id' => $punchControlInsertId,
+    //                 'station_id' => $request->station_id,
+    //                 'punch_type' => $request->punch_type,
+    //                 'punch_status' => $request->punch_status,
+    //                 'time_stamp' => $request->time_stamp,
+    //                 'original_time_stamp' => $request->original_time_stamp,
+    //                 'actual_time_stamp' => $request->actual_time_stamp,
+    //                 'transfer' => 1,
+    //                 'longitude' => $request->longitude,
+    //                 'latitude' => $request->latitude,
+    //                 'status' => $request->emp_punch_status,
+    //                 'updated_by' => Auth::user()->id,
 
-                ];
-                $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+    //             ];
+    //             $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
-                if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Punch updated successfully', 'data' => ['id' => $insertId]], 200);
-                } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed updating Punch', 'data' => []], 500);
-                }
-            });
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
-        }
-    }
+    //             if ($insertId) {
+    //                 return response()->json(['status' => 'success', 'message' => 'Punch updated successfully', 'data' => ['id' => $insertId]], 200);
+    //             } else {
+    //                 return response()->json(['status' => 'error', 'message' => 'Failed updating Punch', 'data' => []], 500);
+    //             }
+    //         });
+    //     } catch (\Illuminate\Database\QueryException $e) {
+    //         return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
+    //     }
+    // }
 
-    public function deleteEmployeePunch($id)
-    {
-        $whereArr = ['id' => $id];
-        $title = 'Employee Punch';
-        $table = 'punch';
+    // public function deleteEmployeePunch($id)
+    // {
+    //     $whereArr = ['id' => $id];
+    //     $title = 'Employee Punch';
+    //     $table = 'punch';
 
-        return $this->common->commonDelete($id, $whereArr, $title, $table);
-    }
+    //     return $this->common->commonDelete($id, $whereArr, $title, $table);
+    // }
 
 
     public function getEmployeePunchById($id)
@@ -258,16 +256,16 @@ class PunchController extends Controller
         ], 200);
     }
 
-    public function getSingleEmployeePunch($id)
-    {
-        $idColumn = 'punch.id';
-        $table = 'punch';
-        $fields = ['punch.*', 'punch_control.department_id', 'punch_control.branch_id', 'punch_control.note', 'punch_control.note'];
-        $joinArr = [
-            'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
+    // public function getSingleEmployeePunch($id)
+    // {
+    //     $idColumn = 'punch.id';
+    //     $table = 'punch';
+    //     $fields = ['punch.*', 'punch_control.department_id', 'punch_control.branch_id', 'punch_control.note', 'punch_control.note'];
+    //     $joinArr = [
+    //         'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
 
-        ];
-        $employee_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
-        return response()->json(['data' => $employee_punch], 200);
-    }
+    //     ];
+    //     $employee_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
+    //     return response()->json(['data' => $employee_punch], 200);
+    // }
 }

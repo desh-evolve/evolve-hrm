@@ -275,7 +275,7 @@ class MassPunchController extends Controller
     public function getDropdownData()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $employees = $this->common->commonGetAll('emp_employees', ['id', 'name_with_initials AS name']);
         $branches = $this->common->commonGetAll('com_branches', '*');
         $departments = $this->common->commonGetAll('com_departments', '*');
         return response()->json([
