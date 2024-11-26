@@ -17,13 +17,14 @@
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
-                                <th class="col">Punch Type</th>
-                                <th class="col">Interval</th>
+                                <th class="col">Meal Policy</th>
+                                <th class="col">Absence Policy</th>
+                                <th class="col">Window</th>
                                 <th class="col">Action</th>
                             </tr>
                         </thead>
                         <tbody id="schd_pol_table_body">
-                            <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                            <tr><td colspan="6" class="text-center">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -48,40 +49,42 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="punch_type_id" class="form-label mb-1 col-md-3">Punch Type</label>
+                            <label for="meal_policy_id" class="form-label mb-1 col-md-3">Meal Policy</label>
                             <div class="col-md-9">
-                                <select class="form-select" id="punch_type_id">
+                                <select class="form-select" id="meal_policy_id">
                                     <!-- Add options dynamically -->
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="round_type_id" class="form-label mb-1 col-md-3">Round Type</label>
+                            <label for="break_policy_ids" class="form-label mb-1 col-md-3">Break Policies</label>
                             <div class="col-md-9">
-                                <select class="form-select" id="round_type_id">
-                                    <option value="">Select a round type</option>
-                                    <option value="down">Down</option>
-                                    <option value="average">Average</option>
-                                    <option value="up">Up</option>
+                                <select class="form-select" id="break_policy_ids" multiple>
+                                    <!-- Add options dynamically -->
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="interval_time" class="form-label mb-1 col-md-3">Interval</label>
+                            <label for="absence_policy_id" class="form-label mb-1 col-md-3">Undertime Absence Policy</label>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" id="interval_time" placeholder="Select Interval (hh:mm)">
+                                <select class="form-select" id="absence_policy_id">
+                                    <!-- Add options dynamically -->
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="grace_period" class="form-label mb-1 col-md-3">Grace Period</label>
+                            <label for="overtime_policy_id" class="form-label mb-1 col-md-3">Overtime Policy</label>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" id="grace_period" placeholder="Select Grace Period (hh:mm)">
+                                <select class="form-select" id="overtime_policy_id">
+                                    <!-- Add options dynamically -->
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="strict_schedule" class="form-label mb-1 col-md-3">Strict Schedule</label>
-                            <div class="col-md-9">
-                                <input type="checkbox" class="form-check-input" id="strict_schedule">
+                            <label for="start_stop_window" class="form-label mb-1 col-md-3">Start / Stop Window</label>
+                            <div class="col-md-9 d-flex align-items-center">
+                                <input type="text" class="form-control numonly w-75" id="start_stop_window" value="01:00">
+                                <span class="ps-4">(hh:mm (2:15))</span>
                             </div>
                         </div>
                     </div>                    
@@ -108,12 +111,13 @@
                 let list = '';
                 if(schedules && schedules.length > 0){
                     schedules.map((schd, i) => {
-                        let interval = convertSecondsToHoursAndMinutes(schd.round_interval);
+                        let interval = convertSecondsToHoursAndMinutes(schd.start_window);
                         list += `
                             <tr schedule_policy_id="${schd.id}">
                                 <td>${i+1}</td>    
                                 <td>${schd.name}</td>    
-                                <td>${schd.punch_type}</td>    
+                                <td>${schd.meal_policy}</td>    
+                                <td>${schd.absence_policy}</td>    
                                 <td>${interval}</td>    
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_round_pol" title="Edit Schedule Policy" data-tooltip="tooltip" data-bs-placement="top">
@@ -127,7 +131,7 @@
                         `;
                     })
                 }else{
-                    list += `<tr><td colspan="3" class="text-center">No Schedule Policies Found!</td></tr>`;
+                    list += `<tr><td colspan="6" class="text-center">No Schedule Policies Found!</td></tr>`;
                 }
 
                 $('#schd_pol_table_body').html(list);
@@ -164,11 +168,30 @@
             try {
                 dropdownData = await commonFetchData('/policy/schedule/dropdown');
 
-                // Populate schedule punch types dropdown
-                let punchTypesList = (dropdownData?.punch_types || [])
+                // Populate meal policy dropdown
+                let mealPolicyList = (dropdownData?.absence_policy || [])
                     .map(type => `<option value="${type.id}">${type.name}</option>`)
                     .join('');
-                $('#punch_type_id').html('<option value="">Select a punch type</option>' + punchTypesList);
+                $('#meal_policy_id').html('<option value="">--</option>' + mealPolicyList);
+
+                // Populate break policy dropdown
+                let breakPolicyList = (dropdownData?.break_policy || [])
+                    .map(type => `<option value="${type.id}">${type.name}</option>`)
+                    .join('');
+                $('#break_policy_ids').html('<option value="">--</option>' + breakPolicyList);
+
+                // Populate absence policy dropdown
+                let absencePolicyList = (dropdownData?.meal_policy || [])
+                    .map(type => `<option value="${type.id}">${type.name}</option>`)
+                    .join('');
+                $('#absence_policy_id').html('<option value="">--</option>' + absencePolicyList);
+
+                // Populate overtime policy dropdown
+                let otPolicyList = (dropdownData?.overtime_policy || [])
+                    .map(type => `<option value="${type.id}">${type.name}</option>`)
+                    .join('');
+                $('#overtime_policy_id').html('<option value="">--</option>' + otPolicyList);
+
             } catch (error) {
                 console.error('Error fetching dropdown data:', error);
             }

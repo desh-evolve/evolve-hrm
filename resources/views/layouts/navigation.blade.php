@@ -94,6 +94,12 @@
                     <div class="collapse menu-dropdown {{ $checkPolicyNav ? 'show' : '' }}" id="policyMultiLevel">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
+                                <a href="{{ route('policy.policy_group') }}" class="nav-link {{ request()->routeIs('policy.policy_group') ? 'active' : '' }}">Policy Groups</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.schedule') }}" class="nav-link {{ request()->routeIs('policy.schedule') ? 'active' : '' }}">Schedule Policy</a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('policy.rounding') }}" class="nav-link {{ request()->routeIs('policy.rounding') ? 'active' : '' }}">Rounding Policy</a>
                             </li>
                             <li class="nav-item">
@@ -120,12 +126,6 @@
                             <li class="nav-item">
                                 <a href="{{ route('policy.holiday') }}" class="nav-link {{ request()->routeIs('policy.holiday') ? 'active' : '' }}">Holiday Policy</a>
                             </li>
-                            <li class="nav-item">
-                                <a href="{{ route('policy.schedule') }}" class="nav-link {{ request()->routeIs('policy.schedule') ? 'active' : '' }}">Schedule Policy</a>
-                            </li>
-
-                            <li class="nav-item"><a href="#" class="nav-link">Policy Groups</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Schedule Policies</a></li>
                         </ul>
                     </div>
                 </li>

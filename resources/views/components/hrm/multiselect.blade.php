@@ -61,7 +61,7 @@
             }).get();
 
             // Update count message
-            selectedCount.text(`${settings.title}: ${selectedIds.length} ${settings.title} Currently Selected, Click the arrow to modify.`);
+            selectedCount.text(`${selectedIds.length} ${settings.title} Currently Selected, Click the arrow to modify.`);
 
             // Trigger callback
             if (typeof settings.onSelectionChange === 'function') {
