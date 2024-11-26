@@ -1,8 +1,8 @@
 <?php
 
-
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 // controller
 use App\Http\Controllers\Company\IndustryController;
@@ -41,11 +41,9 @@ use App\Http\Controllers\Policy\PolicyGroupsController;
 
 // Attendance
 use App\Http\Controllers\Attendance\PunchController;
- 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [AuthenticatedSessionController::class, 'create'])
+        ->name('login');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -382,6 +380,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/policy_group/dropdown', [PolicyGroupsController::class, 'getPolicyGroupDropdownData'])->name('policy.policy_group.dropdown');
     Route::get('/policy/policy_groups', [PolicyGroupsController::class, 'getAllPolicyGroups'])->name('policy.policy_groups.all');
     Route::delete('/policy/policy_group/delete/{id}', [PolicyGroupsController::class, 'deletePolicyGroup'])->name('policy.policy_group.delete');
+    Route::post('/policy/policy_group/create', [PolicyGroupsController::class, 'createPolicyGroup'])->name('policy.policy_group.create');
+    Route::put('/policy/policy_group/update/{id}', [PolicyGroupsController::class, 'updatePolicyGroup'])->name('policy.policy_group.update');
+    Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.province.getById');
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page
