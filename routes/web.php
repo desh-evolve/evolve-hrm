@@ -327,19 +327,25 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/policy/rounding/delete/{id}', [RoundingPolicyController::class, 'deleteRoundingPolicy'])->name('policy.rounding.delete');
     Route::post('/policy/rounding/create', [RoundingPolicyController::class, 'createRoundingPolicy'])->name('policy.rounding.create');
     Route::put('/policy/rounding/update/{id}', [RoundingPolicyController::class, 'updateRoundingPolicy'])->name('policy.rounding.update');
-    Route::get('/policy/rounding/{id}', [RoundingPolicyController::class, 'getRoundingPolicyById'])->name('location.rounding.getById');
+    Route::get('/policy/rounding/{id}', [RoundingPolicyController::class, 'getRoundingPolicyById'])->name('policy.rounding.getById');
 
     // meal policy
     Route::get('/policy/meal', [MealPolicyController::class, 'index'])->name('policy.meal');
     Route::get('/policy/meal/dropdown', [MealPolicyController::class, 'getMealDropdownData'])->name('policy.meal.dropdown');
     Route::get('/policy/meals', [MealPolicyController::class, 'getAllMealPolicies'])->name('policy.meals.all');
     Route::delete('/policy/meal/delete/{id}', [MealPolicyController::class, 'deleteMealPolicy'])->name('policy.meal.delete');
+    Route::post('/policy/meal/create', [MealPolicyController::class, 'createMealPolicy'])->name('policy.meal.create');
+    Route::put('/policy/meal/update/{id}', [MealPolicyController::class, 'updateMealPolicy'])->name('policy.meal.update');
+    Route::get('/policy/meal/{id}', [MealPolicyController::class, 'getMealPolicyById'])->name('policy.meal.getById');
 
     // break policy
     Route::get('/policy/break', [BreakPolicyController::class, 'index'])->name('policy.break');
     Route::get('/policy/break/dropdown', [BreakPolicyController::class, 'getBreakDropdownData'])->name('policy.break.dropdown');
     Route::get('/policy/breaks', [BreakPolicyController::class, 'getAllBreakPolicies'])->name('policy.breaks.all');
     Route::delete('/policy/break/delete/{id}', [BreakPolicyController::class, 'deleteBreakPolicy'])->name('policy.break.delete');
+    Route::post('/policy/break/create', [BreakPolicyController::class, 'createBreakPolicy'])->name('policy.break.create');
+    Route::put('/policy/break/update/{id}', [BreakPolicyController::class, 'updateBreakPolicy'])->name('policy.break.update');
+    Route::get('/policy/break/{id}', [BreakPolicyController::class, 'getBreakPolicyById'])->name('policy.break.getById');
 
     // accrual policy
     Route::get('/policy/accrual', [AccrualPolicyController::class, 'index'])->name('policy.accrual');

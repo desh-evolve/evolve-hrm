@@ -191,8 +191,6 @@
                 let data = response[0]; // Extract the first object
 
                 if (data) {
-                    console.log('data', data);
-
                     // Convert seconds to time for interval and grace fields
                     let interval = convertSecondsToHoursAndMinutes(data.round_interval || 0);
                     let grace = convertSecondsToHoursAndMinutes(data.grace || 0);
