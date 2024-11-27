@@ -171,68 +171,6 @@
             await getDropdownData();
 
         });
-
-        // Get employee data when selecting employee name
-        $(document).on('change', '#employee_id', async function() {
-            employeeId = $(this).val();
-            let employeeName = $('#employee_id option:selected').text();
-            $('#employee_name').val(employeeName);
-            $('#employee_id').val(employeeId);
-
-            if (employeeId === "") {
-
-                $('#table_body').html(
-                    '<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
-                $('#employee_name').val('');
-                $('#employee_id').val('');
-            } else {
-                await renderPunchTable();
-            }
-        });
-
-        // // Fetch and render punchs for the selected employee
-        // async function renderPunchTable() {
-        //     if (!employeeId) {
-        //         $('#punch_table_body').html(
-        //             '<tr><td colspan="7" class="text-center">No Employee Selected</td></tr>');
-        //         return;
-        //     }
-
-        //     let employees_punchs = await commonFetchData(`/company/employee_punch/${employeeId}`);
-        //     let list = '';
-
-        //     if (employees_punchs && employees_punchs.length > 0) {
-        //         employees_punchs.forEach((item, i) => {
-        //             list += `
-    //     <tr punch_id="${item.id}">
-    //         <td>${i + 1}</td>
-    //         <td>${item.name_with_initials}</td>
-    //         <td>${item.punch_type}</td>
-    //         <td>${item.punch_status}</td>
-    //         <td>${item.time_stamp}</td>
-    //         <td>${item.date}</td>
-    //         <td class="text-capitalize">${item.status === 'active'
-    //             ? `<span class="badge border border-success text-success">${item.status}</span>`
-    //             : `<span class="badge border border-warning text-warning">${item.status}</span>`}</td>
-    //         <td>
-    //             <button type="button" class="btn btn-info waves-effect waves-light btn-sm click-edit-punch" title="Edit" data-tooltip="tooltip" data-bs-placement="top">
-    //                 <i class="ri-pencil-fill"></i>
-    //             </button>
-    //             <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_punch" title="Delete" data-tooltip="tooltip" data-bs-placement="top">
-    //                 <i class="ri-delete-bin-fill"></i>
-    //             </button>
-    //         </td>
-    //     </tr>
-    //         `;
-        //         });
-        //     } else {
-        //         list = `<tr><td colspan="7" class="text-danger text-center">No Qualification Yet!</td></tr>`;
-        //     }
-
-        //     $('#punch_table_body').html(list);
-        // }
-
-        //get dropdown data
         async function getDropdownData() {
             try {
                 let dropdownData = await commonFetchData('/company/mass_punch/dropdown')
@@ -264,14 +202,6 @@
             }
         }
 
-        // $(document).on('click', '#add_new_punch_btn', function() {
-        //     resetForm();
-        //     title = `Add New Punch`;
-        //     $('#punch-form-title').html(title);
-        //     $('#punch-form-modal').modal('show');
-        // });
-
-
         //  click event
         $(document).on('click', '#mass-punch-submit-confirm', async function() {
             const selectedDays = {};
@@ -283,15 +213,33 @@
             const punch_type = $('#punch_type').val();
             const branch_id = $('#branch_id').val();
             const department_id = $('#department_id').val();
+            const station = $('#station').val();
+            const note = $('#note').val();
+            const punch_status = $('#punch_status').val();
+            const emp_punch_status = $('#emp_punch_status').val();
 
             const startDate = $("#startDate").val();
             const endDate = $("#endDate").val();
+
             // Collect selected days
             $('.form-check-input').each(function() {
                 const day = $(this).siblings('label').attr('id'); // Get the day from the label's ID
                 selectedDays[day] = $(this).is(':checked') ? 1 : 0;
             })
-            console.log('selectedDays', selectedDays);
+
+            let formattedTime = time.replace('.', ':');
+            if (!formattedTime.includes(':')) {
+                formattedTime += ':00'; // Add seconds if missing
+            } else if (formattedTime.split(':').length === 2) {
+                formattedTime += ':00'; // Add seconds if only HH:mm is provided
+            }
+
+            // Ensure time has two digits for hours
+            if (formattedTime.split(':')[0].length === 1) {
+                formattedTime = '0' + formattedTime; // Prefix single-digit hours with 0
+            }
+
+            console.log('Formatted Time:', formattedTime); // Debug output
 
 
             let createUrl = `/company/mass_punch/create`;
@@ -320,6 +268,8 @@
             formData.append('department_id', department_id);
             formData.append('station', station);
             formData.append('note', note);
+            formData.append('time', formattedTime);
+            formData.append('emp_punch_status', emp_punch_status);
             // formData.append('time_stamp', time_stamp);
 
             formData.append('startDate', start_date);
@@ -332,11 +282,17 @@
 
             try {
                 let res = await commonSaveData(url, formData, method);
+                console.log('response here', res)
                 await commonAlert(res.status, res.message);
 
                 if (res.status === 'success') {
+                    resetForm();
                     $('#punch-form-modal').modal('hide');
-                    await renderPunchTable(); // Re-render table on success
+                    //await renderPunchTable(); // Re-render table on success
+                    if (res.data && res.data.insertedPunchIds) {
+                        window.location.href = '/company/mass_punch/list?data=' + JSON.stringify(res.data
+                            .insertedPunchIds);
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -344,69 +300,21 @@
             }
         });
 
-
-        // $(document).on('click', '.click-edit-punch', async function() {
-        //     // resetForm();
-        //     let punch_id = $(this).closest('tr').attr('punch_id');
-
-
-        //     // Get branch data by id
-        //     try {
-        //         let punch_data = await commonFetchData(
-        //             `/company/single_employee_punch/${punch_id}`);
-        //         punch_data = punch_data[0];
-        //         console.log('punch_data', punch_data);
-
-        //         var datePart = punch_data.time_stamp.split(' ')[0]; // "2024-11-21"
-        //         var timePart = punch_data.time_stamp.split(' ')[1];
-
-        //         console.log('punch_data', datePart);
-        //         // Set initial form values
-        //         $('#punch_id').val(punch_id);
-        //         $('#date').val(datePart || '');
-        //         $('#time').val(timePart || '');
-        //         $('#punch_type').val(punch_data?.punch_type || '');
-        //         $('#punch_status').val(punch_data?.punch_status || '');
-        //         $('#branch_id').val(punch_data?.branch_id || '');
-        //         $('#department_id').val(punch_data?.department_id || '');
-        //         $('#note').val(punch_data?.note || '');
-        //         $('#emp_punch_status').val(punch_data?.status || '');
-        //         // Load the country, province, and city accordingly
-
-
-        //     } catch (error) {
-        //         console.error('error at getQulificationById: ', error);
-        //     } finally {
-        //         title = `Edit Qualification`;
-        //         $('#punch-form-title').html(title);
-        //         $('#punch-form-modal').modal('show');
-        //     }
-        // });
-
-        // $(document).on('click', '.click_delete_punch', async function() {
-        //     let punch_id = $(this).closest('tr').attr('punch_id');
-
-        //     try {
-        //         let url = `/company/employee_punch/delete`;
-        //         const res = await commonDeleteFunction(punch_id, url,
-        //             'Designation'); // Await the promise here
-
-        //         if (res) {
-        //             await renderPunchTable();
-        //         }
-        //     } catch (error) {
-        //         console.error(`Error during Qualification deletion:`, error);
-        //     }
-        // })
-
         function resetForm() {
-            $('#punch_id').val('');
-            $('#punch').val('');
-            $('#institute').val('');
-            $('#year').val('');
-            $('#remarks').val('');
-            $('#punch_status').val('active'); // Reset status to default
-            $('#error-msg').html(''); // Clear error messages
+            $('#start_date').val('');
+            $('#end_date').val('');
+            $('#time').val('');
+            $('#station').val('');
+            $('.form-check').val('');
+            $('#punch_status').val('active');
+            $('#punch_type').val('active');
+            $('#branch_id').val('');
+            $('#department_id').val('');
+            $('#emp_punch_status').val('active');
+            $('#note').val('');
+            $('#error-msg').html('');
+
+            getDropdownData();
         }
     </script>
 
