@@ -92,7 +92,7 @@
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="schedule_id" value=""></button>
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-primary" id="schedule-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-primary" id="form_submit">Submit</button>
                     </div>
                 </div>
             </div>
@@ -169,28 +169,28 @@
                 dropdownData = await commonFetchData('/policy/schedule/dropdown');
 
                 // Populate meal policy dropdown
-                let mealPolicyList = (dropdownData?.absence_policy || [])
+                let mealPolicyList = (dropdownData?.meal_policy || [])
                     .map(type => `<option value="${type.id}">${type.name}</option>`)
                     .join('');
-                $('#meal_policy_id').html('<option value="">--</option>' + mealPolicyList);
+                $('#meal_policy_id').html('<option value="0">--</option>' + mealPolicyList);
 
                 // Populate break policy dropdown
                 let breakPolicyList = (dropdownData?.break_policy || [])
                     .map(type => `<option value="${type.id}">${type.name}</option>`)
                     .join('');
-                $('#break_policy_ids').html('<option value="">--</option>' + breakPolicyList);
+                $('#break_policy_ids').html('<option value="0">--</option>' + breakPolicyList);
 
                 // Populate absence policy dropdown
-                let absencePolicyList = (dropdownData?.meal_policy || [])
+                let absencePolicyList = (dropdownData?.absence_policy || [])
                     .map(type => `<option value="${type.id}">${type.name}</option>`)
                     .join('');
-                $('#absence_policy_id').html('<option value="">--</option>' + absencePolicyList);
+                $('#absence_policy_id').html('<option value="0">--</option>' + absencePolicyList);
 
                 // Populate overtime policy dropdown
                 let otPolicyList = (dropdownData?.overtime_policy || [])
                     .map(type => `<option value="${type.id}">${type.name}</option>`)
                     .join('');
-                $('#overtime_policy_id').html('<option value="">--</option>' + otPolicyList);
+                $('#overtime_policy_id').html('<option value="0">--</option>' + otPolicyList);
 
             } catch (error) {
                 console.error('Error fetching dropdown data:', error);
@@ -202,17 +202,86 @@
             $('#schedule-form-modal').modal('show');
         })
 
-        $(document).on('click', '.click_edit_round_pol', function(){
+        $(document).on('click', '.click_edit_round_pol', async function(){
             resetForm();
             let schedule_policy_id = $(this).closest('tr').attr('schedule_policy_id');
+            $('#schedule_id').val(schedule_policy_id);
+
+            try {
+                let response = await commonFetchData(`/policy/schedule/${schedule_policy_id}`);
+                let data = response[0];
+                //console.log('data', data)
+                let start_stop_window = convertSecondsToHoursAndMinutes(data?.start_stop_window || 0);
+                $('#schedule_name').val(data?.name || '');
+                $('#absence_policy_id').val(data?.absence_policy_id || '0');
+                $('#overtime_policy_id').val(data?.over_time_policy_id || '0');
+                $('#start_stop_window').val(start_stop_window);
+                $('#meal_policy_id').val(data?.meal_policy_id || '0');
+
+               // Extract break_policy_ids from the array
+                const breakPolicyIds = data?.break_policies?.map(policy => policy.break_policy_id) || [];
+                $('#break_policy_ids').val(breakPolicyIds);
+
+            }catch(error){
+                console.error('error at schedule index: ', error)
+            }
+
+
             $('#schedule-form-modal').modal('show');
         })
 
+        $(document).on('click', '#form_submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            let formData = new FormData();
+            let start_stop_window = $('#start_stop_window').val();
+            let start_stop_window_seconds = convertHoursAndMinutesToSeconds(start_stop_window);
+
+            formData.append('schedule_name', $('#schedule_name').val());
+            formData.append('meal_policy_id', $('#meal_policy_id').val());
+            formData.append('break_policy_ids', $('#break_policy_ids').val());
+            formData.append('absence_policy_id', $('#absence_policy_id').val());
+            formData.append('overtime_policy_id', $('#overtime_policy_id').val());
+            formData.append('start_stop_window', start_stop_window_seconds);
+
+            let schedule_id = $('#schedule_id').val();
+            let createUrl = `/policy/schedule/create`;
+            let updateUrl = `/policy/schedule/update/${schedule_id}`;
+
+            const isUpdating = Boolean(schedule_id);
+            let url = isUpdating ? updateUrl : createUrl;
+            let method = 'POST';
+
+            if (isUpdating) {
+                formData.append('schedule_id', schedule_id);
+                method = 'PUT';
+            }
+
+            try {
+                // Send data and handle response
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#schedule-form-modal').modal('hide');
+                    getAllSchedules();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+
+        });
+
+
         function resetForm(){
-            $('#round_type_id').val('');
-            $('#interval_time').val('');
-            $('#grace_period').val('');
-            $('#strict_schedule').val('');
+            $('#schedule_name').val('');
+            $('#meal_policy_id').val('0').trigger('change');
+            $('#break_policy_ids').val([]).trigger('change');
+            $('#absence_policy_id').val('0').trigger('change');
+            $('#overtime_policy_id').val('0').trigger('change');
+            $('#start_stop_window').val('01:00');
             $('#schedule_id').val('');
         }
     </script>

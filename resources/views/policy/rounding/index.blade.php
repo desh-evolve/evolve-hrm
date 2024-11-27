@@ -89,7 +89,7 @@
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="rounding_id" value=""></button>
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-primary" id="rounding-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-primary" id="form_submit">Submit</button>
                     </div>
                 </div>
             </div>
@@ -179,19 +179,96 @@
             $('#rounding-form-modal').modal('show');
         })
 
-        $(document).on('click', '.click_edit_round_pol', function(){
-            resetForm();
-            let rounding_policy_id = $(this).closest('tr').attr('rounding_policy_id');
-            $('#rounding-form-modal').modal('show');
-        })
+        $(document).on('click', '.click_edit_round_pol', async function () { // Declare as async
+            resetForm(); // Reset the form to clear previous data
+            let rounding_policy_id = $(this).closest('tr').attr('rounding_policy_id'); // Correct attribute
 
-        function resetForm(){
-            $('#round_type_id').val('');
+            $('#rounding_id').val(rounding_policy_id); // Set the ID in the hidden field
+
+            try {
+                // Fetch the rounding policy data
+                let response = await commonFetchData(`/policy/rounding/${rounding_policy_id}`);
+                let data = response[0]; // Extract the first object
+
+                if (data) {
+                    console.log('data', data);
+
+                    // Convert seconds to time for interval and grace fields
+                    let interval = convertSecondsToHoursAndMinutes(data.round_interval || 0);
+                    let grace = convertSecondsToHoursAndMinutes(data.grace || 0);
+
+                    // Populate form fields
+                    $('#rounding_name').val(data.name || '');
+                    $('#punch_type_id').val(data.punch_type_id || '0').trigger('change');
+                    $('#round_type_id').val(data.round_type || '').trigger('change');
+                    $('#interval_time').val(interval);
+                    $('#grace_period').val(grace);
+                    $('#strict_schedule').prop('checked', data.strict === 1);
+                }
+            } catch (error) {
+                console.error('Error while fetching rounding policy data:', error);
+                $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
+            }
+
+            // Show the modal after populating data
+            $('#rounding-form-modal').modal('show');
+        });
+
+        $(document).on('click', '#form_submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Collect form data
+            let interval = convertHoursAndMinutesToSeconds($('#interval_time').val());
+            let grace = convertHoursAndMinutesToSeconds($('#grace_period').val());
+            let strictSchedule = $('#strict_schedule').is(':checked') ? 1 : 0;
+
+            let formData = new FormData();
+            formData.append('name', $('#rounding_name').val());
+            formData.append('punch_type_id', $('#punch_type_id').val());
+            formData.append('round_type', $('#round_type_id').val());
+            formData.append('round_interval', interval);
+            formData.append('grace', grace);
+            formData.append('strict', strictSchedule);
+
+            let roundingId = $('#rounding_id').val();
+            let createUrl = `/policy/rounding/create`;
+            let updateUrl = `/policy/rounding/update/${roundingId}`;
+
+            const isUpdating = Boolean(roundingId);
+            let url = isUpdating ? updateUrl : createUrl;
+            let method = isUpdating ? 'PUT' : 'POST';
+
+            if (isUpdating) {
+                formData.append('id', roundingId);
+            }
+
+            try {
+                // Send data and handle response
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#rounding-form-modal').modal('hide');
+                    getAllRoundings(); // Refresh the list of roundings
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        });
+
+        // Reset the form fields
+        function resetForm() {
+            $('#rounding_name').val('');
+            $('#punch_type_id').val('').trigger('change');
+            $('#round_type_id').val('').trigger('change');
             $('#interval_time').val('');
             $('#grace_period').val('');
-            $('#strict_schedule').val('');
+            $('#strict_schedule').prop('checked', false);
             $('#rounding_id').val('');
         }
+
     </script>
 
 </x-app-layout>
