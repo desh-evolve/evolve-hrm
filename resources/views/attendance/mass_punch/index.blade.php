@@ -50,7 +50,7 @@
                                             id="time">
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="station" class="form-label">Station</label>
@@ -204,26 +204,26 @@
         //     if (employees_punchs && employees_punchs.length > 0) {
         //         employees_punchs.forEach((item, i) => {
         //             list += `
-        //     <tr punch_id="${item.id}">
-        //         <td>${i + 1}</td>
-        //         <td>${item.name_with_initials}</td>
-        //         <td>${item.punch_type}</td>
-        //         <td>${item.punch_status}</td>
-        //         <td>${item.time_stamp}</td>
-        //         <td>${item.date}</td>
-        //         <td class="text-capitalize">${item.status === 'active'
-        //             ? `<span class="badge border border-success text-success">${item.status}</span>`
-        //             : `<span class="badge border border-warning text-warning">${item.status}</span>`}</td>
-        //         <td>
-        //             <button type="button" class="btn btn-info waves-effect waves-light btn-sm click-edit-punch" title="Edit" data-tooltip="tooltip" data-bs-placement="top">
-        //                 <i class="ri-pencil-fill"></i>
-        //             </button>
-        //             <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_punch" title="Delete" data-tooltip="tooltip" data-bs-placement="top">
-        //                 <i class="ri-delete-bin-fill"></i>
-        //             </button>
-        //         </td>
-        //     </tr>
-        //         `;
+    //     <tr punch_id="${item.id}">
+    //         <td>${i + 1}</td>
+    //         <td>${item.name_with_initials}</td>
+    //         <td>${item.punch_type}</td>
+    //         <td>${item.punch_status}</td>
+    //         <td>${item.time_stamp}</td>
+    //         <td>${item.date}</td>
+    //         <td class="text-capitalize">${item.status === 'active'
+    //             ? `<span class="badge border border-success text-success">${item.status}</span>`
+    //             : `<span class="badge border border-warning text-warning">${item.status}</span>`}</td>
+    //         <td>
+    //             <button type="button" class="btn btn-info waves-effect waves-light btn-sm click-edit-punch" title="Edit" data-tooltip="tooltip" data-bs-placement="top">
+    //                 <i class="ri-pencil-fill"></i>
+    //             </button>
+    //             <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_punch" title="Delete" data-tooltip="tooltip" data-bs-placement="top">
+    //                 <i class="ri-delete-bin-fill"></i>
+    //             </button>
+    //         </td>
+    //     </tr>
+    //         `;
         //         });
         //     } else {
         //         list = `<tr><td colspan="7" class="text-danger text-center">No Qualification Yet!</td></tr>`;
@@ -274,6 +274,8 @@
 
         //  click event
         $(document).on('click', '#mass-punch-submit-confirm', async function() {
+            const selectedDays = {};
+
             const punch_id = $('#punch_id').val();
             const time = $('#time').val();
             const start_date = $('#start_date').val();
@@ -284,14 +286,16 @@
 
             const startDate = $("#startDate").val();
             const endDate = $("#endDate").val();
-
-            $('.day-checkbox').each(function() {
-                const day = $(this).attr('id'); // e.g., 'Sun'
+            // Collect selected days
+            $('.form-check-input').each(function() {
+                const day = $(this).siblings('label').attr('id'); // Get the day from the label's ID
                 selectedDays[day] = $(this).is(':checked') ? 1 : 0;
-            });
+            })
+            console.log('selectedDays', selectedDays);
 
-            let createUrl = `/company/employee_punch/create`;
-            let updateUrl = `/company/employee_punch/update/${punch_id}`;
+
+            let createUrl = `/company/mass_punch/create`;
+            let updateUrl = `/company/mass_punch/update/${punch_id}`;
 
             let formData = new FormData();
 
@@ -302,7 +306,13 @@
                 $('#error-msg').html(''); // Clear error message if no issues
             }
 
-            formData.append('employee_id', employeeId);
+
+            // Collect selected employee IDs from the multiSelector component
+            const selectedIds = $('#employeeContainer .selected-list option').map(function() {
+                return $(this).val();
+            }).get();
+
+            formData.append('employee_ids', JSON.stringify(selectedIds));
             formData.append('punch_id', punch_id);
             formData.append('punch_type', punch_type);
             formData.append('punch_status', punch_status);
@@ -310,7 +320,7 @@
             formData.append('department_id', department_id);
             formData.append('station', station);
             formData.append('note', note);
-            formData.append('time_stamp', time_stamp);
+            // formData.append('time_stamp', time_stamp);
 
             formData.append('startDate', start_date);
             formData.append('endDate', end_date);
@@ -334,7 +344,7 @@
             }
         });
 
-        
+
         // $(document).on('click', '.click-edit-punch', async function() {
         //     // resetForm();
         //     let punch_id = $(this).closest('tr').attr('punch_id');

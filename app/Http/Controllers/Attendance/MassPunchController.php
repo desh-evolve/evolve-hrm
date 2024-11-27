@@ -18,18 +18,15 @@ class MassPunchController extends Controller
 
     public function __construct()
     {
-        // ========= need to develop getEmployeeList login as a staff =========== //
-
-        $this->middleware('permission:view punch', ['only' => [
+        
+        $this->middleware('permission:view mass punch', ['only' => [
             'index',
-            // 'getAllEmployeePunch',
+            // 'getAllMassPunch',
             'getAllEmployeeList',
-            'getEmployeePunchById',
-            'getSingleEmployeePunch',
+            'getMassPunchById',
+            'getSingleMassPunch',
         ]]);
-        $this->middleware('permission:create punch', ['only' => ['createEmployeePunch']]);
-        $this->middleware('permission:update punch', ['only' => ['updateEmployeePunch']]);
-        $this->middleware('permission:delete punch', ['only' => ['deleteEmployeePunch']]);
+        $this->middleware('permission:create mass punch', ['only' => ['createMassPunch']]);
 
         $this->common = new CommonModel();
     }
@@ -39,7 +36,7 @@ class MassPunchController extends Controller
         return view('attendance.mass_punch.index');
     }
 
-    public function createEmployeePunch(Request $request)
+    public function createMassPunch(Request $request)
     {
         try {
             return DB::transaction(function () use ($request) {
@@ -47,8 +44,10 @@ class MassPunchController extends Controller
                     'punch_type' => 'required',
                     'punch_status' => 'required',
                 ]);
+                $employees = json_decode($request->employee_ids, true); // Decode as an associative array
 
-                $employees = $request->employees;
+                // var_dump('emplopyee', $employees);
+                // $employees = $request->employee_ids;
                 $startDate = Carbon::parse($request->start_date);
                 $endDate = Carbon::parse($request->end_date);
                 $selectedDays = json_decode($request->selectedDays, true);
@@ -78,13 +77,13 @@ class MassPunchController extends Controller
 
                 //-------------------for check if punch_controll insert for given employee , date-----------------
 
-                foreach ($employees as $employeeId) {
+                foreach ($employees as $employee) {
                     foreach ($dates as $date) {
                         $dateTime = Carbon::parse("$date $request->time");
                         // $employeeId = $request->employee_id;
                         $employeeDateId = DB::table('employee_date')
                             ->select('employee_date.id as employee_date_id')
-                            ->where('employee_date.employee_id', $employeeId)
+                            ->where('employee_date.employee_id', $employee)
                             ->where('employee_date.date_stamp', $date)
                             ->groupBy('employee_date.id')
                             ->first();
@@ -176,7 +175,7 @@ class MassPunchController extends Controller
         }
     }
 
-    public function updateEmployeePunch(Request $request, $id)
+    public function updateMassPunch(Request $request, $id)
     {
         try {
             return DB::transaction(function () use ($request, $id) {
@@ -234,7 +233,7 @@ class MassPunchController extends Controller
         }
     }
 
-    public function deleteEmployeePunch($id)
+    public function deleteMassPunch($id)
     {
         $whereArr = ['id' => $id];
         $title = 'Employee Punch';
@@ -244,7 +243,7 @@ class MassPunchController extends Controller
     }
 
 
-    public function getEmployeePunchById($id)
+    public function getMassPunchById($id)
     {
 
         $idColumn = 'employee_date.employee_id';
@@ -287,7 +286,7 @@ class MassPunchController extends Controller
         ], 200);
     }
 
-    public function getSingleEmployeePunch($id)
+    public function getSingleMassPunch($id)
     {
         $idColumn = 'punch.id';
         $table = 'punch';

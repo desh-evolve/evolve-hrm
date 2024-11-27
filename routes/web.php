@@ -41,9 +41,10 @@ use App\Http\Controllers\Policy\PolicyGroupsController;
 
 // Attendance
 use App\Http\Controllers\Attendance\PunchController;
+use App\Http\Controllers\Attendance\MassPunchController;
 
 Route::get('/', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
+    ->name('login');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -251,25 +252,33 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/employee_promotion/{id}', [EmployeePromotionController::class, 'getEmployeePromotioneById'])->name('company.employee_promotion.getById');
 
 
-     // Employee employee_promotion  routes
-     Route::get('/company/employee_family/index', [EmployeeFamilyController::class, 'index'])->name('company.employee_family.index');
+    // Employee employee_promotion  routes
+    Route::get('/company/employee_family/index', [EmployeeFamilyController::class, 'index'])->name('company.employee_family.index');
 
-     Route::post('/company/employee_family/create', [EmployeeFamilyController::class, 'createEmployeeFamily'])->name('company.employee_family.create');
-     Route::put('/company/employee_family/update/{id}', [EmployeeFamilyController::class, 'updateEmployeeFamily'])->name('company.employee_family.update');
-     Route::delete('/company/employee_family/delete/{id}', [EmployeeFamilyController::class, 'deleteEmployeeFamily'])->name('company.employee_family.delete');
-     Route::get('/company/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
-     Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
-     Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
+    Route::post('/company/employee_family/create', [EmployeeFamilyController::class, 'createEmployeeFamily'])->name('company.employee_family.create');
+    Route::put('/company/employee_family/update/{id}', [EmployeeFamilyController::class, 'updateEmployeeFamily'])->name('company.employee_family.update');
+    Route::delete('/company/employee_family/delete/{id}', [EmployeeFamilyController::class, 'deleteEmployeeFamily'])->name('company.employee_family.delete');
+    Route::get('/company/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
+    Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
+    Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
 
 
-     Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
-     //  Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
-      Route::get('/company/employee_punch/dropdown', [PunchController::class, 'getDropdownData'])->name('company.employee_punch.dropdown');
-      Route::post('/company/employee_punch/create', [PunchController::class, 'createEmployeePunch'])->name('company.employee_punch.create');
-      Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
-      Route::get('/company/single_employee_punch/{id}', [PunchController::class, 'getSingleEmployeePunch'])->name('company.employee_punch.single');
-      Route::put('/company/employee_punch/update/{id}', [PunchController::class, 'updateEmployeePunch'])->name('company.employee_punch.update');
-    
+    Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
+    //  Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
+    Route::get('/company/employee_punch/dropdown', [PunchController::class, 'getDropdownData'])->name('company.employee_punch.dropdown');
+    Route::post('/company/employee_punch/create', [PunchController::class, 'createEmployeePunch'])->name('company.employee_punch.create');
+    Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
+    Route::get('/company/single_employee_punch/{id}', [PunchController::class, 'getSingleEmployeePunch'])->name('company.employee_punch.single');
+    Route::put('/company/employee_punch/update/{id}', [PunchController::class, 'updateEmployeePunch'])->name('company.employee_punch.update');
+
+    // ===========mass-punch=================
+    Route::get('/company/mass_punch/index', [MassPunchController::class, 'index'])->name('company.mass_punch.index');
+    Route::get('/company/mass_punch/dropdown', [MassPunchController::class, 'getDropdownData'])->name('company.mass_punch.dropdown');
+    Route::post('/company/mass_punch/create', [MassPunchController::class, 'createMassPunch'])->name('company.mass_punch.create');
+
+
+
+
     //==============================================================================================================================
     // Employee Job History
     //==============================================================================================================================
@@ -284,7 +293,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/single_jobhistory/{id}', [JobHistoryController::class, 'getJobHistoryBySingleEmployee'])->name('employee.jobhistory.single');
 
 
-     //==============================================================================================================================
+    //==============================================================================================================================
     // Employee wage
     //===============================================================================================================================
 
@@ -382,7 +391,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/policy/policy_group/delete/{id}', [PolicyGroupsController::class, 'deletePolicyGroup'])->name('policy.policy_group.delete');
     Route::post('/policy/policy_group/create', [PolicyGroupsController::class, 'createPolicyGroup'])->name('policy.policy_group.create');
     Route::put('/policy/policy_group/update/{id}', [PolicyGroupsController::class, 'updatePolicyGroup'])->name('policy.policy_group.update');
-    Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.province.getById');
+    Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.policy_group.getById');
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page

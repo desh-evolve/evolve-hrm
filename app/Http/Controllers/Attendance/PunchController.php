@@ -19,14 +19,16 @@ class PunchController extends Controller
     {
         // ========= need to develop getEmployeeList login as a staff =========== //
 
-        $this->middleware('permission:view mass punch', ['only' => [
+        $this->middleware('permission:view punch', ['only' => [
             'index',
             // 'getAllEmployeePunch',
             'getAllEmployeeList',
             'getEmployeePunchById',
             'getSingleEmployeePunch',
         ]]);
-        $this->middleware('permission:create mass punch', ['only' => ['createEmployeePunch']]);
+        $this->middleware('permission:create punch', ['only' => ['createEmployeePunch']]);
+        $this->middleware('permission:update punch', ['only' => ['updateEmployeePunch']]);
+        $this->middleware('permission:delete punch', ['only' => ['deleteEmployeePunch']]);
 
         $this->common = new CommonModel();
     }
