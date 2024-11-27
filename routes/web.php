@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 // controller
 use App\Http\Controllers\Company\IndustryController;
@@ -43,8 +42,9 @@ use App\Http\Controllers\Policy\PolicyGroupsController;
 use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
 
-Route::get('/', [AuthenticatedSessionController::class, 'create'])
-    ->name('login');
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
