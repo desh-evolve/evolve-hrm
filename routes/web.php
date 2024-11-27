@@ -365,6 +365,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/overtime/dropdown', [OvertimePolicyController::class, 'getOvertimeDropdownData'])->name('policy.overtime.dropdown');
     Route::get('/policy/overtimes', [OvertimePolicyController::class, 'getAllOvertimePolicies'])->name('policy.overtimes.all');
     Route::delete('/policy/overtime/delete/{id}', [OvertimePolicyController::class, 'deleteOvertimePolicy'])->name('policy.overtime.delete');
+    Route::post('/policy/overtime/create', [OvertimePolicyController::class, 'createOvertimePolicy'])->name('policy.overtime.create');
+    Route::put('/policy/overtime/update/{id}', [OvertimePolicyController::class, 'updateOvertimePolicy'])->name('policy.overtime.update');
+    Route::get('/policy/overtime/{id}', [OvertimePolicyController::class, 'getOvertimePolicyById'])->name('policy.overtime.getById');
 
     // premium policy
     Route::get('/policy/premium', [PremiumPolicyController::class, 'index'])->name('policy.premium');
@@ -385,6 +388,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/absence/dropdown', [AbsencePolicyController::class, 'getAbsenceDropdownData'])->name('policy.absence.dropdown');
     Route::get('/policy/absences', [AbsencePolicyController::class, 'getAllAbsencePolicies'])->name('policy.absences.all');
     Route::delete('/policy/absence/delete/{id}', [AbsencePolicyController::class, 'deleteAbsencePolicy'])->name('policy.absence.delete');
+    Route::post('/policy/absence/create', [AbsencePolicyController::class, 'createAbsencePolicy'])->name('policy.absence.create');
+    Route::put('/policy/absence/update/{id}', [AbsencePolicyController::class, 'updateAbsencePolicy'])->name('policy.absence.update');
+    Route::get('/policy/absence/{id}', [AbsencePolicyController::class, 'getAbsencePolicyById'])->name('policy.absence.getById');
 
     // schedule policy
     Route::get('/policy/schedule', [SchedulePolicyController::class, 'index'])->name('policy.schedule');

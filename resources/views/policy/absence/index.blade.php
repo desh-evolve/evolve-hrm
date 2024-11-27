@@ -21,7 +21,7 @@
                                 <th class="col">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="ex_pol_table_body">
+                        <tbody id="ab_pol_table_body">
                             <tr><td colspan="4" class="text-center">Loading...</td></tr>
                         </tbody>
                     </table>
@@ -47,9 +47,9 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="type_id" class="form-label mb-1 col-md-3">Type</label>
+                            <label for="type" class="form-label mb-1 col-md-3">Type</label>
                             <div class="col-md-9">
-                                <select class="form-select" id="type_id">
+                                <select class="form-select" id="type">
                                     <option value="paid">Paid</option>
                                     <option value="paid_above_salary">Paid (above salary)</option>
                                     <option value="unpaid">Unpaid</option>
@@ -98,7 +98,7 @@
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="absence_id" value=""></button>
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-primary" id="absence-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-primary" id="form_submit">Submit</button>
                     </div>
                 </div>
             </div>
@@ -117,9 +117,8 @@
                 let list = '';
                 if(absences && absences.length > 0){
                     absences.map((ab, i) => {
-                        let time = convertSecondsToHoursAndMinutes(ab.trigger_time);
                         list += `
-                            <tr absence_policy_control_id="${ab.id}">
+                            <tr absence_policy_id="${ab.id}">
                                 <td>${i+1}</td>    
                                 <td>${ab.name}</td>    
                                 <td>${ab.type == 'paid' ? 'Paid' : ab.type == 'unpaid' ? 'Unpaid' : ab.type == 'dock' ? 'Dock' : 'Paid (above salary)'}</td>    
@@ -138,25 +137,19 @@
                     list += `<tr><td colspan="4" class="text-center">No Absence Policies Found!</td></tr>`;
                 }
 
-                $('#ex_pol_table_body').html(list);
+                $('#ab_pol_table_body').html(list);
                 $('[data-tooltip="tooltip"]').tooltip();
             } catch (error) {
                 console.error('error at policy->absence->index->getAllExeptions: ', error);
             }
         }
 
-        $(document).on('click', '.click_edit_ab_pol', function(){
-            let ex_pol_id = $(this).closest('tr').attr('absence_policy_control_id');
-            
-            window.location.href = '/policy/absence/form?id='+ex_pol_id;
-        })
-
         $(document).on('click', '.click_delete_ab_pol', async function(){
-            let ex_pol_id = $(this).closest('tr').attr('absence_policy_control_id');
+            let ab_pol_id = $(this).closest('tr').attr('absence_policy_id');
 
             try {
                 let url = `/policy/absence/delete`;
-                const res = await commonDeleteFunction(ex_pol_id, url, 'Absence Policy');  // Await the promise here
+                const res = await commonDeleteFunction(ab_pol_id, url, 'Absence Policy');  // Await the promise here
 
                 if (res) {
                     $(this).closest('tr').remove();
@@ -215,18 +208,88 @@
             $('#absence-form-modal').modal('show');
         })
 
-        $(document).on('click', '.click_edit_round_pol', function(){
+        $(document).on('click', '.click_edit_ab_pol', async function(){
             resetForm();
             let absence_policy_id = $(this).closest('tr').attr('absence_policy_id');
+
+            $('#absence_id').val(absence_policy_id); // Set the ID in the hidden field
+
+            try {
+                // Fetch the absence policy data
+                let response = await commonFetchData(`/policy/absence/${absence_policy_id}`);
+                let data = response[0]; // Extract the first object
+
+                if (data) {
+                    // Populate form fields
+                    $('#name').val(data.name);
+                    $('#type').val(data.type).trigger('change');
+                    $('#rate').val(data.rate);
+                    $('#wage_group_id').val(data.wage_group_id).trigger('change');
+                    $('#pay_stub_entry_account_id').val(data.pay_stub_entry_account_id).trigger('change');
+                    $('#accrual_policy_id').val(data.accrual_policy_id).trigger('change');
+                    $('#accrual_rate').val(data.accrual_rate);
+                    
+                }
+            } catch (error) {
+                console.error('Error while fetching absence policy data:', error);
+                $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
+            }
+
             $('#absence-form-modal').modal('show');
         })
 
+        $(document).on('click', '#form_submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Collect form data
+            let formData = new FormData();
+
+            let absence_id = $('#absence_id').val();
+
+            formData.append('name', $('#name').val());
+            formData.append('type', $('#type').val());
+            formData.append('rate', $('#rate').val());
+            formData.append('wage_group_id', $('#wage_group_id').val());
+            formData.append('pay_stub_entry_account_id', $('#pay_stub_entry_account_id').val());
+            formData.append('accrual_policy_id', $('#accrual_policy_id').val());
+            formData.append('accrual_rate', $('#accrual_rate').val());
+            
+            let createUrl = `/policy/absence/create`;
+            let updateUrl = `/policy/absence/update/${absence_id}`;
+
+            const isUpdating = Boolean(absence_id);
+            let url = isUpdating ? updateUrl : createUrl;
+            let method = isUpdating ? 'PUT' : 'POST';
+
+            if (isUpdating) {
+                formData.append('id', absence_id);
+            }
+
+            try {
+                // Send data and handle response
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#absence-form-modal').modal('hide');
+                    getAllAbsences(); // Refresh the list of absences
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        });
+
         function resetForm(){
-            $('#round_type_id').val('');
-            $('#interval_time').val('');
-            $('#grace_period').val('');
-            $('#strict_schedule').val('');
             $('#absence_id').val('');
+            $('#name').val('');
+            $('#type').val('paid').trigger('change');
+            $('#rate').val('1.00');
+            $('#wage_group_id').val('0').trigger('change');
+            $('#pay_stub_entry_account_id').val('0').trigger('change');
+            $('#accrual_policy_id').val('0').trigger('change');
+            $('#accrual_rate').val('1.00');
         }
     </script>
 
