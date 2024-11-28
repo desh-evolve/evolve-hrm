@@ -70,7 +70,7 @@
                         <div class="row mb-3">
                             <label for="rate" class="form-label mb-1 col-md-3">Rate</label>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" id="rate" placeholder="Select Rate (hh:mm)">
+                                <input type="text" class="form-control" id="rate" placeholder="Select Rate" value="1.00">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -100,7 +100,7 @@
                         <div class="row mb-3">
                             <label for="accrual_rate" class="form-label mb-1 col-md-3">Accrual Rate</label>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" id="accrual_rate" placeholder="Select Accrual Rate (hh:mm)">
+                                <input type="text" class="form-control" id="accrual_rate" placeholder="Select Accrual Rate" value="1.00">
                             </div>
                         </div>
                     </div>                    
@@ -108,7 +108,7 @@
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="overtime_id" value=""></button>
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-primary" id="overtime-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-primary" id="form_submit">Submit</button>
                     </div>
                 </div>
             </div>
@@ -129,7 +129,7 @@
                     overtimes.map((ot, i) => {
                         let time = convertSecondsToHoursAndMinutes(ot.trigger_time);
                         list += `
-                            <tr overtime_policy_control_id="${ot.id}">
+                            <tr overtime_policy_id="${ot.id}">
                                 <td>${i+1}</td>    
                                 <td>${ot.name}</td>    
                                 <td>${ot.type}</td>    
@@ -156,14 +156,8 @@
             }
         }
 
-        $(document).on('click', '.click_edit_ot_pol', function(){
-            let ex_pol_id = $(this).closest('tr').attr('overtime_policy_control_id');
-            
-            window.location.href = '/policy/overtime/form?id='+ex_pol_id;
-        })
-
         $(document).on('click', '.click_delete_ot_pol', async function(){
-            let ex_pol_id = $(this).closest('tr').attr('overtime_policy_control_id');
+            let ex_pol_id = $(this).closest('tr').attr('overtime_policy_id');
 
             try {
                 let url = `/policy/overtime/delete`;
@@ -232,18 +226,100 @@
             $('#overtime-form-modal').modal('show');
         })
 
-        $(document).on('click', '.click_edit_round_pol', function(){
+        $(document).on('click', '.click_edit_ot_pol', async function(){
             resetForm();
             let overtime_policy_id = $(this).closest('tr').attr('overtime_policy_id');
+
+            $('#overtime_id').val(overtime_policy_id); // Set the ID in the hidden field
+
+            try {
+                // Fetch the overtime policy data
+                let response = await commonFetchData(`/policy/overtime/${overtime_policy_id}`);
+                let data = response[0]; // Extract the first object
+                
+                if (data) {
+
+                    let trigger_time = convertSecondsToHoursAndMinutes(data.trigger_time || 0);
+                    let max_time = convertSecondsToHoursAndMinutes(data.max_time || 0);
+
+                    // Populate form fields
+                    $('#name').val(data.name);
+                    $('#type_id').val(data.type_id).trigger('change');
+                    $('#trigger_time').val(trigger_time);
+                    $('#max_time').val(max_time);
+                    $('#rate').val(data.rate);
+                    $('#wage_group_id').val(data.wage_group_id).trigger('change');
+                    $('#pay_stub_entry_account_id').val(data.pay_stub_entry_account_id).trigger('change');
+                    $('#accrual_policy_id').val(data.accrual_policy_id).trigger('change');
+                    $('#accrual_rate').val(data.accrual_rate);
+                }
+            } catch (error) {
+                console.error('Error while fetching overtime policy data:', error);
+                $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
+            }
+
             $('#overtime-form-modal').modal('show');
         })
 
+        $(document).on('click', '#form_submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Collect form data
+            let formData = new FormData();
+
+            let overtime_id = $('#overtime_id').val();
+
+            let trigger_time = convertHoursAndMinutesToSeconds($('#trigger_time').val() || '0:00');
+            let max_time = convertHoursAndMinutesToSeconds($('#max_time').val() || '0:00');
+
+            formData.append('name', $('#name').val());
+            formData.append('type_id', $('#type_id').val());
+            formData.append('trigger_time', trigger_time);
+            formData.append('max_time', max_time);
+            formData.append('rate', $('#rate').val() || 0);
+            formData.append('wage_group_id', $('#wage_group_id').val() || 0);
+            formData.append('pay_stub_entry_account_id', $('#pay_stub_entry_account_id').val() || 0);
+            formData.append('accrual_policy_id', $('#accrual_policy_id').val() || 0);
+            formData.append('accrual_rate', $('#accrual_rate').val() || 0);
+            
+            let createUrl = `/policy/overtime/create`;
+            let updateUrl = `/policy/overtime/update/${overtime_id}`;
+
+            const isUpdating = Boolean(overtime_id);
+            let url = isUpdating ? updateUrl : createUrl;
+            let method = isUpdating ? 'PUT' : 'POST';
+
+            if (isUpdating) {
+                formData.append('id', overtime_id);
+            }
+
+            try {
+                // Send data and handle response
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#overtime-form-modal').modal('hide');
+                    getAllOvertimes(); // Refresh the list of overtimes
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        });
+
         function resetForm(){
-            $('#round_type_id').val('');
-            $('#interval_time').val('');
-            $('#grace_period').val('');
-            $('#strict_schedule').val('');
-            $('#overtime_id').val('');
+           $('#overtime_id').val('');
+           $('#name').val('');
+           $('#type_id').val('1');
+           $('#trigger_time').val('');
+           $('#max_time').val('');
+           $('#rate').val('1.00');
+           $('#wage_group_id').val('0');
+           $('#pay_stub_entry_account_id').val('0');
+           $('#accrual_policy_id').val('0');
+           $('#accrual_rate').val('1.00');
         }
     </script>
 
