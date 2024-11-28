@@ -57,28 +57,32 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="rate" class="form-label mb-1 col-md-3">Rate</label>
-                            <div class="col-md-9">
-                                <input type="text" class="form-control" id="rate" placeholder="Select Rate (hh:mm)">
+
+                        <div id="unpaid_section">
+                            <div class="row mb-3">
+                                <label for="rate" class="form-label mb-1 col-md-3">Rate</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" id="rate" placeholder="Select Rate (hh:mm)">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="wage_group_id" class="form-label mb-1 col-md-3">Wage Group</label>
+                                <div class="col-md-9">
+                                    <select class="form-select" id="wage_group_id">
+                                        <!-- Add options dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="pay_stub_entry_account_id" class="form-label mb-1 col-md-3">Pay Stub Account</label>
+                                <div class="col-md-9">
+                                    <select class="form-select" id="pay_stub_entry_account_id">
+                                        <!-- Add options dynamically -->
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="wage_group_id" class="form-label mb-1 col-md-3">Wage Group</label>
-                            <div class="col-md-9">
-                                <select class="form-select" id="wage_group_id">
-                                    <!-- Add options dynamically -->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label for="pay_stub_entry_account_id" class="form-label mb-1 col-md-3">Pay Stub Account</label>
-                            <div class="col-md-9">
-                                <select class="form-select" id="pay_stub_entry_account_id">
-                                    <!-- Add options dynamically -->
-                                </select>
-                            </div>
-                        </div>
+
                         <div class="row mb-3">
                             <label for="accrual_policy_id" class="form-label mb-1 col-md-3">Accrual Policy</label>
                             <div class="col-md-9">
@@ -194,6 +198,19 @@
                 console.error('Error fetching dropdown data:', error);
             }
         }
+
+        $(document).on('change', '#type', function(){
+            let type = $(this).val();
+
+            if(type === 'unpaid'){
+                $('#unpaid_section').hide();
+                $('#rate').val('1.00');
+                $('#wage_group_id').val('0').trigger('change');
+                $('#pay_stub_entry_account_id').val('0').trigger('change');
+            }else{
+                $('#unpaid_section').show();
+            }
+        })
 
         $(document).on('change', '#accrual_policy_id', function(){
             if($(this).val() == '0'){

@@ -382,6 +382,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/holiday/dropdown', [HolidayPolicyController::class, 'getHolidayDropdownData'])->name('policy.holiday.dropdown');
     Route::get('/policy/holidays', [HolidayPolicyController::class, 'getAllHolidayPolicies'])->name('policy.holidays.all');
     Route::delete('/policy/holiday/delete/{id}', [HolidayPolicyController::class, 'deleteHolidayPolicy'])->name('policy.holiday.delete');
+    Route::post('/policy/holiday/create', [HolidayPolicyController::class, 'createHolidayPolicy'])->name('policy.holiday.create');
+    Route::put('/policy/holiday/update/{id}', [HolidayPolicyController::class, 'updateHolidayPolicy'])->name('policy.holiday.update');
+    Route::get('/policy/holiday/{id}', [HolidayPolicyController::class, 'getHolidayPolicyById'])->name('policy.holiday.getById');
 
     // absence policy
     Route::get('/policy/absence', [AbsencePolicyController::class, 'index'])->name('policy.absence');
