@@ -254,7 +254,7 @@
                 $('#error-msg').html(''); // Clear error message if no issues
             }
 
-
+            // Collect selected employee IDs from the multiSelector component
             // Collect selected employee IDs from the multiSelector component
             const selectedIds = $('#employeeContainer .selected-list option').map(function() {
                 return $(this).val();
