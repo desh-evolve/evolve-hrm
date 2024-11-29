@@ -357,6 +357,10 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/exception/form', [ExceptionPolicyController::class, 'form'])->name('policy.exception.form');
     Route::get('/policy/exceptions', [ExceptionPolicyController::class, 'getAllExceptionPolicies'])->name('policy.exceptions.all');
     Route::delete('/policy/exception/delete/{id}', [ExceptionPolicyController::class, 'deleteExceptionPolicy'])->name('policy.exception.delete');
+    Route::post('/policy/exception/create', [ExceptionPolicyController::class, 'createExceptionPolicy'])->name('policy.exception.create');
+    Route::put('/policy/exception/update/{id}', [ExceptionPolicyController::class, 'updateExceptionPolicy'])->name('policy.exception.update');
+    Route::get('/policy/exception/{id}', [ExceptionPolicyController::class, 'getExceptionPolicyById'])->name('policy.exception.getById');
+
 
     // overtime policy
     Route::get('/policy/overtime', [OvertimePolicyController::class, 'index'])->name('policy.overtime');

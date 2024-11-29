@@ -37,7 +37,8 @@
                             </tbody>
                         </table>
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary" id="submitForm">Submit</button>
+                            <input type="hidden" id="exception_id" value="">
+                            <button type="button" class="btn btn-primary" id="form_submit">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -75,111 +76,130 @@
 
 
         $(document).ready(function() {
-            const exceptionPolicyForm = new ExceptionPolicyForm(ex_pol);
-            exceptionPolicyForm.populateFormData();
+            populateFormData(ex_pol);
 
             // Bind form submission or button click for sending data
-            $('#submitForm').click(function() {
-                exceptionPolicyForm.sendDataToBackend();
+            $('#form_submit').click(function() {
+                sendDataToBackend();
             });
         });
 
-        class ExceptionPolicyForm {
-            constructor(data) {
-                this.data = data;
+        // Function to generate row HTML for the form data
+        function createRowHTML(ex) {
+            return `
+                <tr class="exception-policy-row">
+                    <td><input type="checkbox" class="active-checkbox" ${ex.active ? 'checked' : ''} /></td>    
+                    <td>${ex.code}</td>    
+                    <td>${ex.name}</td>    
+                    <td>
+                        <select class="severity-dropdown">
+                            <option value="low" ${ex.severity === 'low' ? 'selected' : ''}>Low</option>
+                            <option value="medium" ${ex.severity === 'medium' ? 'selected' : ''}>Medium</option>
+                            <option value="high" ${ex.severity === 'high' ? 'selected' : ''}>High</option>
+                            <option value="critical" ${ex.severity === 'critical' ? 'selected' : ''}>Critical</option>
+                        </select>
+                    </td>    
+                    <td>${ex.grace ? `<input type="text" class="grace-input" value="${ex.grace}" />` : ''}</td>    
+                    <td>${ex.watch_window ? `<input type="text" class="watch-window-input" value="${ex.watch_window}" />` : ''}</td>    
+                    <td>
+                        <select class="email-notification-dropdown">
+                            <option value="none" ${ex.email_notification === 'none' ? 'selected' : ''}>None</option>
+                            <option value="employee" ${ex.email_notification === 'employee' ? 'selected' : ''}>Employee</option>
+                            <option value="supervisor" ${ex.email_notification === 'supervisor' ? 'selected' : ''}>Supervisor</option>
+                            <option value="both" ${ex.email_notification === 'both' ? 'selected' : ''}>Both</option>
+                        </select>
+                    </td>    
+                </tr>
+            `;
+        }
+
+        // Function to populate the form with data
+        function populateFormData(data) {
+            let list = '';
+
+            data.forEach(ex => {
+                list += createRowHTML(ex);
+            });
+
+            $('#ex_pol_form_table_body').html(list);
+        }
+
+        // Function to collect data from the form
+        function collectFormData() {
+            
+
+            // Return the collected data
+            return {
+                policy_data: formDataArr,
+                ex_pol_name: ex_pol_name
+            };
+        }
+
+        // Function to send the collected data to the backend
+        async function sendDataToBackend() {
+            const ex_pol_name = $('#ex_pol_name').val();
+
+            if (ex_pol_name === '') {
+                alert('Exception policy name is required!');
+                return false;
             }
 
-            // Method to populate table with data
-            populateFormData() {
-                let list = '';
+            let formDataArr = [];
 
-                this.data.map(ex => {
-                    list += `
-                        <tr class="exception-policy-row">
-                            <td><input type="checkbox" class="active-checkbox" ${ex.active ? 'checked' : ''} /></td>    
-                            <td>${ex.code}</td>    
-                            <td>${ex.name}</td>    
-                            <td>
-                                <select class="severity-dropdown">
-                                    <option value="low" ${ex.severity === 'low' ? 'selected' : ''}>Low</option>
-                                    <option value="medium" ${ex.severity === 'medium' ? 'selected' : ''}>Medium</option>
-                                    <option value="high" ${ex.severity === 'high' ? 'selected' : ''}>High</option>
-                                    <option value="critical" ${ex.severity === 'critical' ? 'selected' : ''}>Critical</option>
-                                </select>
-                            </td>    
-                            <td>
-                                ${ex.grace ? `<input type="text" class="grace-input" value="${ex.grace}" />` : ''}
-                            </td>    
-                            <td>
-                                ${ex.watch_window ? `<input type="text" class="watch-window-input" value="${ex.watch_window}" />` : ''}
-                            </td>    
-                            <td>
-                                <select class="email-notification-dropdown">
-                                    <option value="none" ${ex.email_notification === 'none' ? 'selected' : ''}>None</option>
-                                    <option value="employee" ${ex.email_notification === 'employee' ? 'selected' : ''}>Employee</option>
-                                    <option value="supervisor" ${ex.email_notification === 'supervisor' ? 'selected' : ''}>Supervisor</option>
-                                    <option value="both" ${ex.email_notification === 'both' ? 'selected' : ''}>Both</option>
-                                </select>
-                            </td>    
-                        </tr>
-                    `;
+            $('#ex_pol_form_table_body tr').each(function () {
+                const row = $(this);
+                const isActive = row.find('.active-checkbox').prop('checked') ? 1 : 0;
+                const code = row.find('td:nth-child(2)').text();
+                const name = row.find('td:nth-child(3)').text();
+                const severity = row.find('.severity-dropdown').val();
+                const grace = convertHoursAndMinutesToSeconds(row.find('.grace-input').val() || '0:00');
+                const watchWindow = convertHoursAndMinutesToSeconds(row.find('.watch-window-input').val() || '0:00');
+                const emailNotification = row.find('.email-notification-dropdown').val();
+
+                formDataArr.push({
+                    active: isActive,
+                    code: code,
+                    name: name,
+                    severity: severity,
+                    grace: grace,
+                    watch_window: watchWindow,
+                    email_notification: emailNotification
                 });
+            });
 
-                $('#ex_pol_form_table_body').html(list);
+
+            const formData = new FormData();
+
+            formData.append('name', ex_pol_name);
+            formData.append('policy_data', JSON.stringify(formDataArr));
+
+            const exception_id = $('#exception_id').val();
+            
+            let createUrl = '/policy/exception/create';
+            let updateUrl = `/policy/exception/update/${exception_id}`;
+            
+            const isUpdating = Boolean(exception_id);
+            const url = isUpdating ? updateUrl : createUrl;
+            const method = isUpdating ? 'PUT' : 'POST';
+
+            // Add exception_id if updating
+            if (isUpdating) {
+                formData.append('id', exception_id);
             }
 
-            // Method to collect data from the table
-            collectFormData() {
-                const formData = [];
+            try {
+                // Send data and handle the response
+                const res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
 
-                $('#ex_pol_form_table_body tr').each(function() {
-                    const row = $(this);
-                    const isActive = row.find('.active-checkbox').prop('checked') ? 1 : 0;
-                    const code = row.find('td:nth-child(2)').text();
-                    const name = row.find('td:nth-child(3)').text();
-                    const severity = row.find('.severity-dropdown').val();
-                    const grace = row.find('.grace-input').val();
-                    const watchWindow = row.find('.watch-window-input').val();
-                    const emailNotification = row.find('.email-notification-dropdown').val();
-
-                    formData.push({
-                        active: isActive,
-                        code: code,
-                        name: name,
-                        severity: severity,
-                        grace: grace,
-                        watch_window: watchWindow,
-                        email_notification: emailNotification
-                    });
-                });
-
-                //check here
-                formData.push('ex_pol_name', $('#ex_pol_name').val());
-
-                return formData;
-            }
-
-            // Method to send collected data to the backend
-            sendDataToBackend() {
-                const formData = this.collectFormData();
-
-                fetch('/your-backend-endpoint', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ data: formData })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    // Handle success (e.g., show a message, reset form, etc.)
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    // Handle error (e.g., show error message)
-                });
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#exception-form-modal').modal('hide');
+                    window.location.href = '/policy/exception';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
             }
         }
 
