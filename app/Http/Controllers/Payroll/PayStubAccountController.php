@@ -37,15 +37,15 @@ class PayStubAccountController extends Controller
     {
         try {
             return DB::transaction(function () use ($request) {
-                $request->validate([
-                    'employee_id' => 'required',
-                    'company' => 'required',
-                    'from_date' => 'required',
-                    'to_date' => 'required',
-                    'department' => 'required',
-                    'designation' => 'required',
-                    'remarks' => 'required',
-                ]);
+                // $request->validate([
+                //     'employee_id' => 'required',
+                //     'company' => 'required',
+                //     'from_date' => 'required',
+                //     'to_date' => 'required',
+                //     'department' => 'required',
+                //     'designation' => 'required',
+                //     'remarks' => 'required',
+                // ]);
 
                 $table = 'emp_work_experience';
                 $inputArr = [
