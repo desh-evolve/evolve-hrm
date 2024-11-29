@@ -202,7 +202,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">
-                            <input type="hidden" id="absence_id" value=""/>
+                            <input type="hidden" id="holiday_policy_id" value=""/>
                             <button type="button" class="btn btn-primary" id="form_submit">Submit</button>
                         </div>
                     </form>
@@ -269,8 +269,20 @@
         }
 
         $(document).on('click', '#holiday_add', function(){
+            let holiday_id = '';
             let holiday_name = $('#holiday_name').val();
             let holiday_date = $('#holiday_date').val();
+
+            if(holiday_name == '' || holiday_date == ''){
+                alert('Both Holiday Name & Date are required!');
+                return;
+            }
+
+            renderHolidayTable(holiday_id, holiday_name, holiday_date);
+            resetHolidays();
+        })
+
+        function renderHolidayTable(holiday_id, holiday_name, holiday_date){
             let list = '';
 
             list = `
@@ -278,18 +290,19 @@
                     <td>${holiday_name}</td>    
                     <td>${holiday_date}</td>    
                     <td>
+                        <input type="hidden" class="holiday_name" id="${holiday_id}" value="${holiday_name}">
+                        <input type="hidden" class="holiday_date" id="${holiday_id}" value="${holiday_date}">
                         <button type="button" class="btn btn-danger waves-effect waves-light btn-sm remove_holiday" title="Remove Holiday" data-tooltip="tooltip" data-bs-placement="top"><i class="ri-delete-bin-fill"></i></button>  
                     </td>    
                 </tr>
             `;
 
             $('#holiday_tbody').append(list);
-            resetHolidays();
-        })
+        }
 
         async function getUpdateData(holiday_policy_id){
 
-            $('#holiday_id').val(holiday_policy_id); // Set the ID in the hidden field
+            $('#holiday_policy_id').val(holiday_policy_id); // Set the ID in the hidden field
 
             try {
                 // Fetch the holiday policy data
@@ -320,8 +333,16 @@
                     $('#force_over_time_policy').val(data.force_over_time_policy);
                     $('#include_over_time').val(data.include_over_time);
                     $('#include_paid_absence_time').val(data.include_paid_absence_time);
-                    $('#round_interval_policy_id').val(data.round_interval_policy_id || '0').trigger('change')
-                    $('#absence_policy_id').val(data.absence_policy_id || '0').trigger('change')
+                    $('#round_interval_policy_id').val(data.round_interval_policy_id || '0').trigger('change');
+                    $('#absence_policy_id').val(data.absence_policy_id || '0').trigger('change');
+
+                    if(data.holidays && data.holidays.length > 0){
+
+                        data.holidays.map((e) => {
+                            renderHolidayTable(e.holiday_id, e.holiday_name, e.holiday_date);
+                        })
+                    }
+
                 }
             } catch (error) {
                 console.error('Error while fetching holiday policy data:', error);
@@ -339,7 +360,7 @@
             // Collect form data
             let formData = new FormData();
 
-            let holiday_id = $('#holiday_id').val();
+            let holiday_id = $('#holiday_policy_id').val();
 
             let average_time_worked_days = $('#average_time_worked_days').is(':checked') ? 1 : 0;
             let force_over_time_policy = $('#force_over_time_policy').is(':checked') ? 1 : 0;
@@ -371,6 +392,16 @@
             formData.append('round_interval_policy_id', $('#round_interval_policy_id').val());
             formData.append('absence_policy_id', $('#absence_policy_id').val());
             
+            let holiday_names = $('.holiday_name').map(function (i) {
+                let id = $(this).attr('id');
+                formData.append(`holiday_names[${id ?? i}]`, $(this).val());
+            });
+
+            let holiday_dates = $('.holiday_date').map(function (i) {
+                let id = $(this).attr('id');
+                formData.append(`holiday_dates[${id ?? i}]`, $(this).val());
+            });
+
             let createUrl = `/policy/holiday/create`;
             let updateUrl = `/policy/holiday/update/${holiday_id}`;
 
@@ -390,7 +421,7 @@
                 if (res.status === 'success') {
                     resetForm();
                     $('#holiday-form-modal').modal('hide');
-                    getAllMeals(); // Refresh the list of holidays
+                    window.location.href = '/policy/holiday';
                 }
             } catch (error) {
                 console.error('Error:', error);

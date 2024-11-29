@@ -50,7 +50,17 @@ class HolidayPolicyController extends Controller
     }
 
     public function getHolidayPolicyById($id){
-        $holidays = $this->common->commonGetById($id, 'id', 'holiday_policy', '*');
+        $connections = [
+            'holidays' => [
+                'con_fields' => ['id AS holiday_id', 'name AS holiday_name', 'date_stamp AS holiday_date'],  // Fields to select from connected table
+                'con_where' => ['holidays.holiday_policy_id' => 'id'],  // Link to the main table
+                'con_joins' => [],
+                'con_name' => 'holidays',  // Alias to store connected data in the result
+                'except_deleted' => true,  // Filter out soft-deleted records
+            ],
+        ];
+
+        $holidays = $this->common->commonGetById($id, 'id', 'holiday_policy', '*', [], [], false, $connections);
         return response()->json(['data' => $holidays], 200);
     }
 
@@ -89,7 +99,14 @@ class HolidayPolicyController extends Controller
                     'minimum_worked_after_days' => 'nullable|integer',
                     'worked_after_scheduled_days' => 'nullable|string',
                     'average_days' => 'nullable|integer',
+                    'holiday_names' => 'nullable|array',
+                    'holiday_dates' => 'nullable|array',
                 ]);
+
+                // Additional validation: ensure holiday_name and holiday_date match in count
+                if (!empty($request->holiday_name) && count($request->holiday_name) !== count($request->holiday_date)) {
+                    return response()->json(['error' => 'Mismatch between holiday names and dates'], 400);
+                }
                 
                 $table = 'holiday_policy';
                 
@@ -121,6 +138,27 @@ class HolidayPolicyController extends Controller
                 ];
     
                 $holidayPolicyId = $this->common->commonSave($table, $inputArr);
+                // Process holiday_name and holiday_date arrays
+                if (!empty($request->holiday_names)) {
+                    foreach ($request->holiday_names as $key => $name) {
+                        $date = $request->holiday_dates[$key] ?? null;
+
+                        // Skip if the date is missing or invalid
+                        if ($name && $date) {
+                            $holidayData = [
+                                'holiday_policy_id' => $holidayPolicyId,
+                                'name' => $name,
+                                'date_stamp' => $date,
+                                'created_by' => Auth::user()->id,
+                                'updated_by' => Auth::user()->id,
+                            ];
+
+                            // Save holiday to the database
+                            $this->common->commonSave('holidays', $holidayData);
+                        }
+                    }
+                }
+                
     
                 if ($holidayPolicyId) {
                     return response()->json(['status' => 'success', 'message' => 'Holiday policy created successfully', 'data' => ['id' => $holidayPolicyId]], 200);
@@ -160,6 +198,8 @@ class HolidayPolicyController extends Controller
                     'minimum_worked_after_days' => 'nullable|integer',
                     'worked_after_scheduled_days' => 'nullable|string',
                     'average_days' => 'nullable|integer',
+                    'holiday_names' => 'nullable|array',
+                    'holiday_dates' => 'nullable|array',
                 ]);
     
                 $table = 'holiday_policy';
@@ -190,6 +230,47 @@ class HolidayPolicyController extends Controller
                 ];
     
                 $updatedId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+
+                 // Update holidays
+                if (!empty($request->holiday_names)) {
+                    $existingHolidays = DB::table('holidays')
+                        ->where('holiday_policy_id', $id)
+                        ->get()
+                        ->keyBy('id');
+
+                    $updatedHolidayIds = [];
+
+                    foreach ($request->holiday_names as $key => $name) {
+                        $date = $request->holiday_dates[$key] ?? null;
+
+                        if ($name && $date) {
+                            $holidayData = [
+                                'holiday_policy_id' => $id,
+                                'name' => $name,
+                                'date_stamp' => $date,
+                                'updated_by' => Auth::user()->id,
+                            ];
+
+                            if (isset($existingHolidays[$key])) {
+                                // Update existing holiday
+                                $holidayId = $key;
+                                DB::table('holidays')->where('id', $holidayId)->update($holidayData);
+                                $updatedHolidayIds[] = $holidayId;
+                            } else {
+                                // Insert new holiday
+                                $holidayData['created_by'] = Auth::user()->id;
+                                $newHolidayId = DB::table('holidays')->insertGetId($holidayData);
+                                $updatedHolidayIds[] = $newHolidayId;
+                            }
+                        }
+                    }
+
+                    // Remove holidays that are no longer in the request
+                    DB::table('holidays')
+                    ->where('holiday_policy_id', $id)
+                    ->whereNotIn('id', $updatedHolidayIds)
+                    ->delete();
+                }
     
                 if ($updatedId) {
                     return response()->json(['status' => 'success', 'message' => 'Holiday policy updated successfully', 'data' => ['id' => $updatedId]], 200);
