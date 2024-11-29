@@ -248,6 +248,9 @@
                 </li>
 
                 <!-- Payroll -->
+                @php
+                    $checkEmployeeNav = request()->routeIs('payroll.*');
+                @endphp
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#payroll" data-bs-toggle="collapse" role="button"
                         aria-expanded="false">
@@ -258,7 +261,12 @@
                             <li class="nav-item"><a href="#" class="nav-link">End of Pay Period</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Pay Stub Amendment</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Pay Period Schedule</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Pay Stub Account</a></li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.pay_stub_account') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay
+                                    Stub Account</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
