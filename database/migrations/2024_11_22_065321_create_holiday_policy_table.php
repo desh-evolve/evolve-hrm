@@ -14,8 +14,6 @@ return new class extends Migration {
             $table->string('type')->nullable()->comment('standard/advanced_fixed/advanced_average');
             $table->string('default_schedule_status')->nullable()->comment('working/absent'); // Default schedule status
             $table->unsignedInteger('minimum_employed_days'); // Minimum employed days
-            $table->unsignedInteger('minimum_worked_period_days')->nullable(); // Minimum worked period days
-            $table->unsignedInteger('minimum_worked_days')->nullable(); // Minimum worked days
             $table->unsignedInteger('average_time_days')->nullable(); // Average time days
             $table->boolean('include_over_time')->default(0); // Include overtime
             $table->boolean('include_paid_absence_time')->default(0); // Include paid absence time
@@ -24,13 +22,15 @@ return new class extends Migration {
             $table->unsignedInteger('time')->nullable(); // Time
             $table->unsignedInteger('absence_policy_id')->nullable(); // Foreign key to absence policies
             $table->unsignedInteger('round_interval_policy_id')->nullable(); // Foreign key to round interval policies
-
+            
             $table->boolean('force_over_time_policy')->default(0); // Force overtime policy
             $table->boolean('average_time_worked_days')->default(1); // Average time worked days
+            $table->unsignedInteger('minimum_worked_days')->default(0); // Minimum worked days
+            $table->unsignedInteger('minimum_worked_period_days')->default(0); // Minimum worked period days
             $table->string('worked_scheduled_days')->default('calendar_days'); // Worked scheduled days
-            $table->unsignedInteger('minimum_worked_after_period_days')->default(0); // Minimum worked after period days
             $table->unsignedInteger('minimum_worked_after_days')->default(0); // Minimum worked after days
-            $table->unsignedSmallInteger('worked_after_scheduled_days')->default(0); // Worked after scheduled days
+            $table->unsignedInteger('minimum_worked_after_period_days')->default(0); // Minimum worked after period days
+            $table->string('worked_after_scheduled_days')->default('calendar_days'); // Worked after scheduled days
             $table->unsignedSmallInteger('paid_absence_as_worked')->default(0); // Paid absence as worked
             $table->unsignedInteger('average_days')->nullable(); // Average days
 

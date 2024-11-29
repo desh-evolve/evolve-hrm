@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="default_schedule_status" class="form-label mb-1 col-md-3">Type</label>
+                                <label for="default_schedule_status" class="form-label mb-1 col-md-3">Default Schedule Status</label>
                                 <div class="col-md-9">
                                     <select class="form-select w-50" id="default_schedule_status">
                                         <option value="working">Working</option>
@@ -60,12 +60,12 @@
                             </div>
                             <div id="advanced_holiday_eligibility_section">
                                 <div class="row mb-3">
-                                    <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Employee Must Work at Least</label>
+                                    <label for="minimum_worked_days" class="form-label mb-1 col-md-3">Employee Must Work at Least</label>
                                     <div class="col-md-9 d-flex align-items-center">
-                                        <input type="text" class="form-control numonly w-25" id="minimum_employed_days" value="15">
+                                        <input type="text" class="form-control numonly w-25" id="minimum_worked_days" value="15">
                                         <span class="ms-3 me-3 w-8">of the</span>
-                                        <input type="text" class="form-control numonly ms-3 me-3 w-25" id="minimum_employed_days" value="30">
-                                        <select class="form-select w-25" id="type">
+                                        <input type="text" class="form-control numonly ms-3 me-3 w-25" id="minimum_worked_period_days" value="30">
+                                        <select class="form-select w-25" id="worked_scheduled_days">
                                             <option value="calendar_days">Calendar Days</option>
                                             <option value="scheduled_days">Scheduled Days</option>
                                             <option value="holiday_week_days">Holiday Week Days</option>
@@ -74,12 +74,12 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Employee Must Work at Least</label>
+                                    <label for="minimum_worked_after_days" class="form-label mb-1 col-md-3">Employee Must Work at Least</label>
                                     <div class="col-md-9 d-flex align-items-center">
-                                        <input type="text" class="form-control numonly w-25" id="minimum_employed_days" value="0">
+                                        <input type="text" class="form-control numonly w-25" id="minimum_worked_after_days" value="0">
                                         <span class="ms-3 me-3 w-8">of the</span>
-                                        <input type="text" class="form-control numonly ms-3 me-3 w-25" id="minimum_employed_days" value="0">
-                                        <select class="form-select w-25" id="type">
+                                        <input type="text" class="form-control numonly ms-3 me-3 w-25" id="minimum_worked_after_period_days" value="0">
+                                        <select class="form-select w-25" id="worked_after_scheduled_days">
                                             <option value="calendar_days">Calendar Days</option>
                                             <option value="scheduled_days">Scheduled Days</option>
                                             <option value="holiday_week_days">Holiday Week Days</option>
@@ -102,52 +102,52 @@
                             </div>
                             <div id="avg_holiday_time_section">
                                 <div class="row mb-3" id="min_emp_days_section">
-                                    <label for="rate" class="form-label mb-1 col-md-3">Total Time over</label>
+                                    <label for="average_time_days" class="form-label mb-1 col-md-3">Total Time over</label>
                                     <div class="col-md-9 d-flex align-items-center">
-                                        <input type="text" class="form-control numonly w-50" id="rate" value="30">
+                                        <input type="text" class="form-control numonly w-50" id="average_time_days" value="30">
                                         <span class="ps-2">(days)</span>
                                     </div>
                                 </div>
                                 <div class="row mb-3" id="min_emp_days_section">
-                                    <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Average Time over</label>
+                                    <label for="average_time_worked_days" class="form-label mb-1 col-md-3">Average Time over</label>
                                     <div class="col-md-9 d-flex align-items-center">
                                         <span class="me-1 w-25">Worked Days Only</span>
-                                        <input type="checkbox" class="form-check-input" id="milestone_rollover_hire_date">
+                                        <input type="checkbox" class="form-check-input" id="average_time_worked_days">
                                         <span class="ms-3 me-3">or</span>
-                                        <input type="text" class="form-control numonly w-25" id="minimum_employed_days" value="0">
+                                        <input type="text" class="form-control numonly w-25" id="average_days" value="30">
                                         <span class="ms-3 w-100">days.</span>
                                     </div>
                                 </div>
                                 <div class="row mb-3" id="min_emp_days_section">
-                                    <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Minimum Time</label>
+                                    <label for="minimum_time" class="form-label mb-1 col-md-3">Minimum Time</label>
                                     <div class="col-md-9 d-flex align-items-center">
-                                        <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                        <input type="text" class="form-control numonly w-50" id="minimum_time" placeholder="hh:mm (2:15)" value="00:00">
                                         <span class="ps-4">hh:mm (2:15) (Use 0 for no minimum)</span>
                                     </div>
                                 </div>
                                 <div class="row mb-3" id="min_emp_days_section">
-                                    <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Maximum Time</label>
+                                    <label for="maximum_time" class="form-label mb-1 col-md-3">Maximum Time</label>
                                     <div class="col-md-9 d-flex align-items-center">
-                                        <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                        <input type="text" class="form-control numonly w-50" id="maximum_time" placeholder="hh:mm (2:15)" value="00:00">
                                         <span class="ps-4">hh:mm (2:15) (Use 0 for no maximum)</span>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="milestone_rollover_hire_date" class="form-label mb-1 col-md-3">Always Apply Over Time/Premium Policies</label>
+                                    <label for="force_over_time_policy" class="form-label mb-1 col-md-3">Always Apply Over Time/Premium Policies</label>
                                     <div class="col-md-9">
-                                        <input type="checkbox" class="form-check-input" id="milestone_rollover_hire_date">
+                                        <input type="checkbox" class="form-check-input" id="force_over_time_policy">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="milestone_rollover_hire_date" class="form-label mb-1 col-md-3">Include Over Time in Average</label>
+                                    <label for="include_over_time" class="form-label mb-1 col-md-3">Include Over Time in Average</label>
                                     <div class="col-md-9">
-                                        <input type="checkbox" class="form-check-input" id="milestone_rollover_hire_date">
+                                        <input type="checkbox" class="form-check-input" id="include_over_time">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="milestone_rollover_hire_date" class="form-label mb-1 col-md-3">Include Paid Absence Time in Average</label>
+                                    <label for="include_paid_absence_time" class="form-label mb-1 col-md-3">Include Paid Absence Time in Average</label>
                                     <div class="col-md-9">
-                                        <input type="checkbox" class="form-check-input" id="milestone_rollover_hire_date">
+                                        <input type="checkbox" class="form-check-input" id="include_paid_absence_time">
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -202,7 +202,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">
-                            <button class="btn btn-primary">Submit</button>
+                            <input type="hidden" id="absence_id" value=""/>
+                            <button type="button" class="btn btn-primary" id="form_submit">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -211,10 +212,15 @@
     </div>
 
     <script>
-        $(document).ready(function(){
+        $(document).ready(function() {
             getDropdownData();
             showSections('standard');
-        })
+
+            <?php if (isset($_GET['id'])): ?>
+                let holiday_policy_id = <?= json_encode($_GET['id']); ?>;
+                getUpdateData(holiday_policy_id);
+            <?php endif; ?>
+        });
 
         async function getDropdownData() {
             try {
@@ -244,6 +250,7 @@
         })
         
         function showSections(type){
+            resetForm(false)
             if(type === 'standard'){
                 $('#advanced_holiday_eligibility_section').hide();
                 $('#avg_holiday_time_section').hide();
@@ -280,13 +287,150 @@
             resetHolidays();
         })
 
+        async function getUpdateData(holiday_policy_id){
+
+            $('#holiday_id').val(holiday_policy_id); // Set the ID in the hidden field
+
+            try {
+                // Fetch the holiday policy data
+                let response = await commonFetchData(`/policy/holiday/${holiday_policy_id}`);
+                let data = response[0]; // Extract the first object
+
+                if (data) {
+                    let minimum_time = convertSecondsToHoursAndMinutes(data.minimum_time || 0);
+                    let maximum_time = convertSecondsToHoursAndMinutes(data.maximum_time || 0);
+
+                    // Populate form fields
+                    $('#name').val(data.name);
+                    $('#type').val(data.type || '').trigger('change');
+                    $('#default_schedule_status').val(data.default_schedule_status);
+                    $('#minimum_employed_days').val(data.minimum_employed_days);
+                    $('#minimum_worked_days').val(data.minimum_worked_days);
+                    $('#minimum_worked_period_days').val(data.minimum_worked_period_days);
+                    $('#worked_scheduled_days').val(data.worked_scheduled_days);
+                    $('#minimum_worked_after_days').val(data.minimum_worked_after_days);
+                    $('#minimum_worked_after_period_days').val(data.minimum_worked_after_period_days);
+                    $('#worked_after_scheduled_days').val(data.worked_after_scheduled_days);
+                    $('#time').val(data.time);
+                    $('#average_time_days').val(data.average_time_days);
+                    $('#average_time_worked_days').val(data.average_time_worked_days);
+                    $('#average_days').val(data.average_days);
+                    $('#minimum_time').val(minimum_time);
+                    $('#maximum_time').val(maximum_time);
+                    $('#force_over_time_policy').val(data.force_over_time_policy);
+                    $('#include_over_time').val(data.include_over_time);
+                    $('#include_paid_absence_time').val(data.include_paid_absence_time);
+                    $('#round_interval_policy_id').val(data.round_interval_policy_id || '0').trigger('change')
+                    $('#absence_policy_id').val(data.absence_policy_id || '0').trigger('change')
+                }
+            } catch (error) {
+                console.error('Error while fetching holiday policy data:', error);
+                $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
+            }
+        }
+
         $(document).on('click', '.remove_holiday', function(){
             $(this).closest('tr').remove();
         })
 
+        $(document).on('click', '#form_submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Collect form data
+            let formData = new FormData();
+
+            let holiday_id = $('#holiday_id').val();
+
+            let average_time_worked_days = $('#average_time_worked_days').is(':checked') ? 1 : 0;
+            let force_over_time_policy = $('#force_over_time_policy').is(':checked') ? 1 : 0;
+            let include_over_time = $('#include_over_time').is(':checked') ? 1 : 0;
+            let include_paid_absence_time = $('#include_paid_absence_time').is(':checked') ? 1 : 0;
+            let time = convertHoursAndMinutesToSeconds($('#time').val() || '0:00');
+            let minimum_time = convertHoursAndMinutesToSeconds($('#minimum_time').val() || '0:00');
+            let maximum_time = convertHoursAndMinutesToSeconds($('#maximum_time').val() || '0:00');
+
+            formData.append('name', $('#name').val());
+            formData.append('type', $('#type').val());
+            formData.append('default_schedule_status', $('#default_schedule_status').val());
+            formData.append('minimum_employed_days', $('#minimum_employed_days').val());
+            formData.append('minimum_worked_days', $('#minimum_worked_days').val());
+            formData.append('minimum_worked_period_days', $('#minimum_worked_period_days').val());
+            formData.append('worked_scheduled_days', $('#worked_scheduled_days').val());
+            formData.append('minimum_worked_after_days', $('#minimum_worked_after_days').val());
+            formData.append('minimum_worked_after_period_days', $('#minimum_worked_after_period_days').val());
+            formData.append('worked_after_scheduled_days', $('#worked_after_scheduled_days').val());
+            formData.append('time', time);
+            formData.append('average_time_days', $('#average_time_days').val());
+            formData.append('average_time_worked_days', average_time_worked_days);
+            formData.append('average_days', $('#average_days').val());
+            formData.append('minimum_time', minimum_time);
+            formData.append('maximum_time', maximum_time);
+            formData.append('force_over_time_policy', force_over_time_policy);
+            formData.append('include_over_time', include_over_time);
+            formData.append('include_paid_absence_time', include_paid_absence_time);
+            formData.append('round_interval_policy_id', $('#round_interval_policy_id').val());
+            formData.append('absence_policy_id', $('#absence_policy_id').val());
+            
+            let createUrl = `/policy/holiday/create`;
+            let updateUrl = `/policy/holiday/update/${holiday_id}`;
+
+            const isUpdating = Boolean(holiday_id);
+            let url = isUpdating ? updateUrl : createUrl;
+            let method = isUpdating ? 'PUT' : 'POST';
+
+            if (isUpdating) {
+                formData.append('id', holiday_id);
+            }
+
+            try {
+                // Send data and handle response
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#holiday-form-modal').modal('hide');
+                    getAllMeals(); // Refresh the list of holidays
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        });
+
         function resetHolidays(){
             $('#holiday_name').val('');
             $('#holiday_date').val('');
+        }
+
+        function resetForm(resetAll = true){
+            if(resetAll){
+                $('#absence_id').val('');
+                $('#name').val('');
+                $('#type').val('standard').trigger('change');
+                $('#default_schedule_status').val('working').trigger('change');
+                $('#holiday_name').val('');
+                $('#holiday_date').val('');
+                $('#holiday_tbody').html('');
+            }
+            $('#minimum_employed_days').val('30');
+            $('#minimum_worked_days').val('15');
+            $('#minimum_worked_period_days').val('30');
+            $('#worked_scheduled_days').val('calendar_days').trigger('change');
+            $('#minimum_worked_after_days').val('0');
+            $('#minimum_worked_after_period_days').val('0');
+            $('#worked_after_scheduled_days').val('calendar_days').trigger('change');
+            $('#time').val('00:00');
+            $('#average_time_days').val('30');
+            $('#average_time_worked_days').prop('checked', false);
+            $('#average_days').val('30');
+            $('#minimum_time').val('00:00');
+            $('#maximum_time').val('00:00');
+            $('#force_over_time_policy').prop('checked', false);
+            $('#include_over_time').prop('checked', false);
+            $('#include_paid_absence_time').prop('checked', false);
+            $('#round_interval_policy_id').val('0');
+            $('#absence_policy_id').val('0');
         }
     </script>
 
