@@ -38,8 +38,18 @@ class ExceptionPolicyController extends Controller
         return response()->json(['data' => $exceptions], 200);
     }
 
-    public function getExceptionPolicyById(){
-
+    public function getExceptionPolicyById($id){
+        $connections = [
+            'exception_policy' => [
+                'con_fields' => ['*'],  // Fields to select from connected table
+                'con_where' => ['exception_policy.exception_policy_control_id' => 'id'],  // Link to the main table
+                'con_joins' => [],
+                'con_name' => 'exceptions',  // Alias to store connected data in the result
+                'except_deleted' => true,  // Filter out soft-deleted records
+            ],
+        ];
+        $exceptions = $this->common->commonGetById($id, 'id', 'exception_policy_control', '*', [], [], false, $connections);
+        return response()->json(['data' => $exceptions], 200);
     }
 
     public function deleteExceptionPolicy($id){
@@ -91,10 +101,7 @@ class ExceptionPolicyController extends Controller
                     // Save the policy
                     $this->common->commonSave('exception_policy', $policy);
 
-                    //print_r($policy);
                 }
-                
-                //exit;
 
                 if($exceptionPolicyControlId){
                     return response()->json(['status' => 'success', 'message' => 'Exception policy created successfully', 'data' => ['id' => $exceptionPolicyControlId]], 200);
@@ -110,66 +117,60 @@ class ExceptionPolicyController extends Controller
 
     public function updateExceptionPolicy(Request $request, $id)
     {
+
         try {
             return DB::transaction(function () use ($request, $id) {
+             
                 // Validate the request
                 $request->validate([
                     'name' => 'required|string|max:250',
                     'policy_data' => 'required|string',
                 ]);
-    
-                // Update exception_policy_control
+                
+                $policyData = json_decode($request->policy_data, true);
+
+                // Insert into exception_policy_control
                 $controlData = [
                     'name' => $request->name,
                     'updated_by' => Auth::user()->id,
                 ];
-                $this->common->commonSave('exception_policy_control', $controlData, $id, 'id');
+                $exceptionPolicyControlId = $this->common->commonSave('exception_policy_control', $controlData, $id, 'id');
     
-                // Process policy_data
-                $existingPolicies = DB::table('exception_policy')
-                    ->where('exception_policy_control_id', $id)
-                    ->get()
-                    ->keyBy('id');
-    
-                $updatedPolicyIds = [];
-                foreach ($request->policy_data as $policy) {
-                    $policyData = [
+                // Delete existing policies tied to this control ID before adding new ones
+                DB::table('exception_policy')->where('exception_policy_control_id', $id)->delete();
+
+                // Insert policy data into exception_policy
+                foreach ($policyData as $pol) {
+                    // Prepare the policy array with all the necessary fields
+                    $policy = [
                         'exception_policy_control_id' => $id,
-                        'type_id' => $policy['type_id'],
-                        'grace' => $policy['grace'] ?? null,
-                        'watch_window' => $policy['watch_window'] ?? null,
-                        'demerit' => $policy['demerit'] ?? null,
-                        'active' => $policy['active'],
-                        'severity' => $policy['severity'],
-                        'email_notification' => $policy['email_notification'],
-                        'enable_authorization' => $policy['enable_authorization'] ?? 0,
-                        'updated_by' => Auth::user()->id,
+                        'type_id' => $pol['code'] ?? '',
+                        'grace' => isset($pol['grace']) ? $pol['grace'] : null,
+                        'watch_window' => isset($pol['watch_window']) ? $pol['watch_window'] : null,
+                        'demerit' => isset($pol['demerit']) ? $pol['demerit'] : null,
+                        'active' => isset($pol['active']) ? $pol['active'] : 0,
+                        'severity' => isset($pol['severity']) ? $pol['severity'] : 'low',
+                        'email_notification' => isset($pol['email_notification']) ? $pol['email_notification'] : 'both',
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id
                     ];
-    
-                    if (!empty($policy['id']) && isset($existingPolicies[$policy['id']])) {
-                        // Update existing policy
-                        DB::table('exception_policy')->where('id', $policy['id'])->update($policyData);
-                        $updatedPolicyIds[] = $policy['id'];
-                    } else {
-                        // Insert new policy
-                        $policyData['created_by'] = Auth::user()->id;
-                        $newPolicyId = DB::table('exception_policy')->insertGetId($policyData);
-                        $updatedPolicyIds[] = $newPolicyId;
-                    }
+                
+                    // Save the policy
+                    $this->common->commonSave('exception_policy', $policy);
+
                 }
-    
-                // Remove policies not in the update request
-                DB::table('exception_policy')
-                    ->where('exception_policy_control_id', $id)
-                    ->whereNotIn('id', $updatedPolicyIds)
-                    ->delete();
-    
-                return response()->json(['status' => 'success', 'message' => 'Exception policy updated successfully', 'data' => ['id' => $id]], 200);
+
+                if($exceptionPolicyControlId){
+                    return response()->json(['status' => 'success', 'message' => 'Exception policy created successfully', 'data' => ['id' => $exceptionPolicyControlId]], 200);
+                }else{
+                    return response()->json(['status' => 'error', 'message' => 'Something went wrong', 'data' => []], 500);
+                }
             });
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
         }
     }
+    
     
 
 }

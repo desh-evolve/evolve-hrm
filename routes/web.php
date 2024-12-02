@@ -351,6 +351,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/accrual/dropdown', [AccrualPolicyController::class, 'getAccrualDropdownData'])->name('policy.accrual.dropdown');
     Route::get('/policy/accruals', [AccrualPolicyController::class, 'getAllAccrualPolicies'])->name('policy.accruals.all');
     Route::delete('/policy/accrual/delete/{id}', [AccrualPolicyController::class, 'deleteAccrualPolicy'])->name('policy.accrual.delete');
+    Route::post('/policy/accrual/create', [AccrualPolicyController::class, 'createAccrualPolicy'])->name('policy.accrual.create');
+    Route::put('/policy/accrual/update/{id}', [AccrualPolicyController::class, 'updateAccrualPolicy'])->name('policy.accrual.update');
+    Route::get('/policy/accrual/{id}', [AccrualPolicyController::class, 'getAccrualPolicyById'])->name('policy.accrual.getById');
 
     // exception policy
     Route::get('/policy/exception', [ExceptionPolicyController::class, 'index'])->name('policy.exception');
