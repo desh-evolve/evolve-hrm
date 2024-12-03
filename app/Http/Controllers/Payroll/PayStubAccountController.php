@@ -37,38 +37,39 @@ class PayStubAccountController extends Controller
     {
         try {
             return DB::transaction(function () use ($request) {
-                // $request->validate([
-                //     'employee_id' => 'required',
-                //     'company' => 'required',
-                //     'from_date' => 'required',
-                //     'to_date' => 'required',
-                //     'department' => 'required',
-                //     'designation' => 'required',
-                //     'remarks' => 'required',
-                // ]);
+                $request->validate([
+                    'type' => 'required|string',
+                    'name' => 'required|string',
+                    'ps_order' => 'required|integer',
+                    // 'active' => 'required|string',
+                    // 'debit_account' => 'nullable|string',
+                    // 'credit_account' => 'nullable|string',
+                ]);
 
-                $table = 'emp_work_experience';
+                $table = 'pay_stub_entry_account';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
-                    'company' => $request->company,
-                    'from_date' => $request->from_date,
-                    'to_date' => $request->to_date,
-                    'department' => $request->department,
-                    'designation' => $request->designation,
-                    'remarks' => $request->remarks,
-                    'status' => $request->work_experience_status,
+                    'company_id' => 1,
+                    'active' => $request->active,
+                    'type' => $request->type,
+                    'name' => $request->name,
+                    'ps_order' => $request->ps_order,
+                    'accrual_pay_stub_entry_account_id' => $request->accrual_pay_stub_entry_account_id,
+                    'debit_account' => $request->debit_account ?: "",
+                    'credit_account' => $request->credit_account ?: "",
+                    'status' => $request->pay_stub_account_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
+
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Work Experience  added successfully', 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Account added successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed adding Work Experience', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed adding Account', 'data' => []], 500);
                 }
             });
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
@@ -78,35 +79,32 @@ class PayStubAccountController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
-                    'company' => 'required',
-                    'from_date' => 'required',
-                    'to_date' => 'required',
-                    'department' => 'required',
-                    'designation' => 'required',
-                    'remarks' => 'required',
+                    'type' => 'required|string',
+                    'name' => 'required|string',
+                    'ps_order' => 'required|integer',
                 ]);
 
-                $table = 'emp_work_experience';
+                $table = 'pay_stub_entry_account';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
-                    'company' => $request->company,
-                    'from_date' => $request->from_date,
-                    'to_date' => $request->to_date,
-                    'department' => $request->department,
-                    'designation' => $request->designation,
-                    'remarks' => $request->remarks,
-                    'status' => $request->work_experience_status,
+                    'company_id' => 1,
+                    'active' => $request->active,
+                    'type' => $request->type,
+                    'name' => $request->name,
+                    'ps_order' => $request->ps_order,
+                    'accrual_pay_stub_entry_account_id' => $request->accrual_pay_stub_entry_account_id,
+                    'debit_account' => $request->debit_account ?: "",
+                    'credit_account' => $request->credit_account ?: "",
+                    'status' => $request->pay_stub_account_status,
                     'updated_by' => Auth::user()->id,
 
                 ];
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Work Experience updated successfully', 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Account updated successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed updating Work Experience', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating Account', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -117,26 +115,26 @@ class PayStubAccountController extends Controller
     public function deletePayStubAccount($id)
     {
         $whereArr = ['id' => $id];
-        $title = 'Employee Work Experience';
-        $table = 'emp_work_experience';
+        $title = 'Pay Stub Account';
+        $table = 'pay_stub_entry_account';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
-    public function getAllPayStubAccountController()
+    public function getAllPayStubAccount()
     {
-        $table = 'emp_work_experience';
+        $table = 'pay_stub_entry_account';
         $fields = '*';
-        $employee_work_experience = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_work_experience], 200);
+        $pay_stub_account = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $pay_stub_account], 200);
     }
 
     public function getPayStubAccountById($id)
     {
         $idColumn = 'id';
-        $table = 'emp_work_experience';
+        $table = 'pay_stub_entry_account';
         $fields = '*';
-        $employee_work_experience = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_work_experience], 200);
+        $pay_stub_account = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $pay_stub_account], 200);
     }
 }
