@@ -58,32 +58,53 @@
                             </div>
                             <div>
                                 <div class="row mb-3" id="appointment_date_section">
-                                    <label for="apply_frequency_month" class="form-label mb-1 col-md-3">Employee's Appointment Date</label>
+                                    <label for="apply_frequency_hire_date" class="form-label mb-1 col-md-3">Employee's Appointment Date</label>
                                     <div class="col-md-9">
-                                        <input type="checkbox" class="form-check-input" id="apply_frequency_month">
+                                        <input type="checkbox" class="form-check-input" id="apply_frequency_hire_date">
                                     </div>
                                 </div>
                                 <div class="row mb-3" id="day_of_month_section">
-                                    <label for="apply_frequency_day_of_month" class="form-label mb-1 col-md-3">Day Of Month</label>
-                                    <div class="col-md-9">
-                                        <select class="form-select" id="apply_frequency_day_of_month">
-                                            <?php for ($i=1; $i < 31; $i++) { ?>
-                                                <option value="<?=$i?>"><?=$i?></option>
-                                            <?php } ?>
-                                        </select>
+                                    <div class="row mb-3">
+                                        <label for="apply_frequency_month" class="form-label mb-1 col-md-3">Day Of Month</label>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="apply_frequency_month">
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">June</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <label for="apply_frequency_day_of_month" class="form-label mb-1 col-md-3">Day Of Month</label>
+                                        <div class="col-md-9">
+                                            <select class="form-select" id="apply_frequency_day_of_month">
+                                                <?php for ($i=1; $i < 31; $i++) { ?>
+                                                    <option value="<?=$i?>"><?=$i?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3" id="day_of_week_section">
                                     <label for="apply_frequency_day_of_week" class="form-label mb-1 col-md-3">Day Of Week</label>
                                     <div class="col-md-9">
                                         <select class="form-select" id="apply_frequency_day_of_week">
-                                            <option value="sunday>">Sunday</option>
-                                            <option value="monday>">Monday</option>
-                                            <option value="tuesday>">Tuesday</option>
-                                            <option value="wednesday>">Wednesday</option>
-                                            <option value="thursday>">Thursday</option>
-                                            <option value="friday>">Friday</option>
-                                            <option value="saturday>">Saturday</option>
+                                            <option value="1">Sunday</option>
+                                            <option value="2">Monday</option>
+                                            <option value="3">Tuesday</option>
+                                            <option value="4">Wednesday</option>
+                                            <option value="5">Thursday</option>
+                                            <option value="6">Friday</option>
+                                            <option value="7">Saturday</option>
                                         </select>
                                     </div>
                                 </div>
@@ -91,7 +112,7 @@
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="minimum_employed_days" class="form-label mb-1 col-md-3">After Minimum Employed Days</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control numonly" id="minimum_employed_days" placeholder="Enter Name" value="">
+                                    <input type="text" class="form-control numonly" id="minimum_employed_days" placeholder="Enter Minimum Employed Days" value="0">
                                 </div>
                             </div>
 
@@ -111,18 +132,18 @@
                                 <label for="milestone_rollover_month" class="form-label mb-1 col-md-3">Month</label>
                                 <div class="col-md-9">
                                     <select class="form-select" id="milestone_rollover_month">
-                                        <option value="january">January</option>
-                                        <option value="february">February</option>
-                                        <option value="march">March</option>
-                                        <option value="april">April</option>
-                                        <option value="may">May</option>
-                                        <option value="june">June</option>
-                                        <option value="july">July</option>
-                                        <option value="august">August</option>
-                                        <option value="september">September</option>
-                                        <option value="october">October</option>
-                                        <option value="november">November</option>
-                                        <option value="december">December</option>
+                                        <option value="1">January</option>
+                                        <option value="2">February</option>
+                                        <option value="3">March</option>
+                                        <option value="4">April</option>
+                                        <option value="5">May</option>
+                                        <option value="6">June</option>
+                                        <option value="7">July</option>
+                                        <option value="8">August</option>
+                                        <option value="9">September</option>
+                                        <option value="10">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
                                     </select>
                                 </div>
                             </div>
@@ -141,7 +162,10 @@
 
                         
                         <div id="length_section">
-                            <u><h5 class="bg-primary text-white">Length Of Service Milestones</h5></u>
+                            <u><h5 class="bg-primary text-white">Length Of Service Milestones </h5></u>
+                            <div class="d-flex justify-content-end mb-2">
+                                <button type="button" class="btn btn-info btn-sm add_milestone">Add Milestone</button>
+                            </div>
                             <table class="table table-bordered">
                                 <thead class="bg-primary text-white">
                                     <tr>
@@ -156,13 +180,11 @@
 
                                 </tbody>
                             </table>
-                            <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-info btn-sm add_milestone">Add Milestone</button>
-                            </div>
                         </div>
                         
-                        <div>
-                            <button class="btn btn-primary">Submit</button>
+                        <div class="d-flex justify-content-end mt-3">
+                            <input type="hidden" id="accrual_policy_id" value="" />
+                            <button type="button" class="btn btn-primary" id="form_submit">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -175,34 +197,51 @@
             $('#frequency_section').hide();
             $('#milestone_rollover_section').hide();
             $('#length_section').hide();
+            $('#accrual_form_tbody').html('');
+
+            // Bind form submission or button click for sending data
+            $('#form_submit').click(function() {
+                sendDataToBackend();
+            });
+
+            <?php if (isset($_GET['id'])): ?>
+                let accrual_policy_id = <?= json_encode($_GET['id']); ?>;
+                getUpdateData(accrual_policy_id);
+            <?php endif; ?>
         })
 
         $(document).on('click', '.add_milestone', function(){
-            let list = '';
+            appendMilestoneRow();
+        })
 
-            list += `
-                <tr>
+        function appendMilestoneRow(milestone = {}, index = null) {
+            const id = milestone.id || `milestone_${index || Date.now()}`;
+            const maximumTime = convertSecondsToHoursAndMinutes(milestone.maximum_time || 0);
+            const rolloverTime = convertSecondsToHoursAndMinutes(milestone.rollover_time || 0);
+
+            const milestoneRow = `
+                <tr class="milestones_list" id="${id}">
                     <td>
                         <span>After: </span>
-                        <input type="text" class="numonly" value="0" />
-                        <select>
-                            <option value="days">Day(s)</option>    
-                            <option value="weeks">Week(s)</option>    
-                            <option value="months">Month(s)</option>    
-                            <option value="years">Year(s)</option>    
-                            <option value="hours">Hour(s)</option>    
+                        <input type="text" class="numonly length_of_service" value="${milestone.length_of_service || 0}" />
+                        <select class="length_of_service_unit">
+                            <option value="days" ${milestone.length_of_service_unit === 'days' ? 'selected' : ''}>Day(s)</option>
+                            <option value="weeks" ${milestone.length_of_service_unit === 'weeks' ? 'selected' : ''}>Week(s)</option>
+                            <option value="months" ${milestone.length_of_service_unit === 'months' ? 'selected' : ''}>Month(s)</option>
+                            <option value="years" ${milestone.length_of_service_unit === 'years' ? 'selected' : ''}>Year(s)</option>
+                            <option value="hours" ${milestone.length_of_service_unit === 'hours' ? 'selected' : ''}>Hour(s)</option>
                         </select>
                     </td>
                     <td>
-                        <input type="text" class="numonly" value="00:00" />
+                        <input type="text" class="numonly accrual_rate" value="${milestone.accrual_rate || 0}" />
+                        <span>ie: 0.0192</span>
+                    </td>
+                    <td>
+                        <input type="text" class="numonly maximum_time" value="${maximumTime}" />
                         <span>ie: hh:mm (2:15)</span>
                     </td>
                     <td>
-                        <input type="text" class="numonly" value="00:00" />
-                        <span>ie: hh:mm (2:15)</span>
-                    </td>
-                    <td>
-                        <input type="text" class="numonly" value="00:00" />
+                        <input type="text" class="numonly rollover_time" value="${rolloverTime}" />
                         <span>ie: hh:mm (2:15)</span>
                     </td>
                     <td>
@@ -210,11 +249,9 @@
                             <i class="ri-delete-bin-fill"></i>
                         </button>
                     </td>
-                </tr>
-            `;
-
-            $('#accrual_form_tbody').append(list);
-        })
+                </tr>`;
+            $('#accrual_form_tbody').append(milestoneRow); // Append to the table body
+        }
 
 
         $(document).on('click', '.remove_milestone', function(){
@@ -224,6 +261,7 @@
         $(document).on('change', '#type', function(){
             let type = $(this).val();
             
+            $('#accrual_form_tbody').html('');
             if(type == 'standard'){ //standard
                 $('#frequency_section').hide();
                 $('#milestone_rollover_section').hide();
@@ -280,7 +318,116 @@
                 $('#rollover_date_section').show();
             }
         });
+
+        // Function to send the collected data to the backend
+        async function sendDataToBackend() {
+            const name = $('#name').val();
+            const type = $('#type').val();
+
+            if (name === '') {
+                alert('Accrual policy name is required!');
+                return false;
+            }
+
+            if(type === '') {
+                alert('Accrual policy type is required!');
+                return false;
+            }
+
+            let formData = new FormData();
+
+            formData.append('name', $('#name').val());
+            formData.append('type', $('#type').val());
+            formData.append('enable_pay_stub_balance_display', $('#enable_pay_stub_balance_display').prop('checked') ? 1 : 0);
+            formData.append('apply_frequency', $('#apply_frequency').val());
+            formData.append('apply_frequency_hire_date', $('#apply_frequency_hire_date').prop('checked') ? 1 : 0);
+            formData.append('apply_frequency_month', $('#apply_frequency_month').val() ?? 0);
+            formData.append('apply_frequency_day_of_month', $('#apply_frequency_day_of_month').val() ?? 0);
+            formData.append('apply_frequency_day_of_week', $('#apply_frequency_day_of_week').val() ?? 0);
+            formData.append('minimum_employed_days', $('#minimum_employed_days').val() ?? 0);
+            formData.append('milestone_rollover_hire_date', $('#milestone_rollover_hire_date').prop('checked') ? 1 : 0);
+            formData.append('milestone_rollover_month', $('#milestone_rollover_month').val() ?? 0);
+            formData.append('milestone_rollover_day_of_month', $('#milestone_rollover_day_of_month').val() ?? 0);
+
+            // Collecting milestones data
+            $('.milestones_list').each(function(i) {
+                const id = $(this).attr('id') || i;
+                const maximumTime = convertHoursAndMinutesToSeconds($(this).find('.maximum_time').val() || '0:00');
+                const rolloverTime = convertHoursAndMinutesToSeconds($(this).find('.rollover_time').val() || '0:00');
+
+                formData.append(`milestones[${id}][length_of_service]`, $(this).find('.length_of_service').val() ?? 0);
+                formData.append(`milestones[${id}][length_of_service_unit]`, $(this).find('.length_of_service_unit').val());
+                formData.append(`milestones[${id}][accrual_rate]`, $(this).find('.accrual_rate').val());
+                formData.append(`milestones[${id}][maximum_time]`, maximumTime);
+                formData.append(`milestones[${id}][rollover_time]`, rolloverTime);
+            });
+
+            const accrual_policy_id = $('#accrual_policy_id').val();
+            
+            let createUrl = '/policy/accrual/create';
+            let updateUrl = `/policy/accrual/update/${accrual_policy_id}`;
+            
+            const isUpdating = Boolean(accrual_policy_id);
+            const url = isUpdating ? updateUrl : createUrl;
+            const method = isUpdating ? 'PUT' : 'POST';
+
+            // Add accrual_policy_id if updating
+            if (isUpdating) {
+                formData.append('id', accrual_policy_id);
+            }
+
+            try {
+                // Send data and handle the response
+                const res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    window.location.href = '/policy/accrual';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        }
+
+        async function getUpdateData(accrual_policy_id) {
+            $('#accrual_policy_id').val(accrual_policy_id); // Set the ID in the hidden field
+
+            try {
+                // Fetch the accrual policy data
+                const response = await commonFetchData(`/policy/accrual/${accrual_policy_id}`);
+                const data = response[0]; // Extract the first object
+
+                if (data) {
+                    // Populate main form fields
+                    $('#name').val(data.name);
+                    $('#type').val(data.type || '').trigger('change');
+                    $('#enable_pay_stub_balance_display').prop('checked', data.enable_pay_stub_balance_display === 1);
+                    $('#apply_frequency').val(data.apply_frequency || '').trigger('change');
+                    $('#apply_frequency_hire_date').prop('checked', data.apply_frequency_hire_date === 1);
+                    $('#apply_frequency_month').val(data.apply_frequency_month || 0);
+                    $('#apply_frequency_day_of_month').val(data.apply_frequency_day_of_month || 0);
+                    $('#apply_frequency_day_of_week').val(data.apply_frequency_day_of_week || 0);
+                    $('#minimum_employed_days').val(data.minimum_employed_days || 0);
+                    $('#milestone_rollover_hire_date').prop('checked', data.milestone_rollover_hire_date === 1);
+                    $('#milestone_rollover_month').val(data.milestone_rollover_month || 0);
+                    $('#milestone_rollover_day_of_month').val(data.milestone_rollover_day_of_month || 0);
+
+                    // Populate milestones
+                    if (data.milestones && Array.isArray(data.milestones)) {
+                        $('#accrual_form_tbody').html(''); // Clear existing milestones
+                        data.milestones.forEach((milestone, i) => {
+                            appendMilestoneRow(milestone, i); // Use the separate function to add rows
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error while fetching accrual policy data:', error);
+                $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
+            }
+        }
+
                 
-        </script>
+    </script>
 
 </x-app-layout>

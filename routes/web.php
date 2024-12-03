@@ -351,12 +351,19 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/accrual/dropdown', [AccrualPolicyController::class, 'getAccrualDropdownData'])->name('policy.accrual.dropdown');
     Route::get('/policy/accruals', [AccrualPolicyController::class, 'getAllAccrualPolicies'])->name('policy.accruals.all');
     Route::delete('/policy/accrual/delete/{id}', [AccrualPolicyController::class, 'deleteAccrualPolicy'])->name('policy.accrual.delete');
+    Route::post('/policy/accrual/create', [AccrualPolicyController::class, 'createAccrualPolicy'])->name('policy.accrual.create');
+    Route::put('/policy/accrual/update/{id}', [AccrualPolicyController::class, 'updateAccrualPolicy'])->name('policy.accrual.update');
+    Route::get('/policy/accrual/{id}', [AccrualPolicyController::class, 'getAccrualPolicyById'])->name('policy.accrual.getById');
 
     // exception policy
     Route::get('/policy/exception', [ExceptionPolicyController::class, 'index'])->name('policy.exception');
     Route::get('/policy/exception/form', [ExceptionPolicyController::class, 'form'])->name('policy.exception.form');
     Route::get('/policy/exceptions', [ExceptionPolicyController::class, 'getAllExceptionPolicies'])->name('policy.exceptions.all');
     Route::delete('/policy/exception/delete/{id}', [ExceptionPolicyController::class, 'deleteExceptionPolicy'])->name('policy.exception.delete');
+    Route::post('/policy/exception/create', [ExceptionPolicyController::class, 'createExceptionPolicy'])->name('policy.exception.create');
+    Route::put('/policy/exception/update/{id}', [ExceptionPolicyController::class, 'updateExceptionPolicy'])->name('policy.exception.update');
+    Route::get('/policy/exception/{id}', [ExceptionPolicyController::class, 'getExceptionPolicyById'])->name('policy.exception.getById');
+
 
     // overtime policy
     Route::get('/policy/overtime', [OvertimePolicyController::class, 'index'])->name('policy.overtime');
