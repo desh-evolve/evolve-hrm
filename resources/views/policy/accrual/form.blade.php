@@ -162,7 +162,10 @@
 
                         
                         <div id="length_section">
-                            <u><h5 class="bg-primary text-white">Length Of Service Milestones</h5></u>
+                            <u><h5 class="bg-primary text-white">Length Of Service Milestones </h5></u>
+                            <div class="d-flex justify-content-end mb-2">
+                                <button type="button" class="btn btn-info btn-sm add_milestone">Add Milestone</button>
+                            </div>
                             <table class="table table-bordered">
                                 <thead class="bg-primary text-white">
                                     <tr>
@@ -177,13 +180,10 @@
 
                                 </tbody>
                             </table>
-                            <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-info btn-sm add_milestone">Add Milestone</button>
-                            </div>
                         </div>
                         
-                        <div>
-                            <input type="hidden" id="accrual_id" value="" />
+                        <div class="d-flex justify-content-end mt-3">
+                            <input type="hidden" id="accrual_policy_id" value="" />
                             <button type="button" class="btn btn-primary" id="form_submit">Submit</button>
                         </div>
                     </form>
@@ -203,34 +203,45 @@
             $('#form_submit').click(function() {
                 sendDataToBackend();
             });
+
+            <?php if (isset($_GET['id'])): ?>
+                let accrual_policy_id = <?= json_encode($_GET['id']); ?>;
+                getUpdateData(accrual_policy_id);
+            <?php endif; ?>
         })
 
         $(document).on('click', '.add_milestone', function(){
-            let list = '';
+            appendMilestoneRow();
+        })
 
-            list += `
-                <tr class="milestones_list" id="">
+        function appendMilestoneRow(milestone = {}, index = null) {
+            const id = milestone.id || `milestone_${index || Date.now()}`;
+            const maximumTime = convertSecondsToHoursAndMinutes(milestone.maximum_time || 0);
+            const rolloverTime = convertSecondsToHoursAndMinutes(milestone.rollover_time || 0);
+
+            const milestoneRow = `
+                <tr class="milestones_list" id="${id}">
                     <td>
                         <span>After: </span>
-                        <input type="text" class="numonly length_of_service" value="0" />
+                        <input type="text" class="numonly length_of_service" value="${milestone.length_of_service || 0}" />
                         <select class="length_of_service_unit">
-                            <option value="days">Day(s)</option>    
-                            <option value="weeks">Week(s)</option>    
-                            <option value="months">Month(s)</option>    
-                            <option value="years">Year(s)</option>    
-                            <option value="hours">Hour(s)</option>    
+                            <option value="days" ${milestone.length_of_service_unit === 'days' ? 'selected' : ''}>Day(s)</option>
+                            <option value="weeks" ${milestone.length_of_service_unit === 'weeks' ? 'selected' : ''}>Week(s)</option>
+                            <option value="months" ${milestone.length_of_service_unit === 'months' ? 'selected' : ''}>Month(s)</option>
+                            <option value="years" ${milestone.length_of_service_unit === 'years' ? 'selected' : ''}>Year(s)</option>
+                            <option value="hours" ${milestone.length_of_service_unit === 'hours' ? 'selected' : ''}>Hour(s)</option>
                         </select>
                     </td>
                     <td>
-                        <input type="text" class="numonly accrual_rate" value="0.0000" />
+                        <input type="text" class="numonly accrual_rate" value="${milestone.accrual_rate || 0}" />
                         <span>ie: 0.0192</span>
                     </td>
                     <td>
-                        <input type="text" class="numonly maximum_time" value="00:00" />
+                        <input type="text" class="numonly maximum_time" value="${maximumTime}" />
                         <span>ie: hh:mm (2:15)</span>
                     </td>
                     <td>
-                        <input type="text" class="numonly rollover_time" value="00:00" />
+                        <input type="text" class="numonly rollover_time" value="${rolloverTime}" />
                         <span>ie: hh:mm (2:15)</span>
                     </td>
                     <td>
@@ -238,11 +249,10 @@
                             <i class="ri-delete-bin-fill"></i>
                         </button>
                     </td>
-                </tr>
-            `;
+                </tr>`;
+            $('#accrual_form_tbody').append(milestoneRow); // Append to the table body
+        }
 
-            $('#accrual_form_tbody').append(list);
-        })
 
         $(document).on('click', '.remove_milestone', function(){
             $(this).closest('tr').remove();
@@ -352,18 +362,18 @@
                 formData.append(`milestones[${id}][rollover_time]`, rolloverTime);
             });
 
-            const accrual_id = $('#accrual_id').val();
+            const accrual_policy_id = $('#accrual_policy_id').val();
             
             let createUrl = '/policy/accrual/create';
-            let updateUrl = `/policy/accrual/update/${accrual_id}`;
+            let updateUrl = `/policy/accrual/update/${accrual_policy_id}`;
             
-            const isUpdating = Boolean(accrual_id);
+            const isUpdating = Boolean(accrual_policy_id);
             const url = isUpdating ? updateUrl : createUrl;
             const method = isUpdating ? 'PUT' : 'POST';
 
-            // Add accrual_id if updating
+            // Add accrual_policy_id if updating
             if (isUpdating) {
-                formData.append('id', accrual_id);
+                formData.append('id', accrual_policy_id);
             }
 
             try {
@@ -379,7 +389,45 @@
                 $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
             }
         }
+
+        async function getUpdateData(accrual_policy_id) {
+            $('#accrual_policy_id').val(accrual_policy_id); // Set the ID in the hidden field
+
+            try {
+                // Fetch the accrual policy data
+                const response = await commonFetchData(`/policy/accrual/${accrual_policy_id}`);
+                const data = response[0]; // Extract the first object
+
+                if (data) {
+                    // Populate main form fields
+                    $('#name').val(data.name);
+                    $('#type').val(data.type || '').trigger('change');
+                    $('#enable_pay_stub_balance_display').prop('checked', data.enable_pay_stub_balance_display === 1);
+                    $('#apply_frequency').val(data.apply_frequency || '').trigger('change');
+                    $('#apply_frequency_hire_date').prop('checked', data.apply_frequency_hire_date === 1);
+                    $('#apply_frequency_month').val(data.apply_frequency_month || 0);
+                    $('#apply_frequency_day_of_month').val(data.apply_frequency_day_of_month || 0);
+                    $('#apply_frequency_day_of_week').val(data.apply_frequency_day_of_week || 0);
+                    $('#minimum_employed_days').val(data.minimum_employed_days || 0);
+                    $('#milestone_rollover_hire_date').prop('checked', data.milestone_rollover_hire_date === 1);
+                    $('#milestone_rollover_month').val(data.milestone_rollover_month || 0);
+                    $('#milestone_rollover_day_of_month').val(data.milestone_rollover_day_of_month || 0);
+
+                    // Populate milestones
+                    if (data.milestones && Array.isArray(data.milestones)) {
+                        $('#accrual_form_tbody').html(''); // Clear existing milestones
+                        data.milestones.forEach((milestone, i) => {
+                            appendMilestoneRow(milestone, i); // Use the separate function to add rows
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error while fetching accrual policy data:', error);
+                $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
+            }
+        }
+
                 
-        </script>
+    </script>
 
 </x-app-layout>
