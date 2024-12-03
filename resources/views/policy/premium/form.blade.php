@@ -239,7 +239,7 @@
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="rate" class="form-label mb-1 col-md-3">Rate</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="rate" value="1:00">
+                                    <input type="text" class="form-control numonly w-50" id="rate" value="1.00">
                                     <span class="ps-4">(ie: 1.5 for time and a half)</span>
                                 </div>
                             </div>
@@ -271,7 +271,7 @@
                         </div>
                         <div class="d-flex justify-content-end mt-4">
                             <input type="hidden" id="premium_policy_id" value="" />
-                            <button type="button" class="btn btn-primary">Submit</button>
+                            <button type="button" id="form_submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -427,16 +427,29 @@
             let includeMealPolicy = $('#include_meal_policy').is(':checked') ? 1 : 0;
             let includeBreakPolicy = $('#include_break_policy').is(':checked') ? 1 : 0;
 
+            let start_time = convertHoursAndMinutesToSeconds($('#start_time').val() || '00:00');
+            let end_time = convertHoursAndMinutesToSeconds($('#end_time').val() || '00:00');
+            let daily_trigger_time = convertHoursAndMinutesToSeconds($('#daily_trigger_time').val() || '00:00');
+            let weekly_trigger_time = convertHoursAndMinutesToSeconds($('#weekly_trigger_time').val() || '00:00');
+            let minimum_time = convertHoursAndMinutesToSeconds($('#minimum_time').val() || '00:00');
+            let maximum_time = convertHoursAndMinutesToSeconds($('#maximum_time').val() || '00:00');
+            let daily_trigger_time2 = convertHoursAndMinutesToSeconds($('#daily_trigger_time2').val() || '00:00');
+            let maximum_no_break_time = convertHoursAndMinutesToSeconds($('#maximum_no_break_time').val() || '00:00');
+            let minimum_break_time = convertHoursAndMinutesToSeconds($('#minimum_break_time').val() || '00:00');
+            let minimum_time_between_shift = convertHoursAndMinutesToSeconds($('#minimum_time_between_shift').val() || '00:00');
+            let minimum_first_shift_time = convertHoursAndMinutesToSeconds($('#minimum_first_shift_time').val() || '00:00');
+            let minimum_shift_time = convertHoursAndMinutesToSeconds($('#minimum_shift_time').val() || '00:00');
+
             // Append form fields
             formData.append('name', $('#name').val());
             formData.append('type', $('#type').val());
             formData.append('start_date', $('#start_date').val());
             formData.append('end_date', $('#end_date').val());
-            formData.append('start_time', $('#start_time').val());
-            formData.append('end_time', $('#end_time').val());
+            formData.append('start_time', start_time);
+            formData.append('end_time', end_time);
             formData.append('include_partial_punch', includePartialPunch);
-            formData.append('daily_trigger_time', $('#daily_trigger_time').val());
-            formData.append('weekly_trigger_time', $('#weekly_trigger_time').val());
+            formData.append('daily_trigger_time', daily_trigger_time);
+            formData.append('weekly_trigger_time', weekly_trigger_time);
 
             // Weekly trigger values
             formData.append('sun', $('#sun').is(':checked') ? 1 : 0);
@@ -448,18 +461,18 @@
             formData.append('sat', $('#sat').is(':checked') ? 1 : 0);
 
             // Additional fields
-            formData.append('daily_trigger_time2', $('#daily_trigger_time2').val());
-            formData.append('maximum_no_break_time', $('#maximum_no_break_time').val());
-            formData.append('minimum_break_time', $('#minimum_break_time').val());
-            formData.append('minimum_time_between_shift', $('#minimum_time_between_shift').val());
-            formData.append('minimum_first_shift_time', $('#minimum_first_shift_time').val());
-            formData.append('minimum_shift_time', $('#minimum_shift_time').val());
-            formData.append('minimum_time', $('#minimum_time').val());
-            formData.append('maximum_time', $('#maximum_time').val());
+            formData.append('daily_trigger_time2', daily_trigger_time2);
+            formData.append('maximum_no_break_time', maximum_no_break_time);
+            formData.append('minimum_break_time', minimum_break_time);
+            formData.append('minimum_time_between_shift', minimum_time_between_shift);
+            formData.append('minimum_first_shift_time', minimum_first_shift_time);
+            formData.append('minimum_shift_time', minimum_shift_time);
+            formData.append('minimum_time', minimum_time);
+            formData.append('maximum_time', maximum_time);
             formData.append('include_meal_policy', includeMealPolicy);
             formData.append('include_break_policy', includeBreakPolicy);
             formData.append('pay_type', $('#pay_type').val());
-            formData.append('rate', $('#rate').val());
+            formData.append('rate', $('#rate').val() || '1.00');
             formData.append('wage_group_id', $('#wage_group_id').val());
             formData.append('pay_stub_entry_account_id', $('#pay_stub_entry_account_id').val());
             formData.append('accrual_policy_id', $('#accrual_policy_id').val());

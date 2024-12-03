@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->string('type')->nullable()->comment('date_time/shift_differential/meal_break/callback/minimum_shift_time/holiday/advanced');
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
-            $table->time('start_time')->nullable();
-            $table->time('end_time')->nullable();
+            $table->integer('start_time')->unsigned()->nullable();
+            $table->integer('end_time')->unsigned()->nullable();
 
             // Weekday flags
             $table->boolean('sun')->default(0);
