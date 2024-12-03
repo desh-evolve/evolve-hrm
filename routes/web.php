@@ -380,6 +380,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/premium/dropdown', [PremiumPolicyController::class, 'getPremiumDropdownData'])->name('policy.premium.dropdown');
     Route::get('/policy/premiums', [PremiumPolicyController::class, 'getAllPremiumPolicies'])->name('policy.premiums.all');
     Route::delete('/policy/premium/delete/{id}', [PremiumPolicyController::class, 'deletePremiumPolicy'])->name('policy.premium.delete');
+    Route::post('/policy/premium/create', [PremiumPolicyController::class, 'createPremiumPolicy'])->name('policy.premium.create');
+    Route::put('/policy/premium/update/{id}', [PremiumPolicyController::class, 'updatePremiumPolicy'])->name('policy.premium.update');
+    Route::get('/policy/premium/{id}', [PremiumPolicyController::class, 'getPremiumPolicyById'])->name('policy.premium.getById');
 
     // holiday policy
     Route::get('/policy/holiday', [HolidayPolicyController::class, 'index'])->name('policy.holiday');

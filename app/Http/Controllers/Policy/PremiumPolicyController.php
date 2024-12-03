@@ -16,8 +16,8 @@ class PremiumPolicyController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view premium policy', ['only' => ['index', 'getAllPremiumPolicies']]);
-        $this->middleware('permission:create premium policy', ['only' => ['form', 'getPremiumDropdownData', '']]);
-        $this->middleware('permission:update premium policy', ['only' => ['form', 'getPremiumDropdownData', '']]);
+        $this->middleware('permission:create premium policy', ['only' => ['form', 'getPremiumDropdownData', 'createPremiumPolicy']]);
+        $this->middleware('permission:update premium policy', ['only' => ['form', 'getPremiumDropdownData', 'updatePremiumPolicy', 'getPremiumPolicyById']]);
         $this->middleware('permission:delete premium policy', ['only' => ['deletePremiumPolicy']]);
 
         $this->common = new CommonModel();
@@ -57,6 +57,11 @@ class PremiumPolicyController extends Controller
         return response()->json(['data' => $premiums], 200);
     }
 
+    public function getPremiumPolicyById(){
+        $premiums = $this->common->commonGetAll('premium_policy', '*');
+        return response()->json(['data' => $premiums], 200);
+    }
+
     public function deletePremiumPolicy($id){
         $whereArr = ['id' => $id];
         $title = 'Premium Policy';
@@ -66,6 +71,46 @@ class PremiumPolicyController extends Controller
     }
 
     public function createPremiumPolicy(Request $request)
+    {
+        /*
+        name //input text
+        type //select
+        start_date //input date
+        end_date //input date
+        start_time //input text
+        end_time //input text
+        include_partial_punch //checkbox
+        daily_trigger_time 
+        weekly_trigger_time
+
+        sun
+        mon
+        tue
+        wed
+        thu
+        fri
+        sat
+
+        daily_trigger_time2
+        maximum_no_break_time
+        minimum_break_time
+        minimum_time_between_shift
+        minimum_first_shift_time
+        minimum_shift_time
+        minimum_time
+        maximum_time
+        include_meal_policy
+        include_break_policy
+        pay_type
+        rate
+        wage_group_id
+        pay_stub_entry_account_id
+        accrual_policy_id
+        premium_policy_id
+        */
+    }
+
+    public function updatePremiumPolicy(Request $request, $id)
     {
         
     }

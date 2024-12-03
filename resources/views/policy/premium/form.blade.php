@@ -43,50 +43,50 @@
                         <div id="date_time_section">
                             <u><h5 class="bg-primary text-white">Date/Time Criteria</h5></u>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Start Date</label>
+                                <label for="start_date" class="form-label mb-1 col-md-3">Start Date</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="date" class="form-control w-50" id="minimum_employed_days" >
+                                    <input type="date" class="form-control w-50" id="start_date" >
                                     <span class="ps-4">ie: 25/02/2001 (Leave blank for no start date)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">End Date</label>
+                                <label for="end_date" class="form-label mb-1 col-md-3">End Date</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="date" class="form-control w-50" id="minimum_employed_days" >
+                                    <input type="date" class="form-control w-50" id="end_date" >
                                     <span class="ps-4">ie: 25/02/2001 (Leave blank for no end date)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Start Time</label>
+                                <label for="start_time" class="form-label mb-1 col-md-3">Start Time</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" >
+                                    <input type="text" class="form-control numonly w-50" id="start_time" >
                                     <span class="ps-4">ie: 20:09 (Leave blank for no start time)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">End Time</label>
+                                <label for="end_time" class="form-label mb-1 col-md-3">End Time</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" >
+                                    <input type="text" class="form-control numonly w-50" id="end_time" >
                                     <span class="ps-4">ie: 20:09 (Leave blank for no end time)</span>
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="enable_pay_stub_balance_display" class="form-label mb-1 col-md-3">Include Partial Punches</label>
+                                <label for="include_partial_punch" class="form-label mb-1 col-md-3">Include Partial Punches</label>
                                 <div class="col-md-9">
-                                    <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                    <input type="checkbox" class="form-check-input" id="include_partial_punch">
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Active After Daily (Regular) Hours</label>
+                                <label for="daily_trigger_time" class="form-label mb-1 col-md-3">Active After Daily (Regular) Hours</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="daily_trigger_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Active After Weekly (Regular) Hours</label>
+                                <label for="weekly_trigger_time" class="form-label mb-1 col-md-3">Active After Weekly (Regular) Hours</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="weekly_trigger_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
@@ -95,32 +95,32 @@
                                 <label for="apply_frequency" class="form-label mb-1 col-md-3">Effective Days</label>
                                 <div class="col-md-9 row">
                                     <div class="col-md-1 d-flex flex-column">
-                                        <label for="enable_pay_stub_balance_display" class="form-label m-0">Sun</label>
-                                        <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                        <label for="sun" class="form-label m-0">Sun</label>
+                                        <input type="checkbox" class="form-check-input" id="sun">
                                     </div>
                                     <div class="col-md-1 d-flex flex-column">
-                                        <label for="enable_pay_stub_balance_display" class="form-label m-0">Mon</label>
-                                        <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                        <label for="mon" class="form-label m-0">Mon</label>
+                                        <input type="checkbox" class="form-check-input" id="mon">
                                     </div>
                                     <div class="col-md-1 d-flex flex-column">
-                                        <label for="enable_pay_stub_balance_display" class="form-label m-0">Tue</label>
-                                        <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                        <label for="tue" class="form-label m-0">Tue</label>
+                                        <input type="checkbox" class="form-check-input" id="tue">
                                     </div>
                                     <div class="col-md-1 d-flex flex-column">
-                                        <label for="enable_pay_stub_balance_display" class="form-label m-0">Wed</label>
-                                        <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                        <label for="wed" class="form-label m-0">Wed</label>
+                                        <input type="checkbox" class="form-check-input" id="wed">
                                     </div>
                                     <div class="col-md-1 d-flex flex-column">
-                                        <label for="enable_pay_stub_balance_display" class="form-label m-0">Thu</label>
-                                        <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                        <label for="thu" class="form-label m-0">Thu</label>
+                                        <input type="checkbox" class="form-check-input" id="thu">
                                     </div>
                                     <div class="col-md-1 d-flex flex-column">
-                                        <label for="enable_pay_stub_balance_display" class="form-label m-0">Fri</label>
-                                        <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                        <label for="fri" class="form-label m-0">Fri</label>
+                                        <input type="checkbox" class="form-check-input" id="fri">
                                     </div>
                                     <div class="col-md-1 d-flex flex-column">
-                                        <label for="enable_pay_stub_balance_display" class="form-label m-0">Sat</label>
-                                        <input type="checkbox" class="form-check-input" id="enable_pay_stub_balance_display">
+                                        <label for="sat" class="form-label m-0">Sat</label>
+                                        <input type="checkbox" class="form-check-input" id="sat">
                                     </div>
                                 </div>
                             </div>
@@ -147,23 +147,23 @@
                         <div id="meal_section">
                             <u><h5 class="bg-primary text-white">Meal/Break Criteria</h5></u>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Active After Daily Hours</label>
+                                <label for="daily_trigger_time2" class="form-label mb-1 col-md-3">Active After Daily Hours</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="daily_trigger_time2" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Maximum Time Without A Break</label>
+                                <label for="maximum_no_break_time" class="form-label mb-1 col-md-3">Maximum Time Without A Break</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="maximum_no_break_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Minimum Time Recognized As Break</label>
+                                <label for="minimum_break_time" class="form-label mb-1 col-md-3">Minimum Time Recognized As Break</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="minimum_break_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
@@ -172,16 +172,16 @@
                         <div id="callback_section">
                             <u><h5 class="bg-primary text-white">Callback Criteria</h5></u>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Minimum Time Between Shifts</label>
+                                <label for="minimum_time_between_shift" class="form-label mb-1 col-md-3">Minimum Time Between Shifts</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="minimum_time_between_shift" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">First Shift Must Be At Least</label>
+                                <label for="minimum_first_shift_time" class="form-label mb-1 col-md-3">First Shift Must Be At Least</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="minimum_first_shift_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
@@ -190,9 +190,9 @@
                         <div id="min_shift_section">
                             <u><h5 class="bg-primary text-white">Minimum Shift Time Criteria</h5></u>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Minimum Shift Time</label>
+                                <label for="minimum_shift_time" class="form-label mb-1 col-md-3">Minimum Shift Time</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="minimum_shift_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15)</span>
                                 </div>
                             </div>
@@ -201,29 +201,29 @@
                         <div id="hours_section">
                             <u><h5 class="bg-primary text-white">Hours/Pay Criteria</h5></u>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Minimum Time</label>
+                                <label for="minimum_time" class="form-label mb-1 col-md-3">Minimum Time</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="minimum_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15) (Use 0 for no minimum)</span>
                                 </div>
                             </div>
                             <div class="row mb-3" id="min_emp_days_section">
-                                <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Maximum Time</label>
+                                <label for="maximum_time" class="form-label mb-1 col-md-3">Maximum Time</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="minimum_employed_days" placeholder="hh:mm (2:15)" value="00:00">
+                                    <input type="text" class="form-control numonly w-50" id="maximum_time" placeholder="hh:mm (2:15)" value="00:00">
                                     <span class="ps-4">hh:mm (2:15) (Use 0 for no maximum)</span>
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="milestone_rollover_hire_date" class="form-label mb-1 col-md-3">Include Meal Policy in Calculation</label>
+                                <label for="include_meal_policy" class="form-label mb-1 col-md-3">Include Meal Policy in Calculation</label>
                                 <div class="col-md-9">
-                                    <input type="checkbox" class="form-check-input" id="milestone_rollover_hire_date">
+                                    <input type="checkbox" class="form-check-input" id="include_meal_policy">
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="milestone_rollover_hire_date" class="form-label mb-1 col-md-3">Include Break Policy in Calculation</label>
+                                <label for="include_break_policy" class="form-label mb-1 col-md-3">Include Break Policy in Calculation</label>
                                 <div class="col-md-9">
-                                    <input type="checkbox" class="form-check-input" id="milestone_rollover_hire_date">
+                                    <input type="checkbox" class="form-check-input" id="include_break_policy">
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -270,7 +270,8 @@
 
                         </div>
                         <div class="d-flex justify-content-end mt-4">
-                            <button class="btn btn-primary">Submit</button>
+                            <input type="hidden" id="premium_policy_id" value="" />
+                            <button type="button" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -412,6 +413,85 @@
                 console.error('Wrong pay type selected');
             }
         })
+
+        $(document).on('click', '#form_submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Collect form data
+            let formData = new FormData();
+
+            let premium_policy_id = $('#premium_policy_id').val(); // For update, set the policy ID
+
+            // Checkbox values (convert to 1/0)
+            let includePartialPunch = $('#include_partial_punch').is(':checked') ? 1 : 0;
+            let includeMealPolicy = $('#include_meal_policy').is(':checked') ? 1 : 0;
+            let includeBreakPolicy = $('#include_break_policy').is(':checked') ? 1 : 0;
+
+            // Append form fields
+            formData.append('name', $('#name').val());
+            formData.append('type', $('#type').val());
+            formData.append('start_date', $('#start_date').val());
+            formData.append('end_date', $('#end_date').val());
+            formData.append('start_time', $('#start_time').val());
+            formData.append('end_time', $('#end_time').val());
+            formData.append('include_partial_punch', includePartialPunch);
+            formData.append('daily_trigger_time', $('#daily_trigger_time').val());
+            formData.append('weekly_trigger_time', $('#weekly_trigger_time').val());
+
+            // Weekly trigger values
+            formData.append('sun', $('#sun').is(':checked') ? 1 : 0);
+            formData.append('mon', $('#mon').is(':checked') ? 1 : 0);
+            formData.append('tue', $('#tue').is(':checked') ? 1 : 0);
+            formData.append('wed', $('#wed').is(':checked') ? 1 : 0);
+            formData.append('thu', $('#thu').is(':checked') ? 1 : 0);
+            formData.append('fri', $('#fri').is(':checked') ? 1 : 0);
+            formData.append('sat', $('#sat').is(':checked') ? 1 : 0);
+
+            // Additional fields
+            formData.append('daily_trigger_time2', $('#daily_trigger_time2').val());
+            formData.append('maximum_no_break_time', $('#maximum_no_break_time').val());
+            formData.append('minimum_break_time', $('#minimum_break_time').val());
+            formData.append('minimum_time_between_shift', $('#minimum_time_between_shift').val());
+            formData.append('minimum_first_shift_time', $('#minimum_first_shift_time').val());
+            formData.append('minimum_shift_time', $('#minimum_shift_time').val());
+            formData.append('minimum_time', $('#minimum_time').val());
+            formData.append('maximum_time', $('#maximum_time').val());
+            formData.append('include_meal_policy', includeMealPolicy);
+            formData.append('include_break_policy', includeBreakPolicy);
+            formData.append('pay_type', $('#pay_type').val());
+            formData.append('rate', $('#rate').val());
+            formData.append('wage_group_id', $('#wage_group_id').val());
+            formData.append('pay_stub_entry_account_id', $('#pay_stub_entry_account_id').val());
+            formData.append('accrual_policy_id', $('#accrual_policy_id').val());
+            formData.append('premium_policy_id', $('#premium_policy_id').val());
+
+            // Determine create or update URL
+            let createUrl = `/policy/premium/create`;
+            let updateUrl = `/policy/premium/update/${premium_policy_id}`;
+            const isUpdating = Boolean(premium_policy_id);
+            let url = isUpdating ? updateUrl : createUrl;
+            let method = isUpdating ? 'PUT' : 'POST';
+
+            if (isUpdating) {
+                formData.append('id', premium_policy_id);
+            }
+
+            try {
+                // Send data and handle response
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#policy-form-modal').modal('hide');
+                    window.location.href = '/policy/premium';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        });
+
 
     </script>
 
