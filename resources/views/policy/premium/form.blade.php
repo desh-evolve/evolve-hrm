@@ -280,9 +280,16 @@
     </div>
 
     <script>
+        let dropdownData = [];
+
         $(document).ready(function(){
             getDropdownData();
             showSections('date_time');
+
+            <?php if (isset($_GET['id'])): ?>
+                const id = <?= json_encode($_GET['id']); ?>; // Safely pass PHP variable to JavaScript
+                getUpdateData(id);
+            <?php endif; ?>
         })
 
         async function getDropdownData() {
@@ -312,6 +319,83 @@
 
             } catch (error) {
                 console.error('Error fetching dropdown data:', error);
+            }
+        }
+
+        async function getUpdateData(id) {
+            try {
+                // Fetch policy data
+                let response = await commonFetchData(`/policy/premium/${id}`);
+                let data = response?.[0]; // Correctly accessing the data array
+
+                if (!data) {
+                    console.error('No data found for the given ID.');
+                    return;
+                }
+
+                console.log('Fetched premium policy data:', data);
+                $('#premium_policy_id').val(data.id); // For update, set the policy ID
+
+                // Checkbox values (convert to 1/0)
+                $('#include_partial_punch').prop('checked', data.include_partial_punch == 1 ? true : false);
+                $('#include_meal_policy').prop('checked', data.include_meal_policy == 1 ? true : false);
+                $('#include_break_policy').prop('checked', data.include_break_policy == 1 ? true : false);
+
+                $('#start_time').val(convertSecondsToHoursAndMinutes(data.start_time || 0));
+                $('#end_time').val(convertSecondsToHoursAndMinutes(data.end_time || 0));
+                $('#daily_trigger_time').val(convertSecondsToHoursAndMinutes(data.daily_trigger_time || 0));
+                $('#weekly_trigger_time').val(convertSecondsToHoursAndMinutes(data.weekly_trigger_time || 0));
+                $('#minimum_time').val(convertSecondsToHoursAndMinutes(data.minimum_time || 0));
+                $('#maximum_time').val(convertSecondsToHoursAndMinutes(data.maximum_time || 0));
+                $('#daily_trigger_time2').val(convertSecondsToHoursAndMinutes(data.daily_trigger_time2 || 0));
+                $('#maximum_no_break_time').val(convertSecondsToHoursAndMinutes(data.maximum_no_break_time || 0));
+                $('#minimum_break_time').val(convertSecondsToHoursAndMinutes(data.minimum_break_time || 0));
+                $('#minimum_time_between_shift').val(convertSecondsToHoursAndMinutes(data.minimum_time_between_shift || 0));
+                $('#minimum_first_shift_time').val(convertSecondsToHoursAndMinutes(data.minimum_first_shift_time || 0));
+                $('#minimum_shift_time').val(convertSecondsToHoursAndMinutes(data.minimum_shift_time || 0));
+
+                // Set branch multiSelector values
+                const branchIds = data.branches.map(branch => branch.branch_id);
+
+                $('#branchContainer').multiSelector({
+                    title: 'Branches',
+                    data: dropdownData?.branches || [],
+                    setSelected: branchIds,
+                });
+
+                // Set department multiSelector values
+                const departmentIds = data.departments.map(department => department.department_id);
+
+                $('#departmentContainer').multiSelector({
+                    title: 'Departments',
+                    data: dropdownData?.departments || [],
+                    setSelected: departmentIds,
+                });
+
+                // Append form fields
+                $('#name').val(data.name);
+                $('#type').val(data.type).trigger('change');
+                $('#start_date').val(data.start_date);
+                $('#end_date').val(data.end_date);
+
+                // Weekly trigger values
+                $('#sun').prop('checked', data.sun == 1 ? true : false);
+                $('#mon').prop('checked', data.mon == 1 ? true : false);
+                $('#tue').prop('checked', data.tue == 1 ? true : false);
+                $('#wed').prop('checked', data.wed == 1 ? true : false);
+                $('#thu').prop('checked', data.thu == 1 ? true : false);
+                $('#fri').prop('checked', data.fri == 1 ? true : false);
+                $('#sat').prop('checked', data.sat == 1 ? true : false);
+
+                // Additional fields
+                $('#pay_type').val(data.pay_type).trigger('change');
+                $('#rate').val(data.rate);
+                $('#wage_group_id').val(data.wage_group_id || 0).trigger('change');
+                $('#pay_stub_entry_account_id').val(data.pay_stub_entry_account_id || 0).trigger('change');
+                $('#accrual_policy_id').val(data.accrual_policy_id || 0).trigger('change');
+
+            } catch (error) {
+                console.error('Error fetching premium policy data:', error);
             }
         }
 
@@ -346,14 +430,6 @@
                 }
             }); 
             
-            /*
-            $('#getSelected').on('click', function () {
-                const selectedIds = $('#multiSelectorContainer .selected-list option').map(function () {
-                    return $(this).val();
-                }).get();
-                alert("Selected IDs: " + selectedIds.join(', '));
-            });
-            */
         }
 
         function renderDepartments(departments){
@@ -361,7 +437,7 @@
                 title: 'Branches',
                 data: departments,
                 onSelectionChange: function (selectedIds) {
-                    console.log("Selected IDs:", selectedIds);
+                    //console.log("Selected IDs:", selectedIds);
                 }
             });
         }
@@ -440,6 +516,18 @@
             let minimum_first_shift_time = convertHoursAndMinutesToSeconds($('#minimum_first_shift_time').val() || '00:00');
             let minimum_shift_time = convertHoursAndMinutesToSeconds($('#minimum_shift_time').val() || '00:00');
 
+            // Differential details
+            let branches = $('#branchContainer .selected-list option').map(function () {
+                return $(this).val();
+            }).get();
+
+            let departments = $('#departmentContainer .selected-list option').map(function () {
+                return $(this).val();
+            }).get();
+
+            formData.append('branches', JSON.stringify(branches));
+            formData.append('departments', JSON.stringify(departments));
+
             // Append form fields
             formData.append('name', $('#name').val());
             formData.append('type', $('#type').val());
@@ -495,9 +583,7 @@
                 await commonAlert(res.status, res.message);
 
                 if (res.status === 'success') {
-                    resetForm();
-                    $('#policy-form-modal').modal('hide');
-                    window.location.href = '/policy/premium';
+                    //window.location.href = '/policy/premium';
                 }
             } catch (error) {
                 console.error('Error:', error);

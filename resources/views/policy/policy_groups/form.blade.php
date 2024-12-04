@@ -174,7 +174,7 @@
                     return;
                 }
                 
-                console.log('Fetched policy  group data:', data);
+                //console.log('Fetched policy  group data:', data);
 
                 // Set the name and status fields
                 $('#name').val(data.name);

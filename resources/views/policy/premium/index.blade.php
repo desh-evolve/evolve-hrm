@@ -47,7 +47,16 @@
                             <tr premium_policy_control_id="${prem.id}">
                                 <td>${i+1}</td>    
                                 <td>${prem.name}</td>    
-                                <td>${prem.type == 'standard' ? 'Standard' : prem.type == 'calendar_based' ? 'Calendar Based' : 'Hour Based'}</td>    
+                                <td>${
+                                    prem.type == 'date_time' ? 'Date/Time' : 
+                                    prem.type == 'shift_differential' ? 'Shift Differential' : 
+                                    prem.type == 'meal_break' ? 'Meal/Break' : 
+                                    prem.type == 'callback' ? 'Callback' : 
+                                    prem.type == 'minimum_shift_time' ? 'Minimum Shift Time' : 
+                                    prem.type == 'holiday' ? 'Holiday' : 
+                                    prem.type == 'advanced' ? 'Advanced' : 
+                                    'Error'}
+                                </td>    
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_prem_pol" title="Edit Premium Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
