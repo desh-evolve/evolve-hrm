@@ -16,8 +16,8 @@ class OvertimePolicyController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view overtime policy', ['only' => ['index', 'getAllOvertimePolicies']]);
-        $this->middleware('permission:create overtime policy', ['only' => ['form', 'getOvertimeDropdownData', 'createOvertimePolicy']]);
-        $this->middleware('permission:update overtime policy', ['only' => ['form', 'getOvertimeDropdownData', 'updateOvertimePolicy', 'getOvertimePolicyById']]);
+        $this->middleware('permission:create overtime policy', ['only' => ['getOvertimeDropdownData', 'createOvertimePolicy']]);
+        $this->middleware('permission:update overtime policy', ['only' => ['getOvertimeDropdownData', 'updateOvertimePolicy', 'getOvertimePolicyById']]);
         $this->middleware('permission:delete overtime policy', ['only' => ['deleteOvertimePolicy']]);
 
         $this->common = new CommonModel();
@@ -26,11 +26,6 @@ class OvertimePolicyController extends Controller
     public function index()
     {
         return view('policy.overtime.index');
-    }
-
-    public function form()
-    {
-        return view('policy.overtime.form');
     }
 
     public function getOvertimeDropdownData(){
@@ -49,11 +44,27 @@ class OvertimePolicyController extends Controller
     }
 
     public function getAllOvertimePolicies(){
+        $table = 'overtime_policy';
         $fields = ['overtime_policy.id', 'overtime_policy.name', 'trigger_time', 'max_time', 'rate', 'accrual_policy_id', 'accrual_rate', 'overtime_policy.type_id', 'overtime_types.name AS type'];
         $joinArr = [
             'overtime_types' => ['overtime_types.id', '=', 'overtime_policy.type_id']
         ];
-        $overtimes = $this->common->commonGetAll('overtime_policy', $fields, $joinArr);
+        $connections = [
+            'policy_group_policies' => [
+                'con_fields' => ['*'],
+                'con_where' => [
+                    'policy_group_policies.policy_table' => $table,
+                    'policy_group_policies.policy_id' => 'id',
+                    'policy_group.status' => 'active',
+                ],
+                'con_joins' => [
+                    'policy_group' => ['policy_group.id', '=', 'policy_group_policies.policy_group_id']
+                ],
+                'con_name' => 'policy_groups',
+                'except_deleted' => false,
+            ],
+        ];
+        $overtimes = $this->common->commonGetAll($table , $fields, $joinArr, [], false, $connections);
         return response()->json(['data' => $overtimes], 200);
     }
 

@@ -11,7 +11,7 @@
                 <div class="card-body">
                     @if (!empty($insertedPunchIds))
                         <table class="table table-bordered">
-                            <thead>
+                            <thead class="bg-primary text-white"/>
                                 <tr>
                                     {{-- <th>ID</th> --}}
                                     <th>Employee Name</th>

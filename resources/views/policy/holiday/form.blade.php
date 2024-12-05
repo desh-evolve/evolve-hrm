@@ -187,7 +187,7 @@
                             </div>
                             <div class="col-md-8">
                                 <table class="table table-bordered">
-                                    <thead>
+                                    <thead class="bg-primary text-white"/>
                                         <tr>
                                             <th>Name</th>
                                             <th>Date</th>

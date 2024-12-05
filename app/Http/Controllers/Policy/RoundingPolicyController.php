@@ -38,11 +38,27 @@ class RoundingPolicyController extends Controller
     }
 
     public function getAllRoundingPolicies(){
+        $table = 'round_interval_policy';
         $fields = ['round_interval_policy.id', 'round_interval_policy.name', 'round_interval_policy.punch_type_id', 'round_type', 'round_interval', 'strict', 'grace', 'round_interval_punch_types.name AS punch_type'];
         $joinArr = [
             'round_interval_punch_types' => ['round_interval_punch_types.id', '=', 'round_interval_policy.punch_type_id']
         ];
-        $roundings = $this->common->commonGetAll('round_interval_policy', $fields, $joinArr);
+        $connections = [
+            'policy_group_policies' => [
+                'con_fields' => ['*'],
+                'con_where' => [
+                    'policy_group_policies.policy_table' => $table,
+                    'policy_group_policies.policy_id' => 'id',
+                    'policy_group.status' => 'active',
+                ],
+                'con_joins' => [
+                    'policy_group' => ['policy_group.id', '=', 'policy_group_policies.policy_group_id']
+                ],
+                'con_name' => 'policy_groups',
+                'except_deleted' => false,
+            ],
+        ];
+        $roundings = $this->common->commonGetAll($table, $fields, $joinArr, [], false, $connections);
         return response()->json(['data' => $roundings], 200);
     }
 

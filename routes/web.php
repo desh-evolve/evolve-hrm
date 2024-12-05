@@ -317,8 +317,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Policies
     //==============================================================================================================================
 
-    // rounding policy
+    // common functions
+    Route::get('/policy/check_in_policy_groups/{policy}', [CommonPolicyController::class, 'checkInPolicyGroups']);
 
+
+    // rounding policy
     Route::get('/policy/rounding', [RoundingPolicyController::class, 'index'])->name('policy.rounding');
     Route::get('/policy/rounding/dropdown', [RoundingPolicyController::class, 'getRoundingDropdownData'])->name('policy.rounding.dropdown');
     Route::get('/policy/roundings', [RoundingPolicyController::class, 'getAllRoundingPolicies'])->name('policy.roundings.all');

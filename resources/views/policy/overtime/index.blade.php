@@ -12,8 +12,12 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- warning Alert -->
+                    <div class="alert bg-warning border-warning text-white material-shadow" role="alert" id="check_unassigned_policies">
+                        <strong> Policies highlighted in yellow may not be active yet because they are not assigned to a <u><a href="/policy/policy_group">Policy Group</a></u>. </strong>
+                    </div>
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -125,11 +129,13 @@
             try {
                 const overtimes = await commonFetchData('/policy/overtimes');
                 let list = '';
+                let showWarning = false;
                 if(overtimes && overtimes.length > 0){
                     overtimes.map((ot, i) => {
+                        showWarning = showWarning ? true : ot.policy_groups.length === 0 ? true : false;
                         let time = convertSecondsToHoursAndMinutes(ot.trigger_time);
                         list += `
-                            <tr overtime_policy_id="${ot.id}">
+                            <tr overtime_policy_id="${ot.id}" class="${ot.policy_groups.length > 0 ? '' : 'bg-warning'}">
                                 <td>${i+1}</td>    
                                 <td>${ot.name}</td>    
                                 <td>${ot.type}</td>    
@@ -147,6 +153,12 @@
                     })
                 }else{
                     list += `<tr><td colspan="5" class="text-center">No Overtime Policies Found!</td></tr>`;
+                }
+
+                if(showWarning){
+                    $('#check_unassigned_policies').show();
+                }else{
+                    $('#check_unassigned_policies').hide();
                 }
 
                 $('#ex_pol_table_body').html(list);
