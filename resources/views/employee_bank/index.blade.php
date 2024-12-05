@@ -204,7 +204,7 @@ $(document).on('click', '#click_delete', async function () {
             $('#employee_id').val(employeeId);
 
 
-             // Update modal title with styled employee name
+            // Update modal title with styled employee name
             $('.modal-title').html(`Bank Account for <span class="text-info fw-bold">${employeeName}</span>`);
 
 

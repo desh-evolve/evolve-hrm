@@ -77,7 +77,7 @@
                 @endphp
 
                 <li class="nav-item">
-                    <a 
+                    <a
                         class="nav-link menu-link {{ $checkPolicyNav ? 'active' : '' }}"
                         href="#policyMultiLevel"
                         data-bs-toggle="collapse"
@@ -144,7 +144,9 @@
                                 <a href="{{ route('employee.profile') }}" class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">My Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link">Messages</a>
+                                <a href="{{ route('employee.messages.index') }}" class="nav-link {{ request()->routeIs('employee.messages.index') ? 'active' : '' }}">
+                                    Employee Messages
+                                </a>
                             </li>
 
                             <li class="nav-item">
@@ -152,7 +154,7 @@
                                     Employee Job History
                                 </a>
                             </li>
-                            
+
                             <li class="nav-item">
                                 <a href="{{ route('company.employee_qualification.index') }}" class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
                                     Employee Qulifications

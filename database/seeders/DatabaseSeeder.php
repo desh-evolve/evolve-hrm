@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             IndustrySeeder::class,
             EmpEmployeesTableSeeder::class,
             ComWageTypesTableSeeder::class,
+            MessageTypesTableSeeder::class,
         ]);
     }
 }

@@ -228,7 +228,7 @@ let dropdownData = [];
 //get dropdown data
 //======================================================================================================
 
-async function getDropdownData() {
+        async function getDropdownData() {
             try {
               let dropdownData = await commonFetchData('/employee/jobhistory/dropdown');
 

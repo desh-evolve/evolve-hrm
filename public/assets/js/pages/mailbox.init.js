@@ -1,4 +1,4 @@
-var url = "assets/json/",
+var url = "/assets/json/",
     allmaillist = "";
 const loader = document.querySelector("#elmLoader");
 var getJSON = function (e, t) {

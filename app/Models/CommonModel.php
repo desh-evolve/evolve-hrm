@@ -19,46 +19,46 @@ class CommonModel extends Model
         $query = DB::table($table)
             ->where($checkColumn, $checkText)
             ->where('status', 'active');
-    
+
         if ($check_where) {
             $query->whereRaw($where);
         }
-    
+
         return $query->exists();
     }
-    
+
     // desh(2024-10-18)
     public function commonGetAll($table, $fields, $joinsArr = [], $whereArr = [], $exceptDel = false, $connections = [], $groupBy = null, $orderBy = null) {
-    
+
         $query = DB::table($table)->select($fields);
-    
+
         foreach ($joinsArr as $joinTable => $on) {
             $query->leftJoin($joinTable, $on[0], $on[1], $on[2]);
         }
-    
+
         foreach ($whereArr as $whereCol => $whereVal) {
             $query->where($whereCol, $whereVal);
         }
-    
+
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
             $query->whereRaw($statusCondition);
         }
-    
+
         if ($groupBy) {
             $query->groupBy($groupBy);
         }
-    
+
         if ($orderBy) {
             $query->orderByRaw($orderBy);
         }
-    
+
         $results = $query->get();
-    
+
         foreach ($results as $res) {
             foreach ($connections as $table => $val) {
                 $con_query = DB::table($table)->select($val['con_fields']);
-    
+
                 if (isset($val['except_deleted']) && $val['except_deleted']) {
                     if ($val['except_deleted'] !== 'all') {
                         $con_query->where("$table.status", '!=', 'delete');
@@ -66,59 +66,59 @@ class CommonModel extends Model
                 } else {
                     $con_query->where("$table.status", 'active');
                 }
-    
+
                 if (!empty($val['con_joins'])) {
                     foreach ($val['con_joins'] as $conJoinTable => $conJoinOn) {
                         $con_query->leftJoin($conJoinTable, $conJoinOn[0], $conJoinOn[1], $conJoinOn[2]);
                     }
                 }
-    
+
                 if (!empty($val['con_where'])) {
                     foreach ($val['con_where'] as $joinCol => $tableCol) {
                         $con_query->where($joinCol, $res->$tableCol);
                     }
                 }
-    
+
                 $con_name = $val['con_name'];
                 $res->$con_name = $con_query->get();
             }
         }
-    
+
         return $results;
     }
-    
+
     // desh(2024-10-18)
     public function commonGetById($id, $idColumn, $table, $fields, $joinsArr = [], $whereArr = [], $exceptDel = false, $connections = [], $groupBy = null, $orderBy = null) {
-    
+
         $query = DB::table($table)->select($fields)->where($idColumn, $id);
-    
+
         foreach ($joinsArr as $joinTable => $on) {
             $query->leftJoin($joinTable, $on[0], $on[1], $on[2]);
         }
-    
+
         foreach ($whereArr as $whereCol => $whereVal) {
             $query->where($whereCol, $whereVal);
         }
-    
+
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
             $query->whereRaw($statusCondition);
         }
-    
+
         if ($groupBy) {
             $query->groupBy($groupBy);
         }
-    
+
         if ($orderBy) {
             $query->orderByRaw($orderBy);
         }
-    
+
         $results = $query->get();
-    
+
         foreach ($results as $res) {
             foreach ($connections as $table => $val) {
                 $con_query = DB::table($table)->select($val['con_fields']);
-    
+
                 if (isset($val['except_deleted']) && $val['except_deleted']) {
                     if ($val['except_deleted'] !== 'all') {
                         $con_query->where("$table.status", '!=', 'delete');
@@ -126,44 +126,44 @@ class CommonModel extends Model
                 } else {
                     $con_query->where("$table.status", 'active');
                 }
-    
+
                 if (!empty($val['con_joins'])) {
                     foreach ($val['con_joins'] as $conJoinTable => $conJoinOn) {
                         $con_query->leftJoin($conJoinTable, $conJoinOn[0], $conJoinOn[1], $conJoinOn[2]);
                     }
                 }
-    
+
                 if (!empty($val['con_where'])) {
                     foreach ($val['con_where'] as $joinCol => $tableCol) {
                         $con_query->where($joinCol, $res->$tableCol);
                     }
                 }
-    
+
                 $con_name = $val['con_name'];
                 $res->$con_name = $con_query->get();
             }
         }
-    
+
         return $results;
     }
-    
+
     // desh(2024-10-18)
-    public function commonDelete($id, $whereArr, $title, $table, $returnMsg = true, $deletedBy = true, $recordLog = true) { 
+    public function commonDelete($id, $whereArr, $title, $table, $returnMsg = true, $deletedBy = true, $recordLog = true) {
         $arr = ['status' => 'delete'];
         if ($deletedBy) {
             $arr['updated_by'] = Auth::user()->id;
         }
-    
+
         $re = DB::table($table)->where($whereArr)->update($arr);
-    
+
         if ($recordLog) {
             //save in activity log
         }
-    
+
         $status = $re ? 'success' : 'error';
         $action = 'Deleted';
         $message = $re ? "$title $action Successfully!!!" : "$title $action Failed!!!";
-    
+
         if($returnMsg){
             return response()->json(['status' => $status, 'message' => $message, 'data' => ['id' => $id]]);
         }else{
@@ -172,24 +172,24 @@ class CommonModel extends Model
     }
 
     // desh(2024-10-18)
-    public function commonChangeStatus($id, $whereArr, $title, $table, $status, $updatedBy = true, $recordLog = true) { 
+    public function commonChangeStatus($id, $whereArr, $title, $table, $status, $updatedBy = true, $recordLog = true) {
         $arr = ['status' => $status];
         if ($updatedBy) {
             $arr['handled_by'] = session('user_id');
         }
-    
+
         $re = DB::table($table)->where($whereArr)->update($arr);
-    
-        if ($recordLog) {            
+
+        if ($recordLog) {
             //save in activity log
         }
-    
+
         $stt = $re ? 'ok' : 'error';
         $message = $re ? "$title $stt Successful!!!" : "$title $stt Failed!!!";
-    
+
         return response()->json(['stt' => $stt, 'msg' => $message, 'data' => $id]);
     }
-    
+
     // desh(2024-10-18)
     public function commonSave($table, $inputArr, $id = null, $idColumn = null, $createdBy = true, $updatedBy = true, $recordLog = true) {
         $type = $id ? 'updated' : 'added';
@@ -198,11 +198,11 @@ class CommonModel extends Model
             if ($createdBy) {
                 $type === 'added' && $inputArr['created_by'] = Auth::user()->id;
             }
-    
+
             if ($updatedBy) {
                 $inputArr['updated_by'] = Auth::user()->id;
             }
-        
+
             if ($type === 'updated') {
                 if ($id === 'all') { // when the whole table gets updated
                     $re = DB::table($table)->update($inputArr);
@@ -214,18 +214,18 @@ class CommonModel extends Model
             } else {
                 $re = DB::table($table)->insert($inputArr);
                 $id = $re ? DB::getPdo()->lastInsertId() : -1; // Get last inserted ID or set to -1 on failure
-            }            
-        
+            }
+
             if ($recordLog) {
                 //save in activity log
             }
-        
+
             return $id;
         } catch (\Throwable $th) {
             return false;
         }
     }
-   
+
     // desh(2024-10-18)
     public function uploadImage($imageId, $imageFile, $uploadPath, $thumbPath, $thumbWidth = 300, $thumbHeight = 300, $saveName = null)
     {
