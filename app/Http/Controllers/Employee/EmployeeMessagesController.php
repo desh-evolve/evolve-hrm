@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
-
+use Exception;
 
 class EmployeeMessagesController extends Controller
 {
@@ -322,6 +322,20 @@ class EmployeeMessagesController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
+
+
+
+    public function deleteMessage($id)
+    {
+        $res = $this->common->commonDelete($id, ['id' => $id], 'Message Chat', 'message_control');
+        $this->common->commonDelete($id, ['message_control_id' => $id], 'Message', 'messages');
+
+        return $res;
+    }
+
+
+
+
 
 
 }

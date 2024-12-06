@@ -70,27 +70,7 @@
                                 </button>
                             </div>
 
-                            <div class="col-sm order-3 order-sm-2">
-                                <div class="hstack gap-sm-1 align-items-center flex-wrap email-topbar-link">
 
-                                    {{-- checkbox --}}
-                                    <div class="form-check fs-14 m-0">
-                                        <input class="form-check-input" type="checkbox" value="" id="checkall">
-                                        <label class="form-check-label" for="checkall"></label>
-                                    </div>
-
-                                    {{-- delete icon --}}
-                                    <div id="email-topbar-actions">
-                                        <div class="hstack gap-sm-1 align-items-center flex-wrap">
-                                            <div data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Trash">
-                                                <button type="button" class="btn btn-ghost-secondary btn-icon btn-sm fs-16 material-shadow-none" data-bs-toggle="modal" data-bs-target="#removeItemModal">
-                                                    <i class="ri-delete-bin-5-fill align-bottom"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             {{-- Refresh button --}}
                             <div class="col-auto order-2 order-sm-3">
@@ -156,18 +136,16 @@
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <div class="hstack gap-sm-1 align-items-center flex-wrap email-topbar-link">
-                                    {{-- delete button --}}
-                                    <button class="btn btn-ghost-secondary btn-icon btn-sm fs-16 material-shadow-none remove-mail" data-remove-id="" data-bs-toggle="modal">
-                                        <i class="ri-delete-bin-5-fill align-bottom"></i>
-                                    </button>
+                                {{-- delete button --}}
+                                <div class="hstack gap-sm-1 align-items-center flex-wrap email-topbar-link delete-chat">
+
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Content Scroll Section -->
-                    <div class="mx-n4 px-4 email-detail-content-scroll" data-simplebar style="height: 450px;">
+                    <div class="mx-n4 px-4 email-detail-content-scroll" data-simplebar style="height: 400px;">
                         <div class="message-item">
                              <!-- Subject -->
                             <div class="mt-4 mb-3">
@@ -176,13 +154,18 @@
                             </div>
 
                             <!-- Email Details -->
-                            <div id="message_content" class="h-100">
-
-                                <div id="error-msg"></div>
-                                <input type="hidden" id="msg_id" value="">
+                            <div id="message_content">
 
                             </div>
                         </div>
+                    </div>
+
+                    <div id="error-msg"></div>
+                    <input type="hidden" id="msg_id" value="">
+
+                    <!-- Reply Section -->
+                    <div class="mt-auto reply-chat">
+
                     </div>
                 </div>
             </div>
@@ -199,7 +182,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header p-3 bg-light">
-                    <h5 class="modal-title">Message</h5>
+                    <h5 class="modal-title">Message Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -231,7 +214,7 @@
                         </div>
 
                         <div class="col-xxl-12 col-md-12 mb-2">
-                            <input type="text" class="form-control fw-bold" id="msg-subject" placeholder="Subject" value="">
+                            <input type="text" class="form-control fw-bold" id="msg-subject" placeholder="Subject" value="" disabled>
                         </div>
                         <div class="col-xxl-12 col-md-12 mb-2">
                             <textarea class="form-control" id="msg-description" rows="5"></textarea>
@@ -429,19 +412,12 @@ $(document).ready(async function () {
                 return;
             }
 
-            const list = messages.map((message) => {
+            const list = messages.map((message, i) => {
                 return `
                     <li msg_id="${message.id}" class="email-item">
                         <div class="col-mail col-mail-1">
-                            <div class="form-check checkbox-wrapper-mail fs-14">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    id="checkbox"
-                                    value="${message.id}"
-                                    onclick="event.stopPropagation()"
-                                    >
-                                <label class="form-check-label" for="checkbox-${message.id}"></label>
+                            <div class="checkbox-wrapper-mail fs-14">
+                                ${i + 1}
                             </div>
                             <div id="type-name" class="title cursor-pointer">
                                 <span class="title-name">${message.type}</span>
@@ -479,19 +455,12 @@ $(document).ready(async function () {
                 return;
             }
 
-            const list = messages.map((message) => {
+            const list = messages.map((message, i) => {
                 return `
                     <li msg_id="${message.id}" class="email-item">
                         <div class="col-mail col-mail-1">
-                            <div class="form-check checkbox-wrapper-mail fs-14">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    id="checkbox"
-                                    value="${message.id}"
-                                    onclick="event.stopPropagation()"
-                                    >
-                                <label class="form-check-label" for="checkbox-${message.id}"></label>
+                            <div class="checkbox-wrapper-mail fs-14">
+                                ${i + 1}
                             </div>
                             <div id="type-name" class="title cursor-pointer">
                                 <span class="title-name">${message.type}</span>
@@ -529,19 +498,12 @@ $(document).ready(async function () {
                 return;
             }
 
-            const list = messages.map((message) => {
+            const list = messages.map((message,i) => {
                 return `
                     <li msg_id="${message.id}" class="email-item">
                         <div class="col-mail col-mail-1">
-                            <div class="form-check checkbox-wrapper-mail fs-14">
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    id="checkbox"
-                                    value="${message.id}"
-                                    onclick="event.stopPropagation()"
-                                    >
-                                <label class="form-check-label" for="checkbox-${message.id}"></label>
+                            <div class="checkbox-wrapper-mail fs-14">
+                                ${i + 1}
                             </div>
                             <div id="type-name" class="title cursor-pointer">
                                 <span class="title-name">${message.type}</span>
@@ -599,7 +561,7 @@ $(document).ready(async function () {
 //===========================================================================================
 
     // Open the Message Details Box
-    $(document).off('click', '.email-item').on('click', '.email-item', async function () {
+    $(document).on('click', '.email-item', async function () {
         resetForm();
 
         // Get the subject directly from the clicked row
@@ -654,9 +616,6 @@ $(document).ready(async function () {
                                     <p class="text-muted fs-12 mb-0">To: ${displayedReceivers}</p>
                                 </div>
                             </div>
-                            <div class="email-description p-1 pb-2 pt-2 mb-2">
-                                <p>${message?.message_description || 'No description available.'}</p>
-                            </div>
                         </div>
                     `;
                 }).join('');
@@ -671,10 +630,24 @@ $(document).ready(async function () {
                     </div>
                 `;
 
-                // Render the messages and reply button
-                $('#message_content').html(`${messagesHTML}${replyButtonHTML}`);
+                // Delete Button
+                const deleteButtonHTML = `
+                    <div class="mt-auto">
+                        <button class="remove-mail btn btn-ghost-secondary btn-icon btn-sm fs-16 material-shadow-none" data-message-control-id="${msg_id}">
+                            <i class="ri-delete-bin-5-fill align-bottom"></i>
+                        </button>
+                    </div>
+                `;
 
-                $('.email-description').hide(); // Hide descriptions initially
+                // Append the delete button HTML inside
+                $('.delete-chat').append(deleteButtonHTML);
+
+                 // Append the reply button HTML inside
+                 $('.reply-chat').append(replyButtonHTML);
+
+                // Render the messages and reply button
+                $('#message_content').html(`${messagesHTML}`);
+
             } else {
                 console.warn('No message details found for this message.');
                 $('#error-msg').html('<p class="text-warning">No message details found for the selected item.</p>');
@@ -835,7 +808,11 @@ $(document).ready(async function () {
 
             if (res && res.status === 'success') {
                 await commonAlert(res.status, res.message);
-                renderMessages();
+
+                renderAllMessages();
+                updateAllMessageCount();
+                updateInboxMessageCount();
+
                 $('#compose-modal').modal('hide');
             } else {
                 let errorMessage = res && res.message ? res.message : 'An unexpected error occurred.';
@@ -989,6 +966,43 @@ $(document).ready(async function () {
     });
 
 
+//======================================================================================================
+// DELETE FUNCTION
+//======================================================================================================
+
+    $(document).on('click', '.remove-mail', async function () {
+        // Get the message_control_id from the parent container
+        const messageControlId = $(this).data('message-control-id');
+
+        if (!messageControlId) {
+            $('#error-msg').html('<p class="text-danger">No message control ID found.</p>');
+            return;
+        }
+
+        try {
+            const url = `/employee/message/delete`;
+            const title = 'Chat';
+
+            const res = await commonDeleteFunction(messageControlId, url, title);
+
+            console.log('Delete Response:', res);
+
+            if (res) {
+                resetForm();
+                $('#message_details_box').hide();
+                // Re-render the message lists after deletion
+                renderAllMessages();
+                renderSentMessages();
+                renderReceivedMessages();
+                updateAllMessageCount();
+                updateInboxMessageCount();
+            }
+        } catch (error) {
+            console.error(`Error during Message Details deletion:`, error);
+        }
+    });
+
+
    // Reset Function
     function resetForm() {
         $('#msg_id').val('');
@@ -996,10 +1010,16 @@ $(document).ready(async function () {
         $('#type').text('');
         $('#message_content').html('');
         $('#email-description').html('');
+        $('.delete-chat').html('');
+        $('.reply-chat').html('');
         $('#error-msg').html('');
     }
 
+
+
 });
+
+
 
 
 

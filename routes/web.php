@@ -209,6 +209,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::post('/employee/messages/reply', [EmployeeMessagesController::class, 'createReplyMessage'])->name('employee.messages.reply');
     Route::get('/employee/sent/messages', [EmployeeMessagesController::class, 'getSentMessages'])->name('employee.messages.sent');
     Route::get('/employee/inbox/messages', [EmployeeMessagesController::class, 'getReceivedMessages'])->name('employee.messages.inbox');
+    Route::delete('/employee/message/delete/{id}', [EmployeeMessagesController::class, 'deleteMessage'])->name('employee.message.delete');
 
     //==============================================================================================================================
     // Currencies
