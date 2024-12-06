@@ -525,7 +525,7 @@
                                 </div>
                                 <hr>
                                 <table class="table">
-                                    <thead>
+                                    <thead class="bg-primary text-white"/>
                                         <tr>
                                             <th>Document Type</th>
                                             <th>Document Title</th>

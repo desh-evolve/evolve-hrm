@@ -41,6 +41,7 @@ use App\Http\Controllers\Policy\PolicyGroupsController;
 // Attendance
 use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
+use App\Http\Controllers\Attendance\TimeSheetController;
 
 // Payroll
 use App\Http\Controllers\Payroll\PayStubAccountController;
@@ -266,6 +267,10 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::post('/company/mass_punch/create', [MassPunchController::class, 'createMassPunch'])->name('company.mass_punch.create');
     Route::get('/company/mass_punch/list', [MassPunchController::class, 'showMassPunchList'])->name('company.mass_punch.mass_punch_list');
 
+
+    // Timesheet
+    Route::get('/employee/timesheet', [TimeSheetController::class, 'index'])->name('employee.timesheet');
+
     //==============================================================================================================================
     // Payroll
     //==============================================================================================================================
@@ -317,8 +322,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Policies
     //==============================================================================================================================
 
-    // rounding policy
+    // common functions
+    Route::get('/policy/check_in_policy_groups/{policy}', [CommonPolicyController::class, 'checkInPolicyGroups']);
 
+
+    // rounding policy
     Route::get('/policy/rounding', [RoundingPolicyController::class, 'index'])->name('policy.rounding');
     Route::get('/policy/rounding/dropdown', [RoundingPolicyController::class, 'getRoundingDropdownData'])->name('policy.rounding.dropdown');
     Route::get('/policy/roundings', [RoundingPolicyController::class, 'getAllRoundingPolicies'])->name('policy.roundings.all');

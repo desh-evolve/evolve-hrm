@@ -239,7 +239,7 @@
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="rate" class="form-label mb-1 col-md-3">Rate</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control numonly w-50" id="rate" value="1:00">
+                                    <input type="text" class="form-control numonly w-50" id="rate" value="1.00">
                                     <span class="ps-4">(ie: 1.5 for time and a half)</span>
                                 </div>
                             </div>
@@ -271,7 +271,7 @@
                         </div>
                         <div class="d-flex justify-content-end mt-4">
                             <input type="hidden" id="premium_policy_id" value="" />
-                            <button type="button" class="btn btn-primary">Submit</button>
+                            <button type="button" id="form_submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -280,9 +280,16 @@
     </div>
 
     <script>
+        let dropdownData = [];
+
         $(document).ready(function(){
             getDropdownData();
             showSections('date_time');
+
+            <?php if (isset($_GET['id'])): ?>
+                const id = <?= json_encode($_GET['id']); ?>; // Safely pass PHP variable to JavaScript
+                getUpdateData(id);
+            <?php endif; ?>
         })
 
         async function getDropdownData() {
@@ -312,6 +319,83 @@
 
             } catch (error) {
                 console.error('Error fetching dropdown data:', error);
+            }
+        }
+
+        async function getUpdateData(id) {
+            try {
+                // Fetch policy data
+                let response = await commonFetchData(`/policy/premium/${id}`);
+                let data = response?.[0]; // Correctly accessing the data array
+
+                if (!data) {
+                    console.error('No data found for the given ID.');
+                    return;
+                }
+
+                console.log('Fetched premium policy data:', data);
+                $('#premium_policy_id').val(data.id); // For update, set the policy ID
+
+                // Checkbox values (convert to 1/0)
+                $('#include_partial_punch').prop('checked', data.include_partial_punch == 1 ? true : false);
+                $('#include_meal_policy').prop('checked', data.include_meal_policy == 1 ? true : false);
+                $('#include_break_policy').prop('checked', data.include_break_policy == 1 ? true : false);
+
+                $('#start_time').val(convertSecondsToHoursAndMinutes(data.start_time || 0));
+                $('#end_time').val(convertSecondsToHoursAndMinutes(data.end_time || 0));
+                $('#daily_trigger_time').val(convertSecondsToHoursAndMinutes(data.daily_trigger_time || 0));
+                $('#weekly_trigger_time').val(convertSecondsToHoursAndMinutes(data.weekly_trigger_time || 0));
+                $('#minimum_time').val(convertSecondsToHoursAndMinutes(data.minimum_time || 0));
+                $('#maximum_time').val(convertSecondsToHoursAndMinutes(data.maximum_time || 0));
+                $('#daily_trigger_time2').val(convertSecondsToHoursAndMinutes(data.daily_trigger_time2 || 0));
+                $('#maximum_no_break_time').val(convertSecondsToHoursAndMinutes(data.maximum_no_break_time || 0));
+                $('#minimum_break_time').val(convertSecondsToHoursAndMinutes(data.minimum_break_time || 0));
+                $('#minimum_time_between_shift').val(convertSecondsToHoursAndMinutes(data.minimum_time_between_shift || 0));
+                $('#minimum_first_shift_time').val(convertSecondsToHoursAndMinutes(data.minimum_first_shift_time || 0));
+                $('#minimum_shift_time').val(convertSecondsToHoursAndMinutes(data.minimum_shift_time || 0));
+
+                // Set branch multiSelector values
+                const branchIds = data.branches.map(branch => branch.branch_id);
+
+                $('#branchContainer').multiSelector({
+                    title: 'Branches',
+                    data: dropdownData?.branches || [],
+                    setSelected: branchIds,
+                });
+
+                // Set department multiSelector values
+                const departmentIds = data.departments.map(department => department.department_id);
+
+                $('#departmentContainer').multiSelector({
+                    title: 'Departments',
+                    data: dropdownData?.departments || [],
+                    setSelected: departmentIds,
+                });
+
+                // Append form fields
+                $('#name').val(data.name);
+                $('#type').val(data.type).trigger('change');
+                $('#start_date').val(data.start_date);
+                $('#end_date').val(data.end_date);
+
+                // Weekly trigger values
+                $('#sun').prop('checked', data.sun == 1 ? true : false);
+                $('#mon').prop('checked', data.mon == 1 ? true : false);
+                $('#tue').prop('checked', data.tue == 1 ? true : false);
+                $('#wed').prop('checked', data.wed == 1 ? true : false);
+                $('#thu').prop('checked', data.thu == 1 ? true : false);
+                $('#fri').prop('checked', data.fri == 1 ? true : false);
+                $('#sat').prop('checked', data.sat == 1 ? true : false);
+
+                // Additional fields
+                $('#pay_type').val(data.pay_type).trigger('change');
+                $('#rate').val(data.rate);
+                $('#wage_group_id').val(data.wage_group_id || 0).trigger('change');
+                $('#pay_stub_entry_account_id').val(data.pay_stub_entry_account_id || 0).trigger('change');
+                $('#accrual_policy_id').val(data.accrual_policy_id || 0).trigger('change');
+
+            } catch (error) {
+                console.error('Error fetching premium policy data:', error);
             }
         }
 
@@ -346,14 +430,6 @@
                 }
             }); 
             
-            /*
-            $('#getSelected').on('click', function () {
-                const selectedIds = $('#multiSelectorContainer .selected-list option').map(function () {
-                    return $(this).val();
-                }).get();
-                alert("Selected IDs: " + selectedIds.join(', '));
-            });
-            */
         }
 
         function renderDepartments(departments){
@@ -361,7 +437,7 @@
                 title: 'Branches',
                 data: departments,
                 onSelectionChange: function (selectedIds) {
-                    console.log("Selected IDs:", selectedIds);
+                    //console.log("Selected IDs:", selectedIds);
                 }
             });
         }
@@ -427,16 +503,41 @@
             let includeMealPolicy = $('#include_meal_policy').is(':checked') ? 1 : 0;
             let includeBreakPolicy = $('#include_break_policy').is(':checked') ? 1 : 0;
 
+            let start_time = convertHoursAndMinutesToSeconds($('#start_time').val() || '00:00');
+            let end_time = convertHoursAndMinutesToSeconds($('#end_time').val() || '00:00');
+            let daily_trigger_time = convertHoursAndMinutesToSeconds($('#daily_trigger_time').val() || '00:00');
+            let weekly_trigger_time = convertHoursAndMinutesToSeconds($('#weekly_trigger_time').val() || '00:00');
+            let minimum_time = convertHoursAndMinutesToSeconds($('#minimum_time').val() || '00:00');
+            let maximum_time = convertHoursAndMinutesToSeconds($('#maximum_time').val() || '00:00');
+            let daily_trigger_time2 = convertHoursAndMinutesToSeconds($('#daily_trigger_time2').val() || '00:00');
+            let maximum_no_break_time = convertHoursAndMinutesToSeconds($('#maximum_no_break_time').val() || '00:00');
+            let minimum_break_time = convertHoursAndMinutesToSeconds($('#minimum_break_time').val() || '00:00');
+            let minimum_time_between_shift = convertHoursAndMinutesToSeconds($('#minimum_time_between_shift').val() || '00:00');
+            let minimum_first_shift_time = convertHoursAndMinutesToSeconds($('#minimum_first_shift_time').val() || '00:00');
+            let minimum_shift_time = convertHoursAndMinutesToSeconds($('#minimum_shift_time').val() || '00:00');
+
+            // Differential details
+            let branches = $('#branchContainer .selected-list option').map(function () {
+                return $(this).val();
+            }).get();
+
+            let departments = $('#departmentContainer .selected-list option').map(function () {
+                return $(this).val();
+            }).get();
+
+            formData.append('branches', JSON.stringify(branches));
+            formData.append('departments', JSON.stringify(departments));
+
             // Append form fields
             formData.append('name', $('#name').val());
             formData.append('type', $('#type').val());
             formData.append('start_date', $('#start_date').val());
             formData.append('end_date', $('#end_date').val());
-            formData.append('start_time', $('#start_time').val());
-            formData.append('end_time', $('#end_time').val());
+            formData.append('start_time', start_time);
+            formData.append('end_time', end_time);
             formData.append('include_partial_punch', includePartialPunch);
-            formData.append('daily_trigger_time', $('#daily_trigger_time').val());
-            formData.append('weekly_trigger_time', $('#weekly_trigger_time').val());
+            formData.append('daily_trigger_time', daily_trigger_time);
+            formData.append('weekly_trigger_time', weekly_trigger_time);
 
             // Weekly trigger values
             formData.append('sun', $('#sun').is(':checked') ? 1 : 0);
@@ -448,18 +549,18 @@
             formData.append('sat', $('#sat').is(':checked') ? 1 : 0);
 
             // Additional fields
-            formData.append('daily_trigger_time2', $('#daily_trigger_time2').val());
-            formData.append('maximum_no_break_time', $('#maximum_no_break_time').val());
-            formData.append('minimum_break_time', $('#minimum_break_time').val());
-            formData.append('minimum_time_between_shift', $('#minimum_time_between_shift').val());
-            formData.append('minimum_first_shift_time', $('#minimum_first_shift_time').val());
-            formData.append('minimum_shift_time', $('#minimum_shift_time').val());
-            formData.append('minimum_time', $('#minimum_time').val());
-            formData.append('maximum_time', $('#maximum_time').val());
+            formData.append('daily_trigger_time2', daily_trigger_time2);
+            formData.append('maximum_no_break_time', maximum_no_break_time);
+            formData.append('minimum_break_time', minimum_break_time);
+            formData.append('minimum_time_between_shift', minimum_time_between_shift);
+            formData.append('minimum_first_shift_time', minimum_first_shift_time);
+            formData.append('minimum_shift_time', minimum_shift_time);
+            formData.append('minimum_time', minimum_time);
+            formData.append('maximum_time', maximum_time);
             formData.append('include_meal_policy', includeMealPolicy);
             formData.append('include_break_policy', includeBreakPolicy);
             formData.append('pay_type', $('#pay_type').val());
-            formData.append('rate', $('#rate').val());
+            formData.append('rate', $('#rate').val() || '1.00');
             formData.append('wage_group_id', $('#wage_group_id').val());
             formData.append('pay_stub_entry_account_id', $('#pay_stub_entry_account_id').val());
             formData.append('accrual_policy_id', $('#accrual_policy_id').val());
@@ -482,9 +583,7 @@
                 await commonAlert(res.status, res.message);
 
                 if (res.status === 'success') {
-                    resetForm();
-                    $('#policy-form-modal').modal('hide');
-                    window.location.href = '/policy/premium';
+                    //window.location.href = '/policy/premium';
                 }
             } catch (error) {
                 console.error('Error:', error);

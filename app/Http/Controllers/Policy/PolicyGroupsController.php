@@ -193,14 +193,14 @@ class PolicyGroupsController extends Controller
     private function savePolicies($policyGroupId, $request)
     {
         $policyTypes = [
-            'over_time_policy_ids' => 'over_time_policy',
+            'over_time_policy_ids' => 'overtime_policy',
             'round_interval_policy_ids' => 'round_interval_policy',
             'meal_policy_ids' => 'meal_policy',
             'break_policy_ids' => 'break_policy',
             'accrual_policy_ids' => 'accrual_policy',
             'premium_policy_ids' => 'premium_policy',
             'holiday_policy_ids' => 'holiday_policy',
-            'exception_policy_control_id' => 'exception_policy',
+            'exception_policy_control_id' => 'exception_policy_control',
         ];
 
         foreach ($policyTypes as $field => $policyTable) {

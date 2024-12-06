@@ -29,7 +29,23 @@ class BreakPolicyController extends Controller
     }
 
     public function getAllBreakPolicies(){
-        $breaks = $this->common->commonGetAll('break_policy', '*');
+        $table = 'break_policy';
+        $connections = [
+            'policy_group_policies' => [
+                'con_fields' => ['*'],
+                'con_where' => [
+                    'policy_group_policies.policy_table' => $table,
+                    'policy_group_policies.policy_id' => 'id',
+                    'policy_group.status' => 'active',
+                ],
+                'con_joins' => [
+                    'policy_group' => ['policy_group.id', '=', 'policy_group_policies.policy_group_id']
+                ],
+                'con_name' => 'policy_groups',
+                'except_deleted' => false,
+            ],
+        ];
+        $breaks = $this->common->commonGetAll($table, '*', [], [], false, $connections);
         return response()->json(['data' => $breaks], 200);
     }
 

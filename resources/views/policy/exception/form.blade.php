@@ -21,7 +21,7 @@
                             <input type="text" class="form-control" id="ex_pol_name" placeholder="Enter Exception Policy Name Here" required />
                         </div>
                         <table class="table table-bordered">
-                            <thead>
+                            <thead class="bg-primary text-white"/>
                                 <tr>
                                     <th class="col">Active</th>
                                     <th class="col">Code</th>

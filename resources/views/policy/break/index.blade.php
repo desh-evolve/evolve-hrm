@@ -12,8 +12,12 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- warning Alert -->
+                    <div class="alert bg-warning border-warning text-white material-shadow" role="alert" id="check_unassigned_policies">
+                        <strong> Policies highlighted in yellow may not be active yet because they are not assigned to a <u><a href="/policy/policy_group">Policy Group</a></u>. </strong>
+                    </div>
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -146,11 +150,13 @@
             try {
                 const breaks = await commonFetchData('/policy/breaks');
                 let list = '';
+                let showWarning = false;
                 if(breaks && breaks.length > 0){
                     breaks.map((brk, i) => {
+                        showWarning = showWarning ? true : brk.policy_groups.length === 0 ? true : false;
                         let interval = convertSecondsToHoursAndMinutes(brk.window_length);
                         list += `
-                            <tr break_policy_id="${brk.id}">
+                            <tr break_policy_id="${brk.id}" class="${brk.policy_groups.length > 0 ? '' : 'bg-warning'}">
                                 <td>${i+1}</td>    
                                 <td>${brk.name}</td>    
                                 <td>${brk.type == 'auto_deduct' ? 'Auto Deduct' : brk.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>    
@@ -168,6 +174,12 @@
                     })
                 }else{
                     list += `<tr><td colspan="3" class="text-center">No Break Policies Found!</td></tr>`;
+                }
+
+                if(showWarning){
+                    $('#check_unassigned_policies').show();
+                }else{
+                    $('#check_unassigned_policies').hide();
                 }
 
                 $('#break_pol_table_body').html(list);

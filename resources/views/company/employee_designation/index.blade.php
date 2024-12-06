@@ -24,7 +24,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Employee Designation Name</th>

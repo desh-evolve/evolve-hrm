@@ -23,7 +23,7 @@
                 </div>
                 <div class="card-body">
                     <table id="employee_table" class="table table-bordered dt-responsive nowrap table-striped align-middle datatable-example" style="width:100%">
-                        <thead>
+                        <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Employee ID</th>

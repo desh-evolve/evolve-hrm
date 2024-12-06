@@ -25,7 +25,7 @@
                     <div class="card-body">
 
                         <table class="table table-bordered table-striped">
-                            <thead>
+                            <thead class="bg-primary text-white"/>
                                 <tr>
                                     <th>Id</th>
                                     <th>Name</th>

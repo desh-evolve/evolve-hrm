@@ -44,7 +44,7 @@
 
                     </div>
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Employee</th>

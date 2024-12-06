@@ -13,8 +13,12 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- warning Alert -->
+                    <div class="alert bg-warning border-warning text-white material-shadow" role="alert" id="check_unassigned_policies">
+                        <strong> Policies highlighted in yellow may not be active yet because they are not assigned to a <u><a href="/policy/policy_group">Policy Group</a></u>. </strong>
+                    </div>
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -40,10 +44,12 @@
             try {
                 const exceptions = await commonFetchData('/policy/exceptions');
                 let list = '';
+                let showWarning = false;
                 if(exceptions && exceptions.length > 0){
                     exceptions.map((ex, i) => {
+                        showWarning = showWarning ? true : ex.policy_groups.length === 0 ? true : false;
                         list += `
-                            <tr exception_policy_control_id="${ex.id}">
+                            <tr exception_policy_control_id="${ex.id}" class="${ex.policy_groups.length > 0 ? '' : 'bg-warning'}">
                                 <td>${i+1}</td>    
                                 <td>${ex.name}</td>    
                                 <td>
@@ -59,6 +65,12 @@
                     })
                 }else{
                     list += `<tr><td colspan="3" class="text-center">No Exception Policies Found!</td></tr>`;
+                }
+
+                if(showWarning){
+                    $('#check_unassigned_policies').show();
+                }else{
+                    $('#check_unassigned_policies').hide();
                 }
 
                 $('#ex_pol_table_body').html(list);

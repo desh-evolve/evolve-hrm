@@ -75,7 +75,7 @@ class CommonModel extends Model
     
                 if (!empty($val['con_where'])) {
                     foreach ($val['con_where'] as $joinCol => $tableCol) {
-                        $con_query->where($joinCol, $res->$tableCol);
+                        $con_query->where($joinCol, $res->$tableCol ?? $tableCol);
                     }
                 }
     
@@ -83,7 +83,7 @@ class CommonModel extends Model
                 $res->$con_name = $con_query->get();
             }
         }
-    
+        
         return $results;
     }
     
