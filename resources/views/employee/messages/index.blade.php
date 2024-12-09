@@ -331,6 +331,7 @@
 // Render Messages
 //===========================================================================================
 
+const loggedUserId = {{ Auth::id() }};
 let dropdownData = [];
 
 
@@ -720,7 +721,7 @@ $(document).ready(async function () {
                 // Populate #employees select field with only the fetched emails
                 // ==============================================================
                 const $employeesSelect = $('#receivers');
-                $employeesSelect.empty(); // Clear existing options
+                $employeesSelect.empty(); 
 
                 // Add only fetched receiver emails to the dropdown
                 receivers.forEach(receiver => {
@@ -836,6 +837,7 @@ $(document).ready(async function () {
         $('#reply_subject').val('');
         $('#reply_body').val('');
         $('#reply-error-msg').html('');
+        $('#message-details-error-msg').html('');
 
         // Get the message_control_id from the Reply Button
         const messageControlId = $(this).data('message-control-id');
@@ -858,6 +860,21 @@ $(document).ready(async function () {
                     email: receiver.receiver_email
                 })) || [];
 
+                 // Include the sender in the reply receivers (if not logged-in user)
+                if (replyMessageData.sender_id !== loggedUserId) {
+                    receivers.push({
+                        id: replyMessageData.sender_id,
+                        email: replyMessageData.sender_email
+                    });
+                }
+
+                // Filter out duplicates and logged-in user
+                receivers = receivers.filter((receiver, index, self) =>
+                    receiver.id !== loggedUserId &&
+                    index === self.findIndex(r => r.id === receiver.id)
+                );
+
+
                 // Extract subject from subject_details
                 const subjectDetails = replyMessageData?.subject_details || {};
                 const messageSubject = subjectDetails[0]?.message_subject || 'No Subject';
@@ -877,7 +894,7 @@ $(document).ready(async function () {
                 // Populate #employees select field with only the fetched emails
                 // ==============================================================
                 const $replyReceivers = $('#reply_receivers');
-                $replyReceivers.empty(); // Clear existing options
+                $replyReceivers.empty();
 
                 receivers.forEach(receiver => {
                     $replyReceivers.append(`<option value="${receiver.id}">${receiver.email}</option>`);
@@ -898,7 +915,6 @@ $(document).ready(async function () {
             console.error('Error fetching reply message data:', error);
             $('#reply-error-msg').html('<p class="text-danger">Failed to load message details. Please try again.</p>');
         } finally {
-            // Show the reply modal
             $('#reply-modal').modal('show');
         }
     })
@@ -970,6 +986,7 @@ $(document).ready(async function () {
 // DELETE FUNCTION
 //======================================================================================================
 
+
     $(document).on('click', '.remove-mail', async function () {
         // Get the message_control_id from the parent container
         const messageControlId = $(this).data('message-control-id');
@@ -990,12 +1007,19 @@ $(document).ready(async function () {
             if (res) {
                 resetForm();
                 $('#message_details_box').hide();
-                // Re-render the message lists after deletion
-                renderAllMessages();
-                renderSentMessages();
-                renderReceivedMessages();
-                updateAllMessageCount();
-                updateInboxMessageCount();
+
+                // Check which tab is active and render the corresponding list
+                if ($('#all-message').hasClass('active')) {
+                    await renderAllMessages();
+                } else if ($('#sent-message').hasClass('active')) {
+                    await renderSentMessages();
+                } else if ($('#inbox-message').hasClass('active')) {
+                    await renderReceivedMessages();
+                }
+
+                // Update message counts
+                await updateAllMessageCount();
+                await updateInboxMessageCount();
             }
         } catch (error) {
             console.error(`Error during Message Details deletion:`, error);
@@ -1016,11 +1040,7 @@ $(document).ready(async function () {
     }
 
 
-
 });
-
-
-
 
 
 </script>

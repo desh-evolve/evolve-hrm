@@ -84,7 +84,7 @@ class EmployeeMessagesController extends Controller
                     $table2 = 'messages';
                     $inputArr2 = [
                         'message_control_id' => $insertId,
-                        'sender_id' => Auth::user()->id, // Sender is the logged-in user
+                        'sender_id' => Auth::user()->id, 
                         'description' => $request->description,
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
@@ -210,10 +210,10 @@ class EmployeeMessagesController extends Controller
     }
 
 
-
     //pawanee(2024-11-20)
     public function getMessagesByControlId($id)
     {
+
         $idColumn = 'message_control_id';
         $table = 'messages';
         $fields = [
@@ -223,12 +223,12 @@ class EmployeeMessagesController extends Controller
             'messages.description as message_description',
             'messages.created_at as sent_at',
             'sender.id as sender_id',
-            'sender.work_email as sender_email', // Sender email from emp_employees
+            'sender.work_email as sender_email',
         ];
 
-        // Joining emp_employees twice: once as sender and once as receiver
+
         $joinArr = [
-            'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'], // Sender details
+            'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'],
         ];
 
         $connections = [
@@ -252,6 +252,7 @@ class EmployeeMessagesController extends Controller
 
         try {
             $messages = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr, [], true, $connections);
+
 
             return response()->json(['data' => $messages], 200);
 
@@ -324,7 +325,7 @@ class EmployeeMessagesController extends Controller
     }
 
 
-
+    //pawanee(2024-11-20)
     public function deleteMessage($id)
     {
         $res = $this->common->commonDelete($id, ['id' => $id], 'Message Chat', 'message_control');
@@ -332,10 +333,6 @@ class EmployeeMessagesController extends Controller
 
         return $res;
     }
-
-
-
-
 
 
 }
