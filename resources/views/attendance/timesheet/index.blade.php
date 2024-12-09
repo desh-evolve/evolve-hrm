@@ -26,26 +26,20 @@
                             <div class="row">
 
                                 <div class="row mb-3 col-md-4">
-                                    <label for="group_filter" class="form-label mb-1 col-md-3">Group</label>
+                                    <label for="group_filter" class="form-label col-md-3">Group</label>
                                     <div class="col-md-9">
                                         <select class="form-select" id="group_filter">
                                             <option value="-1">-- All --</option>
                                             <option value="0">Root</option>
-                                            <option value="1">Group 1</option>
-                                            <option value="2">Group 2</option>
-                                            <option value="3">Group 3</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div class="row mb-3 col-md-4">
-                                    <label for="branch_filter" class="form-label mb-1 col-md-3">Branch</label>
+                                    <label for="branch_filter" class="form-label col-md-3">Branch</label>
                                     <div class="col-md-9">
                                         <select class="form-select" id="branch_filter">
                                             <option value="-1">-- All --</option>
-                                            <option value="1">Head Office</option>
-                                            <option value="2">Kandy</option>
-                                            <option value="3">Kegalle</option>
                                         </select>
                                     </div>
                                 </div>
@@ -55,9 +49,6 @@
                                     <div class="col-md-9">
                                         <select class="form-select" id="department_filter">
                                             <option value="-1">-- All --</option>
-                                            <option value="1">Department 1</option>
-                                            <option value="2">Department 2</option>
-                                            <option value="3">Department 3</option>
                                         </select>
                                     </div>
                                 </div>
@@ -68,8 +59,6 @@
                                     <label for="employee_filter" class="form-label mb-1 col-md-3">Employee</label>
                                     <div class="col-md-9">
                                         <select class="form-select" id="employee_filter">
-                                            <option value="1">Desh</option>
-                                            <option value="2">Jack</option>
                                         </select>
                                     </div>
                                 </div>
@@ -88,6 +77,7 @@
                             </div>
                         </div>
                     </div>
+                    <hr>
                     {{-- timesheet section --}}
                     <div>
                         <table class="table table-bordered">
@@ -159,25 +149,60 @@
                         <div class="col-md-4">
                             <table class="table table-bordered">
                                 <thead>
-                                    <tr><th colspan="8" class="bg-success text-white text-center">Exception Legend</th></tr>
+                                    <tr><th colspan="2" class="bg-success text-white text-center">Exception Legend</th></tr>
+                                    <tr>
+                                        <th class="bg-success text-white text-center">Code</th>
+                                        <th class="bg-success text-white text-center">Exception</th>
+                                    </tr>
                                 </thead>
-                                <tbody></tbody>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-danger fw-bold">M1</td>
+                                        <td>Missing In Punch</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                         <div class="col-md-4">
                             <table class="table table-bordered">
                                 <thead>
-                                    <tr><th colspan="8" class="bg-success text-white text-center">Paid Time</th></tr>
+                                    <tr><th colspan="2" class="bg-success text-white text-center">Paid Time</th></tr>
                                 </thead>
-                                <tbody></tbody>
+                                <tbody>
+                                    <tr>
+                                        <td>Worked Time</td>
+                                        <td>133:20</td>
+                                    </tr>
+                                    <tr class="fw-bold">
+                                        <td>Total Time</td>
+                                        <td>133:20</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                         <div class="col-md-4">
                             <table class="table table-bordered">
                                 <thead>
-                                    <tr><th colspan="8" class="bg-success text-white text-center">Accumulated Time</th></tr>
+                                    <tr><th colspan="2" class="bg-success text-white text-center">Accumulated Time</th></tr>
                                 </thead>
-                                <tbody></tbody>
+                                <tbody>
+                                    <tr>
+                                        <td>Regular Time</td>
+                                        <td>50:55</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Daily OT</td>
+                                        <td>03:55</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Daily OT 3</td>
+                                        <td>04:45</td>
+                                    </tr>
+                                    <tr class="fw-bold">
+                                        <td>Total Time</td>
+                                        <td>133:20</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -187,4 +212,33 @@
             </div>
         </div>
     </div>
+
+    <script>
+        let dropdownData = [];
+
+        $(document).ready(function(){
+            getDropdownDataFunc();
+        })
+
+        async function getDropdownDataFunc(){
+            try {
+                dropdownData = await commonFetchData('/employee/timesheet/dropdown');
+
+
+                branches = dropdownData.branches.length > 0 && dropdownData.branches.map(e => `<option value="${e.id}">${e.branch_name}</option>`).join('');
+                departments = dropdownData.departments.length > 0 && dropdownData.departments.map(e => `<option value="${e.id}">${e.department_name}</option>`).join('');
+                employee_groups = dropdownData.employee_groups.length > 0 && dropdownData.employee_groups.map(e => `<option value="${e.id}">${e.emp_group_name}</option>`).join('');
+                employees = dropdownData.employees.length > 0 && dropdownData.employees.map(e => `<option value="${e.id}">${e.first_name+' '+e.last_name}</option>`).join('');
+
+                $('#group_filter').append(branches);
+                $('#branch_filter').append(departments);
+                $('#department_filter').append(employee_groups);
+                $('#employee_filter').append(employees);
+                console.log('dropdownData', dropdownData)
+            }catch(error){
+                console.error('error at attendance->timesheet->index->getDropdownDataFunc: ', error);
+            } 
+        }
+
+    </script>
 </x-app-layout>

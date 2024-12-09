@@ -271,6 +271,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     // Timesheet
     Route::get('/employee/timesheet', [TimeSheetController::class, 'index'])->name('employee.timesheet');
+    Route::get('/employee/timesheet/dropdown', [TimeSheetController::class, 'getDropdownData']);
 
     //==============================================================================================================================
     // Payroll
