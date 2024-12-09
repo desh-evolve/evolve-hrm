@@ -1,10 +1,10 @@
 <!-- desh(2024-10-23) -->
 <x-app-layout :title="'Input Example'">
-   
+
     <x-slot name="header">
         <h4 class="mb-sm-0">{{ __('Departments') }}</h4>
     </x-slot>
-    
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -60,7 +60,7 @@
                         <div class="col-xxl-12 col-md-12 mb-3">
                             <label for="branches" class="form-label mb-1 req">Branches</label>
                             <select class="select2-multiple" id="branches" name="branches[]" multiple="multiple">
-                                
+
                             </select>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
             }else{
                 list = '<tr><td colspan="7" class="text-center">No Departments Found!</td></tr>';
             }
-            
+
 
             $('#department_table_body').html(list);
             $('[data-tooltip="tooltip"]').tooltip();
@@ -145,6 +145,7 @@
 
             // Get department data by id
             let department_id = $(this).closest('tr').attr('department_id');
+
             try {
                 let department_data = await commonFetchData(`/company/department/${department_id}`);
                 department_data = department_data[0];
@@ -160,10 +161,10 @@
                 //==============================================================
                 // Reset previously disabled options
                 $('#branches option').attr('disabled', false);
-                
+
                 // Set selected branches and disable them in the dropdown
                 $('#branches').val(branches).trigger('change');
-                
+
                 // Disable selected options in the dropdown
                 branches.forEach(branchId => {
                     //$('#branches option[value="' + branchId + '"]').attr('disabled', true); //when we disable it can't get value to send by formData. do sth else here
@@ -193,7 +194,7 @@
                 console.error(`Error during department deletion:`, error);
             }
         })
-        
+
         $(document).on('click', '.click_assign_employees', async function(){
             let department_id = $(this).closest('tr').attr('department_id');
             window.location.href = '/company/department/employees?dep_id='+department_id;
@@ -208,7 +209,7 @@
             let department_name = $('#department_name').val();
             let department_status = $('#department_status').val();
             let branches = $('#branches').val();
-            
+
             let formData = new FormData();
             let missingFields = [];
 
@@ -246,7 +247,7 @@
             try {
                 // Send data and handle response
                 let res = await commonSaveData(url, formData, method);
-                
+
                 if (res && res.status === 'success') {
                     await commonAlert(res.status, res.message);
                     renderDepartmentTable();

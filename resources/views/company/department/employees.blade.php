@@ -1,10 +1,10 @@
 <!-- desh(2024-10-23) -->
 <x-app-layout :title="'Input Example'">
-   
+
     <x-slot name="header">
         <h4 class="mb-sm-0">{{ __('Department Employees') }}</h4>
     </x-slot>
-    
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card info-card" style="display: none">
@@ -39,9 +39,9 @@
                         <div class="col-xxl-12 col-md-12 mb-3">
                             <label for="employeesList" class="form-label mb-1">Select Department Branch Employees</label>
                             <select class="select2-multiple" id="employeesList" name="employeesList[]" multiple="multiple">
-                                
+
                             </select>
-                        </div>                   
+                        </div>
                     </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
@@ -94,7 +94,7 @@
                 let list = ``;
                 let res = await commonFetchData(`/company/department/${department_id}`);
                 department_data = res[0];
-                
+
                 $('#dep_emp_page_title').html(`Employees of ${department_data.department_name} Department`);
 
                 if (department_data?.branch_departments && department_data.branch_departments.length > 0) {
@@ -110,7 +110,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="card-body p-0">
                                         <ul class="list-group">
                         `;
@@ -128,7 +128,7 @@
                                 `;
                             })
                         }
-                                
+
                                 list += `
                                         </ul>
                                     </div>
@@ -176,10 +176,10 @@
             //==============================================================
             // Additional select2 code to handle selected and disabled options
             //==============================================================
-            
+
             // Find the branch department with the matching branch_id
             let branch = department_data?.branch_departments.find(branch => branch.branch_id === parseInt(branch_id));
-            
+
             // If the branch is found, retrieve its employees; otherwise, use an empty array
             let employees = branch ? branch.employees : [];
             let employeesArr = employees.map(e => e.employee_id.toString()) || [];
@@ -213,7 +213,7 @@
             }
 
             let url = `/company/department/employees/create`;
-            
+
             let formData = new FormData();
 
             // Append form data
@@ -224,7 +224,7 @@
             try {
                 // Send data and handle response
                 let res = await commonSaveData(url, formData, 'POST');
-                
+
                 if (res && res.status === 'success') {
                     await commonAlert(res.status, res.message);
                     getDepartmentById(department_id)
@@ -242,7 +242,7 @@
         })
 
 
-        
+
 
     </script>
 

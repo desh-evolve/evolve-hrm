@@ -160,7 +160,7 @@
                 "tabtype" : "Important",
                 "userImg": "assets/images/users/avatar-8.jpg",
                 "labeltype": "Support"
-                
+
             },{
                 "id": 15,
                 "starred": true,
@@ -205,71 +205,6 @@
                 "tabtype" : "Draft",
                 "userImg": "assets/images/users/user-dummy-img.jpg",
                 "labeltype": "Friends"
-            }
-        ],
-        "social": [
-            {
-                "id": 21,
-                "starred": true,
-                "readed" : false,
-                "name": "Peter, me",
-                "title": "Hello",
-                "description" : "Trip home from Colombo has been arranged, then Jenna will come get me from Stockholm. :)",
-                "date" : "Mar 7",
-                "tabtype" : "Inbox",
-                "userImg": "assets/images/users/avatar-8.jpg",
-                "labeltype": "Social"
-            },
-            {
-                "id": 22,
-                "starred": true,
-                "readed" : false,
-                "name": "Susanna",
-                "title": "Freelance - Since you asked... and i'm inconceivably bored at the train station",
-                "description" : "Alright thanks. I'll have to re-book that somehow, i'll get back to you.",
-                "date" : "Mar 7",
-                "tabtype" : "Sent",
-                "userImg": "assets/images/users/avatar-10.jpg",
-                "labeltype": "Social"
-            },
-            {
-                "id": 23,
-                "starred": false,
-                "readed" : true,
-                "name": "Web Support Dennis",
-                "counted": 7,
-                "title": "Re: New mail settings",
-                "description" : "Will you answer him asap?",
-                "date" : "Mar 5",
-                "tabtype" : "Trash",
-                "userImg": "assets/images/users/avatar-3.jpg",
-                "labeltype": "Social"
-            }
-        ],
-        "promotions": [
-            {
-                "id": 24,
-                "starred": false,
-                "readed" : false,
-                "name": "Google Drive Team",
-                "title": "You can now use your storage in Google Drive",
-                "description" : "Hey Nicklas Sandell! Thank you for purchasing extra storage space in Google Drive.",
-                "date" : "Feb 20",
-                "tabtype" : "Spam",
-                "userImg": "assets/images/users/user-dummy-img.jpg",
-                "labeltype": "Social"
-            },
-            {
-                "id": 25,
-                "starred": false,
-                "readed" : true,
-                "name": "Susanna",
-                "title": "Train/Bus",
-                "description" : "Yes ok, great! I'm not stuck in Stockholm anymore, we're making progress.",
-                "date" : "Feb 19",
-                "tabtype" : "Draft",
-                "userImg": "assets/images/users/avatar-3.jpg",
-                "labeltype": "Social"
             }
         ]
     }

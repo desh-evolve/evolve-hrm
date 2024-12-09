@@ -24,6 +24,7 @@ use App\Http\Controllers\Employee\EmployeeWorkExperienceController;
 use App\Http\Controllers\Employee\EmployeePromotionController;
 use App\Http\Controllers\Employee\EmployeeFamilyController;
 use App\Http\Controllers\Employee\EmpWageController;
+use App\Http\Controllers\Employee\EmployeeMessagesController;
 
 // policies
 use App\Http\Controllers\Policy\RoundingPolicyController;
@@ -199,6 +200,22 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/bank/{id}', [EmployeeBankDetailsController::class, 'getBankDetailsByEmpId'])->name('employee.bank.getById');
     Route::get('/company/allemplyee', [EmployeeBankDetailsController::class, 'getAllEmployee'])->name('company.employee.all');
 
+
+     //==============================================================================================================================
+    // Employee Messages
+    //==============================================================================================================================
+
+    Route::get('/employee/messages', [EmployeeMessagesController::class, 'index'])->name('employee.messages.index');
+    Route::get('/employee/allmessages', [EmployeeMessagesController::class, 'getAllMessages'])->name('employee.messages.all');
+    Route::get('/employee/messages/{id}', [EmployeeMessagesController::class, 'getMessagesByControlId'])->name('employee.messages.getById');
+    Route::get('/employee/name/dropdown', [EmployeeMessagesController::class, 'getEmployeeDropdownData'])->name('employee.name.dropdown');
+    Route::post('/employee/messages/create', [EmployeeMessagesController::class, 'createSendMessage'])->name('employee.messages.create');
+    Route::get('/employee/single_message/{id}', [EmployeeMessagesController::class, 'getMessagesBySingleId'])->name('employee.messages.single');
+    Route::post('/employee/messages/reply', [EmployeeMessagesController::class, 'createReplyMessage'])->name('employee.messages.reply');
+    Route::get('/employee/sent/messages', [EmployeeMessagesController::class, 'getSentMessages'])->name('employee.messages.sent');
+    Route::get('/employee/inbox/messages', [EmployeeMessagesController::class, 'getReceivedMessages'])->name('employee.messages.inbox');
+    Route::delete('/employee/message/delete/{id}', [EmployeeMessagesController::class, 'deleteMessage'])->name('employee.message.delete');
+   
 
     //==============================================================================================================================
     // Currencies
