@@ -57,9 +57,13 @@ class TimeSheetController extends Controller
                 'branches' => $branches,
                 'departments' => $departments,
                 'employee_groups' => $employee_groups,
-                'employees' => $employees,
+                'employees' => $employees, //should be filtered by hierarchy
             ]
         ], 200);
+    }
+
+    public function getPayPeriod(){
+
     }
 
 }

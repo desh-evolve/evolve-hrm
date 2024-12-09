@@ -1,7 +1,7 @@
 <x-app-layout :title="'Input Example'">
 
     <style>
-        td{
+        th, td{
            padding: 2px 10px !important; 
         }
         
@@ -224,7 +224,6 @@
             try {
                 dropdownData = await commonFetchData('/employee/timesheet/dropdown');
 
-
                 branches = dropdownData.branches.length > 0 && dropdownData.branches.map(e => `<option value="${e.id}">${e.branch_name}</option>`).join('');
                 departments = dropdownData.departments.length > 0 && dropdownData.departments.map(e => `<option value="${e.id}">${e.department_name}</option>`).join('');
                 employee_groups = dropdownData.employee_groups.length > 0 && dropdownData.employee_groups.map(e => `<option value="${e.id}">${e.emp_group_name}</option>`).join('');
@@ -234,7 +233,7 @@
                 $('#branch_filter').append(departments);
                 $('#department_filter').append(employee_groups);
                 $('#employee_filter').append(employees);
-                console.log('dropdownData', dropdownData)
+                
             }catch(error){
                 console.error('error at attendance->timesheet->index->getDropdownDataFunc: ', error);
             } 
