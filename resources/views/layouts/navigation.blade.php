@@ -264,7 +264,11 @@
                     <div class="collapse menu-dropdown" id="payroll">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item"><a href="#" class="nav-link">End of Pay Period</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Pay Stub Amendment</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.pay_stub_amendment') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_amendment') ? 'active' : '' }}">Pay
+                                    Stub Amendment</a>
+                            </li>
                             <li class="nav-item"><a href="#" class="nav-link">Pay Period Schedule</a></li>
 
                             <li class="nav-item">
