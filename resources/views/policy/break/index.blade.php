@@ -12,8 +12,12 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- warning Alert -->
+                    <div class="alert bg-warning border-warning text-white material-shadow" role="alert" id="check_unassigned_policies">
+                        <strong> Policies highlighted in yellow may not be active yet because they are not assigned to a <u><a href="/policy/policy_group">Policy Group</a></u>. </strong>
+                    </div>
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -109,9 +113,9 @@
 
                         <div class="checkbox_section">
                             <div class="row mb-3">
-                                <label for="include_lunch_punch_time" class="form-label mb-1 col-md-3">Include Any Punched Time for Lunch</label>
+                                <label for="include_break_punch_time" class="form-label mb-1 col-md-3">Include Any Punched Time for Break</label>
                                 <div class="col-md-9">
-                                    <input type="checkbox" class="form-check-input" id="include_lunch_punch_time">
+                                    <input type="checkbox" class="form-check-input" id="include_break_punch_time">
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -126,7 +130,7 @@
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="break_id" value=""></button>
                         <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn w-sm btn-primary" id="break-submit-confirm">Submit</button>
+                        <button type="button" class="btn w-sm btn-primary" id="form_submit">Submit</button>
                     </div>
                 </div>
             </div>
@@ -146,11 +150,13 @@
             try {
                 const breaks = await commonFetchData('/policy/breaks');
                 let list = '';
+                let showWarning = false;
                 if(breaks && breaks.length > 0){
                     breaks.map((brk, i) => {
+                        showWarning = showWarning ? true : brk.policy_groups.length === 0 ? true : false;
                         let interval = convertSecondsToHoursAndMinutes(brk.window_length);
                         list += `
-                            <tr break_policy_id="${brk.id}">
+                            <tr break_policy_id="${brk.id}" class="${brk.policy_groups.length > 0 ? '' : 'bg-warning'}">
                                 <td>${i+1}</td>    
                                 <td>${brk.name}</td>    
                                 <td>${brk.type == 'auto_deduct' ? 'Auto Deduct' : brk.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>    
@@ -168,6 +174,12 @@
                     })
                 }else{
                     list += `<tr><td colspan="3" class="text-center">No Break Policies Found!</td></tr>`;
+                }
+
+                if(showWarning){
+                    $('#check_unassigned_policies').show();
+                }else{
+                    $('#check_unassigned_policies').hide();
                 }
 
                 $('#break_pol_table_body').html(list);
@@ -221,14 +233,122 @@
             $('#break-form-modal').modal('show');
         })
 
-        $(document).on('click', '.click_edit_break_pol', function(){
+        $(document).on('click', '.click_edit_break_pol', async function(){
             resetForm();
             let break_policy_id = $(this).closest('tr').attr('break_policy_id');
+
+            $('#break_id').val(break_policy_id); // Set the ID in the hidden field
+
+            try {
+                // Fetch the break policy data
+                let response = await commonFetchData(`/policy/break/${break_policy_id}`);
+                let data = response[0]; // Extract the first object
+
+                if (data) {
+                    let name = data.name;
+                    let type = data.type;
+                    let auto_detect_type = data.auto_detect_type;
+                    let include_break_punch_time = data.include_break_punch_time;
+                    let include_multiple_breaks = data.include_multiple_breaks;
+                    let trigger_time = convertSecondsToHoursAndMinutes(data.trigger_time || 0);
+                    let amount = convertSecondsToHoursAndMinutes(data.amount || 0);
+                    let start_window = convertSecondsToHoursAndMinutes(data.start_window || 0);
+                    let window_length = convertSecondsToHoursAndMinutes(data.window_length || 0);
+                    let minimum_punch_time = convertSecondsToHoursAndMinutes(data.minimum_punch_time || 0);
+                    let maximum_punch_time = convertSecondsToHoursAndMinutes(data.maximum_punch_time || 0);
+
+                    // Populate form fields
+                    $('#name').val(data.name || '');
+                    $('#type').val(data.type || '0').trigger('change');
+                    $('#auto_detect_type').val(data.auto_detect_type || '').trigger('change');
+                    $('#include_break_punch_time').prop('checked', include_break_punch_time === 1);
+                    $('#include_multiple_breaks').prop('checked', include_multiple_breaks === 1);
+                    $('#trigger_time').val(trigger_time);
+                    $('#amount').val(amount);
+                    $('#start_window').val(start_window);
+                    $('#window_length').val(window_length);
+                    $('#minimum_punch_time').val(minimum_punch_time);
+                    $('#maximum_punch_time').val(maximum_punch_time);
+                }
+            } catch (error) {
+                console.error('Error while fetching break policy data:', error);
+                $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
+            }
+
             $('#break-form-modal').modal('show');
         })
 
-        function resetForm(){
+        $(document).on('click', '#form_submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            // Collect form data
+            let formData = new FormData();
+
+            let break_id = $('#break_id').val();
+            let name = $('#name').val();
+            let type = $('#type').val();
+            let auto_detect_type = $('#auto_detect_type').val();
+            let include_break_punch_time = $('#include_break_punch_time').is(':checked') ? 1 : 0;
+            let include_multiple_breaks = $('#include_multiple_breaks').is(':checked') ? 1 : 0;
+            let trigger_time = convertHoursAndMinutesToSeconds($('#trigger_time').val() || '0:00');
+            let amount = convertHoursAndMinutesToSeconds($('#amount').val() || '0:00');
+            let start_window = convertHoursAndMinutesToSeconds($('#start_window').val() || '0:00');
+            let window_length = convertHoursAndMinutesToSeconds($('#window_length').val() || '0:00');
+            let minimum_punch_time = convertHoursAndMinutesToSeconds($('#minimum_punch_time').val() || '0:00');
+            let maximum_punch_time = convertHoursAndMinutesToSeconds($('#maximum_punch_time').val() || '0:00');
+
+            formData.append('name', name);
+            formData.append('type', type);
+            formData.append('auto_detect_type', auto_detect_type);
+            formData.append('include_break_punch_time', include_break_punch_time);
+            formData.append('include_multiple_breaks', include_multiple_breaks);
+            formData.append('trigger_time', trigger_time);
+            formData.append('amount', amount);
+            formData.append('start_window', start_window);
+            formData.append('window_length', window_length);
+            formData.append('minimum_punch_time', minimum_punch_time);
+            formData.append('maximum_punch_time', maximum_punch_time);
             
+            let createUrl = `/policy/break/create`;
+            let updateUrl = `/policy/break/update/${break_id}`;
+
+            const isUpdating = Boolean(break_id);
+            let url = isUpdating ? updateUrl : createUrl;
+            let method = isUpdating ? 'PUT' : 'POST';
+
+            if (isUpdating) {
+                formData.append('id', break_id);
+            }
+
+            try {
+                // Send data and handle response
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    resetForm();
+                    $('#break-form-modal').modal('hide');
+                    getAllBreaks(); // Refresh the list of breaks
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        });
+
+        function resetForm(){
+            $('#name').val('');
+            $('#type').val('auto_deduct').trigger('change');
+            $('#trigger_time').val('');
+            $('#amount').val('');
+            $('#auto_detect_type').val('time_window').trigger('change');
+            $('#start_window').val('');
+            $('#window_length').val('');
+            $('#minimum_punch_time').val('');
+            $('#maximum_punch_time').val('');
+            $('#include_break_punch_time').prop('checked', false);
+            $('#include_multiple_breaks').prop('checked', false);
+            $('#break_id').val('');
         }
     </script>
 

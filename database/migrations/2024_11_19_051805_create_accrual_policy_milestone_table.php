@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->integer('accrual_policy_id')->unsigned();
             $table->decimal('length_of_service', 9, 2)->nullable();
-            $table->smallInteger('length_of_service_unit_id')->nullable();
+            $table->string('length_of_service_unit')->nullable()->comment('days/weeks/months/years/hours');
             $table->decimal('length_of_service_days', 9, 2)->nullable();
             $table->decimal('accrual_rate', 18, 4)->nullable();
             $table->integer('minimum_time')->unsigned()->nullable()->comment('time in seconds');
