@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +33,20 @@ use App\Http\Controllers\Policy\BreakPolicyController;
 use App\Http\Controllers\Policy\AccrualPolicyController;
 use App\Http\Controllers\Policy\ExceptionPolicyController;
 use App\Http\Controllers\Policy\OvertimePolicyController;
+use App\Http\Controllers\Policy\PremiumPolicyController;
+use App\Http\Controllers\Policy\HolidayPolicyController;
+use App\Http\Controllers\Policy\AbsencePolicyController;
+use App\Http\Controllers\Policy\SchedulePolicyController;
+use App\Http\Controllers\Policy\PolicyGroupsController;
+
+// Attendance
+use App\Http\Controllers\Attendance\PunchController;
+use App\Http\Controllers\Attendance\MassPunchController;
+use App\Http\Controllers\Attendance\TimeSheetController;
+
+// Payroll
+use App\Http\Controllers\Payroll\PayStubAccountController;
+use App\Http\Controllers\Payroll\PayStubAmendmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -149,7 +162,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Employee Designation
     //==============================================================================================================================
     Route::get('/company/employee_designation', [EmployeeDesignationController::class, 'index'])->name('company.employee_designation.index');
-
     Route::post('/company/employee_designation/create', [EmployeeDesignationController::class, 'createEmployeeDesignation'])->name('company.employee_designation.create');
     Route::put('/company/employee_designation/update/{id}', [EmployeeDesignationController::class, 'updateEmployeeDesignation'])->name('company.employee_designation.update');
     Route::delete('/company/employee_designation/delete/{id}', [EmployeeDesignationController::class, 'deleteEmployeeDesignation'])->name('company.employee_designation.delete');
@@ -167,27 +179,20 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/employee_groups', [EmployeeGroupController::class, 'getAllEmployeeGroups'])->name('company.employee_group.all');
     Route::get('/company/employee_group/{id}', [EmployeeGroupController::class, 'getEmployeeGroupById'])->name('company.employee_group.getById');
 
-
-
     //==============================================================================================================================
     // Wage Groups
     //==============================================================================================================================
     Route::get('/company/wagegroups', [WageGroupController::class, 'wageGroup'])->name('company.wagegroups.index');
-
-    // WageGroups routes
     Route::post('/company/wagegroups/create', [WageGroupController::class, 'createWageGroups'])->name('company.wagegroups.create');
     Route::put('/company/wagegroups/update/{id}', [WageGroupController::class, 'updateWageGroups'])->name('company.wagegroups.update');
     Route::delete('/company/wagegroups/delete/{id}', [WageGroupController::class, 'deleteWageGroups'])->name('company.wagegroups.delete');
     Route::get('/company/allwagegroups', [WageGroupController::class, 'getAllWageGroups'])->name('company.wagegroups.all');
     Route::get('/company/wagegroups/{id}', [WageGroupController::class, 'getWageGroupById'])->name('company.wagegroups.getById');
 
-
-
     //==============================================================================================================================
     // Employee Bank Details
     //==============================================================================================================================
     Route::get('/employee/bank', [EmployeeBankDetailsController::class, 'index'])->name('employee.bank.index');
-
     Route::get('/employee/bank/details/{id}', [EmployeeBankDetailsController::class, 'showBankDetails'])->name('employee.bank.details');
     Route::post('/employee/bank/create', [EmployeeBankDetailsController::class, 'createBankDetails'])->name('employee.bank.create');
     Route::put('/employee/bank/update/{id}', [EmployeeBankDetailsController::class, 'updateBankDetails'])->name('employee.bank.update');
@@ -216,8 +221,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Currencies
     //==============================================================================================================================
     Route::get('/company/currency', [CurrencyController::class, 'index'])->name('company.currency.index');
-
-    // Currency routes
     Route::post('/company/currency/create', [CurrencyController::class, 'createCurrency'])->name('company.currency.create');
     Route::put('/company/currency/update/{id}', [CurrencyController::class, 'updateCurrency'])->name('company.currency.update');
     Route::delete('/company/currency/delete/{id}', [CurrencyController::class, 'deleteCurrency'])->name('company.currency.delete');
@@ -229,9 +232,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Employee Qualification
     //==============================================================================================================================
     Route::get('/company/employee_qualification/index', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification.index');
-    // Route::get('/company/employee_qualification', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification');
-
-    // Employee Qualification routes
     Route::post('/company/employee_qualification/create', [EmployeeQualificationController::class, 'createEmployeeQualification'])->name('company.employee_qualification.create');
     Route::put('/company/employee_qualification/update/{id}', [EmployeeQualificationController::class, 'updateEmployeeQualification'])->name('company.employee_qualification.update');
     Route::delete('/company/employee_qualification/delete/{id}', [EmployeeQualificationController::class, 'deleteEmployeeQualification'])->name('company.employee_qualification.delete');
@@ -239,10 +239,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/employee_qualification/dropdown', [EmployeeQualificationController::class, 'getEmployeeList'])->name('company.employee_qualification.dropdown');
     Route::get('/company/employee_qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQualificationById'])->name('company.employee_qualification.getById');
 
-    // Employee employee_work_experience  routes
+    // Employee employee work experience
     Route::get('/company/employee_work_experience/index', [EmployeeWorkExperienceController::class, 'index'])->name('company.employee_work_experience.index');
-    // Route::get('/company/employee_qualification', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification');
-
     Route::post('/company/employee_work_experience/create', [EmployeeWorkExperienceController::class, 'createEmployeeWorkExperience'])->name('company.employee_work_experience.create');
     Route::put('/company/employee_work_experience/update/{id}', [EmployeeWorkExperienceController::class, 'updateEmployeeWorkExperience'])->name('company.employee_work_experience.update');
     Route::delete('/company/employee_work_experience/delete/{id}', [EmployeeWorkExperienceController::class, 'deleteEmployeeWorkExperience'])->name('company.employee_work_experience.delete');
@@ -250,9 +248,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/employee_work_experience/dropdown', [EmployeeWorkExperienceController::class, 'getEmployeeList'])->name('company.employee_work_experience.dropdown');
     Route::get('/company/employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getEmployeeWorkExperienceById'])->name('company.employee_work_experience.getById');
 
-    // Employee employee_promotion  routes
+    // Employee employee promotion  
     Route::get('/company/employee_promotion/index', [EmployeePromotionController::class, 'index'])->name('company.employee_promotion.index');
-
     Route::post('/company/employee_promotion/create', [EmployeePromotionController::class, 'createEmployeePromotion'])->name('company.employee_promotion.create');
     Route::put('/company/employee_promotion/update/{id}', [EmployeePromotionController::class, 'updateEmployeePromotion'])->name('company.employee_promotion.update');
     Route::delete('/company/employee_promotion/delete/{id}', [EmployeePromotionController::class, 'deleteEmployeePromotion'])->name('company.employee_promotion.delete');
@@ -261,22 +258,66 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/employee_promotion/{id}', [EmployeePromotionController::class, 'getEmployeePromotioneById'])->name('company.employee_promotion.getById');
 
 
-     // Employee employee_promotion  routes
-     Route::get('/company/employee_family/index', [EmployeeFamilyController::class, 'index'])->name('company.employee_family.index');
+    // Employee employee promotion
+    Route::get('/company/employee_family/index', [EmployeeFamilyController::class, 'index'])->name('company.employee_family.index');
+    Route::post('/company/employee_family/create', [EmployeeFamilyController::class, 'createEmployeeFamily'])->name('company.employee_family.create');
+    Route::put('/company/employee_family/update/{id}', [EmployeeFamilyController::class, 'updateEmployeeFamily'])->name('company.employee_family.update');
+    Route::delete('/company/employee_family/delete/{id}', [EmployeeFamilyController::class, 'deleteEmployeeFamily'])->name('company.employee_family.delete');
+    Route::get('/company/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
+    Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
+    Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
 
-     Route::post('/company/employee_family/create', [EmployeeFamilyController::class, 'createEmployeeFamily'])->name('company.employee_family.create');
-     Route::put('/company/employee_family/update/{id}', [EmployeeFamilyController::class, 'updateEmployeeFamily'])->name('company.employee_family.update');
-     Route::delete('/company/employee_family/delete/{id}', [EmployeeFamilyController::class, 'deleteEmployeeFamily'])->name('company.employee_family.delete');
-     Route::get('/company/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
-     Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
-     Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
+    //==============================================================================================================================
+    // Attendance
+    //==============================================================================================================================
 
+    //   Employee Punch
+    Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
+    Route::get('/company/employee_punch/dropdown', [PunchController::class, 'getDropdownData'])->name('company.employee_punch.dropdown');
+    Route::post('/company/employee_punch/create', [PunchController::class, 'createEmployeePunch'])->name('company.employee_punch.create');
+    Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
+    Route::get('/company/single_employee_punch/{id}', [PunchController::class, 'getSingleEmployeePunch'])->name('company.employee_punch.single');
+    Route::put('/company/employee_punch/update/{id}', [PunchController::class, 'updateEmployeePunch'])->name('company.employee_punch.update');
+
+    //    Mass Punch
+    Route::get('/company/mass_punch/index', [MassPunchController::class, 'index'])->name('company.mass_punch.index');
+    Route::get('/company/mass_punch/dropdown', [MassPunchController::class, 'getDropdownData'])->name('company.mass_punch.dropdown');
+    Route::post('/company/mass_punch/create', [MassPunchController::class, 'createMassPunch'])->name('company.mass_punch.create');
+    Route::get('/company/mass_punch/list', [MassPunchController::class, 'showMassPunchList'])->name('company.mass_punch.mass_punch_list');
+
+
+    // Timesheet
+    Route::get('/employee/timesheet', [TimeSheetController::class, 'index'])->name('employee.timesheet');
+    Route::get('/employee/timesheet/dropdown', [TimeSheetController::class, 'getDropdownData']);
+
+    //==============================================================================================================================
+    // Payroll
+    //==============================================================================================================================
+    
+    //   Pay stub account
+    Route::get('/payroll/pay_stub_account', [PayStubAccountController::class, 'index'])->name('payroll.pay_stub_account');
+    Route::post('/payroll/pay_stub_account/create', [PayStubAccountController::class, 'createPayStubAccount'])->name('payroll.pay_stub_account.create');
+    Route::put('/payroll/pay_stub_account/update/{id}', [PayStubAccountController::class, 'updatePayStubAccount'])->name('payroll.pay_stub_account.update');
+    Route::delete('/payroll/pay_stub_account/delete/{id}', [PayStubAccountController::class, 'deletePayStubAccount'])->name('payroll.pay_stub_account.delete');
+    Route::get('/payroll/pay_stub_account/allPayStubAccount', [PayStubAccountController::class, 'getAllPayStubAccount'])->name('payroll.pay_stub_account.all');
+    Route::get('/payroll/pay_stub_account/{id}', [PayStubAccountController::class, 'getPayStubAccountById'])->name('payroll.pay_stub_account.getById');
+    
+
+     //   Pay stub amendment
+     Route::get('/payroll/pay_stub_amendment', [PayStubAmendmentController::class, 'index'])->name('payroll.pay_stub_amendment');
+     Route::get('/payroll/pay_stub_amendment/form', [PayStubAmendmentController::class, 'form'])->name('payroll.pay_stub_amendment.form');
+     Route::post('/payroll/pay_stub_amendment/create', [PayStubAmendmentController::class, 'createPayStubAmendment'])->name('payroll.pay_stub_amendment.create');
+     Route::put('/payroll/pay_stub_amendment/update/{id}', [PayStubAmendmentController::class, 'updatePayStubAmendment'])->name('payroll.pay_stub_amendment.update');
+     Route::delete('/payroll/pay_stub_amendment/delete/{id}', [PayStubAmendmentController::class, 'deletePayStubAmendment'])->name('payroll.pay_stub_amendment.delete');
+     Route::get('/payroll/pay_stub_amendment/dropdown', [PayStubAmendmentController::class, 'getDropdownList'])->name('company.pay_stub_amendment.dropdown');
+     Route::get('/payroll/pay_stub_amendment/allPayStubAmendment', [PayStubAmendmentController::class, 'getAllPayStubAmendment'])->name('payroll.pay_stub_amendment.all');
+     Route::get('/payroll/pay_stub_amendment/{id}', [PayStubAmendmentController::class, 'getPayStubAmendmentById'])->name('payroll.pay_stub_amendment.getById');
+     
     //==============================================================================================================================
     // Employee Job History
     //==============================================================================================================================
 
     Route::get('/employee/jobhistory', [JobHistoryController::class, 'index'])->name('employee.jobhistory.index');
-
     Route::get('/employee/jobhistory/dropdown', [JobHistoryController::class, 'getJobHistoryDropdownData'])->name('employee.jobhistory.dropdown');
     Route::post('/employee/jobhistory/create', [JobHistoryController::class, 'createJobHistory'])->name('employee.jobhistory.create');
     Route::put('/employee/jobhistory/update/{id}', [JobHistoryController::class, 'updateJobHistory'])->name('employee.jobhistory.update');
@@ -285,7 +326,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/single_jobhistory/{id}', [JobHistoryController::class, 'getJobHistoryBySingleEmployee'])->name('employee.jobhistory.single');
 
 
-     //==============================================================================================================================
+    //==============================================================================================================================
     // Employee wage
     //===============================================================================================================================
 
@@ -311,24 +352,36 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Policies
     //==============================================================================================================================
 
-    // rounding policy
+    // common functions
+    Route::get('/policy/check_in_policy_groups/{policy}', [CommonPolicyController::class, 'checkInPolicyGroups']);
 
+
+    // rounding policy
     Route::get('/policy/rounding', [RoundingPolicyController::class, 'index'])->name('policy.rounding');
     Route::get('/policy/rounding/dropdown', [RoundingPolicyController::class, 'getRoundingDropdownData'])->name('policy.rounding.dropdown');
     Route::get('/policy/roundings', [RoundingPolicyController::class, 'getAllRoundingPolicies'])->name('policy.roundings.all');
     Route::delete('/policy/rounding/delete/{id}', [RoundingPolicyController::class, 'deleteRoundingPolicy'])->name('policy.rounding.delete');
+    Route::post('/policy/rounding/create', [RoundingPolicyController::class, 'createRoundingPolicy'])->name('policy.rounding.create');
+    Route::put('/policy/rounding/update/{id}', [RoundingPolicyController::class, 'updateRoundingPolicy'])->name('policy.rounding.update');
+    Route::get('/policy/rounding/{id}', [RoundingPolicyController::class, 'getRoundingPolicyById'])->name('policy.rounding.getById');
 
     // meal policy
     Route::get('/policy/meal', [MealPolicyController::class, 'index'])->name('policy.meal');
     Route::get('/policy/meal/dropdown', [MealPolicyController::class, 'getMealDropdownData'])->name('policy.meal.dropdown');
     Route::get('/policy/meals', [MealPolicyController::class, 'getAllMealPolicies'])->name('policy.meals.all');
     Route::delete('/policy/meal/delete/{id}', [MealPolicyController::class, 'deleteMealPolicy'])->name('policy.meal.delete');
+    Route::post('/policy/meal/create', [MealPolicyController::class, 'createMealPolicy'])->name('policy.meal.create');
+    Route::put('/policy/meal/update/{id}', [MealPolicyController::class, 'updateMealPolicy'])->name('policy.meal.update');
+    Route::get('/policy/meal/{id}', [MealPolicyController::class, 'getMealPolicyById'])->name('policy.meal.getById');
 
     // break policy
     Route::get('/policy/break', [BreakPolicyController::class, 'index'])->name('policy.break');
     Route::get('/policy/break/dropdown', [BreakPolicyController::class, 'getBreakDropdownData'])->name('policy.break.dropdown');
     Route::get('/policy/breaks', [BreakPolicyController::class, 'getAllBreakPolicies'])->name('policy.breaks.all');
     Route::delete('/policy/break/delete/{id}', [BreakPolicyController::class, 'deleteBreakPolicy'])->name('policy.break.delete');
+    Route::post('/policy/break/create', [BreakPolicyController::class, 'createBreakPolicy'])->name('policy.break.create');
+    Route::put('/policy/break/update/{id}', [BreakPolicyController::class, 'updateBreakPolicy'])->name('policy.break.update');
+    Route::get('/policy/break/{id}', [BreakPolicyController::class, 'getBreakPolicyById'])->name('policy.break.getById');
 
     // accrual policy
     Route::get('/policy/accrual', [AccrualPolicyController::class, 'index'])->name('policy.accrual');
@@ -336,19 +389,76 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/accrual/dropdown', [AccrualPolicyController::class, 'getAccrualDropdownData'])->name('policy.accrual.dropdown');
     Route::get('/policy/accruals', [AccrualPolicyController::class, 'getAllAccrualPolicies'])->name('policy.accruals.all');
     Route::delete('/policy/accrual/delete/{id}', [AccrualPolicyController::class, 'deleteAccrualPolicy'])->name('policy.accrual.delete');
+    Route::post('/policy/accrual/create', [AccrualPolicyController::class, 'createAccrualPolicy'])->name('policy.accrual.create');
+    Route::put('/policy/accrual/update/{id}', [AccrualPolicyController::class, 'updateAccrualPolicy'])->name('policy.accrual.update');
+    Route::get('/policy/accrual/{id}', [AccrualPolicyController::class, 'getAccrualPolicyById'])->name('policy.accrual.getById');
 
     // exception policy
     Route::get('/policy/exception', [ExceptionPolicyController::class, 'index'])->name('policy.exception');
     Route::get('/policy/exception/form', [ExceptionPolicyController::class, 'form'])->name('policy.exception.form');
     Route::get('/policy/exceptions', [ExceptionPolicyController::class, 'getAllExceptionPolicies'])->name('policy.exceptions.all');
     Route::delete('/policy/exception/delete/{id}', [ExceptionPolicyController::class, 'deleteExceptionPolicy'])->name('policy.exception.delete');
+    Route::post('/policy/exception/create', [ExceptionPolicyController::class, 'createExceptionPolicy'])->name('policy.exception.create');
+    Route::put('/policy/exception/update/{id}', [ExceptionPolicyController::class, 'updateExceptionPolicy'])->name('policy.exception.update');
+    Route::get('/policy/exception/{id}', [ExceptionPolicyController::class, 'getExceptionPolicyById'])->name('policy.exception.getById');
+
 
     // overtime policy
     Route::get('/policy/overtime', [OvertimePolicyController::class, 'index'])->name('policy.overtime');
     Route::get('/policy/overtime/dropdown', [OvertimePolicyController::class, 'getOvertimeDropdownData'])->name('policy.overtime.dropdown');
     Route::get('/policy/overtimes', [OvertimePolicyController::class, 'getAllOvertimePolicies'])->name('policy.overtimes.all');
     Route::delete('/policy/overtime/delete/{id}', [OvertimePolicyController::class, 'deleteOvertimePolicy'])->name('policy.overtime.delete');
+    Route::post('/policy/overtime/create', [OvertimePolicyController::class, 'createOvertimePolicy'])->name('policy.overtime.create');
+    Route::put('/policy/overtime/update/{id}', [OvertimePolicyController::class, 'updateOvertimePolicy'])->name('policy.overtime.update');
+    Route::get('/policy/overtime/{id}', [OvertimePolicyController::class, 'getOvertimePolicyById'])->name('policy.overtime.getById');
 
+    // premium policy
+    Route::get('/policy/premium', [PremiumPolicyController::class, 'index'])->name('policy.premium');
+    Route::get('/policy/premium/form', [PremiumPolicyController::class, 'form'])->name('policy.premium.form');
+    Route::get('/policy/premium/dropdown', [PremiumPolicyController::class, 'getPremiumDropdownData'])->name('policy.premium.dropdown');
+    Route::get('/policy/premiums', [PremiumPolicyController::class, 'getAllPremiumPolicies'])->name('policy.premiums.all');
+    Route::delete('/policy/premium/delete/{id}', [PremiumPolicyController::class, 'deletePremiumPolicy'])->name('policy.premium.delete');
+    Route::post('/policy/premium/create', [PremiumPolicyController::class, 'createPremiumPolicy'])->name('policy.premium.create');
+    Route::put('/policy/premium/update/{id}', [PremiumPolicyController::class, 'updatePremiumPolicy'])->name('policy.premium.update');
+    Route::get('/policy/premium/{id}', [PremiumPolicyController::class, 'getPremiumPolicyById'])->name('policy.premium.getById');
+
+    // holiday policy
+    Route::get('/policy/holiday', [HolidayPolicyController::class, 'index'])->name('policy.holiday');
+    Route::get('/policy/holiday/form', [HolidayPolicyController::class, 'form'])->name('policy.holiday.form');
+    Route::get('/policy/holiday/dropdown', [HolidayPolicyController::class, 'getHolidayDropdownData'])->name('policy.holiday.dropdown');
+    Route::get('/policy/holidays', [HolidayPolicyController::class, 'getAllHolidayPolicies'])->name('policy.holidays.all');
+    Route::delete('/policy/holiday/delete/{id}', [HolidayPolicyController::class, 'deleteHolidayPolicy'])->name('policy.holiday.delete');
+    Route::post('/policy/holiday/create', [HolidayPolicyController::class, 'createHolidayPolicy'])->name('policy.holiday.create');
+    Route::put('/policy/holiday/update/{id}', [HolidayPolicyController::class, 'updateHolidayPolicy'])->name('policy.holiday.update');
+    Route::get('/policy/holiday/{id}', [HolidayPolicyController::class, 'getHolidayPolicyById'])->name('policy.holiday.getById');
+
+    // absence policy
+    Route::get('/policy/absence', [AbsencePolicyController::class, 'index'])->name('policy.absence');
+    Route::get('/policy/absence/dropdown', [AbsencePolicyController::class, 'getAbsenceDropdownData'])->name('policy.absence.dropdown');
+    Route::get('/policy/absences', [AbsencePolicyController::class, 'getAllAbsencePolicies'])->name('policy.absences.all');
+    Route::delete('/policy/absence/delete/{id}', [AbsencePolicyController::class, 'deleteAbsencePolicy'])->name('policy.absence.delete');
+    Route::post('/policy/absence/create', [AbsencePolicyController::class, 'createAbsencePolicy'])->name('policy.absence.create');
+    Route::put('/policy/absence/update/{id}', [AbsencePolicyController::class, 'updateAbsencePolicy'])->name('policy.absence.update');
+    Route::get('/policy/absence/{id}', [AbsencePolicyController::class, 'getAbsencePolicyById'])->name('policy.absence.getById');
+
+    // schedule policy
+    Route::get('/policy/schedule', [SchedulePolicyController::class, 'index'])->name('policy.schedule');
+    Route::get('/policy/schedule/dropdown', [SchedulePolicyController::class, 'getScheduleDropdownData'])->name('policy.schedule.dropdown');
+    Route::get('/policy/schedules', [SchedulePolicyController::class, 'getAllSchedulePolicies'])->name('policy.schedules.all');
+    Route::delete('/policy/schedule/delete/{id}', [SchedulePolicyController::class, 'deleteSchedulePolicy'])->name('policy.schedule.delete');
+    Route::post('/policy/schedule/create', [SchedulePolicyController::class, 'createSchedulePolicy'])->name('policy.schedule.create');
+    Route::put('/policy/schedule/update/{id}', [SchedulePolicyController::class, 'updateSchedulePolicy'])->name('policy.schedule.update');
+    Route::get('/policy/schedule/{id}', [SchedulePolicyController::class, 'getSchedulePolicyById'])->name('location.schedule.getById');
+
+    // policy groups
+    Route::get('/policy/policy_group', [PolicyGroupsController::class, 'index'])->name('policy.policy_group');
+    Route::get('/policy/policy_group/form', [PolicyGroupsController::class, 'form'])->name('policy.policy_group.form');
+    Route::get('/policy/policy_group/dropdown', [PolicyGroupsController::class, 'getPolicyGroupDropdownData'])->name('policy.policy_group.dropdown');
+    Route::get('/policy/policy_groups', [PolicyGroupsController::class, 'getAllPolicyGroups'])->name('policy.policy_groups.all');
+    Route::delete('/policy/policy_group/delete/{id}', [PolicyGroupsController::class, 'deletePolicyGroup'])->name('policy.policy_group.delete');
+    Route::post('/policy/policy_group/create', [PolicyGroupsController::class, 'createPolicyGroup'])->name('policy.policy_group.create');
+    Route::put('/policy/policy_group/update/{id}', [PolicyGroupsController::class, 'updatePolicyGroup'])->name('policy.policy_group.update');
+    Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.policy_group.getById');
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page

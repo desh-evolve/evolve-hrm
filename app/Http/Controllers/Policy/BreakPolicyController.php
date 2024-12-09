@@ -16,8 +16,8 @@ class BreakPolicyController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view break policy', ['only' => ['index', 'getAllBreakPolicies']]);
-        $this->middleware('permission:create break policy', ['only' => ['form', '', '']]);
-        $this->middleware('permission:update break policy', ['only' => ['form', '', '']]);
+        $this->middleware('permission:create break policy', ['only' => ['form', 'createBreakPolicy', '']]);
+        $this->middleware('permission:update break policy', ['only' => ['form', 'updateBreakPolicy', 'getBreakPolicyById']]);
         $this->middleware('permission:delete break policy', ['only' => ['deleteBreakPolicy']]);
 
         $this->common = new CommonModel();
@@ -29,7 +29,28 @@ class BreakPolicyController extends Controller
     }
 
     public function getAllBreakPolicies(){
-        $breaks = $this->common->commonGetAll('break_policy', '*');
+        $table = 'break_policy';
+        $connections = [
+            'policy_group_policies' => [
+                'con_fields' => ['*'],
+                'con_where' => [
+                    'policy_group_policies.policy_table' => $table,
+                    'policy_group_policies.policy_id' => 'id',
+                    'policy_group.status' => 'active',
+                ],
+                'con_joins' => [
+                    'policy_group' => ['policy_group.id', '=', 'policy_group_policies.policy_group_id']
+                ],
+                'con_name' => 'policy_groups',
+                'except_deleted' => false,
+            ],
+        ];
+        $breaks = $this->common->commonGetAll($table, '*', [], [], false, $connections);
+        return response()->json(['data' => $breaks], 200);
+    }
+
+    public function getBreakPolicyById($id){
+        $breaks = $this->common->commonGetById($id, 'id', 'break_policy', '*');
         return response()->json(['data' => $breaks], 200);
     }
 
@@ -43,7 +64,101 @@ class BreakPolicyController extends Controller
 
     public function createBreakPolicy(Request $request)
     {
-        
+        try {
+            return DB::transaction(function () use ($request) {
+                // Validate request
+                $request->validate([
+                    'name' => 'required|string|max:250',
+                    'type' => 'required|string',
+                    'auto_detect_type' => 'required|string',
+                    'include_break_punch_time' => 'nullable|boolean',
+                    'include_multiple_breaks' => 'nullable|boolean',
+                    'trigger_time' => 'nullable|integer',
+                    'amount' => 'nullable|integer',
+                    'start_window' => 'nullable|integer',
+                    'window_length' => 'nullable|integer',
+                    'minimum_punch_time' => 'nullable|integer',
+                    'maximum_punch_time' => 'nullable|integer',
+                ]);
+
+                $table = 'break_policy';
+                $inputArr = [
+                    'company_id' => 1, // Replace with dynamic company ID if applicable
+                    'name' => $request->name,
+                    'type' => $request->type,
+                    'auto_detect_type' => $request->auto_detect_type,
+                    'include_break_punch_time' => $request->include_break_punch_time ?? 0,
+                    'include_multiple_breaks' => $request->include_multiple_breaks ?? 0,
+                    'trigger_time' => $request->trigger_time,
+                    'amount' => $request->amount,
+                    'start_window' => $request->start_window,
+                    'window_length' => $request->window_length,
+                    'minimum_punch_time' => $request->minimum_punch_time,
+                    'maximum_punch_time' => $request->maximum_punch_time,
+                    'created_by' => Auth::user()->id,
+                    'updated_by' => Auth::user()->id,
+                ];
+
+                $breakPolicyId = $this->common->commonSave($table, $inputArr);
+
+                if ($breakPolicyId) {
+                    return response()->json(['status' => 'success', 'message' => 'Break policy created successfully', 'data' => ['id' => $breakPolicyId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed to create break policy', 'data' => []], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
+        }
+    }
+
+    public function updateBreakPolicy(Request $request, $id)
+    {
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                // Validate request
+                $request->validate([
+                    'name' => 'required|string|max:250',
+                    'type' => 'required|string',
+                    'auto_detect_type' => 'required|string',
+                    'include_break_punch_time' => 'nullable|boolean',
+                    'include_multiple_breaks' => 'nullable|boolean',
+                    'trigger_time' => 'nullable|integer',
+                    'amount' => 'nullable|integer',
+                    'start_window' => 'nullable|integer',
+                    'window_length' => 'nullable|integer',
+                    'minimum_punch_time' => 'nullable|integer',
+                    'maximum_punch_time' => 'nullable|integer',
+                ]);
+    
+                $table = 'break_policy';
+                $idColumn = 'id';
+                $inputArr = [
+                    'name' => $request->name,
+                    'type' => $request->type,
+                    'auto_detect_type' => $request->auto_detect_type,
+                    'include_break_punch_time' => $request->include_break_punch_time ?? 0,
+                    'include_multiple_breaks' => $request->include_multiple_breaks ?? 0,
+                    'trigger_time' => $request->trigger_time,
+                    'amount' => $request->amount,
+                    'start_window' => $request->start_window,
+                    'window_length' => $request->window_length,
+                    'minimum_punch_time' => $request->minimum_punch_time,
+                    'maximum_punch_time' => $request->maximum_punch_time,
+                    'updated_by' => Auth::user()->id,
+                ];
+    
+                $updatedId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+    
+                if ($updatedId) {
+                    return response()->json(['status' => 'success', 'message' => 'Break policy updated successfully', 'data' => ['id' => $updatedId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed to update break policy', 'data' => []], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
+        }
     }
 
 }
