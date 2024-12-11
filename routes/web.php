@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Attendance\AttendanceRequestsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,7 @@ use App\Http\Controllers\Attendance\TimeSheetController;
 // Payroll
 use App\Http\Controllers\Payroll\PayStubAccountController;
 use App\Http\Controllers\Payroll\PayStubAmendmentController;
+use App\Http\Controllers\Policy\CommonPolicyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -201,7 +203,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/allemplyee', [EmployeeBankDetailsController::class, 'getAllEmployee'])->name('company.employee.all');
 
 
-     //==============================================================================================================================
+    //==============================================================================================================================
     // Employee Messages
     //==============================================================================================================================
 
@@ -215,7 +217,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/sent/messages', [EmployeeMessagesController::class, 'getSentMessages'])->name('employee.messages.sent');
     Route::get('/employee/inbox/messages', [EmployeeMessagesController::class, 'getReceivedMessages'])->name('employee.messages.inbox');
     Route::delete('/employee/message/delete/{id}', [EmployeeMessagesController::class, 'deleteMessage'])->name('employee.message.delete');
-   
+
 
     //==============================================================================================================================
     // Currencies
@@ -248,7 +250,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/employee_work_experience/dropdown', [EmployeeWorkExperienceController::class, 'getEmployeeList'])->name('company.employee_work_experience.dropdown');
     Route::get('/company/employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getEmployeeWorkExperienceById'])->name('company.employee_work_experience.getById');
 
-    // Employee employee promotion  
+    // Employee employee promotion
     Route::get('/company/employee_promotion/index', [EmployeePromotionController::class, 'index'])->name('company.employee_promotion.index');
     Route::post('/company/employee_promotion/create', [EmployeePromotionController::class, 'createEmployeePromotion'])->name('company.employee_promotion.create');
     Route::put('/company/employee_promotion/update/{id}', [EmployeePromotionController::class, 'updateEmployeePromotion'])->name('company.employee_promotion.update');
@@ -293,7 +295,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
     // Payroll
     //==============================================================================================================================
-    
+
     //   Pay stub account
     Route::get('/payroll/pay_stub_account', [PayStubAccountController::class, 'index'])->name('payroll.pay_stub_account');
     Route::post('/payroll/pay_stub_account/create', [PayStubAccountController::class, 'createPayStubAccount'])->name('payroll.pay_stub_account.create');
@@ -301,7 +303,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/payroll/pay_stub_account/delete/{id}', [PayStubAccountController::class, 'deletePayStubAccount'])->name('payroll.pay_stub_account.delete');
     Route::get('/payroll/pay_stub_account/allPayStubAccount', [PayStubAccountController::class, 'getAllPayStubAccount'])->name('payroll.pay_stub_account.all');
     Route::get('/payroll/pay_stub_account/{id}', [PayStubAccountController::class, 'getPayStubAccountById'])->name('payroll.pay_stub_account.getById');
-    
+
 
      //   Pay stub amendment
      Route::get('/payroll/pay_stub_amendment', [PayStubAmendmentController::class, 'index'])->name('payroll.pay_stub_amendment');
@@ -312,7 +314,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
      Route::get('/payroll/pay_stub_amendment/dropdown', [PayStubAmendmentController::class, 'getDropdownList'])->name('company.pay_stub_amendment.dropdown');
      Route::get('/payroll/pay_stub_amendment/allPayStubAmendment', [PayStubAmendmentController::class, 'getAllPayStubAmendment'])->name('payroll.pay_stub_amendment.all');
      Route::get('/payroll/pay_stub_amendment/{id}', [PayStubAmendmentController::class, 'getPayStubAmendmentById'])->name('payroll.pay_stub_amendment.getById');
-     
+
     //==============================================================================================================================
     // Employee Job History
     //==============================================================================================================================
@@ -408,57 +410,20 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/overtime/dropdown', [OvertimePolicyController::class, 'getOvertimeDropdownData'])->name('policy.overtime.dropdown');
     Route::get('/policy/overtimes', [OvertimePolicyController::class, 'getAllOvertimePolicies'])->name('policy.overtimes.all');
     Route::delete('/policy/overtime/delete/{id}', [OvertimePolicyController::class, 'deleteOvertimePolicy'])->name('policy.overtime.delete');
-    Route::post('/policy/overtime/create', [OvertimePolicyController::class, 'createOvertimePolicy'])->name('policy.overtime.create');
-    Route::put('/policy/overtime/update/{id}', [OvertimePolicyController::class, 'updateOvertimePolicy'])->name('policy.overtime.update');
-    Route::get('/policy/overtime/{id}', [OvertimePolicyController::class, 'getOvertimePolicyById'])->name('policy.overtime.getById');
 
-    // premium policy
-    Route::get('/policy/premium', [PremiumPolicyController::class, 'index'])->name('policy.premium');
-    Route::get('/policy/premium/form', [PremiumPolicyController::class, 'form'])->name('policy.premium.form');
-    Route::get('/policy/premium/dropdown', [PremiumPolicyController::class, 'getPremiumDropdownData'])->name('policy.premium.dropdown');
-    Route::get('/policy/premiums', [PremiumPolicyController::class, 'getAllPremiumPolicies'])->name('policy.premiums.all');
-    Route::delete('/policy/premium/delete/{id}', [PremiumPolicyController::class, 'deletePremiumPolicy'])->name('policy.premium.delete');
-    Route::post('/policy/premium/create', [PremiumPolicyController::class, 'createPremiumPolicy'])->name('policy.premium.create');
-    Route::put('/policy/premium/update/{id}', [PremiumPolicyController::class, 'updatePremiumPolicy'])->name('policy.premium.update');
-    Route::get('/policy/premium/{id}', [PremiumPolicyController::class, 'getPremiumPolicyById'])->name('policy.premium.getById');
 
-    // holiday policy
-    Route::get('/policy/holiday', [HolidayPolicyController::class, 'index'])->name('policy.holiday');
-    Route::get('/policy/holiday/form', [HolidayPolicyController::class, 'form'])->name('policy.holiday.form');
-    Route::get('/policy/holiday/dropdown', [HolidayPolicyController::class, 'getHolidayDropdownData'])->name('policy.holiday.dropdown');
-    Route::get('/policy/holidays', [HolidayPolicyController::class, 'getAllHolidayPolicies'])->name('policy.holidays.all');
-    Route::delete('/policy/holiday/delete/{id}', [HolidayPolicyController::class, 'deleteHolidayPolicy'])->name('policy.holiday.delete');
-    Route::post('/policy/holiday/create', [HolidayPolicyController::class, 'createHolidayPolicy'])->name('policy.holiday.create');
-    Route::put('/policy/holiday/update/{id}', [HolidayPolicyController::class, 'updateHolidayPolicy'])->name('policy.holiday.update');
-    Route::get('/policy/holiday/{id}', [HolidayPolicyController::class, 'getHolidayPolicyById'])->name('policy.holiday.getById');
+    //==============================================================================================================================
+    // Attendance Requests
+    //==============================================================================================================================
 
-    // absence policy
-    Route::get('/policy/absence', [AbsencePolicyController::class, 'index'])->name('policy.absence');
-    Route::get('/policy/absence/dropdown', [AbsencePolicyController::class, 'getAbsenceDropdownData'])->name('policy.absence.dropdown');
-    Route::get('/policy/absences', [AbsencePolicyController::class, 'getAllAbsencePolicies'])->name('policy.absences.all');
-    Route::delete('/policy/absence/delete/{id}', [AbsencePolicyController::class, 'deleteAbsencePolicy'])->name('policy.absence.delete');
-    Route::post('/policy/absence/create', [AbsencePolicyController::class, 'createAbsencePolicy'])->name('policy.absence.create');
-    Route::put('/policy/absence/update/{id}', [AbsencePolicyController::class, 'updateAbsencePolicy'])->name('policy.absence.update');
-    Route::get('/policy/absence/{id}', [AbsencePolicyController::class, 'getAbsencePolicyById'])->name('policy.absence.getById');
+    Route::get('/attendance/requests', [AttendanceRequestsController::class, 'index'])->name('attendance.requests.index');
+    Route::get('/attendance/requests/dropdown', [AttendanceRequestsController::class, 'getRequestDropdownData'])->name('attendance.requests.dropdown');
+    Route::get('/attendance/allrequests', [AttendanceRequestsController::class, 'getAllAttendenceRequests'])->name('attendance.requests.all');
+    Route::get('/attendance/requests/{id}', [AttendanceRequestsController::class, 'getRequestsByControlId'])->name('attendance.requests.getById');
+    Route::post('/attendance/requests/create', [AttendanceRequestsController::class, 'createAttendenceRequests'])->name('attendance.requests.create');
+    Route::delete('/attendance/requests/delete/{id}', [AttendanceRequestsController::class, 'deleteAttendenceRequests'])->name('attendance.requests.delete');
 
-    // schedule policy
-    Route::get('/policy/schedule', [SchedulePolicyController::class, 'index'])->name('policy.schedule');
-    Route::get('/policy/schedule/dropdown', [SchedulePolicyController::class, 'getScheduleDropdownData'])->name('policy.schedule.dropdown');
-    Route::get('/policy/schedules', [SchedulePolicyController::class, 'getAllSchedulePolicies'])->name('policy.schedules.all');
-    Route::delete('/policy/schedule/delete/{id}', [SchedulePolicyController::class, 'deleteSchedulePolicy'])->name('policy.schedule.delete');
-    Route::post('/policy/schedule/create', [SchedulePolicyController::class, 'createSchedulePolicy'])->name('policy.schedule.create');
-    Route::put('/policy/schedule/update/{id}', [SchedulePolicyController::class, 'updateSchedulePolicy'])->name('policy.schedule.update');
-    Route::get('/policy/schedule/{id}', [SchedulePolicyController::class, 'getSchedulePolicyById'])->name('location.schedule.getById');
 
-    // policy groups
-    Route::get('/policy/policy_group', [PolicyGroupsController::class, 'index'])->name('policy.policy_group');
-    Route::get('/policy/policy_group/form', [PolicyGroupsController::class, 'form'])->name('policy.policy_group.form');
-    Route::get('/policy/policy_group/dropdown', [PolicyGroupsController::class, 'getPolicyGroupDropdownData'])->name('policy.policy_group.dropdown');
-    Route::get('/policy/policy_groups', [PolicyGroupsController::class, 'getAllPolicyGroups'])->name('policy.policy_groups.all');
-    Route::delete('/policy/policy_group/delete/{id}', [PolicyGroupsController::class, 'deletePolicyGroup'])->name('policy.policy_group.delete');
-    Route::post('/policy/policy_group/create', [PolicyGroupsController::class, 'createPolicyGroup'])->name('policy.policy_group.create');
-    Route::put('/policy/policy_group/update/{id}', [PolicyGroupsController::class, 'updatePolicyGroup'])->name('policy.policy_group.update');
-    Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.policy_group.getById');
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page
