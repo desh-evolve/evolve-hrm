@@ -36,10 +36,18 @@ class CommonModel extends Model
             $query->leftJoin($joinTable, $on[0], $on[1], $on[2]);
         }
 
-        foreach ($whereArr as $whereCol => $whereVal) {
-            $query->where($whereCol, $whereVal);
-        }
+        foreach ($whereArr as $key => $value) {
 
+            if (is_array($value)) {
+                // Handle SQL functions with whereRaw
+                $q = "{$value[0]} {$value[1]} $value[2]";
+                $query->whereRaw($q);
+            } elseif (is_string($key)) {
+                // Associative array: Handle key-value pairs
+                $query->where($key, '=', $value);
+            }
+        }
+       
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
             $query->whereRaw($statusCondition);
@@ -96,9 +104,15 @@ class CommonModel extends Model
             $query->leftJoin($joinTable, $on[0], $on[1], $on[2]);
         }
 
-        foreach ($whereArr as $whereCol => $whereVal) {
-            $query->where($whereCol, $whereVal);
-        }
+        foreach ($whereArr as $key => $value) {
+            if (is_array($value)) {
+                // Use whereRaw for conditions with SQL functions
+                $query->whereRaw("{$value[0]} {$value[1]} ?", [$value[2]]);
+            } else {
+                // Associative array: Use default operator '='
+                $query->where($key, '=', $value);
+            }
+        }            
 
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
