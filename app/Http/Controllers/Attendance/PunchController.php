@@ -258,6 +258,23 @@ class PunchController extends Controller
         ], 200);
     }
 
+    public function getPunchesByEmployeeIdAndStartDateAndEndDate($employeeId, $startDate, $endDate){
+        $table = 'punch';
+        $fields = ['*'];
+        $joinArr = [
+            'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
+            'employee_date' => ['employee_date.id', '=', 'punch_control.employee_date_id'],
+        ];
+        $whereArr = [
+            ['employee_date.employee_id', '=', $employeeId],
+            ['DATE(punch.time_stamp)', '>=', '"'.$startDate.'"'],
+            ['DATE(punch.time_stamp)', '<=', '"'.$endDate.'"'],
+        ];
+    
+        $punches = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr);
+        return $punches->toArray();
+    }
+
     // public function getSingleEmployeePunch($id)
     // {
     //     $idColumn = 'punch.id';

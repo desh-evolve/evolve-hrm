@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
 
-class EmployeePromotionController extends Controller
+class EmployeePreferencesController extends Controller
 {
     private $common = null;
 
@@ -24,6 +24,9 @@ class EmployeePromotionController extends Controller
         $this->common = new CommonModel();
     }
 
-    
+    public function getEmployeePreferencesByEmployeeId($employee_id){
+        $ep = $this->common->commonGetById($employee_id, 'employee_id', 'emp_preference', '*');
+        return $ep;
+    }
 
 }
