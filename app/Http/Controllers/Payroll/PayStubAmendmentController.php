@@ -37,60 +37,6 @@ class PayStubAmendmentController extends Controller
     {
         return view('payroll.pay_stub_amendment.form');
     }
-    // public function createPayStubAmendment(Request $request)
-    // {
-    //     try {
-    //         return DB::transaction(function () use ($request) {
-    //             // $request->validate([
-    //             //     'pay_stub_entry_name_id' => 'required',
-    //             //     'name' => 'required',
-    //             //     'ps_order' => 'required',
-    //             //     'authorized' => 'required',
-    //             //     'ytd_adjustment' => 'nullable',
-    //             //     'type' => 'nullable',
-    //             //     'employee_ids' => 'nullable|json',
-    //             // ]);
-
-    //             if (!empty($request->employee_ids)) {
-    //                 $empIds = json_decode($request->employee_ids, true);
-    //                 if (is_array($empIds)) {
-    //                     foreach ($empIds as $empId) {
-
-    //                         $payAtubAmendInput = [
-    //                             'employee_id' => $empId, // Replace with dynamic company ID
-    //                             'pay_stub_entry_name_id' => $request->pay_stub_entry_name_id,
-    //                             'effective_date' => $request->effective_date,
-    //                             'rate' => $request->rate,
-    //                             'units' => $request->units,
-    //                             'amount' => $request->amount,
-    //                             'description' => $request->description,
-    //                             'recurring_ps_amendment_id' => $request->recurring_ps_amendment_id,
-    //                             'ytd_adjustment' => $request->ytd_adjustment,
-    //                             'type' => $request->type,
-    //                             'percent_amount' => $request->percent_amount,
-    //                             'percent_amount_entry_name_id' => $request->percent_amount_entry_name_id,
-    //                             'status' => $request->pay_stub_amendment_status,
-    //                             'created_by' => Auth::user()->id,
-    //                             'updated_by' => Auth::user()->id,
-    //                         ];
-
-    //                         // Insert into `policy_group`
-    //                         $payAtubAmendId = $this->common->commonSave('pay_stub_amendment', $payAtubAmendInput); 
-
-    //                     }
-    //                 }
-    //             }
-
-    //             if ($payAtubAmendId) {
-    //                 return response()->json(['status' => 'success', 'message' => 'Family Detail  added successfully', 'data' => ['id' => $payAtubAmendId]], 200);
-    //             } else {
-    //                 return response()->json(['status' => 'error', 'message' => 'Failed adding Family Detail', 'data' => []], 500);
-    //             }
-    //         });
-    //     } catch (\Exception $e) {
-    //         return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage()], 500);
-    //     }
-    // }
 
     public function createPayStubAmendment(Request $request)
     {
