@@ -1,7 +1,7 @@
 <x-app-layout :title="'Input Example'">
 
     <style>
-        td{
+        th, td{
            padding: 2px 10px !important; 
         }
         
@@ -140,6 +140,17 @@
                                     <td></td>
                                     <td></td>
                                 </tr>
+                                <tr>
+                                    <td colspan="8" class="text-center bg-success text-white">
+                                        <strong>Pay Period: </strong>
+                                        @if(count($payPeriod) > 0)
+                                            {{ date('Y-m-d', strtotime($payPeriod[0]->start_date)) }} to 
+                                            {{ date('Y-m-d', strtotime($payPeriod[0]->end_date)) }}
+                                        @else
+                                            NONE
+                                        @endif
+                                    </td>                                                                       
+                                </tr> 
                             </tbody>
                         </table>
                     </div>
@@ -216,6 +227,12 @@
     <script>
         let dropdownData = [];
 
+        const filterData = @json($filterData);
+        const payPeriod = @json($payPeriod);
+        const empPref = @json($empPref);
+
+        console.log("empPref Data:", empPref);
+
         $(document).ready(function(){
             getDropdownDataFunc();
         })
@@ -223,7 +240,6 @@
         async function getDropdownDataFunc(){
             try {
                 dropdownData = await commonFetchData('/employee/timesheet/dropdown');
-
 
                 branches = dropdownData.branches.length > 0 && dropdownData.branches.map(e => `<option value="${e.id}">${e.branch_name}</option>`).join('');
                 departments = dropdownData.departments.length > 0 && dropdownData.departments.map(e => `<option value="${e.id}">${e.department_name}</option>`).join('');
@@ -234,7 +250,7 @@
                 $('#branch_filter').append(departments);
                 $('#department_filter').append(employee_groups);
                 $('#employee_filter').append(employees);
-                console.log('dropdownData', dropdownData)
+                
             }catch(error){
                 console.error('error at attendance->timesheet->index->getDropdownDataFunc: ', error);
             } 

@@ -25,9 +25,62 @@ class TimeSheetController extends Controller
         $this->common = new CommonModel();
     }
 
+    /*
     public function index()
     {
+
         return view('attendance.timesheet.index');
+    }
+    */
+
+    public function index(Request $request)
+    {
+        $currentUser = Auth::user();
+        $filterData = $request->input('filter_data', [
+            'employee_id' => $currentUser->id,
+            'date' => '2024-12-11',
+            'group_ids' => -1,
+            'branch_ids' => -1,
+            'department_ids' => -1,
+        ]);
+
+
+        $payPeriod = $this->getCurrentPayPeriod($filterData['employee_id'], $filterData['date']);
+        $empPref = $this->getEmployeePreferences(Auth::user()->id);
+
+        //$punches = $this->getTimesheetData($userId, $startDate, $endDate);
+        //$payPeriod = $this->getCurrentPayPeriod($filterData['employee_id'], $filterData['date']);
+        //$users = $this->getUserData($filterData['employee_id'], $currentUser->company_id);
+
+        return view('attendance.timesheet.index', compact('payPeriod', 'empPref', 'filterData'));
+    }
+
+    private function getCurrentPayPeriod($employee_id, $date)
+    {
+        $fields = ['*'];
+        $joinArr = [
+            'pay_period_schedule' => ['pay_period_schedule.id', '=', 'pay_period.pay_period_schedule_id'],
+            'pay_period_schedule_employee' => ['pay_period_schedule_employee.pay_period_schedule_id', '=', 'pay_period_schedule.id']
+        ];
+
+        $whereArr = [
+            ['DATE(pay_period.start_date)', '<=', '"'.$date.'"'],
+            ['DATE(pay_period.end_date)', '>=', '"'.$date.'"'],
+            ['pay_period_schedule_employee.employee_id', '=', $employee_id],
+            ['pay_period_schedule.status', '=', '"active"'],
+        ];
+
+        // Fetch the pay period data
+        $pp = $this->common->commonGetAll('pay_period', $fields, $joinArr, $whereArr, true);
+
+        // Return the result (can be empty if no records are found)
+        return $pp;
+    }
+
+    private function getEmployeePreferences($employee_id){
+        $ep = $this->common->commonGetById($employee_id, 'employee_id', 'emp_preference', '*');
+
+        return $ep;
     }
 
     public function getDropdownData(){
@@ -57,9 +110,9 @@ class TimeSheetController extends Controller
                 'branches' => $branches,
                 'departments' => $departments,
                 'employee_groups' => $employee_groups,
-                'employees' => $employees,
+                'employees' => $employees, //should be filtered by hierarchy
             ]
         ], 200);
     }
-
+    
 }
