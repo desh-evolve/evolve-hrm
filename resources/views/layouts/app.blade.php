@@ -127,10 +127,7 @@
 
         </div>
 
-        <!-- common functions -->
-        @include('layouts.common');
-        @include('layouts.calculations');
-        @include('components.hrm.multiselect');
+        
 
         <!--start back-to-top
         <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
@@ -302,5 +299,10 @@
             */
 
         </script>
+
+        <!-- common functions -->
+        @include('layouts.common');
+        @include('layouts.calculations');
+        @include('components.hrm.multiselect');
     </body>
 </html>
