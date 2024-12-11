@@ -91,7 +91,6 @@ class CommonModel extends Model
                 $res->$con_name = $con_query->get();
             }
         }
-
         return $results;
     }
 
