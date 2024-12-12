@@ -43,7 +43,7 @@
                             </div>
 
                             <div class="col-lg-10">
-                                <select class="form-select form-select-sm" id="employee_id" >
+                                <select class="form-select" id="employee_id" >
 
                                 </select>
                             </div>
@@ -88,29 +88,36 @@
                 <h5 class="modal-title">Edit Request</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div id="compose-body" class="row">
 
-                    <div class="col-xxl-12 col-md-12 mb-3">
+            {{-- Alert Message --}}
+            <div class="alert alert-warning alert-dismissible" id="warning_alert" style="display: none;">
+
+            </div>
+
+
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="mb-3">
                         <label for="employee_name" class="form-label mb-1">Employee Name</label>
                         <input type="text" class="form-control" id="employee_name" value="" disabled>
                         <input type="hidden" class="form-control" id="employee_id" value="" disabled>
                     </div>
 
-                    <div class="col-xxl-6 col-md-4 mb-3">
-                        <label for="Type_name" class="form-label mb-1 req">Type</label>
-                        <select class="form-select" id="Type_name" >
+                    <div class="col-xxl-6 col-md-6 mb-3">
+                        <label for="type_id" class="form-label mb-1 req">Type</label>
+                        <select class="form-select" id="type_id" >
                             <option value=""></option>
                         </select>
                     </div>
 
                     <div class="col-xxl-6 col-md-6 mb-3">
-                        <label for="employee_date" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="employee_date" value="">
+                        <label for="employee_date_id" class="form-label req">Date</label>
+                        <input type="date" class="form-control" id="employee_date_id" value="">
                     </div>
 
                     <div class="col-xxl-12 col-md-12 mb-2">
-                        <textarea class="form-control" id="description" rows="15"></textarea>
+                        <textarea class="form-control" id="description" rows="8"></textarea>
                     </div>
                 </div>
 
@@ -118,7 +125,7 @@
                 <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                     <input type="hidden" id="request_id" value=""></button>
                     <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn w-sm btn-success" id="message-send-confirm">Send</button>
+                    <button type="button" class="btn w-sm btn-success" id="request-send-confirm">Send</button>
                 </div>
             </div>
         </div>
@@ -137,12 +144,16 @@
 //======================================================================================================
 let employee_Id = '';
 
-let dropdownData = [];
+let dropdownCache = [];
+
+// Get today's date
+let today = new Date().toISOString().split('T')[0];
 
 
     $(document).ready(async function(){
-            await getDropdownData();
+        await getDropdownData();
 
+        $('#add_request').prop('disabled', true); // Disable Addnew button
 
 
         // Get employee data when selecting employee name
@@ -152,8 +163,15 @@ let dropdownData = [];
             $('#employee_name').val(employeeName);
             $('#employee_id').val(employee_Id);
 
-            if (employee_Id === "") {
+            // Enable button if employee is selected
+            if (employee_Id) {
+                $('#add_request').prop('disabled', false);
+            } else {
+                $('#add_request').prop('disabled', true);
+            }
 
+            // Render the table if employee is selected
+            if (employee_Id === "") {
                 $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
                 $('#employee_name').val('');
                 $('#employee_id').val('');
@@ -166,7 +184,6 @@ let dropdownData = [];
          //render table using employee Id
         async function renderRequestTable(){
             let list = '';
-
             const requests = await commonFetchData(`/employee/requests/${employee_Id}`);
 
             if(requests && requests.length > 0){
@@ -192,7 +209,6 @@ let dropdownData = [];
                 list = '<tr><td colspan="8" class="text-center text-danger">No Request Found!</td></tr>';
             }
 
-
             $('#table_body').html(list);
         }
 
@@ -202,21 +218,20 @@ let dropdownData = [];
 
         async function getDropdownData() {
             try {
-              let dropdownData = await commonFetchData('/attendance/requests/dropdown');
+              let dropdownCache = await commonFetchData('/attendance/requests/dropdown');
 
                 // Populate employee name dropdown
-                let employeeList = (dropdownData?.employees || [])
+                let employeeList = (dropdownCache?.employees || [])
                     .map(employee => `<option value="${employee.id}">${employee.name_with_initials}</option>`)
                     .join('');
                 $('#employee_id').html('<option value="">Select Employee Name</option>' + employeeList);
 
                 // Populate message type dropdown
-                let typeList = (dropdownData?.types || [])
-                    .filter(type => type.name !== 'Email') // Exclude 'email' type
-                    .map(type => `<option value="${type.id}">${type.name}</option>`)
+                let typeList = (dropdownCache?.types || [])
+                    .filter(type => type.type_category === 'request')
+                    .map(type => `<option value="${type.id}">${type.type_name}</option>`)
                     .join('');
-                $('#Type_name').html('<option value="">Select Type</option>' + typeList);
-
+                $('#type_id').html('<option value="">Select Type</option>' + typeList);
 
             } catch (error) {
                 console.error('Error fetching dropdown data:', error);
@@ -224,39 +239,99 @@ let dropdownData = [];
         }
 
 
-    // open compose modal
-    $(document).on('click', '#add_request', async function(){
-        resetForm(); //reset
+//======================================================================================================
+// ADD NEW REQUEST
+//======================================================================================================
 
-        //show modal
-        $('#request-modal').modal('show');
-    })
+        $(document).on('click', '#add_request', async function(){
+            resetForm();
+            $('#request-modal').modal('show');
+        })
 
 
-    $(document).ready(function () {
-        // Get today's date in the format 'YYYY-MM-DD'
-        let today = new Date().toISOString().split('T')[0];
+        $(document).on('click', '#request-send-confirm', async function () {
+            const createUrl = `/attendance/requests/create`;
 
-        // Set the value of the input field with id 'employee_date' to today's date
-        $('#employee_date').val(today);
+            const type = $('#type_id').val();
+            const description = $('#description').val();
+            const date = $('#employee_date_id').val();
+
+            const formData = new FormData();
+            let missingFields = [];
+
+            // Check for missing fields
+            if (!type) missingFields.push('Type');
+            if (!description) missingFields.push('Description');
+            if (!date) missingFields.push('Date');
+
+            if (missingFields.length > 0) {
+                $('#error-msg').html(
+                    `<p class="text-danger">The following fields are required: ${missingFields.join(', ')}.</p>`
+                );
+                return;
+            } else {
+                $('#error-msg').html('');
+            }
+
+            formData.append('employee_id', employee_Id);
+            formData.append('type_id', type);
+            formData.append('description', description);
+            formData.append('employee_date_id', date);
+
+            try {
+                const res = await commonSaveData(createUrl, formData, 'POST');
+
+                if (res && res.status === 'success') {
+                    await commonAlert(res.status, res.message);
+
+                    $('#request-modal').modal('hide');
+                    $('#warning_alert').hide();
+                } else if (res && res.status === 'error') {
+                    if (res.message === 'No matching record found for the employee and date.') {
+
+                        // Append the error message into the warning alert
+                        $('#warning_alert').html(`
+                            <button type="button" class="btn-close" aria-label="Close"></button>
+                            <strong>Warning! </strong> ${res.message}
+                        `).show();
+
+                    } else {
+                        // For other error messages
+                        $('#error-msg').html(`<p class="text-danger">${res.message}</p>`);
+                    }
+                } else {
+                    const errorMessage = res && res.message ? res.message : 'An unexpected error occurred.';
+                    $('#error-msg').html(`<p class="text-danger">${errorMessage}</p>`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+            }
+        });
+
+
+        // Reset alert visibility when the close button is clicked
+        $(document).on('click', '#warning_alert .btn-close', function () {
+            $('#warning_alert').hide();
+        });
+
+
+
     });
 
-
-
-});
 
 
 //reset function
 function resetForm() {
 
     $('#request_id').val('');
-    $('#Type_name').val('');
-    $('#employee_date').val('');
+    $('#type_id').val('');
+    $('#employee_date_id').val(today);
     $('#description').val('');
-    $('#compose-error-msg').html('');
+    $('#error-msg').html('');
+    $('#warning_alert').hide();
 
 }
-
 
 
 

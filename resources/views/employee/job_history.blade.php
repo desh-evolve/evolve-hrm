@@ -43,7 +43,7 @@
                             </div>
 
                             <div class="col-lg-10">
-                                <select class="form-select form-select-sm" id="employee_id" >
+                                <select class="form-select" id="employee_id" >
 
                                 </select>
                             </div>
@@ -169,17 +169,26 @@ let dropdownData = [];
         $(document).ready(async function(){
             await getDropdownData();
 
+            $('#add_new_btn').prop('disabled', true); // Disable Addnew button
+
         });
 
         // Get employee data when selecting employee name
                 $(document).on('change', '#employee_id', async function () {
-                        employee_Id = $(this).val();
-                        let employeeName = $('#employee_id option:selected').text();
-                        $('#employee_name').val(employeeName);
-                        $('#employee_id').val(employee_Id);
+                    employee_Id = $(this).val();
+                    let employeeName = $('#employee_id option:selected').text();
+                    $('#employee_name').val(employeeName);
+                    $('#employee_id').val(employee_Id);
+
+                    // Enable button if employee is selected
+                    if (employee_Id) {
+                        $('#add_new_btn').prop('disabled', false);
+                    } else {
+                        $('#add_new_btn').prop('disabled', true);
+                    }
+
 
                     if (employee_Id === "") {
-
                         $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
                         $('#employee_name').val('');
                         $('#employee_id').val('');
