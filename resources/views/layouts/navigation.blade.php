@@ -96,14 +96,9 @@
                 @endphp
 
                 <li class="nav-item">
-                    <a
-                        class="nav-link menu-link {{ $checkPolicyNav ? 'active' : '' }}"
-                        href="#policyMultiLevel"
-                        data-bs-toggle="collapse"
-                        role="button"
-                        aria-expanded="{{ $checkPolicyNav ? 'true' : 'false' }}"
-                        aria-controls="policyMultiLevel"
-                    >
+                    <a class="nav-link menu-link {{ $checkPolicyNav ? 'active' : '' }}" href="#policyMultiLevel"
+                        data-bs-toggle="collapse" role="button"
+                        aria-expanded="{{ $checkPolicyNav ? 'true' : 'false' }}" aria-controls="policyMultiLevel">
                         <i class="ri-file-paper-line"></i> <span>Policies</span>
                     </a>
                     <div class="collapse menu-dropdown {{ $checkPolicyNav ? 'show' : '' }}" id="policyMultiLevel">
@@ -198,7 +193,8 @@
                                     Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('employee.messages.index') }}" class="nav-link {{ request()->routeIs('employee.messages.index') ? 'active' : '' }}">
+                                <a href="{{ route('employee.messages.index') }}"
+                                    class="nav-link {{ request()->routeIs('employee.messages.index') ? 'active' : '' }}">
                                     Employee Messages
                                 </a>
                             </li>
@@ -276,8 +272,12 @@
                                     class="nav-link {{ request()->routeIs('payroll.pay_stub_amendment') ? 'active' : '' }}">Pay
                                     Stub Amendment</a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Pay Period Schedule</a></li>
 
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.pay_period_schedule') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay
+                                    Period Schedule</a>
+                            </li>
                             <li class="nav-item">
                                 <a href="{{ route('payroll.pay_stub_account') }}"
                                     class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay

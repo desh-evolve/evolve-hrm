@@ -36,39 +36,66 @@ class PayPeriodScheduleController extends Controller
 
     public function getPayPeriodScheduleDropdownData()
     {
-        $time_zoness = $this->common->commonGetAll('time_zones', ['value as id', 'name']);
+        $time_zones = $this->common->commonGetAll('time_zones', ['value as id', 'name']);
         $employees = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
 
         //type => create table
         $type = [
-            [ 'id' => 1, 'name' => 'Manual', 'value' => 'manual'],
-            [ 'id' => 2, 'name' => 'Weekly(52/year)', 'value' => 'weekly'],
-            [ 'id' => 3, 'name' => 'Bi-Weekly (26/year)', 'value' => 'bi-weekly'],
-            [ 'id' => 4, 'name' => 'Semi-Monthly (24/year)', 'value' => 'semi-monthly'],
-            [ 'id' => 5, 'name' => 'Monthly (12/year)', 'value' => 'monthly'],
+            ['id' => 1, 'name' => 'Manual', 'value' => 'manual'],
+            ['id' => 2, 'name' => 'Weekly(52/year)', 'value' => 'weekly'],
+            ['id' => 3, 'name' => 'Bi-Weekly (26/year)', 'value' => 'bi-weekly'],
+            ['id' => 4, 'name' => 'Semi-Monthly (24/year)', 'value' => 'semi-monthly'],
+            ['id' => 5, 'name' => 'Monthly (12/year)', 'value' => 'monthly'],
         ];
         //Assign Shifts To => create table
         $assign_shift_to = [
-            [ 'id' => 1, 'name' => 'Day They Start On', 'value' => 'day-they-start-on'],
-            [ 'id' => 2, 'name' => 'Day They End On', 'value' => 'day-they-end-on'],
-            [ 'id' => 3, 'name' => 'Day w/Most Time Worked', 'value' => 'day-w/most-time-worked'],
-            [ 'id' => 4, 'name' => 'Each Day (Split at Midnight)', 'value' => 'day-each'],
+            ['id' => 1, 'name' => 'Day They Start On', 'value' => 'day-they-start-on'],
+            ['id' => 2, 'name' => 'Day They End On', 'value' => 'day-they-end-on'],
+            ['id' => 3, 'name' => 'Day w/Most Time Worked', 'value' => 'day-w/most-time-worked'],
+            ['id' => 4, 'name' => 'Each Day (Split at Midnight)', 'value' => 'day-each'],
         ];
         //Timesheet verify on => create table
         $timesheet_verify_on = [
-            [ 'id' => 1, 'name' => 'Disabled', 'value' => 'disabled'],
-            [ 'id' => 2, 'name' => 'Employee Only', 'value' => 'employee-only'],
-            [ 'id' => 3, 'name' => 'Superior Only', 'value' => 'superior-only'],
-            [ 'id' => 4, 'name' => 'Employee & Superior', 'value' => 'employee-superior'],
+            ['id' => 1, 'name' => 'Disabled', 'value' => 'disabled'],
+            ['id' => 2, 'name' => 'Employee Only', 'value' => 'employee-only'],
+            ['id' => 3, 'name' => 'Superior Only', 'value' => 'superior-only'],
+            ['id' => 4, 'name' => 'Employee & Superior', 'value' => 'employee-superior'],
         ];
-  
+        $overtime_week = [
+            ['id' => 1, 'name' => 'Sunday-Saturday', 'value' => 'sun-sat'],
+            ['id' => 2, 'name' => 'Monday-Sunday', 'value' => 'mon-sun'],
+            ['id' => 3, 'name' => 'Tuesday-Monday', 'value' => 'tue-mon'],
+            ['id' => 4, 'name' => 'Wednesday-Tuesday', 'value' => 'wed-tue'],
+            ['id' => 5, 'name' => 'Thursday-Wednesday', 'value' => 'thu-wed'],
+            ['id' => 6, 'name' => 'Friday-Thursday', 'value' => 'fri-thu'],
+            ['id' => 7, 'name' => 'Saturday-Friday', 'value' => 'sat-fri'],
+        ];
+        $start_day_of_week = [
+            ['id' => 1, 'name' => 'Sunday', 'value' => 'sun'],
+            ['id' => 2, 'name' => 'Monday', 'value' => 'mon'],
+            ['id' => 3, 'name' => 'Tuesday', 'value' => 'tue'],
+            ['id' => 4, 'name' => 'Wednesday', 'value' => 'wed'],
+            ['id' => 5, 'name' => 'Thursday', 'value' => 'thu'],
+            ['id' => 6, 'name' => 'Friday', 'value' => 'fri'],
+            ['id' => 7, 'name' => 'Saturday', 'value' => 'sat'],
+        ];
+        $transaction_date_bd = [
+            ['id' => 1, 'name' => 'No', 'value' => 'no'],
+            ['id' => 2, 'name' => 'Yes- Previous Business Day', 'value' => 'previous'],
+            ['id' => 3, 'name' => 'Yes- Next Business Day', 'value' => 'next'],
+            ['id' => 4, 'name' => 'Yes- Closest Business Day', 'value' => 'closest'],
+        ];
+
         return response()->json([
             'data' => [
-                'time_zoness' => $time_zoness,
+                'time_zones' => $time_zones,
                 'employees' => $employees,
-                'type' => $type, 
-                'assign_shift_to' => $assign_shift_to, 
-                'timesheet_verify_on' => $timesheet_verify_on, 
+                'type' => $type,
+                'assign_shift_to' => $assign_shift_to,
+                'timesheet_verify_on' => $timesheet_verify_on,
+                'overtime_week' => $overtime_week,
+                'start_day_of_week' => $start_day_of_week,
+                'transaction_date_bd' => $transaction_date_bd,
             ]
         ], 200);
     }
@@ -90,13 +117,7 @@ class PayPeriodScheduleController extends Controller
                 'except_deleted' => true,  // Filter out soft-deleted records
             ],
         ];
-        $joinsArr = [''];
-        $fields = ['pay_period_schedule.*', 'pay_period_schedule.id as id', 'com_wage_groups.wage_group_name' , 'com_wage_type.name as wage_type_name', 'com_wage_type.wage_type'];
-        // $joinsArr = [
-        //     'com_wage_groups' => ['com_wage_groups.id', '=', 'pay_period_schedule.wage_group_id'],
-        //     'com_wage_type' => ['com_wage_type.id', '=', 'pay_period_schedule.wage_type_id']
-        // ];
-        $pg = $this->common->commonGetById($id, 'id', 'pay_period_schedule',$fields, $joinsArr, [], false, $connections);
+        $pg = $this->common->commonGetById($id, 'id', 'pay_period_schedule', '*', [], [], false, $connections);
         return response()->json(['data' => $pg], 200);
     }
 
@@ -145,12 +166,12 @@ class PayPeriodScheduleController extends Controller
 
                     'primary_day_of_month' => $request->primary_day_of_month,
                     'primary_transaction_day_of_month' => $request->primary_transaction_day_of_month,
-                    
+
                     'secondary_day_of_month' => $request->secondary_day_of_month,
                     'secondary_transaction_day_of_month' => $request->secondary_transaction_day_of_month,
                     'transaction_date_bd' => $request->transaction_date_bd,
 
-                    
+
                     'status' => $request->pay_period_schedule_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
@@ -202,18 +223,18 @@ class PayPeriodScheduleController extends Controller
                     'transaction_date' => $request->transaction_date,
                     'transaction_date_bd' => $request->transaction_date_bd,
                     'anchor_date' => $request->anchor_date,
-                    
+
                     'timesheet_verify_before_end_date' => $request->timesheet_verify_before_end_date,
                     'timesheet_verify_before_transaction_date' => $request->timesheet_verify_before_transaction_date,
 
                     'primary_day_of_month' => $request->primary_day_of_month,
                     'primary_transaction_day_of_month' => $request->primary_transaction_day_of_month,
-                    
+
                     'secondary_day_of_month' => $request->secondary_day_of_month,
                     'secondary_transaction_day_of_month' => $request->secondary_transaction_day_of_month,
                     'transaction_date_bd' => $request->transaction_date_bd,
 
-                    
+
                     'status' => $request->pay_period_schedule_status,
 
                     'updated_by' => Auth::user()->id,
@@ -225,7 +246,7 @@ class PayPeriodScheduleController extends Controller
                 if (!$updated) {
                     return response()->json(['status' => 'error', 'message' => 'Failed to update pay period schedule'], 500);
                 }
-                
+
                 $this->savePayPeriodScheduleEmployees($id, $request);
 
                 return response()->json(['status' => 'success', 'message' => 'Policy group updated successfully', 'data' => ['id' => $id]], 200);
@@ -242,26 +263,6 @@ class PayPeriodScheduleController extends Controller
      * @param Request $request
      */
 
-    // private function savePayPeriodScheduleEmployees($payPeriodScheduleId, $request)
-    // {
-    //     if (!empty($request->employee_ids)) {
-    //         $empIds = json_decode($request->employee_ids, true);
-    //         if (is_array($empIds)) {
-    //             foreach ($empIds as $empId) {
-
-    //                 DB::table('pay_period_schedule_employee')
-    //                 ->where('pay_period_schedule_id', $payPeriodScheduleId)
-    //                 ->where('employee_id', $empId)
-    //                 ->delete();
-
-    //                 DB::table('pay_period_schedule_employee')->insert([
-    //                     'pay_period_schedule_id' => $payPeriodScheduleId,
-    //                     'employee_id' => $empId,
-    //                 ]);
-    //             }
-    //         }
-    //     }
-    // }
 
     private function savePayPeriodScheduleEmployees($payPeriodScheduleId, $request)
     {
