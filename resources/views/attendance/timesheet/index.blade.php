@@ -227,12 +227,6 @@
     <script>
         let dropdownData = [];
 
-        const filterData = @json($filterData);
-        const payPeriod = @json($payPeriod);
-        const empPref = @json($empPref);
-
-        console.log("empPref Data:", empPref);
-
         $(document).ready(function(){
             getDropdownDataFunc();
         })

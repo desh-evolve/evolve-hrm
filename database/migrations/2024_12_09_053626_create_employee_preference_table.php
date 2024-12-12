@@ -11,14 +11,14 @@ return new class extends Migration {
             $table->increments('id'); 
             $table->unsignedInteger('user_id'); 
             $table->unsignedInteger('employee_id'); 
-            $table->string('date_format', 250); 
-            $table->string('time_format', 250); 
+            $table->string('date_format', 250)->default('Y-m-d'); 
+            $table->string('time_format', 250)->default('h:i:s'); 
             $table->string('time_unit_format', 250);
             $table->string('time_zone', 250); 
             $table->unsignedInteger('items_per_page')->nullable(); 
             $table->unsignedInteger('timesheet_view')->nullable(); 
-            $table->unsignedInteger('start_week_day')->nullable(); 
-            $table->string('language', 5)->nullable(); 
+            $table->unsignedInteger('start_week_day')->nullable()->comment('1 = monday, 2 = tuesday, 3 = wednesday'); 
+            $table->string('language', 5)->default('eng')->nullable(); 
             $table->boolean('enable_email_notification_exception')->default(0); 
             $table->boolean('enable_email_notification_message')->default(0); 
             $table->boolean('enable_email_notification_home')->default(0); 
