@@ -6,6 +6,7 @@ use App\Models\CommonModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceRequestsController extends Controller
 {
@@ -15,7 +16,6 @@ class AttendanceRequestsController extends Controller
     {
         $this->middleware('permission:view attendance requests', ['only' => [
             'index',
-            'getAllAttendenceRequests',
             'getRequestsByControlId',
             'getEmployeeDropdownData',
 
@@ -54,29 +54,61 @@ class AttendanceRequestsController extends Controller
     }
 
 
-
     //pawanee(2024-12-09)
-    public function getAllAttendenceRequests()
+    public function getRequestsByControlId($employeeId)
     {
-       //
-    }
+        // Get the `id` from the `employee_date` table where `employee_id`
+        $employeeDateId = DB::table('employee_date')
+            ->where('employee_id', $employeeId)
+            ->value('id');
 
+        if (!$employeeDateId) {
+            return response()->json(['error' => 'No matching employee_date record found for the given employee_id'], 404);
+        }
 
-    //pawanee(2024-12-09)
-    public function getRequestsByControlId($id)
-    {
-        $idColumn = 'employee_id';
+        $idColumn = 'employee_date_id';
         $table = 'request';
-        $fields = ['request.*','branch_name', 'department_name', 'emp_designation_name'];
-        $joinArr = [
-            'com_branches'=>['com_branches.id', '=', 'emp_job_history.branch_id'],
-            'com_departments'=>['com_departments.id', '=', 'emp_job_history.department_id'],
-            'com_employee_designations'=>['com_employee_designations.id', '=', 'emp_job_history.designation_id'],
-
+        $fields = [
+            'request.*',
+            'object_type.name as type_name',
         ];
-        $request = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
-        return response()->json(['data' => $request], 200);
+
+        $joinArr = [
+            'object_type'=>['object_type.id', '=', 'request.type_id']
+        ];
+
+        $connections = [
+            // 'message_control' => [
+            //     'con_fields' => ['message_control.id AS message_control_id', 'messages.description AS request_status'], // Fields to fetch
+            //     'con_where' => ['message_control.ref_id' => 'id'], // Match request.id with message_control.request_id
+            //     'con_joins' => [
+            //         'messages' => ['messages.id', '=', 'message_control.message_id'], // Join messages using message_id
+            //     ],
+            //     'con_name' => 'status_details',
+            //     'except_deleted' => true, // Exclude deleted messages
+            // ],
+            'employee_date' => [
+                'con_fields' => ['date_stamp'], 
+                'con_where' => ['employee_date.id' => 'employee_date_id'],
+                'con_joins' => [],
+                'con_name' => 'date_details',
+                'except_deleted' => true,
+            ],
+        ];
+
+
+        try {
+            $attRequest = $this->common->commonGetById($employeeDateId, $idColumn, $table, $fields, $joinArr, [], true, $connections);
+
+            return response()->json(['data' => $attRequest], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching messages: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
+        }
+
     }
+
 
 
     //pawanee(2024-12-09)
@@ -122,48 +154,58 @@ class AttendanceRequestsController extends Controller
                     ->first();
 
                 if (!$typeData) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Invalid Type ID provided.',
-                    ], 200);
+                    return response()->json(['status' => 'error', 'message' => 'Invalid Type ID provided.',], 200);
                 }
 
-                $table2 = 'message_control';
-                $inputArr2 = [
-                    'type_id' => $typeData->id,
-                    'subject' => $typeData->name,
-                    'created_by' => Auth::user()->id,
-                    'updated_by' => Auth::user()->id,
-                ];
+                //ref type
+                $refType = 'request';
 
-                $insertId2 = $this->common->commonSave($table2, $inputArr2);
+
+                if ($insertId) {
+
+                    $table2 = 'message_control';
+                    $inputArr2 = [
+                        'type_id' => $typeData->id,
+                        'subject' => $typeData->name,
+                        'ref_type' => $refType, //ref type
+                        'ref_id' => $insertId, // Request ID from request table
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ];
+
+                    $insertId2 = $this->common->commonSave($table2, $inputArr2);
+                }
+
 
                 // Handle messages
                 if ($insertId2) {
 
                     $table3 = 'messages';
                     $inputArr3 = [
-                        'message_control_id' => $insertId2,
+                        'message_control_id' => $insertId2, // Message control ID from message_control table
                         'sender_id' => Auth::user()->id,
                         'description' => $request->description,
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ];
                     $messageId = $this->common->commonSave($table3, $inputArr3);
-
-                    // If employees are provided, handle message_employees
-                    if ($messageId) {
-
-                        $table4 = 'message_employees';
-                        $inputArr4 = [
-                            'message_id' => $messageId, // Message ID from messages table
-                            'received_id' => $request->employee_id, // Employee ID
-                            'created_by' => Auth::user()->id,
-                            'updated_by' => Auth::user()->id,
-                        ];
-                        $this->common->commonSave($table4, $inputArr4);
-                    }
                 }
+
+
+                // handle message_employees
+                if ($messageId) {
+
+                    $table4 = 'message_employees';
+                    $inputArr4 = [
+                        'message_id' => $messageId, // Message ID from messages table
+                        'received_id' => $request->employee_id, // Employee ID
+                        'created_by' => Auth::user()->id,
+                        'updated_by' => Auth::user()->id,
+                    ];
+                    $this->common->commonSave($table4, $inputArr4);
+                }
+
+
                 if ($insertId) {
                     return response()->json(['status' => 'success', 'message' => 'Request Sent successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
@@ -180,7 +222,7 @@ class AttendanceRequestsController extends Controller
     public function deleteAttendenceRequests($id)
     {
         $whereArr = ['id' => $id];
-        $title = 'Attendance Request';
+        $title = 'Request Status';
         $table = 'request';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);

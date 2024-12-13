@@ -152,8 +152,7 @@ let today = new Date().toISOString().split('T')[0];
 
     $(document).ready(async function(){
         await getDropdownData();
-
-        $('#add_request').prop('disabled', true); // Disable Addnew button
+        $('#add_request').prop('disabled', true);
 
 
         // Get employee data when selecting employee name
@@ -181,23 +180,25 @@ let today = new Date().toISOString().split('T')[0];
         });
 
 
-         //render table using employee Id
+        //render table using employee Id
         async function renderRequestTable(){
             let list = '';
-            const requests = await commonFetchData(`/employee/requests/${employee_Id}`);
+            const requests = await commonFetchData(`/attendance/requests/${employee_Id}`);
 
             if(requests && requests.length > 0){
                 requests.map((request, i) => {
+
+                    const date = request.date_details && request.date_details.length > 0
+                        ? request.date_details[0].date_stamp
+                        : 'N/A'; //if date_details is empty or undefined
+
                     list += `
                         <tr request_id="${request.id}">
                             <td>${i + 1}</td>
-                            <td>${request.employee_date_id}</td>
-                            <td>${request.type_id}</td>
-                            <td>${request.description}</td>
+                            <td>${date}</td>
+                            <td>${request.type_name}</td>
+                            <td>${request.description || 'No Status'}</td>
                             <td>
-                                <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit">
-                                    <i class="ri-pencil-fill"></i>
-                                </button>
                                 <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete">
                                     <i class="ri-delete-bin-fill"></i>
                                 </button>
@@ -211,6 +212,8 @@ let today = new Date().toISOString().split('T')[0];
 
             $('#table_body').html(list);
         }
+
+
 
 //======================================================================================================
 //get dropdown data
@@ -286,6 +289,8 @@ let today = new Date().toISOString().split('T')[0];
 
                     $('#request-modal').modal('hide');
                     $('#warning_alert').hide();
+                    renderRequestTable();
+
                 } else if (res && res.status === 'error') {
                     if (res.message === 'No matching record found for the employee and date.') {
 
@@ -314,6 +319,32 @@ let today = new Date().toISOString().split('T')[0];
         $(document).on('click', '#warning_alert .btn-close', function () {
             $('#warning_alert').hide();
         });
+
+//======================================================================================================
+// DELETE FUNCTION
+//======================================================================================================
+
+        $(document).on('click', '.click_delete', function() {
+            const $row = $(this).closest('tr');
+            const id = $row.attr('request_id');
+
+                deleteItem(id, $row);
+
+        });
+
+        async function deleteItem(id, $row) {
+            const url ='/attendance/requests/delete';
+            const title ='Request';
+            try {
+                        const res = await commonDeleteFunction(id, url, title, $row);
+                        if(res){
+                            renderRequestTable()
+                        }
+                    } catch (error) {
+                        console.error('Error deleting item:', error);
+                    }
+        }
+
 
 
 

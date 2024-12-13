@@ -278,7 +278,7 @@ let dropdownData = [];
 // DELETE FUNCTION
 //======================================================================================================
 
-$(document).on('click', '.click_delete', function() {
+    $(document).on('click', '.click_delete', function() {
         const $row = $(this).closest('tr');
         const id = $row.attr('jobhistory_id');
 
