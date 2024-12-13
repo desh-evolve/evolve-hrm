@@ -258,7 +258,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">
-                            <input type="hidden" id="holiday_policy_id" value="" />
+                            <input type="hidden" id="pay_period_schedule_id" value="" />
                             <button type="button" class="btn btn-primary" id="form_submit">Submit</button>
                         </div>
                     </form>
@@ -350,9 +350,11 @@
         $(document).on('click', '#form_submit', async function() {
 
             const pay_period_schedule_id = $('#pay_period_schedule_id').val();
+            console.log('pay_period_schedule_id',pay_period_schedule_id);
+            
 
             // Collect selected employee IDs from the multiSelector component
-            const selectedIds = $('#employeeContainer .selected-list option').map(function () {
+            const selectedIds = $('#employeeContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
 
@@ -419,6 +421,7 @@
 
 
         // ================================ Type change ====================================
+       
         $(document).on('change', '#type', function() {
 
             if ($(this).val() == 'manual') {
@@ -428,21 +431,21 @@
                 $('#always_show_section').hide();
                 $('#primary_section').hide();
                 $('#secondary_section').hide();
-            } else if ($(this).val() === 'weekly' || $(this).val() === 'bi-weekly') {
+            } else if ($(this).val() == 'weekly' || $(this).val() === 'bi-weekly') {
                 $('#transaction_date').closest('.row').show();
                 $('#start_day_of_week').closest('.row').show();
                 $('#annual_pay_periods').closest('.row').hide();
                 $('#always_show_section').show();
                 $('#primary_section').hide();
                 $('#secondary_section').hide();
-            } else if ($(this).val() === 'semi-monthly') {
+            } else if ($(this).val() == 'semi-monthly') {
                 $('#transaction_date').closest('.row').hide();
                 $('#start_day_of_week').closest('.row').hide();
                 $('#annual_pay_periods').closest('.row').hide();
                 $('#always_show_section').show();
                 $('#primary_section').show();
                 $('#secondary_section').show();
-            } else {
+            } else if ($(this).val() == 'monthly')  {
                 $('#transaction_date').closest('.row').hide();
                 $('#start_day_of_week').closest('.row').hide();
                 $('#annual_pay_periods').closest('.row').hide();
@@ -464,6 +467,72 @@
             }
         })
 
+        async function changeType(type) {
+
+            if (type == 'manual') {
+                $('#annual_pay_periods').closest('.row').show();
+                $('#start_day_of_week').closest('.row').hide();
+                $('#transaction_date').closest('.row').hide();
+                $('#always_show_section').hide();
+                $('#primary_section').hide();
+                $('#secondary_section').hide();
+            } else if (type == 'weekly' || type === 'bi-weekly') {
+                $('#transaction_date').closest('.row').show();
+                $('#start_day_of_week').closest('.row').show();
+                $('#annual_pay_periods').closest('.row').hide();
+                $('#always_show_section').show();
+                $('#primary_section').hide();
+                $('#secondary_section').hide();
+            } else if (type == 'semi-monthly') {
+                $('#transaction_date').closest('.row').hide();
+                $('#start_day_of_week').closest('.row').hide();
+                $('#annual_pay_periods').closest('.row').hide();
+                $('#always_show_section').show();
+                $('#primary_section').show();
+                $('#secondary_section').show();
+            } else if (type == 'monthly')  {
+                $('#transaction_date').closest('.row').hide();
+                $('#start_day_of_week').closest('.row').hide();
+                $('#annual_pay_periods').closest('.row').hide();
+                $('#always_show_section').show();
+                $('#primary_section').show();
+                $('#secondary_section').hide();
+            }
+        }
+        async function changeTimesheetVerifyType(data) {
+            console.log(type);
+
+            if (type == 'manual') {
+                $('#annual_pay_periods').closest('.row').show();
+                $('#start_day_of_week').closest('.row').hide();
+                $('#transaction_date').closest('.row').hide();
+                $('#always_show_section').hide();
+                $('#primary_section').hide();
+                $('#secondary_section').hide();
+            } else if (type == 'weekly' || type === 'bi-weekly') {
+                $('#transaction_date').closest('.row').show();
+                $('#start_day_of_week').closest('.row').show();
+                $('#annual_pay_periods').closest('.row').hide();
+                $('#always_show_section').show();
+                $('#primary_section').hide();
+                $('#secondary_section').hide();
+            } else if (type == 'semi-monthly') {
+                $('#transaction_date').closest('.row').hide();
+                $('#start_day_of_week').closest('.row').hide();
+                $('#annual_pay_periods').closest('.row').hide();
+                $('#always_show_section').show();
+                $('#primary_section').show();
+                $('#secondary_section').show();
+            } else if (type == 'monthly')  {
+                $('#transaction_date').closest('.row').hide();
+                $('#start_day_of_week').closest('.row').hide();
+                $('#annual_pay_periods').closest('.row').hide();
+                $('#always_show_section').show();
+                $('#primary_section').show();
+                $('#secondary_section').hide();
+            }
+        }
+
         async function getUpdateData(id) {
             try {
                 let response = await commonFetchData(`/payroll/pay_period_schedule/${id}`);
@@ -481,6 +550,8 @@
                 let rawDate = data.anchor_date;
                 let formattedDate = new Date(rawDate).toISOString().split('T')[0]; // 'YYYY-MM-DD'
                 $('#anchor_date').val(formattedDate);
+                
+                $('#pay_period_schedule_id').val(data.id);
                 // Populate form fields
                 $('#name').val(data.name || '');
                 $('#description').val(data.description || '');
@@ -490,7 +561,8 @@
                 $('#maximum_shift_time').val(data.maximum_shift_time || '');
                 $('#shift_assigned_day').val(data.shift_assigned_day || '');
                 $('#timesheet_verify_type').val(data.timesheet_verify_type || '');
-                $('#type').val(data.type || '');
+                // $('#type').val(data.type || '');
+                $('#type').val(data.type || '').trigger('change');
                 $('#start_day_of_week').val(data.start_day_of_week);
                 $('#transaction_date').val(data.transaction_date);
                 $('#transaction_date_bd').val(data.transaction_date_bd);
@@ -503,14 +575,17 @@
                 $('#transaction_date_bd').val(data.transaction_date_bd);
                 $('#pay_period_schedule_status').val(data.status);
 
-                employeeIds = data.employees.map(emp => emp.employee_id);
-                
-                // Initialize the multiSelector for employees
-                $('#employeeContainer').multiSelector({
-                    title: 'Employees',
-                    data: dropdownData?.employees || [],
-                    selectedIds: employeeIds,
-                });
+                // employeeIds = data.employees.map(emp => emp.employee_id);
+
+                // // Initialize the multiSelector for employees
+                // $('#employeeContainer').multiSelector({
+                //     title: 'Employees',
+                //     data: dropdownData?.employees || [],
+                //     selectedIds: employeeIds,
+                // });
+
+                await changeType($('#type').val());
+                await changeTimesheetVerifyType($('#timesheet_verify_type').val());
 
             } catch (error) {
                 console.error('Error fetching policy group data:', error);
