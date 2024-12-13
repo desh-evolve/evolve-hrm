@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Log;
 
 class AttendanceRequestsController extends Controller
 {
+
+    // not complete 
+
+
     private $common = null;
 
     public function __construct()
@@ -78,17 +82,17 @@ class AttendanceRequestsController extends Controller
         ];
 
         $connections = [
-            // 'message_control' => [
-            //     'con_fields' => ['message_control.id AS message_control_id', 'messages.description AS request_status'], // Fields to fetch
-            //     'con_where' => ['message_control.ref_id' => 'id'], // Match request.id with message_control.request_id
-            //     'con_joins' => [
-            //         'messages' => ['messages.id', '=', 'message_control.message_id'], // Join messages using message_id
-            //     ],
-            //     'con_name' => 'status_details',
-            //     'except_deleted' => true, // Exclude deleted messages
-            // ],
+            'message_control' => [
+                'con_fields' => ['message_control.id As control_id', 'messages.description AS request_status'],
+                'con_where' => ['message_control.ref_id' => 'id'], // Match request.id with message_control.request_id
+                'con_joins' => [
+                    'messages' => ['messages.message_control_id', '=', 'message_control.id'],
+                ],
+                'con_name' => 'status_details',
+                'except_deleted' => true,
+            ],
             'employee_date' => [
-                'con_fields' => ['date_stamp'], 
+                'con_fields' => ['date_stamp'],
                 'con_where' => ['employee_date.id' => 'employee_date_id'],
                 'con_joins' => [],
                 'con_name' => 'date_details',
@@ -108,6 +112,7 @@ class AttendanceRequestsController extends Controller
         }
 
     }
+
 
 
 

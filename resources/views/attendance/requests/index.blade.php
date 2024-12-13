@@ -188,16 +188,22 @@ let today = new Date().toISOString().split('T')[0];
             if(requests && requests.length > 0){
                 requests.map((request, i) => {
 
+                    //if status_details
+                    const status = request.status_details && request.status_details.length > 0
+                        ? request.status_details[0].request_status
+                        : 'Not Request Status';
+
+                    //if date_details 
                     const date = request.date_details && request.date_details.length > 0
                         ? request.date_details[0].date_stamp
-                        : 'N/A'; //if date_details is empty or undefined
+                        : 'N/A';
 
                     list += `
                         <tr request_id="${request.id}">
                             <td>${i + 1}</td>
                             <td>${date}</td>
                             <td>${request.type_name}</td>
-                            <td>${request.description || 'No Status'}</td>
+                            <td>${status}</td>
                             <td>
                                 <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete">
                                     <i class="ri-delete-bin-fill"></i>
