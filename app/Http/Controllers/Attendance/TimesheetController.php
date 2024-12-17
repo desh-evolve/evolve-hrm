@@ -686,7 +686,6 @@ class TimeSheetController extends Controller
 			foreach( $requests as $r_obj ) {
 				$user_date_stamp = strtotime( $r_obj->date_stamp );
 
-
 				$request_data_arr = array(
 				    'id' => $r_obj->id
 				);
@@ -707,9 +706,127 @@ class TimeSheetController extends Controller
 			}
 		}
 
-        // check here
+        // ==================================================================================================================
+        // Get Holidays
+        // ==================================================================================================================
 
-        
+        // ==================================================================================================================
+        // Get pay period locked days
+        // ==================================================================================================================
+
+        if ( isset($pay_period_obj) AND is_object($pay_period_obj) ) {
+			foreach( $calendar_array as $cal_arr ) {
+				if ( $cal_arr['epoch'] >= $pay_period_obj->getStartDate()
+						AND $cal_arr['epoch'] <= $pay_period_obj->getEndDate() ) {
+					//Debug::text('Current Pay Period: '. TTDate::getDate('DATE+TIME', $cal_arr['epoch'] ), __FILE__, __LINE__, __METHOD__,10);
+					$pay_period_locked_rows[$cal_arr['epoch']] = $pay_period_obj->getIsLocked();
+				} else {
+					//Debug::text('Diff Pay Period...', __FILE__, __LINE__, __METHOD__,10);
+					//FIXME: Add some caching here perhaps?
+					$pplf->getByUserIdAndEndDate( $user_id, $cal_arr['epoch'] );
+					if ( $pplf->getRecordCount() > 0 ) {
+						$tmp_pay_period_obj = $pplf->getCurrent();
+						$pay_period_locked_rows[$cal_arr['epoch']] = $tmp_pay_period_obj->getIsLocked();
+					} else {
+						//Debug::text('  Did not Found rows...', __FILE__, __LINE__, __METHOD__,10);
+						//Allow them to edit payperiods in future.
+						$pay_period_locked_rows[$cal_arr['epoch']] = FALSE;
+					}
+				}
+
+			}
+			unset($tmp_pay_period_obj);
+		}
+
+        // ==================================================================================================================
+        // Get TimeSheet verification
+        // ==================================================================================================================
+
+        if ( isset($pay_period_obj) AND is_object($pay_period_obj) ) {
+			$is_timesheet_superior = FALSE;
+			$pptsvlf = TTnew( 'PayPeriodTimeSheetVerifyListFactory' );
+			$pptsvlf->getByPayPeriodIdAndUserId( $pay_period_obj->getId(), $user_id );
+
+			if ( $pptsvlf->getRecordCount() > 0 ) {
+				$pptsv_obj = $pptsvlf->getCurrent();
+				$pptsv_obj->setCurrentUser( $current_user->getId() );
+			} else {
+				$pptsv_obj = $pptsvlf;
+				$pptsv_obj->setCurrentUser( $current_user->getId() );
+				$pptsv_obj->setUser( $user_id );
+				$pptsv_obj->setPayPeriod( $pay_period_obj->getId() );
+				//$pptsv_obj->setStatus( 45 ); //Pending Verification
+			}
+
+			$time_sheet_verify = array(
+                'id' => $pptsv_obj->getId(),
+                'user_verified' => $pptsv_obj->getUserVerified(),
+                'user_verified_date' => $pptsv_obj->getUserVerifiedDate(),
+                'status_id' => $pptsv_obj->getStatus(),
+                'status' => Option::getByKey( $pptsv_obj->getStatus(), $pptsv_obj->getOptions('status') ),
+                'pay_period_id' => $pptsv_obj->getPayPeriod(),
+                'user_id' => $pptsv_obj->getUser(),
+                'authorized' => $pptsv_obj->getAuthorized(),
+                'authorized_users' => $pptsv_obj->getAuthorizedUsers(),
+                'is_hierarchy_superior' => $pptsv_obj->isHierarchySuperior(),
+                'display_verify_button' => $pptsv_obj->displayVerifyButton(),
+                'verification_box_color' => $pptsv_obj->getVerificationBoxColor(),
+                'verification_status_display' => $pptsv_obj->getVerificationStatusDisplay(),
+                'previous_pay_period_verification_display' => $pptsv_obj->displayPreviousPayPeriodVerificationNotice(),
+                'created_date' => $pptsv_obj->getCreatedDate(),
+                'created_by' => $pptsv_obj->getCreatedBy(),
+                'updated_date' => $pptsv_obj->getUpdatedDate(),
+                'updated_by' => $pptsv_obj->getUpdatedBy(),
+                'deleted_date' => $pptsv_obj->getDeletedDate(),
+                'deleted_by' => $pptsv_obj->getDeletedBy()
+            );
+		}
+
+
+        //Get pay period totals
+		//Sum all Worked Hours
+		//Sum all Paid Absences
+		//Sum all Dock Absences
+		//Sum all Regular/OverTime hours
+		$udtlf = TTnew( 'UserDateTotalListFactory' );
+		$worked_total_time = (int)$udtlf->getWorkedTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
+		Debug::text('Worked Total Time: '. $worked_total_time, __FILE__, __LINE__, __METHOD__,10);
+
+		$paid_absence_total_time = $udtlf->getPaidAbsenceTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
+		Debug::text('Paid Absence Total Time: '. $paid_absence_total_time, __FILE__, __LINE__, __METHOD__,10);
+
+		$dock_absence_total_time = $udtlf->getDockAbsenceTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
+		Debug::text('Dock Absence Total Time: '. $dock_absence_total_time, __FILE__, __LINE__, __METHOD__,10);
+
+		$udtlf->getRegularAndOverTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
+		if ( $udtlf->getRecordCount() > 0 ) {
+			//Get overtime policy names
+			$otplf = TTnew( 'OverTimePolicyListFactory' );
+			$over_time_policy_options = $otplf->getByCompanyIdArray( $current_company->getId(), FALSE );
+
+			foreach($udtlf as $udt_obj ) {
+				Debug::text('Type ID: '. $udt_obj->getColumn('type_id') .' OverTime Policy ID: '. $udt_obj->getColumn('over_time_policy_id') .' Total Time: '. $udt_obj->getColumn('total_time'), __FILE__, __LINE__, __METHOD__,10);
+
+				if ( $udt_obj->getColumn('type_id') == 20 ) {
+					$name = TTi18n::gettext('Regular Time');
+				} else {
+					if ( isset($over_time_policy_options[$udt_obj->getColumn('over_time_policy_id')]) ) {
+						$name = $over_time_policy_options[$udt_obj->getColumn('over_time_policy_id')];
+					} else {
+						$name = TTi18n::gettext('N/A');
+					}
+				}
+
+				if ( $udt_obj->getColumn('type_id') == 20 ) {
+					$total_time = $udt_obj->getColumn('total_time') + $paid_absence_total_time;
+				} else {
+					$total_time = $udt_obj->getColumn('total_time');
+				}
+
+				$pay_period_total_rows[] = array( 'name' => $name, 'total_time' => $total_time );
+			}
+			//var_dump($pay_period_total_rows);
+		}
 
         //==========================================================================
         //print_r($employee_date_total);
