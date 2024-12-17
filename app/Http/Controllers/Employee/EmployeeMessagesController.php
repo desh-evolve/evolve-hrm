@@ -64,8 +64,16 @@ class EmployeeMessagesController extends Controller
                 ]);
 
 
-                // Hardcode the type_id for "Email" from message_types table
-                $typeId = 1;
+                // Hardcode the type_id for "Email" from object_type table
+                $typeId = DB::table('object_type')
+                    ->where('type', 'email')
+                    ->where('name', 'Email')
+                    ->value('id');
+
+                if (!$typeId) {
+                    return response()->json(['status' => 'error', 'message' => 'Email type not found in object_type table'], 400);
+                }
+
 
                 $table = 'message_control';
                 $inputArr = [
@@ -84,7 +92,7 @@ class EmployeeMessagesController extends Controller
                     $table2 = 'messages';
                     $inputArr2 = [
                         'message_control_id' => $insertId,
-                        'sender_id' => Auth::user()->id, 
+                        'sender_id' => Auth::user()->id,
                         'description' => $request->description,
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
@@ -114,12 +122,13 @@ class EmployeeMessagesController extends Controller
     }
 
 
+
     //pawanee(2024-11-20)
     public function getAllMessages()
     {
         $table = 'message_control';
-        $fields = ['message_control.*','message_types.name AS type'];
-        $joinArr = ['message_types'=>['message_types.id', '=', 'message_control.type_id']];
+        $fields = ['message_control.*','object_type.name AS type_name'];
+        $joinArr = ['object_type'=>['object_type.id', '=', 'message_control.type_id']];
 
         $messages = $this->common->commonGetAll($table, $fields, $joinArr);
         return response()->json(['data' => $messages], 200);
@@ -134,8 +143,8 @@ class EmployeeMessagesController extends Controller
 
         $idColumn = 'message_control.created_by';
         $table = 'message_control';
-        $fields = ['message_control.*', 'message_types.name AS type'];
-        $joinArr = ['message_types' => ['message_types.id', '=', 'message_control.type_id']];
+        $fields = ['message_control.*', 'object_type.name AS type_name'];
+        $joinArr = ['object_type' => ['object_type.id', '=', 'message_control.type_id']];
 
         $sentMessages = $this->common->commonGetById($loggedInUserId, $idColumn, $table, $fields, $joinArr);
         return response()->json(['data' => $sentMessages], 200);
@@ -150,8 +159,8 @@ class EmployeeMessagesController extends Controller
 
         $whereArr = [['message_control.created_by', '!=', $loggedInUserId]]; // Exclude messages sent by the logged-in user
         $table = 'message_control';
-        $fields = ['message_control.*', 'message_types.name AS type'];
-        $joinArr = ['message_types' => ['message_types.id', '=', 'message_control.type_id']];
+        $fields = ['message_control.*', 'object_type.name AS type_name'];
+        $joinArr = ['object_type' => ['object_type.id', '=', 'message_control.type_id']];
 
         $receivedMessages = $this->common->commonGetById($loggedInUserId, $whereArr, $table, $fields, $joinArr);
         return response()->json(['data' => $receivedMessages], 200);

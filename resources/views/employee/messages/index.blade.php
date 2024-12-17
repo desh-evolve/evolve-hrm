@@ -421,7 +421,7 @@ $(document).ready(async function () {
                                 ${i + 1}
                             </div>
                             <div id="type-name" class="title cursor-pointer">
-                                <span class="title-name">${message.type}</span>
+                                <span class="title-name">${message.type_name}</span>
                             </div>
                         </div>
                         <div class="col-mail col-mail-2 cursor-pointer">
@@ -464,7 +464,7 @@ $(document).ready(async function () {
                                 ${i + 1}
                             </div>
                             <div id="type-name" class="title cursor-pointer">
-                                <span class="title-name">${message.type}</span>
+                                <span class="title-name">${message.type_name}</span>
                             </div>
                         </div>
                         <div class="col-mail col-mail-2 cursor-pointer">
@@ -507,7 +507,7 @@ $(document).ready(async function () {
                                 ${i + 1}
                             </div>
                             <div id="type-name" class="title cursor-pointer">
-                                <span class="title-name">${message.type}</span>
+                                <span class="title-name">${message.type_name}</span>
                             </div>
                         </div>
                         <div class="col-mail col-mail-2 cursor-pointer">
@@ -555,7 +555,6 @@ $(document).ready(async function () {
             console.error('Error fetching messages:', error);
         }
     }
-
 
 //===========================================================================================
 // Open chat Message box
@@ -721,7 +720,7 @@ $(document).ready(async function () {
                 // Populate #employees select field with only the fetched emails
                 // ==============================================================
                 const $employeesSelect = $('#receivers');
-                $employeesSelect.empty(); 
+                $employeesSelect.empty();
 
                 // Add only fetched receiver emails to the dropdown
                 receivers.forEach(receiver => {
@@ -810,11 +809,10 @@ $(document).ready(async function () {
             if (res && res.status === 'success') {
                 await commonAlert(res.status, res.message);
 
-                renderAllMessages();
-                updateAllMessageCount();
-                updateInboxMessageCount();
-
                 $('#compose-modal').modal('hide');
+                $('#message_details_box').hide();
+                await allRender();
+
             } else {
                 let errorMessage = res && res.message ? res.message : 'An unexpected error occurred.';
                 $('#compose-error-msg').html('<p class="text-danger">' + errorMessage + '</p>');
@@ -963,7 +961,7 @@ $(document).ready(async function () {
             if (res && res.status === 'success') {
                 await commonAlert(res.status, res.message);
 
-                await renderAllMessages();
+                await allRender();
                 // Reload the message details box
                 let $row = $(`li[msg_id="${message_control_id}"]`);
                 if ($row.length) {
@@ -1007,19 +1005,7 @@ $(document).ready(async function () {
             if (res) {
                 resetForm();
                 $('#message_details_box').hide();
-
-                // Check which tab is active and render the corresponding list
-                if ($('#all-message').hasClass('active')) {
-                    await renderAllMessages();
-                } else if ($('#sent-message').hasClass('active')) {
-                    await renderSentMessages();
-                } else if ($('#inbox-message').hasClass('active')) {
-                    await renderReceivedMessages();
-                }
-
-                // Update message counts
-                await updateAllMessageCount();
-                await updateInboxMessageCount();
+                await allRender();
             }
         } catch (error) {
             console.error(`Error during Message Details deletion:`, error);
@@ -1037,6 +1023,29 @@ $(document).ready(async function () {
         $('.delete-chat').html('');
         $('.reply-chat').html('');
         $('#error-msg').html('');
+    }
+
+    // All Render Function
+    async function allRender() {
+
+        try {
+            // Check which tab is active and render the corresponding list
+            if ($('#all-message').hasClass('active')) {
+                await renderAllMessages();
+            } else if ($('#sent-message').hasClass('active')) {
+                await renderSentMessages();
+            } else if ($('#inbox-message').hasClass('active')) {
+                await renderReceivedMessages();
+            }
+
+             // Update message counts
+            await updateAllMessageCount();
+            await updateInboxMessageCount();
+
+        } catch (error) {
+            console.error('error in allRender: ',error);
+        }
+
     }
 
 
