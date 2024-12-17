@@ -418,11 +418,9 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     Route::get('/attendance/requests', [AttendanceRequestsController::class, 'index'])->name('attendance.requests.index');
     Route::get('/attendance/requests/dropdown', [AttendanceRequestsController::class, 'getRequestDropdownData'])->name('attendance.requests.dropdown');
-    Route::get('/attendance/allrequests', [AttendanceRequestsController::class, 'getAllAttendenceRequests'])->name('attendance.requests.all');
     Route::get('/attendance/requests/{id}', [AttendanceRequestsController::class, 'getRequestsByControlId'])->name('attendance.requests.getById');
     Route::post('/attendance/requests/create', [AttendanceRequestsController::class, 'createAttendenceRequests'])->name('attendance.requests.create');
     Route::delete('/attendance/requests/delete/{id}', [AttendanceRequestsController::class, 'deleteAttendenceRequests'])->name('attendance.requests.delete');
-
 
 
     //==============================================================================================================================

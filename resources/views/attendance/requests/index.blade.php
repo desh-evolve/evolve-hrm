@@ -90,9 +90,14 @@
             </div>
 
             {{-- Alert Message --}}
-            <div class="alert alert-warning alert-dismissible" id="warning_alert" style="display: none;">
+            <div class="alert alert-dismissible" id="warning_alert" style="display: none; background-color: #f7ce47; border-color:rgb(230, 224, 202)">
 
             </div>
+
+            {{-- <div class="alert alert-warning alert-dismissible" id="warning_alert" style="display: none;">
+                This is a dark yellow alert!
+            </div>
+            --}}
 
 
             <div class="modal-body">
@@ -191,9 +196,9 @@ let today = new Date().toISOString().split('T')[0];
                     //if status_details
                     const status = request.status_details && request.status_details.length > 0
                         ? request.status_details[0].request_status
-                        : 'Not Request Status';
+                        : 'N/A';
 
-                    //if date_details 
+                    //if date_details
                     const date = request.date_details && request.date_details.length > 0
                         ? request.date_details[0].date_stamp
                         : 'N/A';

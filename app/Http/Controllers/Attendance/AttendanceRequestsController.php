@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class AttendanceRequestsController extends Controller
 {
 
-    // not complete 
+    // not complete
 
 
     private $common = null;
@@ -83,8 +83,8 @@ class AttendanceRequestsController extends Controller
 
         $connections = [
             'message_control' => [
-                'con_fields' => ['message_control.id As control_id', 'messages.description AS request_status'],
-                'con_where' => ['message_control.ref_id' => 'id'], // Match request.id with message_control.request_id
+                'con_fields' => ['message_control.id', 'messages.description AS request_status'],
+                'con_where' => ['message_control.ref_id' => 'id'],
                 'con_joins' => [
                     'messages' => ['messages.message_control_id', '=', 'message_control.id'],
                 ],
@@ -203,7 +203,7 @@ class AttendanceRequestsController extends Controller
                     $table4 = 'message_employees';
                     $inputArr4 = [
                         'message_id' => $messageId, // Message ID from messages table
-                        'received_id' => $request->employee_id, // Employee ID
+                        'received_id' => $request->employee_id,
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ];
@@ -224,15 +224,22 @@ class AttendanceRequestsController extends Controller
 
 
     //pawanee(2024-12-09)
+    // public function deleteAttendenceRequests($id)
+    // {
+    //     $whereArr = ['id' => $id];
+    //     $title = 'Request Status';
+    //     $table = 'request';
+
+    //     return $this->common->commonDelete($id, $whereArr, $title, $table);
+    // }
+
+
     public function deleteAttendenceRequests($id)
     {
-        $whereArr = ['id' => $id];
-        $title = 'Request Status';
-        $table = 'request';
+        $res = $this->common->commonDelete($id, ['id' => $id], 'Request Status', 'request');
+        $this->common->commonDelete($id, ['ref_id' => $id], 'Request Status', 'message_control');
 
-        return $this->common->commonDelete($id, $whereArr, $title, $table);
+        return $res;
     }
-
-
 
 }
