@@ -53,26 +53,6 @@ class TimeSheetController extends Controller
             'department_ids' => -1,
         ]);
 
-        $data = $this->getTimesheetData($filter_data);
-
-        return view('attendance.timesheet.index', [
-            'payPeriod' => $data['payPeriod'],
-            'filter_data' => $filter_data
-        ]);
-    }
-
-    private function getTimesheetData($filter_data)
-    {
-        $payPeriod = $this->getCurrentPayPeriod($filter_data);
-        $punchList = $this->getRenderingData($filter_data);
-
-        return [
-            'payPeriod' => $payPeriod
-        ];
-    }
-
-    private function getCurrentPayPeriod($filter_data)
-    {
         $employee_id = $filter_data['employee_id'];
         $date = $filter_data['date'];
 
@@ -90,13 +70,8 @@ class TimeSheetController extends Controller
         ];
 
         // Fetch the pay period data
-        $pp = $this->common->commonGetAll('pay_period', $fields, $joinArr, $whereArr, true);
+        $payPeriod = $this->common->commonGetAll('pay_period', $fields, $joinArr, $whereArr, true);
 
-        // Return the result (can be empty if no records are found)
-        return $pp;
-    }
-
-    private function getRenderingData($filter_data) {
         $epc = new EmployeePreferencesController();
         $cdc = new CommonDateController();
         $current_user_prefs = $epc->getEmployeePreferencesByEmployeeId(Auth::user()->id);
@@ -710,16 +685,17 @@ class TimeSheetController extends Controller
         // Get Holidays
         // ==================================================================================================================
 
+        // check here
         // ==================================================================================================================
         // Get pay period locked days
         // ==================================================================================================================
 
         if ( isset($pay_period_obj) AND is_object($pay_period_obj) ) {
 			foreach( $calendar_array as $cal_arr ) {
-				if ( $cal_arr['epoch'] >= $pay_period_obj->getStartDate()
-						AND $cal_arr['epoch'] <= $pay_period_obj->getEndDate() ) {
+				if ( $cal_arr['epoch'] >= $pay_period_obj->start_date
+						AND $cal_arr['epoch'] <= $pay_period_obj->end_date ) {
 					//Debug::text('Current Pay Period: '. TTDate::getDate('DATE+TIME', $cal_arr['epoch'] ), __FILE__, __LINE__, __METHOD__,10);
-					$pay_period_locked_rows[$cal_arr['epoch']] = $pay_period_obj->getIsLocked();
+					$pay_period_locked_rows[$cal_arr['epoch']] = $pay_period_obj->is_locked;
 				} else {
 					//Debug::text('Diff Pay Period...', __FILE__, __LINE__, __METHOD__,10);
 					//FIXME: Add some caching here perhaps?
@@ -831,6 +807,11 @@ class TimeSheetController extends Controller
         //==========================================================================
         //print_r($employee_date_total);
         //exit;
+
+        return view('attendance.timesheet.index', [
+            'payPeriod' => $payPeriod,
+            'filter_data' => $filter_data
+        ]);
     }
 
     /**
