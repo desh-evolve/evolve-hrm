@@ -49,7 +49,6 @@ use App\Http\Controllers\Payroll\PayStubAccountController;
 use App\Http\Controllers\Payroll\PayStubAmendmentController;
 use App\Http\Controllers\Payroll\PayPeriodScheduleController;
 use App\Http\Controllers\Payroll\CompanyDeductionController;
-
 use App\Http\Controllers\Policy\CommonPolicyController;
 
 Route::get('/', function () {
