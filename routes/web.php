@@ -49,6 +49,7 @@ use App\Http\Controllers\Attendance\TimeSheetController;
 use App\Http\Controllers\Payroll\PayStubAccountController;
 use App\Http\Controllers\Payroll\PayStubAmendmentController;
 use App\Http\Controllers\Payroll\PayPeriodScheduleController;
+use App\Http\Controllers\Payroll\CompanyDeductionController;
 use App\Http\Controllers\Policy\CommonPolicyController;
 
 Route::get('/', function () {
@@ -337,6 +338,16 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/payroll/pay_period_schedule/dropdown', [PayPeriodScheduleController::class, 'getPayPeriodScheduleDropdownData'])->name('company.pay_period_schedule.dropdown');
     Route::get('/payroll/pay_period_schedule/AllPayPeriodSchedules', [PayPeriodScheduleController::class, 'getAllPayPeriodSchedules'])->name('payroll.pay_period_schedule.all');
     Route::get('/payroll/pay_period_schedule/{id}', [PayPeriodScheduleController::class, 'getPayPeriodScheduleById'])->name('payroll.pay_period_schedule.getById');
+
+    //   Pay Period Schedule
+    Route::get('/payroll/company_deduction', [CompanyDeductionController::class, 'index'])->name('payroll.company_deduction');
+    Route::get('/payroll/company_deduction/form', [CompanyDeductionController::class, 'form'])->name('payroll.company_deduction.form');
+    Route::post('/payroll/company_deduction/create', [CompanyDeductionController::class, 'createCompanyDeduction'])->name('payroll.company_deduction.create');
+    Route::put('/payroll/company_deduction/update/{id}', [CompanyDeductionController::class, 'updateCompanyDeduction'])->name('payroll.company_deduction.update');
+    Route::delete('/payroll/company_deduction/delete/{id}', [CompanyDeductionController::class, 'deleteCompanyDeduction'])->name('payroll.company_deduction.delete');
+    Route::get('/payroll/company_deduction/dropdown', [CompanyDeductionController::class, 'getCompanyDeductionDropdownData'])->name('company.company_deduction.dropdown');
+    Route::get('/payroll/company_deduction/AllCompanyDeduction', [CompanyDeductionController::class, 'getAllCompanyDeduction'])->name('payroll.company_deduction.all');
+    Route::get('/payroll/company_deduction/{id}', [CompanyDeductionController::class, 'getCompanyDeductionById'])->name('payroll.company_deduction.getById');
 
 
     //==============================================================================================================================

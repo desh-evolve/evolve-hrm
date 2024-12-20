@@ -244,13 +244,17 @@
 
                             <li class="nav-item">
                                 <a href="{{ route('payroll.pay_period_schedule') }}"
-                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay
+                                    class="nav-link {{ request()->routeIs('payroll.pay_period_schedule') ? 'active' : '' }}">Pay
                                     Period Schedule</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('payroll.pay_stub_account') }}"
                                     class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay
                                     Stub Account</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.company_deduction') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.company_deduction') ? 'active' : '' }}">Company Deduction</a>
                             </li>
                         </ul>
                     </div>
