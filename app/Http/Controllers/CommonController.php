@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CommonModel;
 use Carbon\Carbon;
 
-class CommonDateController extends Controller
+class CommonController extends Controller
 {
     private $common;
 
@@ -48,7 +48,7 @@ class CommonDateController extends Controller
         // Define where conditions
         $whereArr = [
             ['emp_employees.company_id', '=', $company_id],
-            ['employee_date.user_id', '=', $user_id],
+            ['employee_date.employee_id', '=', $user_id],
             ['employee_date.date_stamp', '>=', '"' . date('Y-m-d', strtotime($start_date)) . '"'],
             ['employee_date.date_stamp', '<=', '"' . date('Y-m-d', strtotime($end_date)) . '"'],
             ['employee_date.status', '=', '"active"'],
@@ -65,6 +65,7 @@ class CommonDateController extends Controller
 
     //get requests 
     public function getRequestsByCompanyIDAndUserIdAndStatusAndStartDateAndEndDate($company_id, $user_id, $status, $start_date, $end_date){
+
         if ( $company_id == '') {
 			return FALSE;
 		}
@@ -85,13 +86,6 @@ class CommonDateController extends Controller
 			return FALSE;
 		}
 
-		if ( $order == NULL ) {
-			//$order = array( 'type_id' => 'asc' );
-			$strict = FALSE;
-		} else {
-			$strict = TRUE;
-		}
-
         
         // Define table and fields
         $table = 'request';
@@ -106,7 +100,7 @@ class CommonDateController extends Controller
         // Define where conditions
         $whereArr = [
             ['emp_employees.company_id', '=', $company_id],
-            ['employee_date.user_id', '=', $user_id],
+            ['employee_date.employee_id', '=', $user_id],
             ['request.status', '=', $status],
             ['employee_date.date_stamp', '>=', '"' . date('Y-m-d', strtotime($start_date)) . '"'],
             ['employee_date.date_stamp', '<=', '"' . date('Y-m-d', strtotime($end_date)) . '"'],
@@ -118,6 +112,101 @@ class CommonDateController extends Controller
     
         return $res;
     }
+
+    // get holidays
+    public function getHolidaysByPolicyGroupUserId($user_id, $start_date, $end_date) {
+		if ( $user_id == '') {
+			return FALSE;
+		}
+
+		if ( $start_date == '') {
+			return FALSE;
+		}
+
+		if ( $end_date == '') {
+			return FALSE;
+		}
+
+        
+        // Define table and fields
+        $table = 'holidays';
+        $fields = ['holidays.*'];
+        
+        // Define table joins
+        $joinArr = [
+            'holiday_policy' => ['holiday_policy.id', '=', 'holidays.holiday_policy_id'],
+            'policy_group' => ['policy_group.company_id', '=', 'holiday_policy.company_id'],
+            'policy_group_employees' => ['policy_group_employees.policy_group_id', '=', 'policy_group.id'],
+        ];
     
+        // Define where conditions
+        $whereArr = [
+            ['policy_group_employees.employee_id', '=', $user_id],
+            ['holidays.date_stamp', '>=', '"' . date('Y-m-d', strtotime($start_date)) . '"'],
+            ['holidays.date_stamp', '<=', '"' . date('Y-m-d', strtotime($end_date)) . '"'],
+            ['holiday_policy.status', '=', '"active"'],
+            ['policy_group.status', '=', '"active"'],
+        ];
+    
+        // Fetch results
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel = true);
+    
+        return $res;
+	}
+    
+    //get pay period
+    public function getPayPeriodByUserIdAndDate($user_id, $end_date){
+        if ( $user_id == '' ) {
+			return FALSE;
+		}
+
+		if ( $end_date == '' OR $end_date <= 0 ) {
+			return FALSE;
+		}
+
+        $fields = ['*'];
+        $joinArr = [
+            'pay_period_schedule' => ['pay_period_schedule.id', '=', 'pay_period.pay_period_schedule_id'],
+            'pay_period_schedule_employee' => ['pay_period_schedule_employee.pay_period_schedule_id', '=', 'pay_period_schedule.id']
+        ];
+
+        $whereArr = [
+            ['DATE(pay_period.start_date)', '<=', '"' . date('Y-m-d', strtotime($end_date)) . '"'],
+            ['DATE(pay_period.end_date)', '>=', '"' . date('Y-m-d', strtotime($end_date)) . '"'],
+            ['pay_period_schedule_employee.employee_id', '=', $user_id],
+            ['pay_period_schedule.status', '=', '"active"'],
+        ];
+
+        // Fetch the pay period data
+        $res = $this->common->commonGetAll('pay_period', $fields, $joinArr, $whereArr, true);
+
+        return $res;
+    }
+
+    public function getPayPeriodTimeSheetByPayPeriodIdAndUserId($pay_period_id, $user_id){
+        if ( $pay_period_id == '') {
+			return FALSE;
+		}
+
+		if ( $user_id == '') {
+			return FALSE;
+		}
+
+        $table = 'pay_period_time_sheet_verify';
+        $fields = ['*'];
+        $joinArr = [];
+
+        $whereArr = [
+            ['pay_period_time_sheet_verify.user_id', '=', $user_id],
+            ['pay_period_time_sheet_verify.pay_period_id', '=', $pay_period_id],
+        ];
+
+        $orderBy = '';
+
+        // Fetch the pay period data
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true, [], null, $orderBy);
+
+        return $res;
+    }
 
 }

@@ -15,15 +15,6 @@ class CommonDateController extends Controller
         $this->common = new CommonModel();
     }
 
-    /**
-     * Generate a calendar array between start and end dates.
-     *
-     * @param string $start_date
-     * @param string $end_date
-     * @param int $start_day_of_week
-     * @param bool $force_weeks
-     * @return array|false
-     */
     public function getCalendarArray($start_date, $end_date, $start_day_of_week = 0, $force_weeks = true)
     {
         if (empty($start_date) || empty($end_date)) {
@@ -31,11 +22,11 @@ class CommonDateController extends Controller
         }
 
         $cal_start_date = $force_weeks
-            ? $this->getBeginWeekEpoch($start_date, $start_day_of_week)
+            ? Carbon::parse($this->getBeginWeekEpoch($start_date, $start_day_of_week))->timestamp
             : Carbon::parse($start_date)->startOfDay()->timestamp;
 
         $cal_end_date = $force_weeks
-            ? $this->getEndWeekEpoch($end_date, $start_day_of_week)
+            ? Carbon::parse($this->getEndWeekEpoch($end_date, $start_day_of_week))->timestamp
             : Carbon::parse($end_date)->endOfDay()->timestamp;
 
         $prev_month = null;
@@ -79,76 +70,63 @@ class CommonDateController extends Controller
         return $retarr;
     }
 
-    /**
-     * Get the beginning of the week timestamp.
-     *
-     * @param string|null $date
-     * @param int $start_day_of_week
-     * @return int
-     */
     public static function getBeginWeekEpoch($date = null, $start_day_of_week = 0)
     {
         $date = $date ? Carbon::parse($date) : Carbon::now();
+        //print_r($date); echo '<br><br>';
+        
         $day_of_week = $date->dayOfWeek;
+        
         $offset = $day_of_week < $start_day_of_week
             ? 7 + ($day_of_week - $start_day_of_week)
             : $day_of_week - $start_day_of_week;
 
-        return $date->subDays($offset)->startOfDay()->timestamp;
+        // Get the start of the week date and use the timestamp
+        $d = $date->subDays($offset)->startOfDay();
+
+        // Output the date in 'Y-m-d' format
+        $formatted_date = $d->format('Y-m-d'); 
+ 
+        return $formatted_date;  // Return the Unix timestamp
     }
 
-    /**
-     * Get the end of the week timestamp.
-     *
-     * @param string|null $date
-     * @param int $start_day_of_week
-     * @return int
-     */
     public static function getEndWeekEpoch($date = null, $start_day_of_week = 0)
     {
+        // Get the beginning of the week in Y-m-d format
         $begin_week = self::getBeginWeekEpoch($date, $start_day_of_week);
-        return Carbon::createFromTimestamp($begin_week)->addDays(6)->endOfDay()->timestamp;
-    }
 
-    /**
-     * Get the beginning of the day timestamp.
-     *
-     * @param int|null $timestamp
-     * @return int
-     */
+        // Convert the Y-m-d formatted date to a Unix timestamp
+        $begin_week_timestamp = Carbon::parse($begin_week)->timestamp;
+
+        // Calculate the end of the week as a timestamp
+        $end_of_week_timestamp = Carbon::createFromTimestamp($begin_week_timestamp)
+            ->addDays(6)
+            ->endOfDay()
+            ->timestamp;
+            
+        // Output the date in 'Y-m-d' format
+        $formatted_date = Carbon::createFromTimestamp($end_of_week_timestamp)->format('Y-m-d');
+
+        // Return the Unix timestamp for the end of the week
+        return $formatted_date;
+    }
+    
+
     public static function getBeginDayEpoch($timestamp = null)
     {
         return Carbon::createFromTimestamp($timestamp ?? Carbon::now()->timestamp)->startOfDay()->timestamp;
     }
 
-    /**
-     * Get the middle of the day timestamp.
-     *
-     * @param int|null $timestamp
-     * @return int
-     */
     public static function getMiddleDayEpoch($timestamp = null)
     {
         return Carbon::createFromTimestamp($timestamp ?? Carbon::now()->timestamp)->setTime(12, 0)->timestamp;
     }
 
-    /**
-     * Get the end of the day timestamp.
-     *
-     * @param int|null $timestamp
-     * @return int
-     */
     public static function getEndDayEpoch($timestamp = null)
     {
         return Carbon::createFromTimestamp($timestamp ?? Carbon::now()->timestamp)->endOfDay()->timestamp;
     }
 
-    /**
-     * Get an ISO date stamp from a timestamp.
-     *
-     * @param int $timestamp
-     * @return string
-     */
     public static function getISODateStamp($timestamp)
     {
         return Carbon::createFromTimestamp($timestamp)->format('Ymd');
