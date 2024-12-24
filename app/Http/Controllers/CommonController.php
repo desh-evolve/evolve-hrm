@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\CommonModel;
 use Carbon\Carbon;
@@ -36,8 +37,24 @@ class CommonController extends Controller
     
         // Define table and fields
         $table = 'exception';
-        $fields = ['exception.*', 'employee_date.date_stamp as user_date_stamp', 'exception_policy.severity as severity', 'exception_policy.type_id as exception_policy_type_id'];
-        
+        $fields = [
+            'exception.*', 
+            'employee_date.date_stamp as user_date_stamp', 
+            'exception_policy.severity as severity', 
+            'exception_policy.type_id as exception_policy_type_id',
+            DB::raw("
+                CASE
+                    WHEN severity = 'low' THEN '#000000' 
+                    WHEN severity = 'medium' THEN '#0000FF'
+                    WHEN severity = 'high' THEN '#FF9900'
+                    WHEN severity = 'critical' THEN '#FF0000'
+                    ELSE '#666666'
+                END AS color
+            ")
+        ];
+
+        /* '#666666' => 'gray', '#000000' => 'black', '#0000FF' => 'blue', '#FF9900' => 'blue', '#FF0000' => 'red' */
+
         // Define table joins
         $joinArr = [
             'employee_date' => ['employee_date.id', '=', 'exception.user_date_id'],
@@ -183,7 +200,7 @@ class CommonController extends Controller
         return $res;
     }
 
-    public function getPayPeriodTimeSheetByPayPeriodIdAndUserId($pay_period_id, $user_id){
+    public function getPayPeriodTimeSheetByPayPeriodIdAndUserId( $pay_period_id, $user_id ){
         if ( $pay_period_id == '') {
 			return FALSE;
 		}
@@ -201,12 +218,24 @@ class CommonController extends Controller
             ['pay_period_time_sheet_verify.pay_period_id', '=', $pay_period_id],
         ];
 
-        $orderBy = '';
-
         // Fetch the pay period data
-        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true, [], null, $orderBy);
-
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true);
+        
         return $res;
+    }
+
+    public function getOverTimePolicyOptions( $company_id ){
+
+        $res = $this->common->commonGetById($company_id, 'company_id', 'overtime_policy', '*');
+
+        $list = [];
+        if(count($res) > 0){
+            foreach($res as $re){
+                $list[$re->id] = $re->name;
+            }
+        }
+
+        return $list;
     }
 
 }

@@ -143,9 +143,9 @@
                                 <tr>
                                     <td colspan="8" class="text-center bg-success text-white">
                                         <strong>Pay Period: </strong>
-                                        @if(count($payPeriod) > 0)
-                                            {{ date('Y-m-d', strtotime($payPeriod[0]->start_date)) }} to 
-                                            {{ date('Y-m-d', strtotime($payPeriod[0]->end_date)) }}
+                                        @if(isset($payPeriod))
+                                            {{ date('Y-m-d', strtotime($payPeriod->start_date)) }} to 
+                                            {{ date('Y-m-d', strtotime($payPeriod->end_date)) }}
                                         @else
                                             NONE
                                         @endif

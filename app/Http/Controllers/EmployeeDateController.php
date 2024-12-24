@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CommonModel;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeDateController extends Controller
 {
@@ -97,7 +98,7 @@ class EmployeeDateController extends Controller
 		}
 
         $table = 'employee_date_total';
-        $fields = ['SUM(total_time)'];
+        $fields = [DB::raw('IFNULL(SUM(total_time), 0) as total_time')];
         $joinArr = [
             'employee_date' => ['employee_date.id', '=', 'employee_date_total.employee_date_id'],
         ];
@@ -105,15 +106,13 @@ class EmployeeDateController extends Controller
         $whereArr = [
             ['employee_date.employee_id', '=', $user_id],
             ['employee_date.pay_period_id', '=', $pay_period_id],
-            ['employee_date_total.status = "worked" OR ( employee_date_total.status = "system" AND employee_date_total.type in ( "lunch", "break" ) )'],
+            '(employee_date_total.status = "worked" OR ( employee_date_total.status = "system" AND employee_date_total.type in ( "lunch", "break" ) ))',
             ['employee_date.status', '=', '"active"'],
         ];
 
-        $orderBy = '';
-
         // Fetch the pay period data
-        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true, [], null, $orderBy);
-
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true);
+        
         return $res;
     }
 
@@ -127,7 +126,7 @@ class EmployeeDateController extends Controller
 		}
 
         $table = 'employee_date_total';
-        $fields = ['SUM(total_time)'];
+        $fields = [DB::raw('IFNULL(SUM(total_time), 0) as total_time')];
         $joinArr = [
             'employee_date' => ['employee_date.id', '=', 'employee_date_total.employee_date_id'],
             'absence_policy' => ['absence_policy.id', '=', 'employee_date_total.absence_policy_id'],
@@ -136,16 +135,14 @@ class EmployeeDateController extends Controller
         $whereArr = [
             ['employee_date.employee_id', '=', $user_id],
             ['employee_date.pay_period_id', '=', $pay_period_id],
-            ['employee_date_total.status', '=', "system"],
-            ['absence_policy.type in ( "paid", "paid_above_salary" )'],
+            ['employee_date_total.status', '=', '"system"'],
+            'absence_policy.type in ( "paid", "paid_above_salary" )',
             ['employee_date_total.status', '=', '"absence"'],
             ['employee_date.status', '=', '"active"'],
         ];
 
-        $orderBy = '';
-
         // Fetch the pay period data
-        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true, [], null, $orderBy);
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true);
 
         return $res;
     }
@@ -160,7 +157,7 @@ class EmployeeDateController extends Controller
 		}
 
         $table = 'employee_date_total';
-        $fields = ['SUM(total_time)'];
+        $fields = [DB::raw('IFNULL(SUM(total_time), 0) as total_time')];
         $joinArr = [
             'employee_date' => ['employee_date.id', '=', 'employee_date_total.employee_date_id'],
             'absence_policy' => ['absence_policy.id', '=', 'employee_date_total.absence_policy_id'],
@@ -169,17 +166,15 @@ class EmployeeDateController extends Controller
         $whereArr = [
             ['employee_date.employee_id', '=', $user_id],
             ['employee_date.pay_period_id', '=', $pay_period_id],
-            ['employee_date_total.status', '=', "system"],
-            ['absence_policy.type in ( "paid", "paid_above_salary" )'],
+            ['employee_date_total.status', '=', '"system"'],
+            'absence_policy.type in ( "paid", "paid_above_salary" )',
             ['employee_date_total.status', '=', '"absence"'],
             ['absence_policy.type', '=', '"dock"'],
             ['employee_date.status', '=', '"active"'],
         ];
 
-        $orderBy = '';
-
         // Fetch the pay period data
-        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true, [], null, $orderBy);
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true);
 
         return $res;
     }
@@ -194,7 +189,11 @@ class EmployeeDateController extends Controller
 		}
 
         $table = 'employee_date_total';
-        $fields = ['employee_date_total.type as type', 'employee_date_total.over_time_policy_id as over_time_policy_id', 'sum(total_time) as total_time'];
+        $fields = [
+            'employee_date_total.type as type', 
+            'employee_date_total.over_time_policy_id as over_time_policy_id', 
+            DB::raw('IFNULL(SUM(total_time), 0) as total_time')
+        ];
         $joinArr = [
             'employee_date' => ['employee_date.id', '=', 'employee_date_total.employee_date_id'],
         ];
@@ -206,9 +205,9 @@ class EmployeeDateController extends Controller
             ['employee_date.status', '=', '"active"'],
         ];
 
-        $groupBy = 'employee_date_total.type, employee_date_total.over_time_policy_id';
+        $groupBy = ['type', 'over_time_policy_id'];
 
-        $orderBy = 'employee_date_total.type, employee_date_total.over_time_policy_id';
+        $orderBy = 'type, over_time_policy_id';
 
         // Fetch the pay period data
         $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true, [], $groupBy, $orderBy);
