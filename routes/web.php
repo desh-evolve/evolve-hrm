@@ -49,6 +49,7 @@ use App\Http\Controllers\Payroll\PayStubAccountController;
 use App\Http\Controllers\Payroll\PayStubAmendmentController;
 use App\Http\Controllers\Payroll\PayPeriodScheduleController;
 use App\Http\Controllers\Payroll\CompanyDeductionController;
+use App\Http\Controllers\Payroll\PayStubEntryAccountLinkController;
 use App\Http\Controllers\Policy\CommonPolicyController;
 
 Route::get('/', function () {
@@ -335,6 +336,13 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/payroll/company_deduction/dropdown', [CompanyDeductionController::class, 'getCompanyDeductionDropdownData'])->name('company.company_deduction.dropdown');
     Route::get('/payroll/company_deduction/AllCompanyDeduction', [CompanyDeductionController::class, 'getAllCompanyDeduction'])->name('payroll.company_deduction.all');
     Route::get('/payroll/company_deduction/{id}', [CompanyDeductionController::class, 'getCompanyDeductionById'])->name('payroll.company_deduction.getById');
+    
+    //   Pay Pay Stub Entry Account Link
+    Route::get('/payroll/pay_stub_entry_account_link', [PayStubEntryAccountLinkController::class, 'index'])->name('payroll.pay_stub_entry_account_link');
+    Route::post('/payroll/pay_stub_entry_account_link/create', [PayStubEntryAccountLinkController::class, 'createPayStubEntryAccountLink'])->name('payroll.pay_stub_entry_account_link.create');
+    Route::put('/payroll/pay_stub_entry_account_link/update/{id}', [PayStubEntryAccountLinkController::class, 'updatePayStubEntryAccountLink'])->name('payroll.pay_stub_entry_account_link.update');
+    Route::get('/payroll/pay_stub_entry_account_link/dropdown', [PayStubEntryAccountLinkController::class, 'getPayStubEntryAccountLinkDropdownData'])->name('company.pay_stub_entry_account_link.dropdown');
+    Route::get('/payroll/pay_stub_entry_account_link/{id}', [PayStubEntryAccountLinkController::class, 'getPayStubEntryAccountLinkById'])->name('payroll.pay_stub_entry_account_link.getById');
 
     //==============================================================================================================================
     // Employee Job History

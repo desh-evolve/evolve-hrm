@@ -287,6 +287,10 @@
                                 <a href="{{ route('payroll.company_deduction') }}"
                                     class="nav-link {{ request()->routeIs('payroll.company_deduction') ? 'active' : '' }}">Company Deduction</a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.pay_stub_entry_account_link') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_entry_account_link') ? 'active' : '' }}">Pay Stub Account Links</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
