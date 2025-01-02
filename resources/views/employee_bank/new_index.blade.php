@@ -23,7 +23,7 @@
                     </div>
                     <div class="card-body">
                         <div class="card-body">
-                        <table class="table table-nowrap" id="employee_table">
+                        <table class="table table-nowrap" id="user_table">
                             <thead class="table-light" id="table_head">
                                 <tr>
                                     <th scope="col">#</th>
@@ -60,15 +60,15 @@ $(document).ready(async function () {
     async function renderTableBody() {
         try {
 
-            const employees = await commonFetchData('/company/allemplyee');
+            const users = await commonFetchData('/company/allemplyee');
 
             let list = '';
 
-            if (employees.length === 0) {
+            if (users.length === 0) {
                 $('#table_body').html('<tr><td colspan="7" class="text-center">No data available</td></tr>');
                 return;
             } else {
-                list = employees.map((item, i) => {
+                list = users.map((item, i) => {
                     return `
                         <tr emp_id="${item.id}">
                             <th scope="row">${i + 1}</th>
@@ -94,8 +94,8 @@ $(document).ready(async function () {
 
          // Navigate to Employee Bank Details Page
          $(document).on('click', '.manage-bank', function () {
-            const employeeId = $(this).data('id');
-            window.location.href = `/employee/bank/details/${employeeId}`;
+            const userId = $(this).data('id');
+            window.location.href = `/user/bank/details/${userId}`;
         });
 
     }

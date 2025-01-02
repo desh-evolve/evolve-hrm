@@ -7,16 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('hierarchy_employee', function (Blueprint $table) {
+        Schema::create('hierarchy_user', function (Blueprint $table) {
             $table->bigIncrements('id'); 
             $table->unsignedInteger('hierarchy_control_id'); 
-            $table->unsignedInteger('employee_id'); 
+            $table->unsignedInteger('user_id'); 
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('hierarchy_employee');
+        Schema::dropIfExists('hierarchy_user');
     }
 };
 

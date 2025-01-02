@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('emp_wage', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('employee_id');
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('wage_group_id');
             $table->unsignedBigInteger('wage_type_id');
             

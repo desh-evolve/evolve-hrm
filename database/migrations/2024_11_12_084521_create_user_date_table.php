@@ -4,16 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateComBranchDepartmentEmployeesTable extends Migration
+return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
-        Schema::create('com_branch_department_employees', function (Blueprint $table) {
+        Schema::create('user_date', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('br_dep_id');
-            $table->unsignedBigInteger('division_id')->nullable();
-            $table->unsignedBigInteger('employee_id');
-            
+            $table->integer('user_id')->comment('emp_user table id');
+            $table->integer('pay_period_id');
+            $table->date('date_stamp');
+
             $table->string('status')->default('active')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->default(0)->nullable();
@@ -22,9 +25,11 @@ class CreateComBranchDepartmentEmployeesTable extends Migration
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
-        Schema::dropIfExists('com_branch_department_employees');
+        Schema::dropIfExists('user_date');
     }
-}
-
+};

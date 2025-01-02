@@ -32,11 +32,11 @@
 
                     <div class="row mb-3 mb-4">
                         <div class="col-lg-2 d-flex align-items-center">
-                            <label for="employee_idname" class="form-label mb-1 req">Employee Name</label>
+                            <label for="user_idname" class="form-label mb-1 req">Employee Name</label>
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm js-example-basic-single" id="employee_id">
+                            <select class="form-select form-select-sm js-example-basic-single" id="user_id">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
@@ -72,44 +72,44 @@
     @include('attendance.punch_popup')
 
     <script>
-        let employeeId = '';
+        let userId = '';
 
         $(document).ready(async function() {
             await getDropdownData();
 
         });
 
-        // Get employee data when selecting employee name
-        $(document).on('change', '#employee_id', async function() {
-            employeeId = $(this).val();
-            let employeeName = $('#employee_id option:selected').text();
-            $('#employee_name').val(employeeName);
-            $('#employee_id').val(employeeId);
+        // Get user data when selecting user name
+        $(document).on('change', '#user_id', async function() {
+            userId = $(this).val();
+            let userName = $('#user_id option:selected').text();
+            $('#user_name').val(userName);
+            $('#user_id').val(userId);
 
-            if (employeeId === "") {
+            if (userId === "") {
 
                 $('#table_body').html(
                     '<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
-                $('#employee_name').val('');
-                $('#employee_id').val('');
+                $('#user_name').val('');
+                $('#user_id').val('');
             } else {
                 await renderPunchTable();
             }
         });
 
-        // Fetch and render punchs for the selected employee
+        // Fetch and render punchs for the selected user
         async function renderPunchTable() {
-            if (!employeeId) {
+            if (!userId) {
                 $('#punch_table_body').html(
                     '<tr><td colspan="7" class="text-center">No Employee Selected</td></tr>');
                 return;
             }
 
-            let employees_punchs = await commonFetchData(`/company/employee_punch/${employeeId}`);
+            let users_punchs = await commonFetchData(`/company/user_punch/${userId}`);
             let list = '';
 
-            if (employees_punchs && employees_punchs.length > 0) {
-                employees_punchs.forEach((item, i) => {
+            if (users_punchs && users_punchs.length > 0) {
+                users_punchs.forEach((item, i) => {
                     list += `
                 <tr punch_id="${item.id}">
                     <td>${i + 1}</td>
@@ -142,13 +142,13 @@
         //get dropdown data
         async function getDropdownData() {
             try {
-                let dropdownData = await commonFetchData('/company/employee_punch/dropdown');
+                let dropdownData = await commonFetchData('/company/user_punch/dropdown');
 
-                // Populate employee name dropdown
-                let employeeList = (dropdownData?.employees || [])
-                    .map(employee => `<option value="${employee.id}">${employee.name_with_initials}</option>`)
+                // Populate user name dropdown
+                let userList = (dropdownData?.users || [])
+                    .map(user => `<option value="${user.id}">${user.name_with_initials}</option>`)
                     .join('');
-                $('#employee_id').html('<option value="">Select Employee Name</option>' + employeeList);
+                $('#user_id').html('<option value="">Select Employee Name</option>' + userList);
 
 
                 // Populate branch dropdown
@@ -191,8 +191,8 @@
 
             const time_stamp = `${date}T${time}`; // Format: "2024-11-11T16:19"
 
-            let createUrl = `/company/employee_punch/create`;
-            let updateUrl = `/company/employee_punch/update/${punch_id}`;
+            let createUrl = `/company/user_punch/create`;
+            let updateUrl = `/company/user_punch/update/${punch_id}`;
 
             let formData = new FormData();
 
@@ -203,7 +203,7 @@
                 $('#error-msg').html(''); // Clear error message if no issues
             }
 
-            formData.append('employee_id', employeeId);
+            formData.append('user_id', userId);
             formData.append('punch_id', punch_id);
             formData.append('punch_type', punch_type);
             formData.append('punch_status', punch_status);
@@ -241,7 +241,7 @@
             // Get branch data by id
             try {
                 let punch_data = await commonFetchData(
-                    `/company/single_employee_punch/${punch_id}`);
+                    `/company/single_user_punch/${punch_id}`);
                 punch_data = punch_data[0];
                 console.log('punch_data', punch_data);
 
@@ -274,7 +274,7 @@
             let punch_id = $(this).closest('tr').attr('punch_id');
 
             try {
-                let url = `/company/employee_punch/delete`;
+                let url = `/company/user_punch/delete`;
                 const res = await commonDeleteFunction(punch_id, url,
                     'Designation'); // Await the promise here
 

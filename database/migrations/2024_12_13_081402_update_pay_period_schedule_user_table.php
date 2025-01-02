@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('pay_period_schedule_employee', function (Blueprint $table) {
+        Schema::table('pay_period_schedule_user', function (Blueprint $table) {
             $table->string('status', 10)
                 ->default('active')
-                ->after('employee_id')
+                ->after('user_id')
                 ->comment('Status of the record (active/inactive)');
         });
     }
@@ -24,7 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('pay_period_schedule_employee', function (Blueprint $table) {
+        Schema::table('pay_period_schedule_user', function (Blueprint $table) {
             $table->dropColumn('status');
         });
     }

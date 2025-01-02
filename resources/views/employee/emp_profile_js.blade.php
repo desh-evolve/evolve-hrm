@@ -1,13 +1,13 @@
 <script>
     
-const employee_id = "<?= isset($_GET['emp']) && is_numeric($_GET['emp']) ? $_GET['emp'] : '' ?>";
+const user_id = "<?= isset($_GET['emp']) && is_numeric($_GET['emp']) ? $_GET['emp'] : '' ?>";
 
 $(document).ready(function() {
     // Inject the PHP value into JavaScript, ensuring it's properly handled
 
-    // Check if employee_id is a valid number and greater than 0
-    if (employee_id && parseInt(employee_id) > 0) {
-        console.log('emp_profile_js loaded', employee_id);
+    // Check if user_id is a valid number and greater than 0
+    if (user_id && parseInt(user_id) > 0) {
+        console.log('emp_profile_js loaded', user_id);
     }else{
         window.location.href = '/error';
     }
@@ -64,54 +64,54 @@ $(document).ready(function() {
 
 async function loadEmployeeOverview(){
     try {
-        let data = await commonFetchData(`/employee/${employee_id}`);
+        let data = await commonFetchData(`/user/${user_id}`);
         
         if(data){
-            let employeeData = data.employee[0];
+            let userData = data.user[0];
             let companyData = data.company[0];
 
             // Populate the fields with the API data
-            $('#name').text(employeeData.first_name + " " + employeeData.last_name);
-            $('#full-name').text(employeeData.full_name);
-            $('#name-initials').text(employeeData.name_with_initials);
-            $('#mobile').text(employeeData.contact_1);
-            $('#email').text(employeeData.personal_email);
-            $('#address').text(employeeData.address_1);
-            $('#location').text(employeeData.city_id); // Modify this to display the proper location if necessary
-            $('#nic').text(employeeData.nic);
-            $('#dob').text(employeeData.dob);
-            $('#gender').text(employeeData.gender);
-            $('#religion').text(employeeData.religion || 'N/A');
-            $('#marital-status').text(employeeData.marital_status || 'N/A');
+            $('#name').text(userData.first_name + " " + userData.last_name);
+            $('#full-name').text(userData.full_name);
+            $('#name-initials').text(userData.name_with_initials);
+            $('#mobile').text(userData.contact_1);
+            $('#email').text(userData.personal_email);
+            $('#address').text(userData.address_1);
+            $('#location').text(userData.city_id); // Modify this to display the proper location if necessary
+            $('#nic').text(userData.nic);
+            $('#dob').text(userData.dob);
+            $('#gender').text(userData.gender);
+            $('#religion').text(userData.religion || 'N/A');
+            $('#marital-status').text(userData.marital_status || 'N/A');
 
-            $('#work-contact').text(employeeData.work_contact || 'N/A');
-            $('#work-email').text(employeeData.work_email || 'N/A');
-            $('#immediate-contact-person').text(employeeData.immediate_contact_person || 'N/A');
-            $('#immediate-contact').text(employeeData.immediate_contact_no || 'N/A');
-            $('#home-contact').text(employeeData.home_contact || 'N/A');
-            $('#epf-reg-no').text(employeeData.epf_reg_no || 'N/A');
+            $('#work-contact').text(userData.work_contact || 'N/A');
+            $('#work-email').text(userData.work_email || 'N/A');
+            $('#immediate-contact-person').text(userData.immediate_contact_person || 'N/A');
+            $('#immediate-contact').text(userData.immediate_contact_no || 'N/A');
+            $('#home-contact').text(userData.home_contact || 'N/A');
+            $('#epf-reg-no').text(userData.epf_reg_no || 'N/A');
 
-            $('#employee-status').text(employeeData.employee_status == 1 ? 'Active' : 'Inactive');
-            $('#employee-number').text(employeeData.id);
-            $('#punch-id').text(employeeData.punch_machine_user_id);
-            $('#branch').text(employeeData.province_id);
-            $('#department').text(employeeData.employee_group_id);
-            $('#employment-group').text(employeeData.employee_group_id);
-            $('#designation').text(employeeData.designation_id);
-            $('#basis-employment').text(employeeData.employment_type_id);
-            $('#currency').text(employeeData.currency_id);
-            $('#pay-period').text(employeeData.pay_period_id || 'N/A');
+            $('#user-status').text(userData.user_status == 1 ? 'Active' : 'Inactive');
+            $('#user-number').text(userData.id);
+            $('#punch-id').text(userData.punch_machine_user_id);
+            $('#branch').text(userData.province_id);
+            $('#department').text(userData.user_group_id);
+            $('#employment-group').text(userData.user_group_id);
+            $('#designation').text(userData.designation_id);
+            $('#basis-employment').text(userData.employment_type_id);
+            $('#currency').text(userData.currency_id);
+            $('#pay-period').text(userData.pay_period_id || 'N/A');
 
-            $('#appointment-date').text(employeeData.appointment_date);
-            $('#appointment-note').text(employeeData.appointment_note || 'N/A');
-            $('#termination-date').text(employeeData.terminated_date || 'N/A');
-            $('#termination-note').text(employeeData.terminated_note || 'N/A');
-            $('#confirmed-date').text(employeeData.confirmed_date || 'N/A');
-            $('#retirement-date').text(employeeData.retirement_date || 'N/A');
+            $('#appointment-date').text(userData.appointment_date);
+            $('#appointment-note').text(userData.appointment_note || 'N/A');
+            $('#termination-date').text(userData.terminated_date || 'N/A');
+            $('#termination-note').text(userData.terminated_note || 'N/A');
+            $('#confirmed-date').text(userData.confirmed_date || 'N/A');
+            $('#retirement-date').text(userData.retirement_date || 'N/A');
 
-            $('#title-name').text(employeeData.first_name + " " + employeeData.last_name);
-            $('#title-role').text(employeeData.role || 'N/A');
-            $('#title-employee-no').text(employeeData.id || 'N/A');
+            $('#title-name').text(userData.first_name + " " + userData.last_name);
+            $('#title-role').text(userData.role || 'N/A');
+            $('#title-user-no').text(userData.id || 'N/A');
 
             $('#title-company').text(companyData.company_name || 'N/A');
             $('#title-company-address').text(companyData.address_1 + ', ' + companyData.address_2);

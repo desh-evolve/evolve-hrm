@@ -91,7 +91,7 @@
         async function renderGroupTable() {
             let list = '';
             $('#table_body').html('<p>Loading...</p>');
-            let items = await commonFetchData('/company/employee_groups');
+            let items = await commonFetchData('/company/user_groups');
 
 
             if (items && items.length > 0) {
@@ -138,7 +138,7 @@
 
             // Get branch data by id
             try {
-                let group_data = await commonFetchData(`/company/employee_group/${group_id}`);
+                let group_data = await commonFetchData(`/company/user_group/${group_id}`);
                 group_data = group_data[0];
                 console.log('group_data', group_data);
 
@@ -163,8 +163,8 @@
             const emp_group_name = $('#emp_group_name').val();
             const group_status = $('#group_status').val();
 
-            let createUrl = `/company/employee_group/create`;
-            let updateUrl = `/company/employee_group/update/${group_id}`;
+            let createUrl = `/company/user_group/create`;
+            let updateUrl = `/company/user_group/update/${group_id}`;
 
             let formData = new FormData();
 
@@ -213,7 +213,7 @@
             let group_id = $(this).closest('tr').attr('group_id');
 
             try {
-                let url = `/company/employee_group/delete`;
+                let url = `/company/user_group/delete`;
                 const res = await commonDeleteFunction(group_id, url,
                 'Group'); // Await the promise here
 

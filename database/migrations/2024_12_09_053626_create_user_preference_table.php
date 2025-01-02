@@ -7,10 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('emp_preference', function (Blueprint $table) {
+        Schema::create('user_preference', function (Blueprint $table) {
             $table->increments('id'); 
             $table->unsignedInteger('user_id'); 
-            $table->unsignedInteger('employee_id'); 
             $table->string('date_format', 250)->default('Y-m-d'); 
             $table->string('time_format', 250)->default('h:i:s'); 
             $table->string('time_unit_format', 250);
@@ -34,6 +33,6 @@ return new class extends Migration {
 
     public function down()
     {
-        Schema::dropIfExists('emp_preference');
+        Schema::dropIfExists('user_preference');
     }
 };

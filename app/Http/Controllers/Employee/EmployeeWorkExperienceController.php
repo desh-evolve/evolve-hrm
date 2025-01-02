@@ -16,23 +16,23 @@ class EmployeeWorkExperienceController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee work experience', ['only' => [
+        $this->middleware('permission:view user work experience', ['only' => [
             'index',
             'getAllEmployeeWorkExperience',
             'getAllEmployeeList',
             'getEmployeeWorkExperienceById',
             'getSingleEmployeeWorkExperience',
         ]]);
-        $this->middleware('permission:create employee work experience', ['only' => ['createEmployeeWorkExperience']]);
-        $this->middleware('permission:update employee work experience', ['only' => ['updateEmployeeWorkExperience']]);
-        $this->middleware('permission:delete employee work experience', ['only' => ['deleteEmployeeWorkExperience']]);
+        $this->middleware('permission:create user work experience', ['only' => ['createEmployeeWorkExperience']]);
+        $this->middleware('permission:update user work experience', ['only' => ['updateEmployeeWorkExperience']]);
+        $this->middleware('permission:delete user work experience', ['only' => ['deleteEmployeeWorkExperience']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('employee_work_experience.index');
+        return view('user_work_experience.index');
     }
 
     public function createEmployeeWorkExperience(Request $request)
@@ -40,7 +40,7 @@ class EmployeeWorkExperienceController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'company' => 'required',
                     'from_date' => 'required',
                     'to_date' => 'required',
@@ -51,7 +51,7 @@ class EmployeeWorkExperienceController extends Controller
 
                 $table = 'emp_work_experience';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'company' => $request->company,
                     'from_date' => $request->from_date,
                     'to_date' => $request->to_date,
@@ -80,7 +80,7 @@ class EmployeeWorkExperienceController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'company' => 'required',
                     'from_date' => 'required',
                     'to_date' => 'required',
@@ -92,7 +92,7 @@ class EmployeeWorkExperienceController extends Controller
                 $table = 'emp_work_experience';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'company' => $request->company,
                     'from_date' => $request->from_date,
                     'to_date' => $request->to_date,
@@ -129,24 +129,24 @@ class EmployeeWorkExperienceController extends Controller
     {
         $table = 'emp_work_experience';
         $fields = '*';
-        $employee_work_experience = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_work_experience], 200);
+        $user_work_experience = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $user_work_experience], 200);
     }
 
     public function getEmployeeWorkExperienceById($id)
     {
-        $idColumn = 'employee_id';
+        $idColumn = 'user_id';
         $table = 'emp_work_experience';
         $fields = '*';
-        $employee_work_experience = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_work_experience], 200);
+        $user_work_experience = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_work_experience], 200);
     }
     public function getEmployeeList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         return response()->json([
-            'data' => $employees,
+            'data' => $users,
         ], 200);
     }
 
@@ -155,7 +155,7 @@ class EmployeeWorkExperienceController extends Controller
         $idColumn = 'id';
         $table = 'emp_work_experience';
         $fields = '*';
-        $employee_work_experience = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_work_experience], 200);
+        $user_work_experience = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_work_experience], 200);
     }
 }

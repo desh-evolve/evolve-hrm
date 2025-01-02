@@ -16,23 +16,23 @@ class EmployeeQualificationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee qualification', ['only' => [
+        $this->middleware('permission:view user qualification', ['only' => [
             'index',
             'getAllEmployeeQualification',
             'getAllEmployeeList',
             'getEmployeeQualificationById',
             'getSingleEmployeeQualification',
         ]]);
-        $this->middleware('permission:create employee qualification', ['only' => ['createEmployeeQualification']]);
-        $this->middleware('permission:update employee qualification', ['only' => ['updateEmployeeQualification']]);
-        $this->middleware('permission:delete employee qualification', ['only' => ['deleteEmployeeQualification']]);
+        $this->middleware('permission:create user qualification', ['only' => ['createEmployeeQualification']]);
+        $this->middleware('permission:update user qualification', ['only' => ['updateEmployeeQualification']]);
+        $this->middleware('permission:delete user qualification', ['only' => ['deleteEmployeeQualification']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('employee_qualification.index');
+        return view('user_qualification.index');
     }
 
     public function createEmployeeQualification(Request $request)
@@ -40,7 +40,7 @@ class EmployeeQualificationController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'qualification' => 'required',
                     'institute' => 'required',
                     'year' => 'required',
@@ -49,7 +49,7 @@ class EmployeeQualificationController extends Controller
 
                 $table = 'emp_qualifications';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'qualification' => $request->qualification,
                     'institute' => $request->institute,
                     'remarks' => $request->remarks,
@@ -77,7 +77,7 @@ class EmployeeQualificationController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'qualification' => 'required',
                     'institute' => 'required',
                     'year' => 'required',
@@ -87,7 +87,7 @@ class EmployeeQualificationController extends Controller
                 $table = 'emp_qualifications';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'qualification' => $request->qualification,
                     'institute' => $request->institute,
                     'year' => $request->year,
@@ -122,28 +122,28 @@ class EmployeeQualificationController extends Controller
     {
         $table = 'emp_qualifications';
         $fields = '*';
-        $employee_qualifications = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_qualifications], 200);
+        $user_qualifications = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $user_qualifications], 200);
     }
 
     public function getEmployeeQualificationById($id)
     {
-        $idColumn = 'employee_id';
+        $idColumn = 'user_id';
         $table = 'emp_qualifications';
         $fields = '*';
-        $employee_qualifications = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_qualifications], 200);
+        $user_qualifications = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_qualifications], 200);
     }
     public function getEmployeeList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
-        // $employees = $this->common->commonGetAll($table, $fields);
+        $users = $this->common->commonGetAll('emp_employees', '*');
+        // $users = $this->common->commonGetAll($table, $fields);
         return response()->json([
             // 'data' => [
-            //     'employees' => $employees,
+            //     'users' => $users,
             // ]
-            'data' => $employees,
+            'data' => $users,
         ], 200);
     }
 
@@ -152,7 +152,7 @@ class EmployeeQualificationController extends Controller
         $idColumn = 'id';
         $table = 'emp_qualifications';
         $fields = '*';
-        $employee_qualification = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_qualification], 200);
+        $user_qualification = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_qualification], 200);
     }
 }

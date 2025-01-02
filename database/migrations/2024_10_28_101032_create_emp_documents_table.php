@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('emp_documents', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('employee_id');  // Foreign key to employees table
+            $table->unsignedBigInteger('user_id');  // Foreign key to users table
             $table->unsignedBigInteger('doc_type_id');  // Foreign key to document types table
             $table->string('title')->nullable();  // Title of the document
             $table->string('file');

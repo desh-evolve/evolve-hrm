@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('com_branch_department_employees', function (Blueprint $table) {
+        Schema::table('com_branch_department_users', function (Blueprint $table) {
             // Drop the br_dep_id column
             $table->dropColumn('br_dep_id');
             
@@ -26,7 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('com_branch_department_employees', function (Blueprint $table) {
+        Schema::table('com_branch_department_users', function (Blueprint $table) {
             // Add back br_dep_id column
             $table->unsignedBigInteger('br_dep_id')->after('id');
 

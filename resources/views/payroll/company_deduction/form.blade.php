@@ -335,10 +335,10 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="employee_ids" class="form-label mb-1 col-md-3">Employees</label>
+                                <label for="user_ids" class="form-label mb-1 col-md-3">Employees</label>
                                 <div class="col-md-9">
-                                    <div class="ps-2" id="employeeContainer">
-                                        {{-- render employees dynamically --}}
+                                    <div class="ps-2" id="userContainer">
+                                        {{-- render users dynamically --}}
                                     </div>
                                 </div>
                             </div>
@@ -357,7 +357,7 @@
 
 
     <script>
-        const employeeIds = '';
+        const userIds = '';
         let dropdownData = [];
 
         $(document).ready(async function() {
@@ -374,7 +374,7 @@
             try {
                 let dropdownData = await commonFetchData('/payroll/company_deduction/dropdown')
 
-                console.log("Employees Data:", dropdownData?.employees);
+                console.log("Employees Data:", dropdownData?.users);
 
                 // Time Zone dropdown
                 let stubEntryAccountList = (dropdownData?.pay_stub_entry_accounts || [])
@@ -384,10 +384,10 @@
                 $('#pay_stub_entry_account_id').html('<option value="">Select Stub Entry Accounts</option>' +
                     stubEntryAccountList);
 
-                // Initialize the multiSelector for employees
-                $('#employeeContainer').multiSelector({
+                // Initialize the multiSelector for users
+                $('#userContainer').multiSelector({
                     title: 'Employees',
-                    data: dropdownData?.employees || [],
+                    data: dropdownData?.users || [],
                 });
 
                 // Initialize the multiSelector for exclude Account
@@ -463,15 +463,15 @@
             const company_deduction_id = $('#company_deduction_id').val();
             console.log('company_deduction_id', company_deduction_id);
 
-            // Collect selected employee IDs from the multiSelector component
-            const selectedIds = $('#employeeContainer .selected-list option').map(function() {
+            // Collect selected user IDs from the multiSelector component
+            const selectedIds = $('#userContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
-            // Collect selected employee IDs from the multiSelector component
+            // Collect selected user IDs from the multiSelector component
             const selectedExcludeAccIds = $('#excludeAccContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
-            // Collect selected employee IDs from the multiSelector component
+            // Collect selected user IDs from the multiSelector component
             const selectedIncludeAccIds = $('#includeAccContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
@@ -488,7 +488,7 @@
             //     $('#error-msg').html(''); // Clear error message if no issues
             // }
 
-            formData.append('employee_ids', JSON.stringify(selectedIds));
+            formData.append('user_ids', JSON.stringify(selectedIds));
             formData.append('exclude_pay_stub_entry_account_ids', JSON.stringify(selectedExcludeAccIds));
             formData.append('include_pay_stub_entry_account_ids', JSON.stringify(includeAccContainer));
 
@@ -724,13 +724,13 @@
                 $('#basis_of_employment').val(data.basis_of_employment);
                 $('#company_deduction_status').val(data.status);
 
-                // employeeIds = data.employees.map(emp => emp.employee_id);
+                // userIds = data.users.map(emp => emp.user_id);
 
-                // // Initialize the multiSelector for employees
-                // $('#employeeContainer').multiSelector({
+                // // Initialize the multiSelector for users
+                // $('#userContainer').multiSelector({
                 //     title: 'Employees',
-                //     data: dropdownData?.employees || [],
-                //     selectedIds: employeeIds,
+                //     data: dropdownData?.users || [],
+                //     selectedIds: userIds,
                 // });
 
                 await changeType($('#calculation_type').val());

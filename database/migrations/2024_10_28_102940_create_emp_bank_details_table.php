@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('emp_bank_details', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('employee_id');  // Foreign key to employees table
+            $table->unsignedBigInteger('user_id');  // Foreign key to users table
             $table->string('bank_code')->nullable();  // Bank code
             $table->string('bank_name');  // Bank name
             $table->string('bank_branch');  // Bank branch

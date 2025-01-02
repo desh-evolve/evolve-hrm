@@ -39,11 +39,11 @@
 
                         <div class="row mb-3 mb-4">
                             <div class="col-lg-2">
-                                <label for="employee_id" class="form-label mb-1 req">Employee Name</label>
+                                <label for="user_id" class="form-label mb-1 req">Employee Name</label>
                             </div>
 
                             <div class="col-lg-10">
-                                <select class="form-select" id="employee_id" >
+                                <select class="form-select" id="user_id" >
 
                                 </select>
                             </div>
@@ -98,9 +98,9 @@
                 <div id="jobhistory-form-body" class="row">
 
                     <div class="col-xxl-3 col-md-12 mb-3">
-                        <label for="employee_name" class="form-label mb-1">Employee Name</label>
-                        <input type="text" class="form-control" id="employee_name" value="" disabled>
-                        <input type="hidden" class="form-control" id="employee_id" value="" disabled>
+                        <label for="user_name" class="form-label mb-1">Employee Name</label>
+                        <input type="text" class="form-control" id="user_name" value="" disabled>
+                        <input type="hidden" class="form-control" id="user_id" value="" disabled>
                     </div>
 
                     <div class="col-xxl-4 col-md-4 mb-3">
@@ -161,7 +161,7 @@
 //======================================================================================================
 // RENDER TABLE
 //======================================================================================================
-let employee_Id = '';
+let user_id = '';
 
 let dropdownData = [];
 
@@ -173,35 +173,35 @@ let dropdownData = [];
 
         });
 
-        // Get employee data when selecting employee name
-                $(document).on('change', '#employee_id', async function () {
-                    employee_Id = $(this).val();
-                    let employeeName = $('#employee_id option:selected').text();
-                    $('#employee_name').val(employeeName);
-                    $('#employee_id').val(employee_Id);
+        // Get user data when selecting user name
+                $(document).on('change', '#user_id', async function () {
+                    user_id = $(this).val();
+                    let userName = $('#user_id option:selected').text();
+                    $('#user_name').val(userName);
+                    $('#user_id').val(user_id);
 
-                    // Enable button if employee is selected
-                    if (employee_Id) {
+                    // Enable button if user is selected
+                    if (user_id) {
                         $('#add_new_btn').prop('disabled', false);
                     } else {
                         $('#add_new_btn').prop('disabled', true);
                     }
 
 
-                    if (employee_Id === "") {
+                    if (user_id === "") {
                         $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
-                        $('#employee_name').val('');
-                        $('#employee_id').val('');
+                        $('#user_name').val('');
+                        $('#user_id').val('');
                     } else {
                         await renderJobHistoryTable();
                     }
                 });
 
-        //render table using employee Id
+        //render table using user Id
           async function renderJobHistoryTable(){
             let list = '';
 
-            const jobs = await commonFetchData(`/employee/jobhistory/${employee_Id}`);
+            const jobs = await commonFetchData(`/user/jobhistory/${user_id}`);
 
             if(jobs && jobs.length > 0){
                 jobs.map((job, i) => {
@@ -239,13 +239,13 @@ let dropdownData = [];
 
         async function getDropdownData() {
             try {
-              let dropdownData = await commonFetchData('/employee/jobhistory/dropdown');
+              let dropdownData = await commonFetchData('/user/jobhistory/dropdown');
 
-                // Populate employee name dropdown
-                let employeeList = (dropdownData?.employees || [])
-                    .map(employee => `<option value="${employee.id}">${employee.name_with_initials}</option>`)
+                // Populate user name dropdown
+                let userList = (dropdownData?.users || [])
+                    .map(user => `<option value="${user.id}">${user.name_with_initials}</option>`)
                     .join('');
-                $('#employee_id').html('<option value="">Select Employee Name</option>' + employeeList);
+                $('#user_id').html('<option value="">Select Employee Name</option>' + userList);
 
 
                 // Populate branch dropdown
@@ -287,7 +287,7 @@ let dropdownData = [];
     });
 
     async function deleteItem(id, $row) {
-        const url ='/employee/jobhistory/delete';
+        const url ='/user/jobhistory/delete';
         const title ='Employee Job History';
         try {
                     const res = await commonDeleteFunction(id, url, title, $row);
@@ -321,9 +321,9 @@ let dropdownData = [];
         let jobhistory_id = $(this).closest('tr').attr('jobhistory_id');
 
         try {
-            let job_data = await commonFetchData(`/employee/single_jobhistory/${jobhistory_id}`);
+            let job_data = await commonFetchData(`/user/single_jobhistory/${jobhistory_id}`);
             job_data = job_data[0];
-                console.log('employees_data', job_data);
+                console.log('users_data', job_data);
 
                 // Set form values with fetched data
                 $('#jobhistory_id').val(jobhistory_id);
@@ -336,7 +336,7 @@ let dropdownData = [];
 
             } catch (error) {
                 console.error('Error at getJobHistoryById:', error);
-                $('#error-msg').html('<p class="text-danger">Error fetching employee job history data. Please try again.</p>');
+                $('#error-msg').html('<p class="text-danger">Error fetching user job history data. Please try again.</p>');
             } finally {
                 $('#jobhistory_form_modal').modal('show');
             }
@@ -348,7 +348,7 @@ let dropdownData = [];
         const jobhistory_id = $('#jobhistory_id').val();
 
         const isUpdating = Boolean(jobhistory_id);
-        const url = isUpdating ? `/employee/jobhistory/update/${jobhistory_id}` : `/employee/jobhistory/create`;
+        const url = isUpdating ? `/user/jobhistory/update/${jobhistory_id}` : `/user/jobhistory/create`;
         const method = isUpdating ? 'PUT' : 'POST';
 
         const formFields = {
@@ -379,7 +379,7 @@ let dropdownData = [];
             $('#error-msg').html('');
         }
 
-            formData.append('employee_id', employee_Id);
+            formData.append('user_id', user_id);
 
         try {
             let res = await commonSaveData(url, formData, method);

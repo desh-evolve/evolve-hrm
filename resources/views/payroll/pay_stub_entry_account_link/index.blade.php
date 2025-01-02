@@ -34,10 +34,10 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="total_employee_deduction" class="form-label mb-1 col-md-3">Total Employee
+                                <label for="total_user_deduction" class="form-label mb-1 col-md-3">Total Employee
                                     Deduction</label>
                                 <div class="col-md-9">
-                                    <select class="form-select w-50" id="total_employee_deduction">
+                                    <select class="form-select w-50" id="total_user_deduction">
                                         <option value="">Select</option>
                                     </select>
                                 </div>
@@ -122,11 +122,11 @@
                     .join('');
                 $('#total_gross').html('<option value="">Select Total Gross</option>' + totalGrossList);
 
-                // Populate total_employee_deduction
+                // Populate total_user_deduction
                 let totalEmployeeDeductionList = (dropdownData?.type || [])
                     .map(over => `<option value="${over.value}">${over.name}</option>`)
                     .join('');
-                $('#total_employee_deduction').html('<option value="">Select Total Employee Deduction</option>' +
+                $('#total_user_deduction').html('<option value="">Select Total Employee Deduction</option>' +
                     totalEmployeeDeductionList);
 
                 // Populate total_employer_deduction
@@ -157,7 +157,7 @@
             let pay_stub_entry_account_link_id = $('#pay_stub_entry_account_link_id').val();
 
             formData.append('total_gross', $('#total_gross').val());
-            formData.append('total_employee_deduction', $('#total_employee_deduction').val());
+            formData.append('total_user_deduction', $('#total_user_deduction').val());
             formData.append('total_employer_deduction', $('#total_employer_deduction').val());
             formData.append('total_net_pay', $('#total_net_pay').val());
             formData.append('regular_time', $('#regular_time').val());
@@ -209,7 +209,7 @@
                 // Populate form fields
                 $('#pay_stub_entry_account_link_id').val(data.id || '');
                 $('#total_gross').val(data.total_gross || '');
-                $('#total_employee_deduction').val(data.total_employee_deduction || '');
+                $('#total_user_deduction').val(data.total_user_deduction || '');
                 $('#total_employer_deduction').val(data.total_employer_deduction || '');
                 $('#total_net_pay').val(data.total_net_pay || '');
                 $('#regular_time').val(data.regular_time || '');
@@ -227,7 +227,7 @@
         function resetForm() {
             $('#pay_stub_entry_account_link_id').val('');
             $('#total_gross').val('');
-            $('#total_employee_deduction').val('');
+            $('#total_user_deduction').val('');
             $('#total_employer_deduction').val('');
             $('#total_net_pay').val('');
             $('#regular_time').val('');

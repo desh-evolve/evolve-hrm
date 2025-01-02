@@ -116,7 +116,7 @@
                                 <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_department" title="Delete Department" data-tooltip="tooltip" data-bs-placement="top">
                                     <i class="ri-delete-bin-fill"></i>
                                 </button>
-                                <button type="button" class="btn btn-success waves-effect waves-light btn-sm click_assign_employees" title="Department Employees" data-tooltip="tooltip" data-bs-placement="top">
+                                <button type="button" class="btn btn-success waves-effect waves-light btn-sm click_assign_users" title="Department Employees" data-tooltip="tooltip" data-bs-placement="top">
                                     Department Employees <i class="ri-group-line"></i>
                                 </button>
                             </td>
@@ -141,7 +141,7 @@
 
         $(document).on('click', '.click_edit_department', async function() {
             resetForm();
-            $('#error-msg').html('<p class="text-danger">* Note - Updating department branches may affect department employees.</p>');
+            $('#error-msg').html('<p class="text-danger">* Note - Updating department branches may affect department users.</p>');
 
             // Get department data by id
             let department_id = $(this).closest('tr').attr('department_id');
@@ -195,9 +195,9 @@
             }
         })
 
-        $(document).on('click', '.click_assign_employees', async function(){
+        $(document).on('click', '.click_assign_users', async function(){
             let department_id = $(this).closest('tr').attr('department_id');
-            window.location.href = '/company/department/employees?dep_id='+department_id;
+            window.location.href = '/company/department/users?dep_id='+department_id;
         })
 
         $(document).on('click', '#department-submit-confirm', async function() {

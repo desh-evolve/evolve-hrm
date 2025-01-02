@@ -246,9 +246,9 @@
                 <div class="modal-body">
                     <div id="compose-body">
                         <div class="input-group mb-3">
-                            <label class="input-group-text" for="employees">To</label>
+                            <label class="input-group-text" for="users">To</label>
                             <div style="flex: 1;">
-                                <select class="select2-multiple form-control" id="employees" name="employees[]" multiple="multiple">
+                                <select class="select2-multiple form-control" id="users" name="users[]" multiple="multiple">
 
                                 </select>
                             </div>
@@ -368,17 +368,17 @@ $(document).ready(async function () {
 
 
 //===========================================================================================
-// dropdown employee name
+// dropdown user name
 //===========================================================================================
 
     async function getDropdownData() {
         try {
-            dropdownData = await commonFetchData('/employee/name/dropdown');
-            // Populate employees dropdown
-            let employeeList = (dropdownData?.employees || [])
-                .map(employee => `<option value="${employee.id}">${employee.work_email}</option>`)
+            dropdownData = await commonFetchData('/user/name/dropdown');
+            // Populate users dropdown
+            let userList = (dropdownData?.users || [])
+                .map(user => `<option value="${user.id}">${user.work_email}</option>`)
                 .join('');
-            $('#employees').html(employeeList);
+            $('#users').html(userList);
             $(".select2-multiple").select2();
         } catch (error) {
             console.error('Error fetching dropdown data:', error);
@@ -406,7 +406,7 @@ $(document).ready(async function () {
 
     async function renderAllMessages() {
         try {
-            const messages = await commonFetchData('/employee/allmessages');
+            const messages = await commonFetchData('/user/allmessages');
 
             if (messages.length === 0) {
                 $('#msg-list').html('<li class="text-center">No messages available</li>');
@@ -449,7 +449,7 @@ $(document).ready(async function () {
 
     async function renderSentMessages() {
         try {
-            const messages = await commonFetchData('/employee/sent/messages');
+            const messages = await commonFetchData('/user/sent/messages');
 
             if (messages.length === 0) {
                 $('#msg-list').html('<li class="text-center">No sent messages available</li>');
@@ -492,7 +492,7 @@ $(document).ready(async function () {
 
     async function renderReceivedMessages() {
         try {
-            const messages = await commonFetchData('/employee/inbox/messages');
+            const messages = await commonFetchData('/user/inbox/messages');
 
             if (messages.length === 0) {
                 $('#msg-list').html('<li class="text-center">No inbox messages available</li>');
@@ -536,7 +536,7 @@ $(document).ready(async function () {
     // Update All Message Count
     async function updateAllMessageCount() {
         try {
-            const messages = await commonFetchData('/employee/allmessages');
+            const messages = await commonFetchData('/user/allmessages');
             const messageCount = messages.length;
             $('#msg-count').text(messageCount);
         } catch (error) {
@@ -548,7 +548,7 @@ $(document).ready(async function () {
      // Update All Received Message Count
      async function updateInboxMessageCount() {
         try {
-            const messages = await commonFetchData('/employee/inbox/messages');
+            const messages = await commonFetchData('/user/inbox/messages');
             const messageCount = messages.length;
             $('#inbox-msg-count').text(messageCount);
         } catch (error) {
@@ -583,7 +583,7 @@ $(document).ready(async function () {
         }
 
         try {
-            let messageData = await commonFetchData(`/employee/messages/${msg_id}`);
+            let messageData = await commonFetchData(`/user/messages/${msg_id}`);
 
             if (Array.isArray(messageData) && messageData.length > 0) {
                 console.log('Fetched Message Data:', messageData);
@@ -694,7 +694,7 @@ $(document).ready(async function () {
 
 
         try {
-            let message_data = await commonFetchData(`/employee/single_message/${message_id}`);
+            let message_data = await commonFetchData(`/user/single_message/${message_id}`);
 
             if (message_data && message_data[0]) {
                 message_data = message_data[0];
@@ -717,21 +717,21 @@ $(document).ready(async function () {
                 $('#msg-description').val(message_data?.message_description || '');
 
                 // ==============================================================
-                // Populate #employees select field with only the fetched emails
+                // Populate #users select field with only the fetched emails
                 // ==============================================================
-                const $employeesSelect = $('#receivers');
-                $employeesSelect.empty();
+                const $usersSelect = $('#receivers');
+                $usersSelect.empty();
 
                 // Add only fetched receiver emails to the dropdown
                 receivers.forEach(receiver => {
-                    $employeesSelect.append(
+                    $usersSelect.append(
                         `<option value="${receiver.id}">${receiver.email}</option>`
                     );
                 });
 
                 // Preselect fetched receivers
                 const receiverIds = receivers.map(receiver => receiver.id.toString());
-                $employeesSelect.val(receiverIds).trigger('change');
+                $usersSelect.val(receiverIds).trigger('change');
 
 
                 $(".select2-multiple").select2();
@@ -759,7 +759,7 @@ $(document).ready(async function () {
         //reset
         $('#subject').val('');
         $('#description').val('');
-        $('#employees').val([]).trigger('change');
+        $('#users').val([]).trigger('change');
         $('#compose-error-msg').html('');
 
         //show modal
@@ -768,11 +768,11 @@ $(document).ready(async function () {
 
 
     $(document).on('click', '#message-send-confirm', async function() {
-        let createUrl = `/employee/messages/create`;
+        let createUrl = `/user/messages/create`;
 
         let subject = $('#subject').val();
         let description = $('#description').val();
-        let employees = $('#employees').val();
+        let users = $('#users').val();
 
         let formData = new FormData();
         let missingFields = [];
@@ -780,7 +780,7 @@ $(document).ready(async function () {
         // Check for missing fields and add them to the array
         if (!subject) missingFields.push('subject');
         if (!description) missingFields.push('description');
-        if (!employees || employees.length == 0) missingFields.push('employees');
+        if (!users || users.length == 0) missingFields.push('users');
 
         // If there are any missing fields, display the error message and stop execution
         if (missingFields.length > 0) {
@@ -795,7 +795,7 @@ $(document).ready(async function () {
         // Append form data
         formData.append('subject', subject);
         formData.append('description', description);
-        formData.append('employees', employees);
+        formData.append('users', users);
 
 
         let url = createUrl;
@@ -847,7 +847,7 @@ $(document).ready(async function () {
 
         try {
             // Fetch message data using the control ID
-            let replyMessageData = await commonFetchData(`/employee/messages/${messageControlId}`);
+            let replyMessageData = await commonFetchData(`/user/messages/${messageControlId}`);
 
             if (replyMessageData && Array.isArray(replyMessageData)) {
                 replyMessageData = replyMessageData[0];
@@ -889,7 +889,7 @@ $(document).ready(async function () {
                 console.log('Message Subject:', replySubject);
 
                 // ==============================================================
-                // Populate #employees select field with only the fetched emails
+                // Populate #users select field with only the fetched emails
                 // ==============================================================
                 const $replyReceivers = $('#reply_receivers');
                 $replyReceivers.empty();
@@ -919,7 +919,7 @@ $(document).ready(async function () {
 
 
     $(document).on('click', '#message-reply-confirm', async function() {
-        let createUrl = `/employee/messages/reply`;
+        let createUrl = `/user/messages/reply`;
 
         let message_control_id = $('#message_control_id').val();
         let reply_subject = $('#reply_subject').val();
@@ -995,7 +995,7 @@ $(document).ready(async function () {
         }
 
         try {
-            const url = `/employee/message/delete`;
+            const url = `/user/message/delete`;
             const title = 'Chat';
 
             const res = await commonDeleteFunction(messageControlId, url, title);

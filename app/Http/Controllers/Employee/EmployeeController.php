@@ -16,32 +16,32 @@ class EmployeeController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:view employee profile', ['only' => ['employee_profile', 'getMyDataByEmployeeId']]);
-        $this->middleware('permission:view employee', ['only' => [
-            'employee_list',
+        $this->middleware('permission:view user profile', ['only' => ['user_profile', 'getMyDataByEmployeeId']]);
+        $this->middleware('permission:view user', ['only' => [
+            'user_list',
             'getAllEmployees',
             'getEmployeeByEmployeeId',
         ]]);
-        $this->middleware('permission:create employee', ['only' => ['employee_form', 'getEmployeeDropdownData', 'createEmployee']]);
-        $this->middleware('permission:update employee', ['only' => ['employee_form', 'getEmployeeDropdownData', 'updateEmployee']]);
-        $this->middleware('permission:delete employee', ['only' => ['deleteEmployee']]);
+        $this->middleware('permission:create user', ['only' => ['user_form', 'getEmployeeDropdownData', 'createEmployee']]);
+        $this->middleware('permission:update user', ['only' => ['user_form', 'getEmployeeDropdownData', 'updateEmployee']]);
+        $this->middleware('permission:delete user', ['only' => ['deleteEmployee']]);
 
         $this->common = new CommonModel();
     }
 
-    public function employee_list()
+    public function user_list()
     {
-        return view('employee.emp_list');
+        return view('user.emp_list');
     }
 
-    public function employee_form()
+    public function user_form()
     {
-        return view('employee.emp_form');
+        return view('user.emp_form');
     }
 
-    public function employee_profile()
+    public function user_profile()
     {
-        return view('employee.emp_profile');
+        return view('user.emp_profile');
     }
 
     public function getEmployeeDropdownData(){
@@ -62,16 +62,16 @@ class EmployeeController extends Controller
     
         // Fetch the department with connections
         $departments = $this->common->commonGetAll('com_departments', ['com_departments.*'], [], [], false, $connections);
-        $employee_groups = $this->common->commonGetAll('com_employee_groups', '*');
-        $employee_designations = $this->common->commonGetAll('com_employee_designations', '*');
+        $user_groups = $this->common->commonGetAll('com_employee_groups', '*');
+        $user_designations = $this->common->commonGetAll('com_user_designations', '*');
         //policy groups => create table
         $policy_groups = [
             [ 'id' => 1, 'name' => 'PG 1'],
             [ 'id' => 2, 'name' => 'PG 2'],
             [ 'id' => 3, 'name' => 'PG 3'],
         ];
-        //employee status => create table
-        $employee_status = [
+        //user status => create table
+        $user_status = [
             [ 'id' => 1, 'name' => 'Active', 'description' => ''],
             [ 'id' => 2, 'name' => 'Leave', 'description' => 'Illness/Injury'],
             [ 'id' => 3, 'name' => 'Leave', 'desription' => 'Maternity/Parental'],
@@ -131,10 +131,10 @@ class EmployeeController extends Controller
             'data' => [
                 'branches' => $branches,
                 'departments' => $departments,
-                'employee_groups' => $employee_groups,
-                'employee_designations' => $employee_designations,
+                'user_groups' => $user_groups,
+                'user_designations' => $user_designations,
                 'policy_groups' => $policy_groups,
-                'employee_status' => $employee_status,
+                'user_status' => $user_status,
                 'currencies' => $currencies,
                 'pay_period' => $pay_period,
                 'roles' => $roles,
@@ -190,12 +190,12 @@ class EmployeeController extends Controller
                 'dob' => 'nullable|date',
                 'gender' => 'nullable|string|max:10',
                 'bond_period' => 'nullable|string|max:255',
-                'employee_status' => 'required|integer',
+                'user_status' => 'required|integer',
                 'marital_status' => 'nullable|string|max:20',
-                'employee_image' => 'nullable|string|max:255',
+                'user_image' => 'nullable|string|max:255',
                 'punch_machine_user_id' => 'nullable|integer',
                 'designation_id' => 'required|integer',
-                'employee_group_id' => 'required|integer',
+                'user_group_id' => 'required|integer',
                 'policy_group_id' => 'required|integer',
                 'appointment_date' => 'required|date',
                 'appointment_note' => 'nullable|string',
@@ -227,8 +227,8 @@ class EmployeeController extends Controller
             $user->syncRoles([$request->permission_group_id]);
             //===========================================================================================================
             
-            // Prepare employee data and insert into the 'emp_employees' table
-            $employeeData = [
+            // Prepare user data and insert into the 'emp_employees' table
+            $userData = [
                 'user_id' => $user->id, // Use the newly created user ID
                 'title' => $request->title,
                 'first_name' => $request->first_name,
@@ -256,12 +256,12 @@ class EmployeeController extends Controller
                 'dob' => $request->dob,
                 'gender' => $request->gender,
                 'bond_period' => $request->bond_period,
-                'employee_status' => $request->employee_status,
+                'user_status' => $request->user_status,
                 'marital_status' => $request->marital_status,
-                'employee_image' => $request->employee_image,
+                'user_image' => $request->user_image,
                 'punch_machine_user_id' => $request->punch_machine_user_id,
                 'designation_id' => $request->designation_id,
-                'employee_group_id' => $request->employee_group_id,
+                'user_group_id' => $request->user_group_id,
                 'policy_group_id' => $request->policy_group_id,
                 'appointment_date' => $request->appointment_date,
                 'appointment_note' => $request->appointment_note,
@@ -278,13 +278,13 @@ class EmployeeController extends Controller
                 'updated_by' => Auth::id(),
             ];
     
-            $employeeId = DB::table('emp_employees')->insertGetId($employeeData);
+            $userId = DB::table('emp_employees')->insertGetId($userData);
     
             // Return a successful response
             return response()->json([
                 'status' => 'success',
                 'message' => 'Employee added successfully',
-                'data' => ['id' => $employeeId],
+                'data' => ['id' => $userId],
             ], 201);
         });
     }
@@ -323,12 +323,12 @@ class EmployeeController extends Controller
                     'dob' => 'nullable|date',
                     'gender' => 'nullable|string|max:10',
                     'bond_period' => 'nullable|string|max:255',
-                    'employee_status' => 'required|integer',
+                    'user_status' => 'required|integer',
                     'marital_status' => 'nullable|string|max:20',
-                    'employee_image' => 'nullable|string|max:255',
+                    'user_image' => 'nullable|string|max:255',
                     'punch_machine_user_id' => 'nullable|integer',
                     'designation_id' => 'required|integer',
-                    'employee_group_id' => 'required|integer',
+                    'user_group_id' => 'required|integer',
                     'policy_group_id' => 'required|integer',
                     'appointment_date' => 'required|date',
                     'appointment_note' => 'nullable|string',
@@ -374,12 +374,12 @@ class EmployeeController extends Controller
                     'dob' => $request->dob,
                     'gender' => $request->gender,
                     'bond_period' => $request->bond_period,
-                    'employee_status' => $request->employee_status,
+                    'user_status' => $request->user_status,
                     'marital_status' => $request->marital_status,
-                    'employee_image' => $request->employee_image,
+                    'user_image' => $request->user_image,
                     'punch_machine_user_id' => $request->punch_machine_user_id,
                     'designation_id' => $request->designation_id,
-                    'employee_group_id' => $request->employee_group_id,
+                    'user_group_id' => $request->user_group_id,
                     'policy_group_id' => $request->policy_group_id,
                     'appointment_date' => $request->appointment_date,
                     'appointment_note' => $request->appointment_note,
@@ -394,7 +394,7 @@ class EmployeeController extends Controller
                     'pay_period_id' => $request->pay_period_id,
                     'role_id' => $request->role_id,
 
-                    'status' => $request->employee_status,
+                    'status' => $request->user_status,
                     'updated_by' => Auth::user()->id,
                 ];
 
@@ -424,8 +424,8 @@ class EmployeeController extends Controller
     {
         $table = 'emp_employees';
         $fields = '*';
-        $employee_designations = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_designations], 200);
+        $user_designations = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $user_designations], 200);
     }
 
     public function getEmployeeByEmployeeId($id)
@@ -433,16 +433,16 @@ class EmployeeController extends Controller
         // Fetch company data
         $company = $this->common->commonGetById(1, 'id', 'com_companies', '*');
         
-        // Fetch employee data
+        // Fetch user data
         $idColumn = 'id';
         $table = 'emp_employees';
         $fields = '*';
-        $employees = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        $users = $this->common->commonGetById($id, $idColumn, $table, $fields);
 
-        // Combine the employee data with company data
+        // Combine the user data with company data
         $response = [
             'data' => [
-                'employee' => $employees,
+                'user' => $users,
                 'company' => $company
             ],
         ];

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('emp_work_experience', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('employee_id');  // Foreign key to employees table
+            $table->unsignedBigInteger('user_id');  // Foreign key to users table
             $table->string('company');  // Name of the company
             $table->date('from_date');  // Start date of employment
             $table->date('to_date');  // End date of employment, nullable if still employed

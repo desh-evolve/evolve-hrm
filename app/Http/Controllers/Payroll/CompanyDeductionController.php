@@ -44,7 +44,7 @@ class CompanyDeductionController extends Controller
             ->where('status', 'active')
             ->get();
 
-        $employees = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
+        $users = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
 
         //type => create table
         $type = [
@@ -88,7 +88,7 @@ class CompanyDeductionController extends Controller
         return response()->json([
             'data' => [
                 'pay_stub_entry_accounts' => $pay_stub_entry_accounts,
-                'employees' => $employees,
+                'users' => $users,
                 'type' => $type,
                 'length_of_service' => $length_of_service,
                 'basis_of_employment' => $basis_of_employment,
@@ -108,11 +108,11 @@ class CompanyDeductionController extends Controller
     {
 
         $connections = [
-            'pay_employee_deduction' => [
-                'con_fields' => ['employee_id'],  // Fields to select from connected table
-                'con_where' => ['pay_employee_deduction.company_deduction_id' => 'id'],  // Link to the main table 
+            'pay_user_deduction' => [
+                'con_fields' => ['user_id'],  // Fields to select from connected table
+                'con_where' => ['pay_user_deduction.company_deduction_id' => 'id'],  // Link to the main table 
                 'con_joins' => [],
-                'con_name' => 'employees',  // Alias to store connected data in the result
+                'con_name' => 'users',  // Alias to store connected data in the result
                 'except_deleted' => true,  // Filter out soft-deleted records
             ],
         ];
@@ -148,7 +148,7 @@ class CompanyDeductionController extends Controller
                     // 'basis_of_employment' => 'required',
                     // 'include_pay_stub_entry_account_ids' => 'nullable|json',
                     // 'exclude_pay_stub_entry_account_ids' => 'nullable|json',
-                    // 'employee_ids' => 'nullable|json',
+                    // 'user_ids' => 'nullable|json',
                 ]);
 
                 dd($request->all());
@@ -219,7 +219,7 @@ class CompanyDeductionController extends Controller
                     'basis_of_employment' => 'required',
                     'include_pay_stub_entry_account_ids' => 'nullable|json',
                     'exclude_pay_stub_entry_account_ids' => 'nullable|json',
-                    'employee_ids' => 'nullable|json',
+                    'user_ids' => 'nullable|json',
                 ]);
 
                 $payPeriodScheduleInput = [
@@ -279,14 +279,14 @@ class CompanyDeductionController extends Controller
 
     private function saveCompanyDeductionEmployees($companyDeductionId, $request)
     {
-        if (!empty($request->employee_ids)) {
-            $empIds = json_decode($request->employee_ids, true);
+        if (!empty($request->user_ids)) {
+            $empIds = json_decode($request->user_ids, true);
 
             if (is_array($empIds)) {
-                // Delete all existing employees for this pay period schedule
-                DB::table('pay_employee_deduction')
+                // Delete all existing users for this pay period schedule
+                DB::table('pay_user_deduction')
                     ->where('company_deduction_id', $companyDeductionId)
-                    ->whereIn('employee_id', $empIds)
+                    ->whereIn('user_id', $empIds)
                     ->delete();
 
                 // Prepare bulk insert data
@@ -300,7 +300,7 @@ class CompanyDeductionController extends Controller
                     $status = $request->pay_period_schedule_status ?? 'active';
                     return [
                         'company_deduction_id' => $companyDeductionId,
-                        'employee_id' => $empId,
+                        'user_id' => $empId,
                         'user_value1' => $user_value1,
                         'user_value2' => $user_value2,
                         'user_value3' => $user_value3,
@@ -312,8 +312,8 @@ class CompanyDeductionController extends Controller
                     ];
                 }, $empIds);
 
-                // Insert all employees in a single query
-                DB::table('pay_employee_deduction')->insert($insertData);
+                // Insert all users in a single query
+                DB::table('pay_user_deduction')->insert($insertData);
             }
         }
     }

@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('policy_group_employees', function (Blueprint $table) {
+        Schema::create('policy_group_users', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('policy_group_id')->default(0);
-            $table->unsignedInteger('employee_id')->default(0);
+            $table->unsignedInteger('user_id')->default(0);
 
             // Audit fields
             $table->string('status')->default('active')->nullable();
@@ -20,7 +20,7 @@ return new class extends Migration {
 
     public function down()
     {
-        Schema::dropIfExists('policy_group_employees');
+        Schema::dropIfExists('policy_group_users');
     }
 };
 

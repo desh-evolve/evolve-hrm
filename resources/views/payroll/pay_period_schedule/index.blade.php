@@ -81,7 +81,7 @@
                 console.error('error at payroll->pay-period-schedule->index->getAllPayPeriodSchedule: ', error);
             }
         }
-        // <td>${ab.type == 'earning' ? 'Earning' : ab.type == 'employee_deduction' ? 'Employee Deduction' : ab.type == 'employer_deduction' ? 'Employer Deduction' : ab.type == 'total' ? 'Total' : 'Accrual'}</td>    
+        // <td>${ab.type == 'earning' ? 'Earning' : ab.type == 'user_deduction' ? 'Employee Deduction' : ab.type == 'employer_deduction' ? 'Employer Deduction' : ab.type == 'total' ? 'Total' : 'Accrual'}</td>    
 
         $(document).on('click', '#new_pay_period_schedule_click', function() {
             resetForm();

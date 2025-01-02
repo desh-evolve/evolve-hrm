@@ -40,7 +40,7 @@ class AttendanceRequestsController extends Controller
 
     //pawanee(2024-12-09)
     public function getRequestDropdownData(){
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         $types = $this->common->commonGetAll(
             'object_type',
             [
@@ -51,7 +51,7 @@ class AttendanceRequestsController extends Controller
 
         return response()->json([
             'data' => [
-                'employees' => $employees,
+                'users' => $users,
                 'types' => $types,
             ]
         ], 200);
@@ -59,18 +59,18 @@ class AttendanceRequestsController extends Controller
 
 
     //pawanee(2024-12-09)
-    public function getRequestsByControlId($employeeId)
+    public function getRequestsByControlId($userId)
     {
-        // Get the `id` from the `employee_date` table where `employee_id`
-        $employeeDateId = DB::table('employee_date')
-            ->where('employee_id', $employeeId)
+        // Get the `id` from the `user_date` table where `user_id`
+        $userDateId = DB::table('user_date')
+            ->where('user_id', $userId)
             ->value('id');
 
-        if (!$employeeDateId) {
-            return response()->json(['error' => 'No matching employee_date record found for the given employee_id'], 404);
+        if (!$userDateId) {
+            return response()->json(['error' => 'No matching user_date record found for the given user_id'], 404);
         }
 
-        $idColumn = 'employee_date_id';
+        $idColumn = 'user_date_id';
         $table = 'request';
         $fields = [
             'request.*',
@@ -91,9 +91,9 @@ class AttendanceRequestsController extends Controller
                 'con_name' => 'status_details',
                 'except_deleted' => true,
             ],
-            'employee_date' => [
+            'user_date' => [
                 'con_fields' => ['date_stamp'],
-                'con_where' => ['employee_date.id' => 'employee_date_id'],
+                'con_where' => ['user_date.id' => 'user_date_id'],
                 'con_joins' => [],
                 'con_name' => 'date_details',
                 'except_deleted' => true,
@@ -102,7 +102,7 @@ class AttendanceRequestsController extends Controller
 
 
         try {
-            $attRequest = $this->common->commonGetById($employeeDateId, $idColumn, $table, $fields, $joinArr, [], true, $connections);
+            $attRequest = $this->common->commonGetById($userDateId, $idColumn, $table, $fields, $joinArr, [], true, $connections);
 
             return response()->json(['data' => $attRequest], 200);
 
@@ -122,29 +122,29 @@ class AttendanceRequestsController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'type_id' => 'required',
-                    'employee_date_id' => 'required',
+                    'user_date_id' => 'required',
                     'description' => 'required|string',
                 ]);
 
 
-                    // Check if employee_id and date match in employee_date table
-                    $employeeDate = DB::table('employee_date')
-                    ->where('employee_id', $request->employee_id)
-                    ->where('date_stamp', $request->employee_date_id)
+                    // Check if user_id and date match in user_date table
+                    $userDate = DB::table('user_date')
+                    ->where('user_id', $request->user_id)
+                    ->where('date_stamp', $request->user_date_id)
                     ->first();
 
-                if (!$employeeDate) {
+                if (!$userDate) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'No matching record found for the employee and date.',
+                        'message' => 'No matching record found for the user and date.',
                     ], 200);
                 }
 
                 $table = 'request';
                 $inputArr = [
-                    'employee_date_id' => $employeeDate->id, // ID from employee_date table
+                    'user_date_id' => $userDate->id, // ID from user_date table
                     'type_id' => $request->type_id,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
@@ -197,13 +197,13 @@ class AttendanceRequestsController extends Controller
                 }
 
 
-                // handle message_employees
+                // handle message_users
                 if ($messageId) {
 
-                    $table4 = 'message_employees';
+                    $table4 = 'message_users';
                     $inputArr4 = [
                         'message_id' => $messageId, // Message ID from messages table
-                        'received_id' => $request->employee_id,
+                        'received_id' => $request->user_id,
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ];

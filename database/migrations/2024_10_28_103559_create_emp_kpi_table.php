@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('emp_kpi', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('employee_id');  // Foreign key to employees table
+            $table->unsignedBigInteger('user_id');  // Foreign key to users table
             $table->date('review_date');  // Date of the KPI review
             $table->unsignedBigInteger('reviewed_by');
 

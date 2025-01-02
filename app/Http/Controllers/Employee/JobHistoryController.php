@@ -15,15 +15,15 @@ class JobHistoryController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee job history', ['only' => [
+        $this->middleware('permission:view user job history', ['only' => [
             'index',
             'getJobHistoryByEmployeeId',
             'getJobHistoryDropdownData',
             'getJobHistoryBySingleEmployee',
         ]]);
-        $this->middleware('permission:create employee job history', ['only' => ['createJobHistory']]);
-        $this->middleware('permission:update employee job history', ['only' => ['updateJobHistory']]);
-        $this->middleware('permission:delete employee job history', ['only' => ['deleteJobHistory']]);
+        $this->middleware('permission:create user job history', ['only' => ['createJobHistory']]);
+        $this->middleware('permission:update user job history', ['only' => ['updateJobHistory']]);
+        $this->middleware('permission:delete user job history', ['only' => ['deleteJobHistory']]);
 
         $this->common = new CommonModel();
     }
@@ -32,19 +32,19 @@ class JobHistoryController extends Controller
     //pawanee(2024-10-28)
     public function index()
     {
-        return view('employee.job_history');
+        return view('user.job_history');
     }
 
 
     //pawanee(2024-10-28)
     public function getJobHistoryDropdownData(){
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         $branches = $this->common->commonGetAll('com_branches', '*');
         $departments = $this->common->commonGetAll('com_departments', '*');
-        $designations = $this->common->commonGetAll('com_employee_designations', '*');
+        $designations = $this->common->commonGetAll('com_user_designations', '*');
         return response()->json([
             'data' => [
-                'employees' => $employees,
+                'users' => $users,
                 'branches' => $branches,
                 'departments' => $departments,
                 'designations' => $designations,
@@ -60,7 +60,7 @@ class JobHistoryController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'branch_id' => 'required',
                     'department_id' => 'required',
                     'designation_id' => 'required',
@@ -71,7 +71,7 @@ class JobHistoryController extends Controller
 
                 $table = 'emp_job_history';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'branch_id' => $request->branch_id,
                     'department_id' => $request->department_id,
                     'designation_id' => $request->designation_id,
@@ -101,7 +101,7 @@ class JobHistoryController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'branch_id' => 'required',
                     'department_id' => 'required',
                     'designation_id' => 'required',
@@ -113,7 +113,7 @@ class JobHistoryController extends Controller
                 $table = 'emp_job_history';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'branch_id' => $request->branch_id,
                     'department_id' => $request->department_id,
                     'designation_id' => $request->designation_id,
@@ -151,13 +151,13 @@ class JobHistoryController extends Controller
 
     //pawanee(2024-10-28)
     public function getJobHistoryByEmployeeId($id){
-        $idColumn = 'employee_id';
+        $idColumn = 'user_id';
         $table = 'emp_job_history';
         $fields = ['emp_job_history.*','branch_name', 'department_name', 'emp_designation_name'];
         $joinArr = [
             'com_branches'=>['com_branches.id', '=', 'emp_job_history.branch_id'],
             'com_departments'=>['com_departments.id', '=', 'emp_job_history.department_id'],
-            'com_employee_designations'=>['com_employee_designations.id', '=', 'emp_job_history.designation_id'],
+            'com_user_designations'=>['com_user_designations.id', '=', 'emp_job_history.designation_id'],
 
         ];
         $jobhistory = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
@@ -171,8 +171,8 @@ class JobHistoryController extends Controller
         $idColumn = 'id';
         $table = 'emp_job_history';
         $fields = '*';
-        $employee_qualification = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_qualification], 200);
+        $user_qualification = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_qualification], 200);
     }
 
 

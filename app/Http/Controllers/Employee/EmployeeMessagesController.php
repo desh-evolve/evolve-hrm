@@ -18,7 +18,7 @@ class EmployeeMessagesController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee messages', ['only' => [
+        $this->middleware('permission:view user messages', ['only' => [
             'index',
             'getAllMessages',
             'getMessagesByControlId',
@@ -26,8 +26,8 @@ class EmployeeMessagesController extends Controller
             'getMessagesBySingleId',
             'getSentMessages',
         ]]);
-        $this->middleware('permission:create employee messages', ['only' => ['createSendMessage', 'createReplyMessage']]);
-        $this->middleware('permission:delete employee messages', ['only' => ['deleteMessage']]);
+        $this->middleware('permission:create user messages', ['only' => ['createSendMessage', 'createReplyMessage']]);
+        $this->middleware('permission:delete user messages', ['only' => ['deleteMessage']]);
 
         $this->common = new CommonModel();
     }
@@ -36,16 +36,16 @@ class EmployeeMessagesController extends Controller
     //pawanee(2024-11-20)
     public function index()
     {
-        return view('employee.messages.index');
+        return view('user.messages.index');
     }
 
 
     //pawanee(2024-11-20)
     public function getEmployeeDropdownData(){
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         return response()->json([
             'data' => [
-                'employees' => $employees,
+                'users' => $users,
             ]
         ], 200);
     }
@@ -57,7 +57,7 @@ class EmployeeMessagesController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employees' => 'required',
+                    'users' => 'required',
                     'subject' => 'required|string',
                     'description' => 'required|string',
 
@@ -86,8 +86,8 @@ class EmployeeMessagesController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 // Handle messages
-                if ($request->has('employees')) {
-                    $employees = explode(',', $request->employees);
+                if ($request->has('users')) {
+                    $users = explode(',', $request->users);
 
                     $table2 = 'messages';
                     $inputArr2 = [
@@ -99,11 +99,11 @@ class EmployeeMessagesController extends Controller
                     ];
                     $messageId = $this->common->commonSave($table2, $inputArr2);
 
-                    $table3 = 'message_employees';
-                    foreach ($employees as $employee){
+                    $table3 = 'message_users';
+                    foreach ($users as $user){
                         $inputArr3 = [
                             'message_id' => $messageId, // Message ID from messages table
-                            'received_id' => trim($employee), // Employee ID
+                            'received_id' => trim($user), // Employee ID
                         ];
                         $this->common->commonSave($table3, $inputArr3);
                     }
@@ -195,11 +195,11 @@ class EmployeeMessagesController extends Controller
                 'con_name' => 'subject_details',
                 'except_deleted' => true,
             ],
-            'message_employees' => [
+            'message_users' => [
                 'con_fields' => ['receiver.id AS receiver_id', 'receiver.work_email AS receiver_email'],
-                'con_where' => ['message_employees.message_id' => 'id'],
+                'con_where' => ['message_users.message_id' => 'id'],
                 'con_joins' => [
-                    'emp_employees as receiver' => ['receiver.id', '=', 'message_employees.received_id'],
+                    'emp_employees as receiver' => ['receiver.id', '=', 'message_users.received_id'],
                 ],
                 'con_name' => 'receiver_details',
                 'except_deleted' => true,
@@ -248,11 +248,11 @@ class EmployeeMessagesController extends Controller
                 'con_name' => 'subject_details',
                 'except_deleted' => true,
             ],
-            'message_employees' => [
+            'message_users' => [
                 'con_fields' => ['receiver.id AS receiver_id', 'receiver.work_email AS receiver_email'],
-                'con_where' => ['message_employees.message_id' => 'id'],
+                'con_where' => ['message_users.message_id' => 'id'],
                 'con_joins' => [
-                    'emp_employees as receiver' => ['receiver.id', '=', 'message_employees.received_id'],
+                    'emp_employees as receiver' => ['receiver.id', '=', 'message_users.received_id'],
                 ],
                 'con_name' => 'receiver_details',
                 'except_deleted' => true,
@@ -311,8 +311,8 @@ class EmployeeMessagesController extends Controller
                     return response()->json(['status' => 'error', 'message' => 'Failed to create reply.'], 500);
                 }
 
-                // Insert into the message_employees table for selected receivers
-                $table2 = 'message_employees';
+                // Insert into the message_users table for selected receivers
+                $table2 = 'message_users';
                 foreach ($request->reply_receivers as $replyReceiver) {
                     $inputArr2 = [
                         'message_id' => $insertId, // The new message ID

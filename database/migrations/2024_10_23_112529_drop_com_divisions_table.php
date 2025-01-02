@@ -14,9 +14,9 @@ return new class extends Migration
         // Drop the `com_divisions` table
         Schema::dropIfExists('com_divisions');
 
-        // Remove the `division_id` column from `com_branch_department_employees` table
-        Schema::table('com_branch_department_employees', function (Blueprint $table) {
-            if (Schema::hasColumn('com_branch_department_employees', 'division_id')) {
+        // Remove the `division_id` column from `com_branch_department_users` table
+        Schema::table('com_branch_department_users', function (Blueprint $table) {
+            if (Schema::hasColumn('com_branch_department_users', 'division_id')) {
                 $table->dropColumn('division_id');
             }
         });
@@ -40,8 +40,8 @@ return new class extends Migration
             $table->integer('updated_by')->nullable();
         });
 
-        // Add `division_id` column back to `com_branch_department_employees` table
-        Schema::table('com_branch_department_employees', function (Blueprint $table) {
+        // Add `division_id` column back to `com_branch_department_users` table
+        Schema::table('com_branch_department_users', function (Blueprint $table) {
             $table->integer('division_id')->nullable();
         });
     }

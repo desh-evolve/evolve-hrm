@@ -43,7 +43,7 @@ class MassPunchController extends Controller
                     'punch_type' => 'required',
                     'punch_status' => 'required',
                 ]);
-                $employees = json_decode($request->employee_ids, true); // Decode as an associative array
+                $users = json_decode($request->user_ids, true); // Decode as an associative array
 
                 $startDate = Carbon::parse($request->startDate);
                 $endDate = Carbon::parse($request->endDate);
@@ -71,40 +71,40 @@ class MassPunchController extends Controller
                         $dates[] = $date->toDateString();
                     }
                 }
-                //-------------------for check if punch_controll insert for given employee , date-----------------
+                //-------------------for check if punch_controll insert for given user , date-----------------
                 $insertedPunchIds = [];
-                foreach ($employees as $employee) {
+                foreach ($users as $user) {
                     foreach ($dates as $date) {
                         $time = $request->time;
                         // Combine and parse date and time
                         $dateTime = Carbon::createFromFormat('Y-m-d H:i:s', "$date $time");
-                        // $employeeId = $request->employee_id;
-                        $employeeDateId = DB::table('employee_date')
-                            ->select('employee_date.id as employee_date_id')
-                            ->where('employee_date.employee_id', $employee)
-                            ->where('employee_date.date_stamp', $date)
-                            ->groupBy('employee_date.id')
+                        // $userId = $request->user_id;
+                        $userDateId = DB::table('user_date')
+                            ->select('user_date.id as user_date_id')
+                            ->where('user_date.user_id', $user)
+                            ->where('user_date.date_stamp', $date)
+                            ->groupBy('user_date.id')
                             ->first();
 
-                        $employeeName = DB::table('emp_employees')
+                        $userName = DB::table('emp_employees')
                             ->select('emp_employees.name_with_initials as name')
-                            ->where('emp_employees.id', $employee)
+                            ->where('emp_employees.id', $user)
                             ->first();
 
-                        if ($employeeDateId) {
-                            $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
+                        if ($userDateId) {
+                            $userDateId = $userDateId->user_date_id; // Extract the ID
 
                             // Check if punch_control exists
                             $countRaw = DB::table('punch_control')
                                 ->select('punch_control.*')
-                                ->where('punch_control.employee_date_id', $employeeDateId)
+                                ->where('punch_control.user_date_id', $userDateId)
                                 ->first();
 
                             if (!$countRaw) { // Check if record doesn't exist
                                 $table_1 = 'punch_control';
                                 // Insert new record into punch_control
                                 $punchControlInputArr = [
-                                    'employee_date_id' => $employeeDateId,
+                                    'user_date_id' => $userDateId,
                                     'branch_id' => $request->branch_id,
                                     'department_id' => $request->department_id,
                                     'total_time' => 0,
@@ -139,7 +139,7 @@ class MassPunchController extends Controller
                                     ]);
                             }
                         } else {
-                            // Handle case where no employee_date record is found
+                            // Handle case where no user_date record is found
                             return response()->json(['message' => 'Employee Date not found'], 404);
                         }
 
@@ -180,10 +180,10 @@ class MassPunchController extends Controller
                                     'punch_type' => $punchInputArr['punch_type'],
                                     'punch_status' => $punchInputArr['punch_status'],
                                     'time_stamp' => $punchInputArr['time_stamp'],
-                                    'emp_name' => $employeeName,
+                                    'emp_name' => $userName,
                                 ];
                             } else {
-                                var_dump('Error inserting punch for:', $employee, $date);
+                                var_dump('Error inserting punch for:', $user, $date);
                             }
                         } else {
                             return response()->json(['status' => 'error', 'message' => 'Failed adding Work Experience', 'data' => []], 500);
@@ -223,21 +223,21 @@ class MassPunchController extends Controller
     //                 'punch_type' => 'required',
     //                 'punch_status' => 'required',
     //             ]);
-    //             $employeeId = $request->employee_id;
-    //             $employeeDateId = DB::table('employee_date')
-    //                 ->select('employee_date.id as employee_date_id')
-    //                 ->where('employee_date.employee_id', $employeeId)
-    //                 ->where('employee_date.date_stamp', $request->date)
-    //                 ->groupBy('employee_date.id')
+    //             $userId = $request->user_id;
+    //             $userDateId = DB::table('user_date')
+    //                 ->select('user_date.id as user_date_id')
+    //                 ->where('user_date.user_id', $userId)
+    //                 ->where('user_date.date_stamp', $request->date)
+    //                 ->groupBy('user_date.id')
     //                 ->first();
 
-    //             if ($employeeDateId) {
-    //                 $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
+    //             if ($userDateId) {
+    //                 $userDateId = $userDateId->user_date_id; // Extract the ID
 
     //                 // Check if punch_control exists
     //                 $countRaw = DB::table('punch_control')
     //                     ->select('punch_control.*')
-    //                     ->where('punch_control.employee_date_id', $employeeDateId)
+    //                     ->where('punch_control.user_date_id', $userDateId)
     //                     ->first();
     //             }
     //             $punchControlInsertId = $countRaw->id;
@@ -285,17 +285,17 @@ class MassPunchController extends Controller
     // public function getMassPunchById($id)
     // {
 
-    //     $idColumn = 'employee_date.employee_id';
+    //     $idColumn = 'user_date.user_id';
     //     // $table = 'emp_job_history';
     //     $table = 'punch';
-    //     $fields = ['punch.*', 'employee_date.date_stamp as date', 'emp_employees.name_with_initials'];
+    //     $fields = ['punch.*', 'user_date.date_stamp as date', 'emp_employees.name_with_initials'];
     //     $joinArr = [
     //         'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
-    //         'employee_date' => ['employee_date.id', '=', 'punch_control.employee_date_id'],
-    //         'emp_employees' => ['emp_employees.id', '=', 'employee_date.employee_id'],
+    //         'user_date' => ['user_date.id', '=', 'punch_control.user_date_id'],
+    //         'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
 
     //     ];
-    //     // $whereArr = ['employee_date.employee_id' => $idColumn];
+    //     // $whereArr = ['user_date.user_id' => $idColumn];
     //     $jobhistory = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
     //     return response()->json(['data' => $jobhistory], 200);
     // }
@@ -303,9 +303,9 @@ class MassPunchController extends Controller
     public function getEmployeeList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         return response()->json([
-            'data' => $employees,
+            'data' => $users,
         ], 200);
     }
 
@@ -313,12 +313,12 @@ class MassPunchController extends Controller
     public function getDropdownData()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', ['id', 'name_with_initials AS name']);
+        $users = $this->common->commonGetAll('emp_employees', ['id', 'name_with_initials AS name']);
         $branches = $this->common->commonGetAll('com_branches', '*');
         $departments = $this->common->commonGetAll('com_departments', '*');
         return response()->json([
             'data' => [
-                'employees' => $employees,
+                'users' => $users,
                 'branches' => $branches,
                 'departments' => $departments,
             ]
@@ -334,7 +334,7 @@ class MassPunchController extends Controller
     //         'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
 
     //     ];
-    //     $employee_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
-    //     return response()->json(['data' => $employee_punch], 200);
+    //     $user_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
+    //     return response()->json(['data' => $user_punch], 200);
     // }
 }

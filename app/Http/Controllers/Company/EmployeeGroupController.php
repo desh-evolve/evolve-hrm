@@ -15,21 +15,21 @@ class EmployeeGroupController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee group', ['only' => [
+        $this->middleware('permission:view user group', ['only' => [
             'index', 
             'getAllEmployeeGroups', 
             'getEmployeeGroupById', 
         ]]);
-        $this->middleware('permission:create employee group', ['only' => ['createEmployeeGroup']]);
-        $this->middleware('permission:update employee group', ['only' => ['updateEmployeeGroup']]);
-        $this->middleware('permission:delete employee group', ['only' => ['deleteEmployeeGroup']]);
+        $this->middleware('permission:create user group', ['only' => ['createEmployeeGroup']]);
+        $this->middleware('permission:update user group', ['only' => ['updateEmployeeGroup']]);
+        $this->middleware('permission:delete user group', ['only' => ['deleteEmployeeGroup']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('company.employee_group.index');
+        return view('company.user_group.index');
     }
 
     public function createEmployeeGroup(Request $request)
@@ -105,15 +105,15 @@ class EmployeeGroupController extends Controller
     {
         $table = 'com_employee_groups';
         $fields = '*';
-        $employee_groups = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_groups], 200);
+        $user_groups = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $user_groups], 200);
     }
 
     public function getEmployeeGroupById($id){
         $idColumn = 'id';
         $table = 'com_employee_groups';
         $fields = '*';
-        $employee_groups = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_groups], 200);
+        $user_groups = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_groups], 200);
     }
 }

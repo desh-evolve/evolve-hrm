@@ -12,7 +12,7 @@ async function getDropdownData() {
     showPreloader();
 
     try {
-        dropdownData = await commonFetchData('/employee/dropdown');
+        dropdownData = await commonFetchData('/user/dropdown');
 
         // Populate branch dropdown
         let branchList = (dropdownData?.branches || [])
@@ -23,14 +23,14 @@ async function getDropdownData() {
         // Populate department dropdown
         $('#department_id').html('<option value="">Select a branch first</option>');
 
-        // Populate employee group dropdown
-        let empGroupList = (dropdownData?.employee_groups || [])
+        // Populate user group dropdown
+        let empGroupList = (dropdownData?.user_groups || [])
             .map(empGroup => `<option value="${empGroup.id}">${empGroup.emp_group_name}</option>`)
             .join('');
-        $('#employee_group_id').html('<option value="">Select an employee group</option>' + empGroupList);
+        $('#user_group_id').html('<option value="">Select an user group</option>' + empGroupList);
 
-        // Populate employee designation dropdown
-        let designationList = (dropdownData?.employee_designations || [])
+        // Populate user designation dropdown
+        let designationList = (dropdownData?.user_designations || [])
             .map(designation => `<option value="${designation.id}">${designation.emp_designation_name}</option>`)
             .join('');
         $('#designation_id').html('<option value="">Select a designation</option>' + designationList);
@@ -41,11 +41,11 @@ async function getDropdownData() {
             .join('');
         $('#policy_group_id').html('<option value="">Select a policy group</option>' + policyGroupList);
 
-        // Populate employee status dropdown
-        let empStatusList = (dropdownData?.employee_status || [])
+        // Populate user status dropdown
+        let empStatusList = (dropdownData?.user_status || [])
             .map(empStatus => `<option value="${empStatus.id}">${empStatus.name} ${empStatus.description ? ' - ' + empStatus.description : ''}</option>`)
             .join('');
-        $('#employee_status').html('<option value="">Select an employee status</option>' + empStatusList);
+        $('#user_status').html('<option value="">Select an user status</option>' + empStatusList);
 
         // Populate currency dropdown
         let currencyList = (dropdownData?.currencies || [])
@@ -107,8 +107,8 @@ async function getDropdownData() {
 
 async function getNextEmployeeNumber(){
     try {
-        let nextNumber = await commonFetchData('/employee/next_employee_id');
-        $('#employee_no').attr('placeholder', `Next Employee Number = ${nextNumber}`)
+        let nextNumber = await commonFetchData('/user/next_user_id');
+        $('#user_no').attr('placeholder', `Next Employee Number = ${nextNumber}`)
         //$('#punch_machine_user_id').attr('placeholder', `Next ID = ${nextNumber}`)
         //console.log('nextNumber', nextNumber)
     } catch (error) {
@@ -311,9 +311,9 @@ $(document).on('keyup', '#password, #confirm_password', function(e) {
 $(document).on('click', '.emp_form_submit', async function(e) {
     e.preventDefault(); // Prevent default form submission
 
-    const employeeId = $('#employee_id').val();
-    const createUrl = `/employee/create`;
-    const updateUrl = `/employee/update/${employeeId}`;
+    const userId = $('#user_id').val();
+    const createUrl = `/user/create`;
+    const updateUrl = `/user/update/${userId}`;
 
     // Get the password and confirm_password values
     const password = $('#password').val();
@@ -330,7 +330,7 @@ $(document).on('click', '.emp_form_submit', async function(e) {
 
     // Append standard form fields
     const fields = [
-        'employee_no', 'punch_machine_user_id', 'branch_id', 'department_id', 'employee_group_id', 'designation_id', 'policy_group_id', 'employee_status', 'currency_id', 'pay_period_schedule_id', 'appointment_date', 'appointment_note', 'termination_date', 'confirmed_date', 'retirement_date', 'months', 'permission_group_id', 'email', 'password', 'title', 'name_with_initials', 'first_name', 'last_name', 'full_name', 'dob', 'nic', 'gender', 'religion_id', 'marital_status', 'personal_email', 'contact_1', 'contact_2', 'address_1', 'address_2', 'address_3', 'postal_code', 'country_id', 'province_id', 'city_id', 'work_email', 'work_contact', 'immediate_contact_person', 'immediate_contact_no', 'home_contact', 'epf_no'
+        'user_no', 'punch_machine_user_id', 'branch_id', 'department_id', 'user_group_id', 'designation_id', 'policy_group_id', 'user_status', 'currency_id', 'pay_period_schedule_id', 'appointment_date', 'appointment_note', 'termination_date', 'confirmed_date', 'retirement_date', 'months', 'permission_group_id', 'email', 'password', 'title', 'name_with_initials', 'first_name', 'last_name', 'full_name', 'dob', 'nic', 'gender', 'religion_id', 'marital_status', 'personal_email', 'contact_1', 'contact_2', 'address_1', 'address_2', 'address_3', 'postal_code', 'country_id', 'province_id', 'city_id', 'work_email', 'work_contact', 'immediate_contact_person', 'immediate_contact_no', 'home_contact', 'epf_no'
     ];
 
     fields.forEach(field => {
@@ -343,10 +343,10 @@ $(document).on('click', '.emp_form_submit', async function(e) {
     // Append employment type (radio/checkbox)
     formData.append('employment_type_id', $("input[name='employment_type']:checked").val());
 
-    // Append employee photo (if a file is selected)
-    const employeePhoto = $('#employee_photo')[0].files[0];
-    if (employeePhoto) {
-        formData.append('employee_photo', employeePhoto);
+    // Append user photo (if a file is selected)
+    const userPhoto = $('#user_photo')[0].files[0];
+    if (userPhoto) {
+        formData.append('user_photo', userPhoto);
     }
 
     // Append the files stored in filesArray to FormData
@@ -357,12 +357,12 @@ $(document).on('click', '.emp_form_submit', async function(e) {
     });
 
     // Determine if it's an update or create operation
-    const isUpdating = Boolean(employeeId);
+    const isUpdating = Boolean(userId);
     const url = isUpdating ? updateUrl : createUrl;
     const method = isUpdating ? 'PUT' : 'POST';
 
     if (isUpdating) {
-        formData.append('employee_id', employeeId);
+        formData.append('user_id', userId);
     }
 
     try {
@@ -371,7 +371,7 @@ $(document).on('click', '.emp_form_submit', async function(e) {
         await commonAlert(res.status, res.message);
 
         if (res.status === 'success') {
-            window.location.href = '/employee/profile?emp='+res.data.id;
+            window.location.href = '/user/profile?emp='+res.data.id;
         }
     } catch (error) {
         console.error('Error:', error);

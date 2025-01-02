@@ -82,7 +82,7 @@
                 console.error('error at payroll->pay-stub-amendment->index->getAllPayStubAccount: ', error);
             }
         }
-        // <td>${ab.type == 'earning' ? 'Earning' : ab.type == 'employee_deduction' ? 'Employee Deduction' : ab.type == 'employer_deduction' ? 'Employer Deduction' : ab.type == 'total' ? 'Total' : 'Accrual'}</td>    
+        // <td>${ab.type == 'earning' ? 'Earning' : ab.type == 'user_deduction' ? 'Employee Deduction' : ab.type == 'employer_deduction' ? 'Employer Deduction' : ab.type == 'total' ? 'Total' : 'Accrual'}</td>    
 
         $(document).on('click', '#new_pay_stub_amendment_click', function() {
             resetForm();

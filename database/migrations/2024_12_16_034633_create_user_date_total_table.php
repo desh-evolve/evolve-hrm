@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::create('employee_date_total', function (Blueprint $table) {
+        Schema::create('user_date_total', function (Blueprint $table) {
             $table->increments('id'); 
-            $table->unsignedInteger('employee_date_id'); 
+            $table->unsignedInteger('user_date_id'); 
             $table->string('punch_status', 20)->default('normal')->comment('normal/lunch/break'); 
             $table->string('punch_type', 20)->default('in')->comment('in/out'); 
             $table->unsignedInteger('punch_control_id')->nullable(); 
@@ -38,6 +38,6 @@ return new class extends Migration {
 
     public function down()
     {
-        Schema::dropIfExists('employee_date_total');
+        Schema::dropIfExists('user_date_total');
     }
 };

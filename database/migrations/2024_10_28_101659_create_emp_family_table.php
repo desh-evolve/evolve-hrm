@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('emp_family', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('employee_id');  // Foreign key to employees table
+            $table->unsignedBigInteger('user_id');  // Foreign key to users table
             $table->string('name');  // Family member's name
-            $table->string('relationship');  // Relationship to the employee
+            $table->string('relationship');  // Relationship to the user
             $table->date('dob');  // Date of birth
             $table->string('nic')->nullable();  // National ID, nullable if not applicable
             $table->string('gender');  // Gender

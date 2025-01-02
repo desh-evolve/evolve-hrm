@@ -53,14 +53,14 @@
                     <div class="collapse menu-dropdown" id="attendance">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('employee.timesheet') }}"
-                                    class="nav-link {{ request()->routeIs('employee.timesheet') ? 'active' : '' }}">
+                                <a href="{{ route('user.timesheet') }}"
+                                    class="nav-link {{ request()->routeIs('user.timesheet') ? 'active' : '' }}">
                                     My Time Sheet
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_punch.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_punch.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.user_punch.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.user_punch.index') ? 'active' : '' }}">
                                     Punches
                                 </a>
                             </li>
@@ -164,75 +164,75 @@
 
                 <!-- Employees -->
                 @php
-                    $checkEmployeeNav = request()->routeIs('employee.*');
+                    $checkEmployeeNav = request()->routeIs('user.*');
                 @endphp
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link {{ $checkEmployeeNav ? 'active' : '' }}" href="#employeeMultiLevel"
+                    <a class="nav-link menu-link {{ $checkEmployeeNav ? 'active' : '' }}" href="#userMultiLevel"
                         data-bs-toggle="collapse" role="button"
                         aria-expanded="{{ $checkEmployeeNav ? 'true' : 'false' }}"
-                        aria-controls="employeeMultiLevel">
+                        aria-controls="userMultiLevel">
                         <i class="ri-group-line"></i> <span data-key="t-multi-level">Employees</span>
                     </a>
                     <div class="collapse menu-dropdown {{ $checkEmployeeNav ? 'show' : '' }}"
-                        id="employeeMultiLevel">
+                        id="userMultiLevel">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('employee.form') }}"
-                                    class="nav-link {{ request()->routeIs('employee.form') ? 'active' : '' }}">Add New
+                                <a href="{{ route('user.form') }}"
+                                    class="nav-link {{ request()->routeIs('user.form') ? 'active' : '' }}">Add New
                                     Employee</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('employee.list') }}"
-                                    class="nav-link {{ request()->routeIs('employee.list') ? 'active' : '' }}">Employee
+                                <a href="{{ route('user.list') }}"
+                                    class="nav-link {{ request()->routeIs('user.list') ? 'active' : '' }}">Employee
                                     List</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('employee.profile') }}"
-                                    class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">My
+                                <a href="{{ route('user.profile') }}"
+                                    class="nav-link {{ request()->routeIs('user.profile') ? 'active' : '' }}">My
                                     Profile</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('employee.messages.index') }}"
-                                    class="nav-link {{ request()->routeIs('employee.messages.index') ? 'active' : '' }}">
+                                <a href="{{ route('user.messages.index') }}"
+                                    class="nav-link {{ request()->routeIs('user.messages.index') ? 'active' : '' }}">
                                     Employee Messages
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('employee.jobhistory.index') }}"
-                                    class="nav-link {{ request()->routeIs('employee.jobhistory.index') ? 'active' : '' }}">
+                                <a href="{{ route('user.jobhistory.index') }}"
+                                    class="nav-link {{ request()->routeIs('user.jobhistory.index') ? 'active' : '' }}">
                                     Employee Job History
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_qualification.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.user_qualification.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.user_qualification.index') ? 'active' : '' }}">
                                     Employee Qulifications
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_work_experience.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_work_experience.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.user_work_experience.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.user_work_experience.index') ? 'active' : '' }}">
                                     Employee Work Experience
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_promotion.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_promotion.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.user_promotion.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.user_promotion.index') ? 'active' : '' }}">
                                     Employee Promotion
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_family.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_family.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.user_family.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.user_family.index') ? 'active' : '' }}">
                                     Employee Family
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('employee_wage.index') }}"
-                                    class="nav-link {{ request()->routeIs('employee_family.index') ? 'active' : '' }}">
+                                <a href="{{ route('user_wage.index') }}"
+                                    class="nav-link {{ request()->routeIs('user_family.index') ? 'active' : '' }}">
                                     Employee Wage
                                 </a>
                             </li>
@@ -364,8 +364,8 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_designation.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_designation.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.user_designation.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.user_designation.index') ? 'active' : '' }}">
                                     Designations
                                 </a>
                             </li>
@@ -377,8 +377,8 @@
                             </li>
 
                             <li class="nav-item">
-                                <a href="{{ route('company.employee_group.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_group.index') ? 'active' : '' }}">
+                                <a href="{{ route('company.user_group.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.user_group.index') ? 'active' : '' }}">
                                     Employee Groups
                                 </a>
                             </li>

@@ -39,11 +39,11 @@
 
                         <div class="row mb-3 mb-4">
                             <div class="col-lg-2">
-                                <label for="employee_id" class="form-label mb-1 req">Employee Name</label>
+                                <label for="user_id" class="form-label mb-1 req">Employee Name</label>
                             </div>
 
                             <div class="col-lg-10">
-                                <select class="form-select" id="employee_id" >
+                                <select class="form-select" id="user_id" >
 
                                 </select>
                             </div>
@@ -104,9 +104,9 @@
                 <div class="row">
 
                     <div class="mb-3">
-                        <label for="employee_name" class="form-label mb-1">Employee Name</label>
-                        <input type="text" class="form-control" id="employee_name" value="" disabled>
-                        <input type="hidden" class="form-control" id="employee_id" value="" disabled>
+                        <label for="user_name" class="form-label mb-1">Employee Name</label>
+                        <input type="text" class="form-control" id="user_name" value="" disabled>
+                        <input type="hidden" class="form-control" id="user_id" value="" disabled>
                     </div>
 
                     <div class="col-xxl-6 col-md-6 mb-3">
@@ -117,8 +117,8 @@
                     </div>
 
                     <div class="col-xxl-6 col-md-6 mb-3">
-                        <label for="employee_date_id" class="form-label req">Date</label>
-                        <input type="date" class="form-control" id="employee_date_id" value="">
+                        <label for="user_date_id" class="form-label req">Date</label>
+                        <input type="date" class="form-control" id="user_date_id" value="">
                     </div>
 
                     <div class="col-xxl-12 col-md-12 mb-2">
@@ -147,7 +147,7 @@
 //======================================================================================================
 // RENDER TABLE
 //======================================================================================================
-let employee_Id = '';
+let user_id = '';
 
 let dropdownCache = [];
 
@@ -160,35 +160,35 @@ let today = new Date().toISOString().split('T')[0];
         $('#add_request').prop('disabled', true);
 
 
-        // Get employee data when selecting employee name
-        $(document).on('change', '#employee_id', async function () {
-            employee_Id = $(this).val();
-            let employeeName = $('#employee_id option:selected').text();
-            $('#employee_name').val(employeeName);
-            $('#employee_id').val(employee_Id);
+        // Get user data when selecting user name
+        $(document).on('change', '#user_id', async function () {
+            user_id = $(this).val();
+            let userName = $('#user_id option:selected').text();
+            $('#user_name').val(userName);
+            $('#user_id').val(user_id);
 
-            // Enable button if employee is selected
-            if (employee_Id) {
+            // Enable button if user is selected
+            if (user_id) {
                 $('#add_request').prop('disabled', false);
             } else {
                 $('#add_request').prop('disabled', true);
             }
 
-            // Render the table if employee is selected
-            if (employee_Id === "") {
+            // Render the table if user is selected
+            if (user_id === "") {
                 $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
-                $('#employee_name').val('');
-                $('#employee_id').val('');
+                $('#user_name').val('');
+                $('#user_id').val('');
             } else {
                 await renderRequestTable();
             }
         });
 
 
-        //render table using employee Id
+        //render table using user Id
         async function renderRequestTable(){
             let list = '';
-            const requests = await commonFetchData(`/attendance/requests/${employee_Id}`);
+            const requests = await commonFetchData(`/attendance/requests/${user_id}`);
 
             if(requests && requests.length > 0){
                 requests.map((request, i) => {
@@ -234,11 +234,11 @@ let today = new Date().toISOString().split('T')[0];
             try {
               let dropdownCache = await commonFetchData('/attendance/requests/dropdown');
 
-                // Populate employee name dropdown
-                let employeeList = (dropdownCache?.employees || [])
-                    .map(employee => `<option value="${employee.id}">${employee.name_with_initials}</option>`)
+                // Populate user name dropdown
+                let userList = (dropdownCache?.users || [])
+                    .map(user => `<option value="${user.id}">${user.name_with_initials}</option>`)
                     .join('');
-                $('#employee_id').html('<option value="">Select Employee Name</option>' + employeeList);
+                $('#user_id').html('<option value="">Select Employee Name</option>' + userList);
 
                 // Populate message type dropdown
                 let typeList = (dropdownCache?.types || [])
@@ -268,7 +268,7 @@ let today = new Date().toISOString().split('T')[0];
 
             const type = $('#type_id').val();
             const description = $('#description').val();
-            const date = $('#employee_date_id').val();
+            const date = $('#user_date_id').val();
 
             const formData = new FormData();
             let missingFields = [];
@@ -287,10 +287,10 @@ let today = new Date().toISOString().split('T')[0];
                 $('#error-msg').html('');
             }
 
-            formData.append('employee_id', employee_Id);
+            formData.append('user_id', user_id);
             formData.append('type_id', type);
             formData.append('description', description);
-            formData.append('employee_date_id', date);
+            formData.append('user_date_id', date);
 
             try {
                 const res = await commonSaveData(createUrl, formData, 'POST');
@@ -303,7 +303,7 @@ let today = new Date().toISOString().split('T')[0];
                     renderRequestTable();
 
                 } else if (res && res.status === 'error') {
-                    if (res.message === 'No matching record found for the employee and date.') {
+                    if (res.message === 'No matching record found for the user and date.') {
 
                         // Append the error message into the warning alert
                         $('#warning_alert').html(`
@@ -368,7 +368,7 @@ function resetForm() {
 
     $('#request_id').val('');
     $('#type_id').val('');
-    $('#employee_date_id').val(today);
+    $('#user_date_id').val(today);
     $('#description').val('');
     $('#error-msg').html('');
     $('#warning_alert').hide();

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('emp_qualifications', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('employee_id');  // Foreign key to employees table
+            $table->unsignedBigInteger('user_id');  // Foreign key to users table
             $table->string('qualification');  // Name or type of qualification
             $table->string('institute');  // Institute name
             $table->string('year');  // Year of completion
