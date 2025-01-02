@@ -23,8 +23,8 @@
                     </div>
                     <div class="card-body">
                         <div class="card-body">
-                        <table class="table table-nowrap" id="employee_table">
-                            <thead class="table-light" id="table_head">
+                        <table class="table table-bordered">
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Employee Name</th>

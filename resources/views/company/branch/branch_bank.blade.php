@@ -30,7 +30,7 @@
 
                     <div class="justify-content-md-end">
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">Add New<i class="ri-add-line"></i></button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">New Bank<i class="ri-add-line"></i></button>
                             <a href="/company/branch" class="btn btn-danger">Back</a>
                         </div>
                     </div>
@@ -39,8 +39,8 @@
 
                 <div class="card-body">
                     <div class="card-body">
-                        <table class="table table-nowrap" id="bankdetails_table">
-                            <thead class="table-light" id="table_head">
+                        <table class="table table-bordered">
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Bank Code</th>
@@ -53,7 +53,7 @@
 
                             <tbody id="table_body">
                                 <!-- Render brnch bank details dynamically -->
-                                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="7" class="text-center">Loading...</td></tr>
 
                             </tbody>
                         </table>
@@ -84,22 +84,22 @@
 
                     <div class="row">
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="bank_code" class="form-label mb-1">Bank Code</label>
                             <input type="text" class="form-control" id="bank_code" placeholder="Enter Bank Code" value="">
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="bank_name" class="form-label mb-1">Bank Name</label>
                             <input type="text" class="form-control" id="bank_name" placeholder="Enter Bank Name" value="">
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="bank_branch" class="form-label mb-1">Bank Branch</label>
                             <input type="text" class="form-control" id="bank_branch" placeholder="Enter Bank Branch" value="">
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="bank_account" class="form-label mb-1">Account Number</label>
                             <input type="text" class="form-control" id="bank_account" placeholder="Enter Account Number" value="">
                         </div>

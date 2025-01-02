@@ -28,7 +28,7 @@
 
                 <div class="justify-content-md-end">
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">Add New<i class="ri-add-line"></i></button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">New WageGroup<i class="ri-add-line"></i></button>
                     </div>
                 </div>
             </div>
@@ -36,18 +36,18 @@
 
             <div class="card-body">
                     <div class="card-body">
-                        <table class="table table-nowrap" id="wageGroup_table">
-                            <thead class="table-light" id="table_head">
+                        <table class="table table-bordered">
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Name</th>
+                                    <th scope="col">Wage Group Name</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
 
                             <tbody id="table_body">
 
-                                <tr><td colspan="4" class="text-center">Loading...</td></tr>
+                                <tr><td colspan="7" class="text-center">Loading...</td></tr>
 
                             </tbody>
                         </table>
@@ -73,7 +73,7 @@
             </div>
             <div class="modal-body">
                 <div id="wageGroup-form-body" class="row">
-                    <div class="col-xxl-3 col-md-12 mb-3">
+                    <div class="mb-3">
                         <label for="wage_group_name" class="form-label mb-1">Name</label>
                         <input type="text" class="form-control" id="wage_group_name" placeholder="Enter Wage Group Name" value="">
                     </div>

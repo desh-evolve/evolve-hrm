@@ -29,15 +29,15 @@
 
                     <div class="justify-content-md-end">
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">Add New<i class="ri-add-line"></i></button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">New Currencies<i class="ri-add-line"></i></button>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-body">
                     <div class="card-body">
-                        <table class="table table-nowrap" id="currency_table">
-                            <thead class="table-light" id="table_head">
+                        <table class="table table-bordered">
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Currency Name</th>
@@ -78,22 +78,22 @@
                 <div class="modal-body">
                     <div id="currency-form-body" class="row">
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="currency_name" class="form-label mb-1">Currency Name</label>
                             <input type="text" class="form-control" id="currency_name" placeholder="Enter Currency Name" value="">
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="iso_code" class="form-label mb-1">ISO Code</label>
                             <input type="text" class="form-control" id="iso_code" placeholder="Enter ISO Code" value="">
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="conversion_rate" class="form-label mb-1">Currency Conversion Rate</label>
                             <input type="text" class="form-control" id="conversion_rate" placeholder="Enter Conversion Rate" value="">
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="previous_rate" class="form-label mb-1">Previous Rate</label>
                             <input type="text" class="form-control" id="previous_rate" placeholder="Enter Previous Rate" value="">
                         </div>
