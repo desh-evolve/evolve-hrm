@@ -43,80 +43,70 @@ class TimeSheetController extends Controller
 
     public function index(Request $request)
     {
+
+        $epc = new EmployeePreferencesController();
+        $cdc = new CommonDateController();
+        $cc = new CommonController();
+        $pc = new PunchController();
+        $edc = new EmployeeDateController();
+
         $currentUser = Auth::user();
         $filter_data = $request->input('filter_data', [
             'company_id' => 1,
             'employee_id' => $currentUser->id,
-            'date' => '2024-12-11',
+            'date' => '2024-12-14',
             'group_ids' => -1,
             'branch_ids' => -1,
             'department_ids' => -1,
         ]);
 
-        $data = $this->getTimesheetData($filter_data);
-
-        return view('attendance.timesheet.index', [
-            'payPeriod' => $data['payPeriod'],
-            'filter_data' => $filter_data
-        ]);
-    }
-
-    private function getTimesheetData($filter_data)
-    {
-        $payPeriod = $this->getCurrentPayPeriod($filter_data);
-        $punchList = $this->getRenderingData($filter_data);
-
-        return [
-            'payPeriod' => $payPeriod
-        ];
-    }
-
-    private function getCurrentPayPeriod($filter_data)
-    {
         $employee_id = $filter_data['employee_id'];
-        $date = $filter_data['date'];
 
-        $fields = ['*'];
-        $joinArr = [
-            'pay_period_schedule' => ['pay_period_schedule.id', '=', 'pay_period.pay_period_schedule_id'],
-            'pay_period_schedule_employee' => ['pay_period_schedule_employee.pay_period_schedule_id', '=', 'pay_period_schedule.id']
-        ];
+        //Get employee date info from filter date.
+        $em_date_arr = $edc->getByEmployeeDateUserIdAndDate($employee_id, $filter_data['date']);
+        //print_r($em_date_arr);exit;
+        $pay_period_obj = null;
+        if ( count($em_date_arr) > 0 ) {
+            $pay_period_id = $em_date_arr[0]->pay_period_id;
+        } else {
+            $pay_period_arr = $cc->getPayPeriodByUserIdAndDate($employee_id, $filter_data['date']);
 
-        $whereArr = [
-            ['DATE(pay_period.start_date)', '<=', '"'.$date.'"'],
-            ['DATE(pay_period.end_date)', '>=', '"'.$date.'"'],
-            ['pay_period_schedule_employee.employee_id', '=', $employee_id],
-            ['pay_period_schedule.status', '=', '"active"'],
-        ];
+            if ( count($pay_period_arr) > 0 ) {
+                $pay_period_obj = $pay_period_arr[0];
+                $pay_period_id = $pay_period_obj->id;
+            } else {
+                $pay_period_id = FALSE;
+            }
+        }
 
-        // Fetch the pay period data
-        $pp = $this->common->commonGetAll('pay_period', $fields, $joinArr, $whereArr, true);
+        $pay_period_arr =  $this->common->commonGetById($pay_period_id, 'id', 'pay_period', '*', [], [], true);
 
-        // Return the result (can be empty if no records are found)
-        return $pp;
-    }
+        if ( count($pay_period_arr) > 0 ) {
+            $pay_period_obj = $pay_period_arr[0];
+        }
 
-    private function getRenderingData($filter_data) {
-        $epc = new EmployeePreferencesController();
-        $cdc = new CommonDateController();
+        //print_r($pay_period_obj );exit;
+
         $current_user_prefs = $epc->getEmployeePreferencesByEmployeeId(Auth::user()->id);
 
         // Get the start day of the week, defaulting to Monday
-        $start_date = $cdc->getBeginWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day );
-		$end_date = $cdc->getEndWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day );
+        $start_date = $cdc->getBeginWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day ); // Y-m-d format
+		$end_date = $cdc->getEndWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day ); // Y-m-d format
 
         $calendar_array = $cdc->getCalendarArray( $start_date, $end_date, $current_user_prefs[0]->start_week_day );
 
         //print_r($calendar_array);exit;
-
+        
         // Fetch the punch list for the given week range
-        $pc = new PunchController();
         $punchList = $pc->getPunchesByEmployeeIdAndStartDateAndEndDate($filter_data['employee_id'], $start_date, $end_date);
-
-
+        
+        //print_r($punchList);exit;
+        
         if(count($punchList) > 0){
+            
             foreach($punchList as $punch_obj){
-                $user_date_stamp = $punch_obj->user_date_stamp;
+                
+                $user_date_stamp = Carbon::parse($punch_obj->user_date_stamp)->timestamp; //UNIX timestamp
 
                 if ( $punch_obj->note != '' ) {
 					$has_note = TRUE;
@@ -136,54 +126,57 @@ class TimeSheetController extends Controller
 				);
 
                 //Total up meal and break total time for each day.
-				if ($punch_obj->punch_type !== 'normal') {
-
-                    $userDateType =& $tmp_date_break_totals[$user_date_stamp][$punch_obj->punch_type];
-                
-                    if ($punch_obj->punch_status === 'out') {
-                        $userDateType['prev'] = $punch_obj->time_stamp;
-                    } elseif (isset($userDateType['prev'])) {
-                
-                        // Ensure both values are well-formed numeric strings
-                        $current_time = (string)(float)$punch_obj->time_stamp;
-                        $previous_time = (string)(float)$userDateType['prev'];
-                
-                        $userDateType['total_time'] = isset($userDateType['total_time']) 
-                            ? bcadd($userDateType['total_time'], bcsub($current_time, $previous_time)) 
-                            : bcsub($current_time, $previous_time);
-                
-                        $userDateType['total_breaks'] = isset($userDateType['total_breaks']) 
-                            ? $userDateType['total_breaks'] + 1 
-                            : 1;
-                
-                        if ($userDateType['total_time'] > 0) {
-                            $break_name = ($punch_obj->punch_type == 20) ? 'Lunch Time' : 'Break Time';
-                
-                            $date_break_totals[$user_date_stamp][$punch_obj->punch_type] = [
-                                'break_name' => $break_name,
-                                'total_time' => $userDateType['total_time'],
-                                'total_breaks' => $userDateType['total_breaks'],
-                            ];
-
-                        }
-                    }
+				if ($punch_obj->punch_type != 'normal') {
                     
-                    $date_total_break_ids[] = (int)$punch_obj->punch_type;
+                    $userDateType =& $tmp_date_break_totals[$user_date_stamp][$punch_obj->punch_type];
+                    //print_r($punch_obj->time_stamp);
+
+                    if ($punch_obj->punch_status == 'out') {
+
+                        $userDateType['prev'] = Carbon::parse($punch_obj->time_stamp)->timestamp;
+                        
+                    } elseif ( isset($userDateType['prev']) ) {
+
+                        if ( !isset($userDateType['total_time']) ) {
+							$userDateType['total_time'] = 0;
+						}
+
+                        $timeStamp = Carbon::parse($punch_obj->time_stamp)->timestamp;
+                        $userDateType['total_time'] = bcadd( $userDateType['total_time'], bcsub( $timeStamp, $userDateType['prev']) );
+
+                        if ( !isset($userDateType['total_breaks']) ) {
+							$userDateType['total_breaks'] = 0;
+						}
+						$userDateType['total_breaks']++;
+
+						if ( $userDateType['total_time'] > 0 ) {
+                            $break_name = ($punch_obj->punch_type == 'lunch') ? 'Lunch Time' : 'Break Time';
+
+							$date_break_totals[$user_date_stamp][$punch_obj->punch_type] = array(
+								'break_name' => $break_name,
+								'total_time' => $userDateType['total_time'], //time in seconds
+  								'total_breaks' => $userDateType['total_breaks'], //number of breaks
+							);
+						}
+
+                    }
+
+                    $date_total_break_ids[] = $punch_obj->punch_type;
                 }
             }
             
             //Process meal/break total time so it can be properly formatted on the timesheet.
             if ( isset($date_break_totals) ) {
                 $date_total_break_ids = array_unique($date_total_break_ids);
-                rsort($date_total_break_ids); //Put break time first, then lunch.
+                sort($date_total_break_ids); //Put break time first, then lunch.
 
-                $date_break_total_rows = TimeSheetFormatArrayByDate( $date_break_totals, $date_total_break_ids, $calendar_array, 'break_name');
+                $date_break_total_rows = $this->TimeSheetFormatArrayByDate( $date_break_totals, $date_total_break_ids, $calendar_array, 'break_name');
             }
 
             $x=0;
             $stop = FALSE;
             $max_no_punch_count = count($calendar_array)*2;
-            $punch_day_counter=array();
+            $punch_day_counter = array();
             $last_punch_control_id=array();
             $no_punch_count=0;
             $max_punch_day_counter=0;
@@ -193,22 +186,27 @@ class TimeSheetController extends Controller
                     $status = 'in'; //In
                     $status_name = 'In';
                 } else {
-                    $status = 'in'; //Out
+                    $status = 'out'; //Out
                     $status_name = 'Out';
                 }
     
+                //print_r($punches);exit;
+
                 foreach( $calendar_array as $cal_arr ) {
                     $cal_day_epoch = $cal_arr['epoch'];
+                    
                     if ( !isset($punch_day_counter[$cal_day_epoch]) ) {
                         $punch_day_counter[$cal_day_epoch] = 0;
                     }
                     if ( !isset($last_punch_control_id[$cal_day_epoch]) ) {
                         $last_punch_control_id[$cal_day_epoch] = 0;
                     }
-    
+
+                    //print_r($x . "=".isset($punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]]));
+
                     if ( isset($punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]])
-                            && $punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]]['status_id'] == $status
-                            && $status == 'in' ) {
+                            AND $punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]]['punch_status'] == $status
+                            AND $status == 'in' ) {
                         $punch_arr = $punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]];
     
                         $last_punch_control_id[$cal_day_epoch] = $punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]]['punch_control_id'];
@@ -217,7 +215,7 @@ class TimeSheetController extends Controller
     
                         $no_punch_count=0;
                     } elseif ( isset($punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]])
-                                && $punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]]['status_id'] == $status
+                                && $punches[$cal_day_epoch][$punch_day_counter[$cal_day_epoch]]['punch_status'] == $status
                                 && $status == 20 ) {
                         //Debug::text($x .'Status: 20 Found Punch for Day: '. $cal_arr['day_of_month'] , __FILE__, __LINE__, __METHOD__,10);
     
@@ -282,16 +280,16 @@ class TimeSheetController extends Controller
     
     
                     $rows[$x]['data'][$cal_arr['epoch']] = $punch_arr;
-                    $rows[$x]['status_id'] = $status;
+                    $rows[$x]['punch_status'] = $status;
                     $rows[$x]['status'] = $status_name;
                     $rows[$x]['background'] = $x % 2;
-    
+
                     if ( $punch_day_counter[$cal_day_epoch] > $max_punch_day_counter) {
                         //Debug::text('Updating Max Day Punch Counter: '. $punch_day_counter[$cal_day_epoch], __FILE__, __LINE__, __METHOD__,10);
                         $max_punch_day_counter = $punch_day_counter[$cal_day_epoch];
                     }
                 }
-    
+
                 //Debug::text('No Punch Count: '. $no_punch_count .' Max: '. $max_no_punch_count, __FILE__, __LINE__, __METHOD__,10);
                 //Only pop off the last row if the rows aren't in pairs. Because if there is only ONE in punch at the first day of the week
                 //and no other punches, the Out row doesn't show otherwise.
@@ -319,15 +317,13 @@ class TimeSheetController extends Controller
         }
 
         //Get date total rows.
-        $edc = new EmployeeDateController();
-
         $meal_policy_options = $this->common->commonGetById($filter_data['company_id'], 'company_id', 'meal_policy', '*');
-
+        
         $employee_date_total = $edc->getByCompanyIDAndUserIdAndStatusAndTypeAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['employee_id'], 'in', 'normal', $start_date, $end_date);
-
+        
         if ( count($employee_date_total) > 0 ){
             foreach($employee_date_total as $udt_obj) {
-                $user_date_stamp = strtotime( $udt_obj->user_date_stamp );
+                $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
                 if ( $udt_obj->meal_policy_id !== FALSE AND isset($meal_policy_options[$udt_obj->meal_policy_id]) ) {
                     $meal_policy = $meal_policy_options[$udt_obj->meal_policy_id];
@@ -339,8 +335,8 @@ class TimeSheetController extends Controller
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
                     'user_date_id' => $udt_obj->employee_date_id,
-                    'status_id' => $udt_obj->punch_status,
-                    'type_id' => $udt_obj->punch_type,
+                    'status' => $udt_obj->status,
+                    'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
                     'meal_policy_id' => $udt_obj->meal_policy_id,
                     'meal_policy' => $meal_policy,
@@ -355,7 +351,7 @@ class TimeSheetController extends Controller
                 $date_total_meal_ids[] = (int)$udt_obj->meal_policy_id;
             }
         }
-
+        
         if ( isset($date_meal_totals) ) {
 			foreach( $date_meal_totals as $user_date_stamp => $date_rows ) {
 				foreach($date_rows as $date_data) {
@@ -374,14 +370,21 @@ class TimeSheetController extends Controller
             sort($date_total_meal_ids);
 
             // Format the array by date
-			$date_meal_policy_total_rows = TimeSheetFormatArrayByDate( $date_meal_total_group, $date_total_meal_ids, $calendar_array, 'meal_policy');
+			$date_meal_policy_total_rows = $this->TimeSheetFormatArrayByDate( $date_meal_total_group, $date_total_meal_ids, $calendar_array, 'meal_policy');
+
+            //print_r($date_meal_total_group);
+            //exit;
 		}
+
+        // check here============================================================================================================================================================================================================================================================================================================================================================================
+        // check all the functions working properly.
+
 
         $break_policy_options = $this->common->commonGetById($filter_data['company_id'], 'company_id', 'break_policy', '*');
 
 		if ( count($employee_date_total) > 0 ) {
 			foreach($employee_date_total as $udt_obj) {
-				$user_date_stamp = strtotime( $udt_obj->user_date_stamp );
+                $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
 				if ( $udt_obj->id !== FALSE AND isset($break_policy_options[$udt_obj->id]) ) {
 					$break_policy = $break_policy_options[$udt_obj->id];
@@ -393,12 +396,12 @@ class TimeSheetController extends Controller
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
                     'user_date_id' => $udt_obj->employee_date_id,
-                    'status_id' => $udt_obj->punch_status,
-                    'type_id' => $udt_obj->punch_type,
+                    'status' => $udt_obj->status,
+                    'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
                     'break_policy_id' => $udt_obj->break_policy_id,
                     'break_policy' => $break_policy,
-                    'department_id' => $udt_obj->departme,
+                    'department_id' => $udt_obj->department_id,
                     'total_time' => $udt_obj->total_time,
                     'total_time_display' => abs($udt_obj->total_time),
                     //'name' => $udt_obj->getName(),
@@ -410,44 +413,48 @@ class TimeSheetController extends Controller
 			}
 		}
 
+        
         if ( isset($date_break_policy_totals) ) {
-			foreach( $date_break_policy_totals as $user_date_stamp => $date_rows ) {
-				foreach($date_rows as $date_data) {
-					$prev_total_time = 0;
+            foreach( $date_break_policy_totals as $user_date_stamp => $date_rows ) {
+                foreach($date_rows as $date_data) {
+                    $prev_total_time = 0;
 					if ( isset($date_break_policy_total_group[$user_date_stamp][$date_data['break_policy_id']]) ) {
-						$prev_total_time = $date_break_policy_total_group[$user_date_stamp][$date_data['break_policy_id']]['total_time'];
+                        $prev_total_time = $date_break_policy_total_group[$user_date_stamp][$date_data['break_policy_id']]['total_time'];
+                        echo 'hi';
 					}
-
+                    
 					$date_data['total_time'] = $date_data['total_time'] + $prev_total_time;
+
 					$date_break_policy_total_group[$user_date_stamp][$date_data['break_policy_id']] = $date_data;
 				}
 			}
-
+            
 			$date_total_break_policy_ids = array_unique($date_total_break_policy_ids);
 			sort($date_total_break_policy_ids);
-
-			$date_break_policy_total_rows = TimeSheetFormatArrayByDate( $date_break_policy_total_group, $date_total_break_policy_ids, $calendar_array, 'break_policy');
-		}
+            
+			$date_break_policy_total_rows = $this->TimeSheetFormatArrayByDate( $date_break_policy_total_group, $date_total_break_policy_ids, $calendar_array, 'break_policy');
+            
+        }
 
         //Get only system totals.
 		if ( count($employee_date_total) > 0 ) {
 			foreach($employee_date_total as $udt_obj) {
-				$user_date_stamp = strtotime( $udt_obj->user_date_stamp );
+                $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
-				$type_and_policy_id = $udt_obj->punch_type.(int)$udt_obj->over_time_policy_id;
+				$type_and_policy_id = $udt_obj->type.(int)$udt_obj->over_time_policy_id;
 
 				$date_totals[$user_date_stamp][] = array(
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
                     'user_date_id' => $udt_obj->employee_date_id,
-                    'status_id' => $udt_obj->punch_status,
-                    'type_id' => $udt_obj->punch_type,
+                    'status' => $udt_obj->status,
+                    'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
                     'type_and_policy_id' => $type_and_policy_id,
                     'branch_id' => (int)$udt_obj->branch_id,
                     'department_id' => $udt_obj->department_id,
                     'total_time' => $udt_obj->total_time,
-                    'name' => $udt_obj->name,
+                    'name' => 'Total Time',
                     //Override only shows for SYSTEM override columns...
                     //FIXME: Need to check Worked overrides too.
                     'tmp_override' => $udt_obj->override
@@ -467,35 +474,38 @@ class TimeSheetController extends Controller
 			$date_total_type_ids[100] = NULL;
 		}
 
+        
         if ( isset($date_totals) ) {
-			//Group Date Totals
+            //Group Date Totals
 			foreach( $date_totals as $user_date_stamp => $date_rows ) {
-				foreach($date_rows as $date_data) {
-					$prev_total_time = 0;
+                foreach($date_rows as $date_data) {
+                    $prev_total_time = 0;
 					if ( isset($date_total_group[$user_date_stamp][$date_data['type_and_policy_id']]) ) {
-						$prev_total_time = $date_total_group[$user_date_stamp][$date_data['type_and_policy_id']]['total_time'];
+                        $prev_total_time = $date_total_group[$user_date_stamp][$date_data['type_and_policy_id']]['total_time'];
 					}
-
+                    
 					if ( $date_data['tmp_override'] == TRUE && isset($date_total_group[$user_date_stamp][100]) ) {
-						$date_total_group[$user_date_stamp][100]['override'] = TRUE;
+                        $date_total_group[$user_date_stamp][100]['override'] = TRUE;
 					}
-
+                    
 					$date_data['total_time'] = $date_data['total_time'] + $prev_total_time;
 					$date_total_group[$user_date_stamp][$date_data['type_and_policy_id']] = $date_data;
 				}
 			}
-
+            
+            
 			//We want to keep the order of the SQL query, so use this method instead.
 			if ( isset($date_total_type_ids) ) {
 				$date_total_type_ids = array_keys($date_total_type_ids);
 				sort($date_total_type_ids); //Keep Total, then Regular first.
 			}
+            
+			$date_total_rows = $this->TimeSheetFormatArrayByDate( $date_total_group, $date_total_type_ids, $calendar_array, 'name');
 
-			$date_total_rows = TimeSheetFormatArrayByDate( $date_total_group, $date_total_type_ids, $calendar_array, 'name');
 		}
 
         // ==================================================================================================================
-        // job part removed (add if needed later) - no table columns either. you have to add those.
+        // job part removed (add if needed later) - no table columns either. you have to add those too. (desh (2024-12-23))
         // ==================================================================================================================
         
         
@@ -503,14 +513,15 @@ class TimeSheetController extends Controller
         // Get Premium Time
         // ==================================================================================================================
 
-        $premium_policy_options = $this->common->commonGetById($filter_data['company_id'], 'company_id', 'premuim_policy', '*');
+        $premium_policy_options = $this->common->commonGetById($filter_data['company_id'], 'company_id', 'premium_policy', '*');
 
-		$udtlf = TTnew( 'UserDateTotalListFactory' );
+        
 		//Get only worked totals.
 		if ( count($employee_date_total) > 0 ) {
-			foreach($employee_date_total as $udt_obj) {
-				$user_date_stamp = strtotime($udt_obj->user_date_stamp);
-
+            foreach($employee_date_total as $udt_obj) {
+                $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
+                //print_r($employee_date_total); exit;
+                
 				if ( $udt_obj->id !== FALSE AND isset($premium_policy_options[$udt_obj->premium_policy_id]) ) {
 					$premium_policy = $premium_policy_options[$udt_obj->premium_policy_id];
 				} else {
@@ -521,12 +532,12 @@ class TimeSheetController extends Controller
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
                     'user_date_id' => $udt_obj->employee_date_id,
-                    'status_id' => $udt_obj->punch_status,
-                    'type_id' => $udt_obj->punch_type,
+                    'status' => $udt_obj->status,
+                    'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
                     'premium_policy_id' => $udt_obj->premium_policy_id,
                     'premium_policy' => $premium_policy,
-                    'department_id' => $udt_obj->departme,
+                    'department_id' => $udt_obj->department_id,
                     'total_time' => $udt_obj->total_time,
                     //'name' => $udt_obj->getName(),
                     'override' => $udt_obj->override
@@ -537,37 +548,39 @@ class TimeSheetController extends Controller
 			}
 		}
 
+        
 		if ( isset($date_premium_totals) ) {
-			foreach( $date_premium_totals as $user_date_stamp => $date_rows ) {
+            foreach( $date_premium_totals as $user_date_stamp => $date_rows ) {
 				foreach($date_rows as $date_data) {
 					$prev_total_time = 0;
 					if ( isset($date_premium_total_group[$user_date_stamp][$date_data['premium_policy_id']]) ) {
 						$prev_total_time = $date_premium_total_group[$user_date_stamp][$date_data['premium_policy_id']]['total_time'];
 					}
-
+                    
 					$date_data['total_time'] = $date_data['total_time'] + $prev_total_time;
 					$date_premium_total_group[$user_date_stamp][$date_data['premium_policy_id']] = $date_data;
 				}
 			}
-
+            
 			$date_total_premium_ids = array_unique($date_total_premium_ids);
 			sort($date_total_premium_ids);
-
-			$date_premium_total_rows = TimeSheetFormatArrayByDate( $date_premium_total_group, $date_total_premium_ids, $calendar_array, 'premium_policy');
+            
+			$date_premium_total_rows = $this->TimeSheetFormatArrayByDate( $date_premium_total_group, $date_total_premium_ids, $calendar_array, 'premium_policy');
 			//var_dump($date_premium_total_rows);
 		}
-
-
+        
+        
         // ==================================================================================================================
         // Get Absences
         // ==================================================================================================================
         
         $absence_policy_options = $this->common->commonGetById($filter_data['company_id'], 'company_id', 'absence_policy', '*');
+       
                 
 		//Get only worked totals.
         if ( count($employee_date_total) > 0 ) {
 			foreach($employee_date_total as $udt_obj) {
-				$user_date_stamp = strtotime( $udt_obj->user_date_stamp );
+				$user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
 				if ( $udt_obj->absence_policy_id !== FALSE ) {
 					$absence_policy = $absence_policy_options[$udt_obj->absence_policy_id];
@@ -579,12 +592,12 @@ class TimeSheetController extends Controller
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
                     'user_date_id' => $udt_obj->employee_date_id,
-                    'status_id' => $udt_obj->punch_status,
-                    'type_id' => $udt_obj->punch_type,
+                    'status' => $udt_obj->status,
+                    'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
                     'absence_policy_id' => $udt_obj->absence_policy_id,
                     'absence_policy' => $absence_policy,
-                    'department_id' => $udt_obj->departme,
+                    'department_id' => $udt_obj->department_id,
                     'total_time' => $udt_obj->total_time,
                     //'name' => $udt_obj->getName(),
                     'override' => $udt_obj->override
@@ -594,43 +607,41 @@ class TimeSheetController extends Controller
 				$date_total_absence_ids[] = (int)$udt_obj->absence_policy_id;
 			}
 		} 
-		//                die;
-
+		
+        
+        
 		if ( isset($date_absence_totals) ) {
-			foreach( $date_absence_totals as $user_date_stamp => $date_rows ) {
-				foreach($date_rows as $date_data) {
-					$prev_total_time = 0;
+            foreach( $date_absence_totals as $user_date_stamp => $date_rows ) {
+                foreach($date_rows as $date_data) {
+                    $prev_total_time = 0;
 					if ( isset($date_absence_total_group[$user_date_stamp][$date_data['absence_policy_id']]) ) {
-						$prev_total_time = $date_absence_total_group[$user_date_stamp][$date_data['absence_policy_id']]['total_time'];
+                        $prev_total_time = $date_absence_total_group[$user_date_stamp][$date_data['absence_policy_id']]['total_time'];
 					}
-
+                    
 					$date_data['total_time'] = $date_data['total_time'] + $prev_total_time;
 					$date_absence_total_group[$user_date_stamp][$date_data['absence_policy_id']] = $date_data;
 				}
 			}
-
+            
 			$date_total_absence_ids = array_unique($date_total_absence_ids);
 			sort($date_total_absence_ids);
-
-			$date_absence_total_rows = TimeSheetFormatArrayByDate( $date_absence_total_group, $date_total_absence_ids, $calendar_array, 'absence_policy');
+            
+			$date_absence_total_rows = $this->TimeSheetFormatArrayByDate( $date_absence_total_group, $date_total_absence_ids, $calendar_array, 'absence_policy');
 			//var_dump($date_absence_total_rows);
 		}
 
         // ==================================================================================================================
         // Get Exceptions
         // ==================================================================================================================
-
-        $cc = new CommonController();
-
-		$exceptions = $cc->getExceptionsByCompanyIDAndUserIdAndStartDateAndEndDate( $current_company->getID(), $filter_data['employee_id'], $start_date, $end_date);
-
+        
+		$exceptions = $cc->getExceptionsByCompanyIDAndUserIdAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['employee_id'], $start_date, $end_date);
+        
 		$punch_exceptions = array();
 
 		if ( count($exceptions) > 0 ) {
 			foreach( $exceptions as $e_obj ) {
 
-				$user_date_stamp = strtotime( $e_obj->user_date_stamp );
-
+                $user_date_stamp = Carbon::parse($e_obj->user_date_stamp)->timestamp;
 
 				$exception_data_arr = array(
                     'type_id' => $e_obj->type_id,
@@ -647,44 +658,73 @@ class TimeSheetController extends Controller
 				}
 
 				$date_exceptions[$user_date_stamp][] = $exception_data_arr;
-				if ( !isset($unique_exceptions[$e_obj->getColumn('exception_policy_type_id')])
-						OR ( $unique_exceptions[$e_obj->getColumn('exception_policy_type_id')]['severity_id'] < $exception_data_arr['severity_id']) ) {
-					$unique_exceptions[$e_obj->getColumn('exception_policy_type_id')] = $exception_data_arr;
+				if ( !isset($unique_exceptions[$e_obj->exception_policy_type_id])
+						OR ( $unique_exceptions[$e_obj->exception_policy_type_id]['severity_id'] < $exception_data_arr['severity_id']) ) {
+					$unique_exceptions[$e_obj->exception_policy_type_id] = $exception_data_arr;
 				}
 			}
 		}
-
+        
 		if ( isset($date_exceptions) ) {
-			foreach( $calendar_array as $cal_arr ) {
-				if ( isset($date_exceptions[$cal_arr['epoch']])) {
-					$exception_data = $date_exceptions[$cal_arr['epoch']];
+            foreach( $calendar_array as $cal_arr ) {
+                if ( isset($date_exceptions[$cal_arr['epoch']])) {
+                    $exception_data = $date_exceptions[$cal_arr['epoch']];
 				} else {
 					$exception_data = NULL;
 				}
-
+                
 				$date_exception_total_rows[] = $exception_data;
 			}
 		}
-
+        
         //Get exception names for legend.
 		if ( isset($unique_exceptions) ) {
-            $exception_options = $this->common->commonGetAll('exception_policy', '*');
+
+            // check here
+            // this is data redundant -> if can add these data to a table and get from it.
+            $exception_options = [
+                'S1' => 'Unscheduled Absence',
+                'S2' => 'Not Scheduled',
+                'S3' => 'In Early',
+                'S4' => 'In Late',
+                'S5' => 'Out Early',
+                'S6' => 'Out Late',
+                'S7' => 'Over Daily Scheduled Time',
+                'S8' => 'Under Daily Scheduled Time',
+                'S9' => 'Over Weekly Scheduled Time',
+                'O1' => 'Over Daily Time',
+                'O2' => 'Over Weekly Time',
+                'M1' => 'Missing In Punch',
+                'M2' => 'Missing Out Punch',
+                'M3' => 'Missing Lunch In/Out Punch',
+                'M4' => 'Missing Break In/Out Punch',
+                'L1' => 'Long Lunch',
+                'L2' => 'Short Lunch',
+                'L3' => 'No Lunch',
+                'B1' => 'Long Break',
+                'B2' => 'Short Break',
+                'B3' => 'Too Many Breaks',
+                'B4' => 'Too Few Breaks',
+                'B5' => 'No Break',
+                'V1' => 'TimeSheet Not Verified'
+            ];
+
             
 			foreach( $unique_exceptions as $unique_exception ) {
-				$unique_exceptions[$unique_exception['exception_policy_type_id']]['name'] = $exception_options[$unique_exception['exception_policy_type_id']];
+                $unique_exceptions[$unique_exception['exception_policy_type_id']]['name'] = $exception_options[$unique_exception['exception_policy_type_id']];
 			}
-
+            
 			sort($unique_exceptions);
 		}
 
         // ==================================================================================================================
         // Get Pending Requests
         // ==================================================================================================================
+		$requests = $cc->getRequestsByCompanyIDAndUserIdAndStatusAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['employee_id'], '"pending"', $start_date, $end_date);
 
-		$requests = $cc->getRequestsByCompanyIDAndUserIdAndStatusAndStartDateAndEndDate( $current_company->getID(), $filter_data['employee_id'], 'pending', $start_date, $end_date);
 		if ( count($requests) > 0 ) {
 			foreach( $requests as $r_obj ) {
-				$user_date_stamp = strtotime( $r_obj->date_stamp );
+                $user_date_stamp = Carbon::parse($r_obj->user_date_stamp)->timestamp;
 
 				$request_data_arr = array(
 				    'id' => $r_obj->id
@@ -706,36 +746,44 @@ class TimeSheetController extends Controller
 			}
 		}
 
+        
         // ==================================================================================================================
         // Get Holidays
         // ==================================================================================================================
+        
+        $holiday_array = $cc->getHolidaysByPolicyGroupUserId($employee_id, $start_date, $end_date);
+        
 
         // ==================================================================================================================
         // Get pay period locked days
         // ==================================================================================================================
-
+        
         if ( isset($pay_period_obj) AND is_object($pay_period_obj) ) {
 			foreach( $calendar_array as $cal_arr ) {
-				if ( $cal_arr['epoch'] >= $pay_period_obj->getStartDate()
-						AND $cal_arr['epoch'] <= $pay_period_obj->getEndDate() ) {
+                
+                $start_date = Carbon::parse($pay_period_obj->start_date)->startOfDay()->timestamp;;
+                $end_date = Carbon::parse($pay_period_obj->end_date)->startOfDay()->timestamp;;
+
+				if ( $cal_arr['epoch'] >= $start_date
+						AND $cal_arr['epoch'] <= $end_date ) {
 					//Debug::text('Current Pay Period: '. TTDate::getDate('DATE+TIME', $cal_arr['epoch'] ), __FILE__, __LINE__, __METHOD__,10);
-					$pay_period_locked_rows[$cal_arr['epoch']] = $pay_period_obj->getIsLocked();
+					$pay_period_locked_rows[$cal_arr['epoch']] = $pay_period_obj->status == 'locked' ? TRUE : FALSE;
 				} else {
 					//Debug::text('Diff Pay Period...', __FILE__, __LINE__, __METHOD__,10);
 					//FIXME: Add some caching here perhaps?
-					$pplf->getByUserIdAndEndDate( $user_id, $cal_arr['epoch'] );
-					if ( $pplf->getRecordCount() > 0 ) {
-						$tmp_pay_period_obj = $pplf->getCurrent();
-						$pay_period_locked_rows[$cal_arr['epoch']] = $tmp_pay_period_obj->getIsLocked();
+					$pplf = $cc->getPayPeriodByUserIdAndDate( $employee_id, $cal_arr['epoch'] );
+					if ( count($pplf) > 0 ) {
+						$tmp_pay_period_obj = $pplf[0];
+						$pay_period_locked_rows[$cal_arr['epoch']] = $tmp_pay_period_obj->status == 'locked' ? TRUE : FALSE;
 					} else {
 						//Debug::text('  Did not Found rows...', __FILE__, __LINE__, __METHOD__,10);
 						//Allow them to edit payperiods in future.
 						$pay_period_locked_rows[$cal_arr['epoch']] = FALSE;
 					}
+                    
 				}
 
 			}
-			unset($tmp_pay_period_obj);
 		}
 
         // ==================================================================================================================
@@ -744,93 +792,132 @@ class TimeSheetController extends Controller
 
         if ( isset($pay_period_obj) AND is_object($pay_period_obj) ) {
 			$is_timesheet_superior = FALSE;
-			$pptsvlf = TTnew( 'PayPeriodTimeSheetVerifyListFactory' );
-			$pptsvlf->getByPayPeriodIdAndUserId( $pay_period_obj->getId(), $user_id );
+			$pptsvlf = $cc->getPayPeriodTimeSheetByPayPeriodIdAndUserId( $pay_period_obj->id, $employee_id );
 
-			if ( $pptsvlf->getRecordCount() > 0 ) {
-				$pptsv_obj = $pptsvlf->getCurrent();
-				$pptsv_obj->setCurrentUser( $current_user->getId() );
+			if ( count($pptsvlf) > 0 ) {
+				$pptsv_obj = $pptsvlf[0];
 			} else {
-				$pptsv_obj = $pptsvlf;
-				$pptsv_obj->setCurrentUser( $current_user->getId() );
-				$pptsv_obj->setUser( $user_id );
-				$pptsv_obj->setPayPeriod( $pay_period_obj->getId() );
+                $pptsv_obj = $pptsvlf;
 				//$pptsv_obj->setStatus( 45 ); //Pending Verification
 			}
-
+            
 			$time_sheet_verify = array(
-                'id' => $pptsv_obj->getId(),
-                'user_verified' => $pptsv_obj->getUserVerified(),
-                'user_verified_date' => $pptsv_obj->getUserVerifiedDate(),
-                'status_id' => $pptsv_obj->getStatus(),
-                'status' => Option::getByKey( $pptsv_obj->getStatus(), $pptsv_obj->getOptions('status') ),
-                'pay_period_id' => $pptsv_obj->getPayPeriod(),
-                'user_id' => $pptsv_obj->getUser(),
-                'authorized' => $pptsv_obj->getAuthorized(),
-                'authorized_users' => $pptsv_obj->getAuthorizedUsers(),
-                'is_hierarchy_superior' => $pptsv_obj->isHierarchySuperior(),
-                'display_verify_button' => $pptsv_obj->displayVerifyButton(),
-                'verification_box_color' => $pptsv_obj->getVerificationBoxColor(),
-                'verification_status_display' => $pptsv_obj->getVerificationStatusDisplay(),
-                'previous_pay_period_verification_display' => $pptsv_obj->displayPreviousPayPeriodVerificationNotice(),
-                'created_date' => $pptsv_obj->getCreatedDate(),
-                'created_by' => $pptsv_obj->getCreatedBy(),
-                'updated_date' => $pptsv_obj->getUpdatedDate(),
-                'updated_by' => $pptsv_obj->getUpdatedBy(),
-                'deleted_date' => $pptsv_obj->getDeletedDate(),
-                'deleted_by' => $pptsv_obj->getDeletedBy()
+                'id' => $pptsv_obj->id,
+                'user_verified' => $pptsv_obj->user_verified,
+                'user_verified_date' => $pptsv_obj->user_verified_date,
+                'status_id' => $pptsv_obj->status_id,
+                'status' => $pptsv_obj->status,
+                'pay_period_id' => $pptsv_obj->pay_period_id,
+                'user_id' => $pptsv_obj->user_id,
+                'authorized' => $pptsv_obj->authorized,
+                'authorized_users' => null, //get users if need
+                'is_hierarchy_superior' => null,
+                'display_verify_button' => null,
+                'verification_box_color' => null,
+                'verification_status_display' => null,
+                'previous_pay_period_verification_display' => null,
+                'created_at' => $pptsv_obj->created_at,
+                'created_by' => $pptsv_obj->created_by,
+                'updated_at' => $pptsv_obj->updated_at,
+                'updated_by' => $pptsv_obj->updated_by,
             );
+
 		}
-
-
+        
         //Get pay period totals
 		//Sum all Worked Hours
 		//Sum all Paid Absences
 		//Sum all Dock Absences
 		//Sum all Regular/OverTime hours
-		$udtlf = TTnew( 'UserDateTotalListFactory' );
-		$worked_total_time = (int)$udtlf->getWorkedTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
-		Debug::text('Worked Total Time: '. $worked_total_time, __FILE__, __LINE__, __METHOD__,10);
-
-		$paid_absence_total_time = $udtlf->getPaidAbsenceTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
-		Debug::text('Paid Absence Total Time: '. $paid_absence_total_time, __FILE__, __LINE__, __METHOD__,10);
-
-		$dock_absence_total_time = $udtlf->getDockAbsenceTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
-		Debug::text('Dock Absence Total Time: '. $dock_absence_total_time, __FILE__, __LINE__, __METHOD__,10);
-
-		$udtlf->getRegularAndOverTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
-		if ( $udtlf->getRecordCount() > 0 ) {
+		$worked_total_time = $edc->getWorkedTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+        
+		$paid_absence_total_time = $edc->getPaidAbsenceTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+        
+		$dock_absence_total_time = $edc->getDockAbsenceTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+        
+		$udtlf = $edc->getRegularAndOverTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+        
+		if ($udtlf && count($udtlf) > 0 ) {
 			//Get overtime policy names
-			$otplf = TTnew( 'OverTimePolicyListFactory' );
-			$over_time_policy_options = $otplf->getByCompanyIdArray( $current_company->getId(), FALSE );
-
+			$over_time_policy_options = $cc->getOverTimePolicyOptions($filter_data['company_id']); 
+            
+            
 			foreach($udtlf as $udt_obj ) {
-				Debug::text('Type ID: '. $udt_obj->getColumn('type_id') .' OverTime Policy ID: '. $udt_obj->getColumn('over_time_policy_id') .' Total Time: '. $udt_obj->getColumn('total_time'), __FILE__, __LINE__, __METHOD__,10);
 
-				if ( $udt_obj->getColumn('type_id') == 20 ) {
-					$name = TTi18n::gettext('Regular Time');
+				if ( $udt_obj->type == 'regular' ) {
+					$name = 'Regular Time';
 				} else {
-					if ( isset($over_time_policy_options[$udt_obj->getColumn('over_time_policy_id')]) ) {
-						$name = $over_time_policy_options[$udt_obj->getColumn('over_time_policy_id')];
+                    if ( isset($over_time_policy_options[$udt_obj->over_time_policy_id]) ) {
+                        $name = $over_time_policy_options[$udt_obj->over_time_policy_id];
 					} else {
-						$name = TTi18n::gettext('N/A');
+                        $name = 'N/A';
 					}
 				}
-
-				if ( $udt_obj->getColumn('type_id') == 20 ) {
-					$total_time = $udt_obj->getColumn('total_time') + $paid_absence_total_time;
+                
+                
+				if ( $udt_obj->type == 'regular' ) {
+					$total_time = $udt_obj->total_time + $paid_absence_total_time;
 				} else {
-					$total_time = $udt_obj->getColumn('total_time');
+                    $total_time = $udt_obj->total_time;
 				}
-
+                
 				$pay_period_total_rows[] = array( 'name' => $name, 'total_time' => $total_time );
 			}
-			//var_dump($pay_period_total_rows);
 		}
 
         //==========================================================================
-        //print_r($employee_date_total);
+        //print_r($pay_period_obj);
         //exit;
+
+        return view('attendance.timesheet.index', [
+            'payPeriod' => $pay_period_obj,
+            'filter_data' => $filter_data,
+            'calendar_array' => $calendar_array,
+            'rows' => $rows,
+            'date_break_total_rows' => $date_break_total_rows,
+            'date_break_policy_total_rows' => $date_break_policy_total_rows,
+            'date_meal_policy_total_rows' => $date_meal_policy_total_rows,
+            'date_total_rows' => $date_total_rows,
+            //'date_branch_total_rows' => $date_branch_total_rows,
+            //'date_department_total_rows' => $date_department_total_rows,
+            //'date_job_total_rows' => $date_job_total_rows,
+            //'date_job_item_total_rows' => $date_job_item_total_rows,
+            'date_premium_total_rows' => $date_premium_total_rows,
+            'date_absence_total_rows' => $date_absence_total_rows,
+            'punch_exceptions' => $punch_exceptions,
+            //'punch_control_exceptions' => $punch_control_exceptions,
+            'date_exception_total_rows' => $date_exception_total_rows,
+            'date_request_total_rows' => $date_request_total_rows,
+            'exception_legend' => $unique_exceptions,
+            'pay_period_total_rows' => $pay_period_total_rows,
+            'holidays' => $holiday_array,
+            'pay_period_locked_rows' => $pay_period_locked_rows,
+            'pay_period_worked_total_time' => $worked_total_time,
+            'pay_period_paid_absence_total_time' => $paid_absence_total_time,
+            'pay_period_dock_absence_total_time' => $dock_absence_total_time,
+            'time_sheet_verify' => $time_sheet_verify,
+            //'is_assigned_pay_period_schedule' => $is_assigned_pay_period_schedule,
+            //'pay_period_id' => optional($pay_period_obj)->getId(),
+            //'pay_period_start_date' => optional($pay_period_obj)->getStartDate(),
+            //'pay_period_end_date' => optional($pay_period_obj)->getEndDate(),
+            //'pay_period_verify_type_id' => optional($pay_period_obj)->getTimeSheetVerifyType(),
+            //'pay_period_verify_window_start_date' => optional($pay_period_obj)->getTimeSheetVerifyWindowStartDate(),
+            //'pay_period_verify_window_end_date' => optional($pay_period_obj)->getTimeSheetVerifyWindowEndDate(),
+            //'pay_period_transaction_date' => optional($pay_period_obj)->getTransactionDate(),
+            //'pay_period_is_locked' => optional($pay_period_obj)->getIsLocked(),
+            //'pay_period_status_id' => optional($pay_period_obj)->getStatus(),
+            //'action_options' => $action_options,
+            //'group_options' => $group_options,
+            //'branch_options' => $branch_options,
+            //'department_options' => $department_options,
+            //'user_options' => $user_options,
+            //'is_owner' => $is_owner,
+            //'is_child' => $is_child,
+            //'user_obj' => $user_obj,
+            //'start_date' => $start_date,
+            //'end_date' => $end_date,
+            //'current_time' => $current_time
+        ]);
     }
 
     /**
@@ -852,23 +939,23 @@ class TimeSheetController extends Controller
 
         while ($stop == false) {
             if (isset($type_arr[$x])) {
-                $type_id = $type_arr[$x];
+                $type = $type_arr[$x];
             } else {
-                $type_id = null;
+                $type = null;
             }
-
+            
             $no_punch_count = 0;
 
             foreach ($calendar_array as $cal_arr) {
-                if (isset($input_arr[$cal_arr['epoch']][$type_id])) {
-                    $total_arr = $input_arr[$cal_arr['epoch']][$type_id];
+                if (isset($input_arr[$cal_arr['epoch']][$type])) {
+                    $total_arr = $input_arr[$cal_arr['epoch']][$type];
 
                     if ($total_arr[$name_key] == '') {
                         $total_rows[$x]['name'] = __('N/A'); // Localization for "N/A"
                     } else {
                         $total_rows[$x]['name'] = $total_arr[$name_key];
                     }
-                    $total_rows[$x]['type_and_policy_id'] = $type_id;
+                    $total_rows[$x]['type_and_policy_id'] = $type;
                     if ($id_key != '') {
                         $total_rows[$x]['id'] = $total_arr[$id_key];
                     }

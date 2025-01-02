@@ -37,16 +37,21 @@ class CommonModel extends Model
         }
 
         foreach ($whereArr as $key => $value) {
-
-            if (is_array($value)) {
-                // Handle SQL functions with whereRaw
+            if (is_array($value) && count($value) === 3) {
+                // Use whereRaw for conditions with SQL functions, ensuring the array has exactly 3 elements
                 $q = "{$value[0]} {$value[1]} $value[2]";
                 $query->whereRaw($q);
             } elseif (is_string($key)) {
-                // Associative array: Handle key-value pairs
+                // Associative array: Use the key as column and default operator '='
                 $query->where($key, '=', $value);
+            } elseif (is_string($value)) {
+                // Handle non-associative string values
+                $query->whereRaw($value);
+            } else {
+                // Handle unexpected cases
+                throw new InvalidArgumentException('Invalid condition format in whereArr.');
             }
-        }
+        }        
        
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
@@ -104,14 +109,21 @@ class CommonModel extends Model
         }
 
         foreach ($whereArr as $key => $value) {
-            if (is_array($value)) {
-                // Use whereRaw for conditions with SQL functions
-                $query->whereRaw("{$value[0]} {$value[1]} ?", [$value[2]]);
-            } else {
-                // Associative array: Use default operator '='
+            if (is_array($value) && count($value) === 3) {
+                // Use whereRaw for conditions with SQL functions, ensuring the array has exactly 3 elements
+                $q = "{$value[0]} {$value[1]} $value[2]";
+                $query->whereRaw($q);
+            } elseif (is_string($key)) {
+                // Associative array: Use the key as column and default operator '='
                 $query->where($key, '=', $value);
+            } elseif (is_string($value)) {
+                // Handle non-associative string values
+                $query->whereRaw($value);
+            } else {
+                // Handle unexpected cases
+                throw new InvalidArgumentException('Invalid condition format in whereArr.');
             }
-        }            
+        }                
 
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
