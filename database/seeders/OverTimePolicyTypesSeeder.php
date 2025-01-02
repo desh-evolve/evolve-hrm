@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class OverTimePolicySeeder extends Seeder
+class OverTimePolicyTypesSeeder extends Seeder
 {
     public function run()
     {

@@ -10,7 +10,7 @@ class IndustrySeeder extends Seeder
 {
     public function run()
     {
-        DB::table('industries')->insert([
+        DB::table('com_industries')->insert([
             [
                 'industry_name' => 'Agriculture, Forestry, Fishing and Hunting',
                 'created_by'    => 0,
