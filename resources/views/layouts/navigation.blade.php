@@ -59,14 +59,25 @@
                     </a>
                     <div class="collapse menu-dropdown" id="attendance">
                         <ul class="nav nav-sm flex-column">
-                            <li class="nav-item"><a href="#" class="nav-link">My Time Sheet</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Punches</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Mass Punch</a></li>
                             <li class="nav-item">
-                                <a href="{{ route('attendance.requests.index') }}" class="nav-link {{ request()->routeIs('attendance.requests.index') ? 'active' : '' }}">
-                                    Requests
+                                <a href="{{ route('employee.timesheet') }}"
+                                    class="nav-link {{ request()->routeIs('employee.timesheet') ? 'active' : '' }}">
+                                    My Time Sheet
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.employee_punch.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.employee_punch.index') ? 'active' : '' }}">
+                                    Punches
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('company.mass_punch.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.mass_punch.index') ? 'active' : '' }}">
+                                    Mass Punch
+                                </a>
+                            </li>
+                            <li class="nav-item"><a href="#" class="nav-link">Requests</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">Apply Leaves</a></li>
                         </ul>
                     </div>
@@ -99,8 +110,16 @@
                     </a>
                     <div class="collapse menu-dropdown {{ $checkPolicyNav ? 'show' : '' }}" id="policyMultiLevel">
                         <ul class="nav nav-sm flex-column">
-                            <li class="nav-item"><a href="#" class="nav-link">Policy</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Policy</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.policy_group') }}"
+                                    class="nav-link {{ request()->routeIs('policy.policy_group') ? 'active' : '' }}">Policy
+                                    Groups</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.schedule') }}"
+                                    class="nav-link {{ request()->routeIs('policy.schedule') ? 'active' : '' }}">Schedule
+                                    Policy</a>
+                            </li>
                             <li class="nav-item">
                                 <a href="{{ route('policy.rounding') }}"
                                     class="nav-link {{ request()->routeIs('policy.rounding') ? 'active' : '' }}">Rounding
@@ -131,9 +150,21 @@
                                     class="nav-link {{ request()->routeIs('policy.exception') ? 'active' : '' }}">Exception
                                     Policy</a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Policy</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Policy</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Policy</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.premium') }}"
+                                    class="nav-link {{ request()->routeIs('policy.premium') ? 'active' : '' }}">Premium
+                                    Policy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.absence') }}"
+                                    class="nav-link {{ request()->routeIs('policy.absence') ? 'active' : '' }}">Absence
+                                    Policy</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('policy.holiday') }}"
+                                    class="nav-link {{ request()->routeIs('policy.holiday') ? 'active' : '' }}">Holiday
+                                    Policy</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -251,13 +282,21 @@
 
                             <li class="nav-item">
                                 <a href="{{ route('payroll.pay_period_schedule') }}"
-                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay
+                                    class="nav-link {{ request()->routeIs('payroll.pay_period_schedule') ? 'active' : '' }}">Pay
                                     Period Schedule</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('payroll.pay_stub_account') }}"
                                     class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay
                                     Stub Account</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.company_deduction') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.company_deduction') ? 'active' : '' }}">Company Deduction</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.pay_stub_entry_account_link') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_entry_account_link') ? 'active' : '' }}">Pay Stub Account Links</a>
                             </li>
                         </ul>
                     </div>
