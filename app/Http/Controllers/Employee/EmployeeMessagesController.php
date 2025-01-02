@@ -482,11 +482,37 @@ class EmployeeMessagesController extends Controller
     //pawanee(2024-11-20)
     public function deleteMessage($id)
     {
-        $res = $this->common->commonDelete($id, ['id' => $id], 'Message Chat', 'message_control');
-        $this->common->commonDelete($id, ['message_control_id' => $id], 'Message', 'messages');
+        try {
+            DB::beginTransaction();
 
-        return $res;
+            $messageControl = DB::table('message_control')
+                ->where('id', $id)
+                ->first();
+
+                
+            if (!$messageControl) {
+                return response()->json(['status' => 'error', 'message' => 'Message control record not found.'], 404);
+            }
+
+            $refId = $messageControl->ref_id;
+
+            $this->common->commonDelete($id,['id' => $id], 'Message Chat', 'message_control');
+            $this->common->commonDelete($id, ['message_control_id' => $id], 'Message', 'messages');
+
+            if ($refId) {
+                $this->common->commonDelete($refId, ['id' => $refId], 'Request', 'request');
+            }
+
+            DB::commit();
+
+            return response()->json(['status' => 'success', 'message' => 'Data deleted successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting message: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete message data.'], 500);
+        }
     }
+
 
 
 }

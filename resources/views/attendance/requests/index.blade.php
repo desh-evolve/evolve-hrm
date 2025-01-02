@@ -184,46 +184,56 @@ let today = new Date().toISOString().split('T')[0];
         });
 
 
-        //render table using employee Id
-        async function renderRequestTable(){
+
+        async function renderRequestTable() {
             let list = '';
-            const requests = await commonFetchData(`/attendance/requests/${employee_Id}`);
+            try {
+                const requestData = await commonFetchData(`/attendance/requests/${employee_Id}`);
+                console.log('Fetched Data:', requestData);
 
-            if(requests && requests.length > 0){
-                requests.map((request, i) => {
+                // Flatten nested arrays
+                const requests = requestData && Array.isArray(requestData)
+                    ? requestData.reduce((acc, curr) => acc.concat(curr), []) 
+                    : [];
 
-                    //if status_details
-                    const message = request.status_details && request.status_details.length > 0
-                        ? request.status_details[0].request_status
-                        : 'N/A';
+                console.log('Flattened Requests:', requests);
 
-                    //if date_details
-                    const date = request.date_details && request.date_details.length > 0
-                        ? request.date_details[0].date_stamp
-                        : 'N/A';
+                if (requests.length > 0) {
+                    requests.forEach((request, i) => {
+                        const message = request.status_details?.[0]?.request_status || 'N/A';
+                        const date = request.date_details?.[0]?.date_stamp || 'N/A';
 
-                    list += `
-                        <tr request_id="${request.id}">
-                            <td>${i + 1}</td>
-                            <td>${date}</td>
-                            <td>${request.type_name}</td>
-                            <td>${message}</td>
-                            <td class="text-capitalize">${request.status === 'authorized' ? `<span class="badge border border-success text-success">${request.status}</span>` : `<span class="badge border border-warning text-warning">${request.status}</span>`}</td>
-                            <td>
-                                <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete">
-                                    <i class="ri-delete-bin-fill"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                })
-            }else{
-                list = '<tr><td colspan="8" class="text-center text-danger">No Request Found!</td></tr>';
+                        list += `
+                            <tr request_id="${request.id}">
+                                <td>${i + 1}</td>
+                                <td>${date}</td>
+                                <td>${request.type_name}</td>
+                                <td>${message}</td>
+                                <td class="text-capitalize">
+                                    ${
+                                        request.status === 'authorized'
+                                            ? `<span class="badge border border-success text-success">${request.status}</span>`
+                                            : `<span class="badge border border-warning text-warning">${request.status}</span>`
+                                    }
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete">
+                                        <i class="ri-delete-bin-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    list = '<tr><td colspan="8" class="text-center text-danger">No Request Found!</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error fetching or rendering data:', error);
+                list = '<tr><td colspan="8" class="text-center text-danger">Error loading data!</td></tr>';
             }
 
             $('#table_body').html(list);
         }
-
 
 
 //======================================================================================================
@@ -326,7 +336,7 @@ let today = new Date().toISOString().split('T')[0];
         });
 
 
-        // Reset alert visibility 
+        // Reset alert visibility
         $(document).on('click', '#warning_alert .btn-close', function () {
             $('#warning_alert').hide();
         });
@@ -340,20 +350,19 @@ let today = new Date().toISOString().split('T')[0];
             const id = $row.attr('request_id');
 
                 deleteItem(id, $row);
-
         });
 
         async function deleteItem(id, $row) {
             const url ='/attendance/requests/delete';
             const title ='Request';
             try {
-                        const res = await commonDeleteFunction(id, url, title, $row);
-                        if(res){
-                            renderRequestTable()
-                        }
-                    } catch (error) {
-                        console.error('Error deleting item:', error);
-                    }
+                const res = await commonDeleteFunction(id, url, title, $row);
+                if(res){
+                    renderRequestTable()
+                }
+            } catch (error) {
+                console.error('Error deleting item:', error);
+            }
         }
 
 
