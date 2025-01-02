@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Attendance\AttendanceRequestsController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +44,7 @@ use App\Http\Controllers\Policy\PolicyGroupsController;
 use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
 use App\Http\Controllers\Attendance\TimeSheetController;
+use App\Http\Controllers\Attendance\AttendanceRequestsController;
 
 // Payroll
 use App\Http\Controllers\Payroll\PayStubAccountController;
@@ -215,6 +216,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::post('/employee/messages/create', [EmployeeMessagesController::class, 'createSendMessage'])->name('employee.messages.create');
     Route::get('/employee/single_message/{id}', [EmployeeMessagesController::class, 'getMessagesBySingleId'])->name('employee.messages.single');
     Route::post('/employee/messages/reply', [EmployeeMessagesController::class, 'createReplyMessage'])->name('employee.messages.reply');
+    Route::post('/employee/messages/mark-as-read', [EmployeeMessagesController::class, 'updateReadStatus'])->name('employee.messages.read');
     Route::get('/employee/sent/messages', [EmployeeMessagesController::class, 'getSentMessages'])->name('employee.messages.sent');
     Route::get('/employee/inbox/messages', [EmployeeMessagesController::class, 'getReceivedMessages'])->name('employee.messages.inbox');
     Route::delete('/employee/message/delete/{id}', [EmployeeMessagesController::class, 'deleteMessage'])->name('employee.message.delete');
@@ -445,6 +447,17 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/attendance/requests/{id}', [AttendanceRequestsController::class, 'getRequestsByControlId'])->name('attendance.requests.getById');
     Route::post('/attendance/requests/create', [AttendanceRequestsController::class, 'createAttendenceRequests'])->name('attendance.requests.create');
     Route::delete('/attendance/requests/delete/{id}', [AttendanceRequestsController::class, 'deleteAttendenceRequests'])->name('attendance.requests.delete');
+
+
+    //==============================================================================================================================
+    // Dashboard (temp)
+    //==============================================================================================================================
+
+    Route::get('/dashboard/temp', [DashboardController::class, 'index'])->name('dashboard.temp.index');
+    Route::get('/dashboard/temp/employee/count', [DashboardController::class, 'getAllEmployeeCount'])->name('dashboard.temp.employee.count');
+    Route::get('/dashboard/temp/leave/count', [DashboardController::class, 'getAllLeaveCount'])->name('dashboard.temp.leave.count');
+    Route::get('/dashboard/temp/messages', [DashboardController::class, 'getNewMessages'])->name('dashboard.temp.new.messages');
+    Route::get('/dashboard/temp/requests', [DashboardController::class, 'getRequestsData'])->name('dashboard.temp.requests');
 
 
     //==============================================================================================================================

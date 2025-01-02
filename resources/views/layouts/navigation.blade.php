@@ -44,6 +44,13 @@
                     </a>
                 </li>
 
+                <!-- Template Dashboard -->
+                <li class="nav-item">
+                    <a href="{{ route('dashboard.temp.index') }}" class="nav-link {{ request()->routeIs('dashboard.temp.index') ? 'active' : '' }}">
+                        <i class="ri-dashboard-2-line"></i>Temp Dashboard
+                    </a>
+                </li>
+
                 <!-- Attendance -->
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#attendance" data-bs-toggle="collapse" role="button"

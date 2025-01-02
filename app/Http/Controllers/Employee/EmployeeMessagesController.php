@@ -27,6 +27,7 @@ class EmployeeMessagesController extends Controller
             'getSentMessages',
         ]]);
         $this->middleware('permission:create employee messages', ['only' => ['createSendMessage', 'createReplyMessage']]);
+        $this->middleware('permission:update read status', ['only' => ['updateReadStatus']]);
         $this->middleware('permission:delete employee messages', ['only' => ['deleteMessage']]);
 
         $this->common = new CommonModel();
@@ -122,16 +123,68 @@ class EmployeeMessagesController extends Controller
     }
 
 
-
     //pawanee(2024-11-20)
     public function getAllMessages()
     {
-        $table = 'message_control';
-        $fields = ['message_control.*','object_type.name AS type_name'];
-        $joinArr = ['object_type'=>['object_type.id', '=', 'message_control.type_id']];
+        $loggedInUserId = Auth::user()->id;
 
-        $messages = $this->common->commonGetAll($table, $fields, $joinArr);
-        return response()->json(['data' => $messages], 200);
+        $table = 'message_control';
+        $fields = [
+            'message_control.*',
+            'object_type.name AS type_name'
+        ];
+
+
+        $joinArr = [
+            'object_type' => ['object_type.id', '=', 'message_control.type_id'],
+        ];
+
+
+        $receivedConnections = [
+            'messages' => [
+                'con_fields' => [
+                    'messages.*',
+                    'messages.id as message_id',
+                    'messages.message_control_id',
+                    'messages.description as message_description',
+                    'messages.created_at as sent_at',
+                    'sender.id as sender_id',
+                    'sender.work_email as sender_email',
+                    'message_employees.read_status',
+                ],
+                'con_where' => [
+                    'messages.message_control_id' => 'id',
+                    'message_employees.received_id' => $loggedInUserId
+                ],
+                'con_joins' => [
+                    'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'],
+                    'message_employees' => ['message_employees.message_id', '=', 'messages.id'],
+                ],
+                'con_name' => 'message_details',
+                'except_deleted' => true,
+            ],
+        ];
+
+
+        $receivedWhereArr = [
+            ['message_control.created_by', '!=', $loggedInUserId]
+        ];
+
+        try {
+
+            $sentMessages = $this->common->commonGetById($loggedInUserId, 'message_control.created_by', $table, $fields, $joinArr);
+
+            $receivedMessages = $this->common->commonGetAll($table, $fields, $joinArr, $receivedWhereArr, false, $receivedConnections);
+
+
+            return response()->json([
+                'sentMessages' => $sentMessages ?? [],
+                'receivedMessages' => $receivedMessages ?? []
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching all messages: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
+        }
     }
 
 
@@ -139,7 +192,7 @@ class EmployeeMessagesController extends Controller
     public function getSentMessages()
     {
 
-        $loggedInUserId = Auth::user()->id; // Get the logged-in user's ID
+        $loggedInUserId = Auth::user()->id;
 
         $idColumn = 'message_control.created_by';
         $table = 'message_control';
@@ -154,17 +207,106 @@ class EmployeeMessagesController extends Controller
     //pawanee(2024-11-20)
     public function getReceivedMessages()
     {
+        $loggedInUserId = Auth::user()->id;
 
-        $loggedInUserId = Auth::user()->id; // Get the logged-in user's ID
-
-        $whereArr = [['message_control.created_by', '!=', $loggedInUserId]]; // Exclude messages sent by the logged-in user
         $table = 'message_control';
-        $fields = ['message_control.*', 'object_type.name AS type_name'];
-        $joinArr = ['object_type' => ['object_type.id', '=', 'message_control.type_id']];
+        $fields = [
+            'message_control.*',
+            'object_type.name AS type_name'
+        ];
 
-        $receivedMessages = $this->common->commonGetById($loggedInUserId, $whereArr, $table, $fields, $joinArr);
-        return response()->json(['data' => $receivedMessages], 200);
+        $joinArr = [
+            'object_type' => ['object_type.id', '=', 'message_control.type_id'],
+        ];
+
+        $connections = [
+            'messages' => [
+                'con_fields' => [
+                    'messages.*',
+                    'messages.id as message_id',
+                    'messages.message_control_id',
+                    'messages.description as message_description',
+                    'messages.created_at as sent_at',
+                    'sender.id as sender_id',
+                    'sender.work_email as sender_email',
+                    'message_employees.read_status',
+                ],
+                'con_where' => [
+                    'messages.message_control_id' => 'id',
+                    'message_employees.received_id' => $loggedInUserId
+                ],
+                'con_joins' => [
+                    'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'],
+                    'message_employees' => ['message_employees.message_id', '=', 'messages.id'],
+                ],
+                'con_name' => 'message_details',
+                'except_deleted' => true,
+            ],
+        ];
+
+        $whereArr = [
+            ['message_control.created_by', '!=', $loggedInUserId]
+        ];
+
+        try {
+
+            $receivedMessages = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, false, $connections);
+
+            return response()->json(['data' => $receivedMessages], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching received messages: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
+        }
     }
+
+
+    //pawanee(2024-11-20)
+    public function updateReadStatus(Request $request)
+    {
+        try {
+            return DB::transaction(function () use ($request) {
+                $request->validate([
+                    'message_control_id' => 'required|integer|exists:message_control,id',
+                ]);
+
+                $loggedInUserId = Auth::id();
+
+                $messageIds = DB::table('messages')
+                    ->where('message_control_id', $request->message_control_id)
+                    ->where('sender_id', '!=', $loggedInUserId)
+                    ->pluck('id');
+
+                // Check if there are any messages
+                if ($messageIds->isEmpty()) {
+                    return response()->json(['status' => 'error', 'message' => 'No received messages found for the given message_control_id.'], 404);
+                }
+
+                // Check if there are any unread messages
+                $unreadMessages = DB::table('message_employees')
+                    ->whereIn('message_id', $messageIds)
+                    ->where('received_id', $loggedInUserId)
+                    ->where('read_status', 0)
+                    ->exists();
+
+                if (!$unreadMessages) {
+                    return response()->json(['status' => 'success', 'message' => 'All messages are already marked as read.'], 200);
+                }
+
+                // Update read_status
+                $updatedRows = DB::table('message_employees')
+                    ->whereIn('message_id', $messageIds)
+                    ->where('received_id', $loggedInUserId)
+                    ->where('read_status', 0)
+                    ->update(['read_status' => 1]);
+
+                return response()->json(['status' => 'success', 'message' => 'Messages marked as read', 'updatedRows' => $updatedRows], 200);
+            });
+        } catch (\Throwable $e) {
+            Log::error('Error in updateReadStatus: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage()], 500);
+        }
+    }
+
 
 
     //pawanee(2024-11-20)
@@ -219,6 +361,7 @@ class EmployeeMessagesController extends Controller
     }
 
 
+
     //pawanee(2024-11-20)
     public function getMessagesByControlId($id)
     {
@@ -270,6 +413,7 @@ class EmployeeMessagesController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
         }
     }
+
 
 
     //pawanee(2024-11-20)
@@ -332,6 +476,7 @@ class EmployeeMessagesController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
+
 
 
     //pawanee(2024-11-20)

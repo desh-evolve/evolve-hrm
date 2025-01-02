@@ -28,7 +28,7 @@
 
                 <div class="justify-content-md-end">
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">Add New<i class="ri-add-line"></i></button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">New Job History<i class="ri-add-line"></i></button>
                     </div>
                 </div>
             </div>
@@ -51,8 +51,8 @@
                         </div>
 
 
-                        <table class="table table-nowrap" id="jobhistory_table">
-                            <thead class="table-light" id="table_head">
+                        <table class="table table-bordered">
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Branch</th>
@@ -68,7 +68,7 @@
                             <tbody id="table_body">
 
                                 <tr>
-                                    <td colspan="8" class="text-center text-info">Please Select a Employee</td>
+                                    <td colspan="8" class="text-center">Please Select a Employee...</td>
                                 </tr>
 
                             </tbody>
@@ -97,7 +97,7 @@
             <div class="modal-body">
                 <div id="jobhistory-form-body" class="row">
 
-                    <div class="col-xxl-3 col-md-12 mb-3">
+                    <div class="col-xxl-12 col-md-12 mb-3">
                         <label for="employee_name" class="form-label mb-1">Employee Name</label>
                         <input type="text" class="form-control" id="employee_name" value="" disabled>
                         <input type="hidden" class="form-control" id="employee_id" value="" disabled>
@@ -124,19 +124,19 @@
                         </select>
                     </div>
 
-                    <div class="col-xxl-3 col-md-6 mb-3">
+                    <div class="col-xxl-6 col-md-6 mb-3">
                         <label for="first_worked_date" class="form-label">First Worked Date</label>
                         <input type="date" class="form-control" id="first_worked_date" value="">
                     </div>
 
-                    <div class="col-xxl-3 col-md-6 mb-3">
+                    <div class="col-xxl-6 col-md-6 mb-3">
                         <label for="last_worked_date" class="form-label">Last Worked Date</label>
                         <input type="date" class="form-control" id="last_worked_date" value="">
                     </div>
 
-                    <div class="col-xxl-3 col-md-12 mb-3">
+                    <div class="col-xxl-12 col-md-12 mb-3">
                         <label for="note" class="form-label">Note</label>
-                        <textarea class="form-control" id="note" rows="3"></textarea>
+                        <textarea class="form-control" id="note" rows="5"></textarea>
                     </div>
 
 
@@ -189,7 +189,7 @@ let dropdownData = [];
 
 
                     if (employee_Id === "") {
-                        $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
+                        $('#table_body').html('<tr><td colspan="8" class="text-center">Please Select a Employee...</td></tr>');
                         $('#employee_name').val('');
                         $('#employee_id').val('');
                     } else {
