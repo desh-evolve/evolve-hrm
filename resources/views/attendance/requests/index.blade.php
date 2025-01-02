@@ -28,7 +28,7 @@
 
                 <div class="justify-content-md-end">
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_request">Add New<i class="ri-add-line"></i></button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_request">New Request<i class="ri-add-line"></i></button>
                     </div>
                 </div>
             </div>
@@ -51,12 +51,13 @@
                         </div>
 
 
-                        <table class="table table-nowrap" id="jobhistory_table">
-                            <thead class="table-light" id="table_head">
+                        <table class="table table-bordered">
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Type</th>
+                                    <th scope="col">Message</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -65,7 +66,7 @@
                             <tbody id="table_body">
 
                                 <tr>
-                                    <td colspan="8" class="text-center text-info">Please Select a Employee</td>
+                                    <td colspan="8" class="text-center">Please Select a Employee...</td>
                                 </tr>
 
                             </tbody>
@@ -80,7 +81,7 @@
 
 
 
-<!-- Compose Modal -->
+<!-- Request Modal -->
 <div class="modal fade zoomIn" id="request-modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -90,15 +91,9 @@
             </div>
 
             {{-- Alert Message --}}
-            <div class="alert alert-dismissible" id="warning_alert" style="display: none; background-color: #f7ce47; border-color:rgb(230, 224, 202)">
+            <div class="alert alert-warning alert-dismissible" id="warning_alert" style="display: none;">
 
             </div>
-
-            {{-- <div class="alert alert-warning alert-dismissible" id="warning_alert" style="display: none;">
-                This is a dark yellow alert!
-            </div>
-            --}}
-
 
             <div class="modal-body">
                 <div class="row">
@@ -108,8 +103,10 @@
                         <input type="text" class="form-control" id="user_name" value="" disabled>
                         <input type="hidden" class="form-control" id="user_id" value="" disabled>
                     </div>
+                </div>
 
-                    <div class="col-xxl-6 col-md-6 mb-3">
+                <div class="row">
+                    <div class="col-xxl-6 col-md-6 mb-2">
                         <label for="type_id" class="form-label mb-1 req">Type</label>
                         <select class="form-select" id="type_id" >
                             <option value=""></option>
@@ -117,17 +114,19 @@
                     </div>
 
                     <div class="col-xxl-6 col-md-6 mb-3">
-                        <label for="user_date_id" class="form-label req">Date</label>
-                        <input type="date" class="form-control" id="user_date_id" value="">
+                        <label for="employee_date_id" class="form-label mb-1 req">Date</label>
+                        <input type="date" class="form-control" id="employee_date_id" value="">
                     </div>
+                </div>
 
+                <div class="row">
                     <div class="col-xxl-12 col-md-12 mb-2">
                         <textarea class="form-control" id="description" rows="8"></textarea>
                     </div>
                 </div>
 
                 <div id="error-msg"></div>
-                <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
+                <div class="d-flex gap-2 justify-content-end mt-3 mb-2">
                     <input type="hidden" id="request_id" value=""></button>
                     <button type="button" class="btn w-sm btn-danger" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn w-sm btn-success" id="request-send-confirm">Send</button>
@@ -174,11 +173,11 @@ let today = new Date().toISOString().split('T')[0];
                 $('#add_request').prop('disabled', true);
             }
 
-            // Render the table if user is selected
-            if (user_id === "") {
-                $('#table_body').html('<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
-                $('#user_name').val('');
-                $('#user_id').val('');
+            // Render the table if employee is selected
+            if (employee_Id === "") {
+                $('#table_body').html('<tr><td colspan="8" class="text-center">Please Select a Employee...</td></tr>');
+                $('#employee_name').val('');
+                $('#employee_id').val('');
             } else {
                 await renderRequestTable();
             }
@@ -194,7 +193,7 @@ let today = new Date().toISOString().split('T')[0];
                 requests.map((request, i) => {
 
                     //if status_details
-                    const status = request.status_details && request.status_details.length > 0
+                    const message = request.status_details && request.status_details.length > 0
                         ? request.status_details[0].request_status
                         : 'N/A';
 
@@ -208,7 +207,8 @@ let today = new Date().toISOString().split('T')[0];
                             <td>${i + 1}</td>
                             <td>${date}</td>
                             <td>${request.type_name}</td>
-                            <td>${status}</td>
+                            <td>${message}</td>
+                            <td class="text-capitalize">${request.status === 'authorized' ? `<span class="badge border border-success text-success">${request.status}</span>` : `<span class="badge border border-warning text-warning">${request.status}</span>`}</td>
                             <td>
                                 <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete">
                                     <i class="ri-delete-bin-fill"></i>
@@ -312,7 +312,7 @@ let today = new Date().toISOString().split('T')[0];
                         `).show();
 
                     } else {
-                        // For other error messages
+
                         $('#error-msg').html(`<p class="text-danger">${res.message}</p>`);
                     }
                 } else {
@@ -326,7 +326,7 @@ let today = new Date().toISOString().split('T')[0];
         });
 
 
-        // Reset alert visibility when the close button is clicked
+        // Reset alert visibility 
         $(document).on('click', '#warning_alert .btn-close', function () {
             $('#warning_alert').hide();
         });

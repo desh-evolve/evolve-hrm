@@ -38,7 +38,7 @@
 
                     </div>
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">qualification</th>

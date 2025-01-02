@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,7 @@ use App\Http\Controllers\Policy\PolicyGroupsController;
 use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
 use App\Http\Controllers\Attendance\TimeSheetController;
+use App\Http\Controllers\Attendance\AttendanceRequestsController;
 
 // Payroll
 use App\Http\Controllers\Payroll\PayStubAccountController;
@@ -209,16 +211,17 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Employee Messages
     //==============================================================================================================================
 
-    Route::get('/user/messages', [EmployeeMessagesController::class, 'index'])->name('user.messages.index');
-    Route::get('/user/allmessages', [EmployeeMessagesController::class, 'getAllMessages'])->name('user.messages.all');
-    Route::get('/user/messages/{id}', [EmployeeMessagesController::class, 'getMessagesByControlId'])->name('user.messages.getById');
-    Route::get('/user/name/dropdown', [EmployeeMessagesController::class, 'getEmployeeDropdownData'])->name('user.name.dropdown');
-    Route::post('/user/messages/create', [EmployeeMessagesController::class, 'createSendMessage'])->name('user.messages.create');
-    Route::get('/user/single_message/{id}', [EmployeeMessagesController::class, 'getMessagesBySingleId'])->name('user.messages.single');
-    Route::post('/user/messages/reply', [EmployeeMessagesController::class, 'createReplyMessage'])->name('user.messages.reply');
-    Route::get('/user/sent/messages', [EmployeeMessagesController::class, 'getSentMessages'])->name('user.messages.sent');
-    Route::get('/user/inbox/messages', [EmployeeMessagesController::class, 'getReceivedMessages'])->name('user.messages.inbox');
-    Route::delete('/user/message/delete/{id}', [EmployeeMessagesController::class, 'deleteMessage'])->name('user.message.delete');
+    Route::get('/employee/messages', [EmployeeMessagesController::class, 'index'])->name('employee.messages.index');
+    Route::get('/employee/allmessages', [EmployeeMessagesController::class, 'getAllMessages'])->name('employee.messages.all');
+    Route::get('/employee/messages/{id}', [EmployeeMessagesController::class, 'getMessagesByControlId'])->name('employee.messages.getById');
+    Route::get('/employee/name/dropdown', [EmployeeMessagesController::class, 'getEmployeeDropdownData'])->name('employee.name.dropdown');
+    Route::post('/employee/messages/create', [EmployeeMessagesController::class, 'createSendMessage'])->name('employee.messages.create');
+    Route::get('/employee/single_message/{id}', [EmployeeMessagesController::class, 'getMessagesBySingleId'])->name('employee.messages.single');
+    Route::post('/employee/messages/reply', [EmployeeMessagesController::class, 'createReplyMessage'])->name('employee.messages.reply');
+    Route::post('/employee/messages/mark-as-read', [EmployeeMessagesController::class, 'updateReadStatus'])->name('employee.messages.read');
+    Route::get('/employee/sent/messages', [EmployeeMessagesController::class, 'getSentMessages'])->name('employee.messages.sent');
+    Route::get('/employee/inbox/messages', [EmployeeMessagesController::class, 'getReceivedMessages'])->name('employee.messages.inbox');
+    Route::delete('/employee/message/delete/{id}', [EmployeeMessagesController::class, 'deleteMessage'])->name('employee.message.delete');
 
 
     //==============================================================================================================================
@@ -490,6 +493,17 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::post('/policy/policy_group/create', [PolicyGroupsController::class, 'createPolicyGroup'])->name('policy.policy_group.create');
     Route::put('/policy/policy_group/update/{id}', [PolicyGroupsController::class, 'updatePolicyGroup'])->name('policy.policy_group.update');
     Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.policy_group.getById');
+
+    //==============================================================================================================================
+    // Dashboard (temp)
+    //==============================================================================================================================
+
+    Route::get('/dashboard/temp', [DashboardController::class, 'index'])->name('dashboard.temp.index');
+    Route::get('/dashboard/temp/employee/count', [DashboardController::class, 'getAllEmployeeCount'])->name('dashboard.temp.employee.count');
+    Route::get('/dashboard/temp/leave/count', [DashboardController::class, 'getAllLeaveCount'])->name('dashboard.temp.leave.count');
+    Route::get('/dashboard/temp/messages', [DashboardController::class, 'getNewMessages'])->name('dashboard.temp.new.messages');
+    Route::get('/dashboard/temp/requests', [DashboardController::class, 'getRequestsData'])->name('dashboard.temp.requests');
+
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page

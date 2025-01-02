@@ -333,6 +333,7 @@
 
 const loggedUserId = {{ Auth::id() }};
 let dropdownData = [];
+let message_controller_id = '';
 
 
 $(document).ready(async function () {
@@ -404,22 +405,55 @@ $(document).ready(async function () {
 // Render All Messageses
 //===========================================================================================
 
+
     async function renderAllMessages() {
         try {
-            const messages = await commonFetchData('/user/allmessages');
+            // Fetch messages from the API
+            const response = await fetch('/employee/allmessages', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-            if (messages.length === 0) {
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('API Response:', data);
+
+            // Extract sent and received messages
+            const sentMessages = data.sentMessages || [];
+            const receivedMessages = data.receivedMessages || [];
+
+            if (!sentMessages.length && !receivedMessages.length) {
                 $('#msg-list').html('<li class="text-center">No messages available</li>');
                 return;
             }
 
-            const list = messages.map((message, i) => {
+            // Combine sent and received messages
+            const allMessages = [...sentMessages, ...receivedMessages];
+
+            // unread first, then by created_at in descending order
+            allMessages.sort((a, b) => {
+                const aUnread = !sentMessages.includes(a) && (a.message_details || []).some(detail => detail.read_status === 0);
+                const bUnread = !sentMessages.includes(b) && (b.message_details || []).some(detail => detail.read_status === 0);
+
+                if (aUnread !== bUnread) {
+                    return aUnread ? -1 : 1;
+                }
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+
+
+            const messageList = allMessages.map((message, i) => {
+                const isSent = sentMessages.includes(message);
+                const messageDetails = message.message_details || [];
+                const hasUnreadMessages = !isSent && messageDetails.some(detail => detail.read_status === 0);
+
                 return `
-                    <li msg_id="${message.id}" class="email-item">
+                    <li msg_id="${message.id}" data-type="${isSent ? 'sent' : 'received'}" class="email-item ${!isSent && hasUnreadMessages ? 'fw-bold text-dark' : ''}">
                         <div class="col-mail col-mail-1">
-                            <div class="checkbox-wrapper-mail fs-14">
-                                ${i + 1}
-                            </div>
+                            <div class="checkbox-wrapper-mail fs-14">${i + 1}</div>
                             <div id="type-name" class="title cursor-pointer">
                                 <span class="title-name">${message.type_name}</span>
                             </div>
@@ -428,20 +462,22 @@ $(document).ready(async function () {
                             <div id="type-sub">
                                 <span class="subject-title">${message.subject}</span>
                             </div>
-                            <div class="date" id="sent-date">${formatDate1(message.created_at)}</div>
+                            <div class="date" id="message-date">${formatDate1(message.created_at)}</div>
                         </div>
                     </li>
                 `;
             }).join('');
 
-            $('#msg-list').html(list);
+            $('#msg-list').html(messageList);
             $('#elmLoader').hide();
-
         } catch (error) {
             $('#msg-list').html('<li class="text-center text-danger">Error loading messages</li>');
             console.error('Error fetching messages:', error);
         }
     }
+
+
+
 
 //===========================================================================================
 // Render All Sent Messageses
@@ -456,7 +492,10 @@ $(document).ready(async function () {
                 return;
             }
 
-            const list = messages.map((message, i) => {
+            // messages by created_at in descending order
+            const storeMessages = messages.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const list = storeMessages.map((message, i) => {
                 return `
                     <li msg_id="${message.id}" class="email-item">
                         <div class="col-mail col-mail-1">
@@ -490,6 +529,7 @@ $(document).ready(async function () {
 // Render All Received Messageses
 //===========================================================================================
 
+
     async function renderReceivedMessages() {
         try {
             const messages = await commonFetchData('/user/inbox/messages');
@@ -499,9 +539,26 @@ $(document).ready(async function () {
                 return;
             }
 
-            const list = messages.map((message,i) => {
+            // unread first, then by created_at in descending order
+            const storeMessages = messages.sort((a, b) => {
+                const aUnread = (a.message_details || []).some(detail => detail.read_status === 0);
+                const bUnread = (b.message_details || []).some(detail => detail.read_status === 0);
+
+                if (aUnread !== bUnread) {
+                    return aUnread ? -1 : 1; // Unread messages come first
+                }
+
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+
+
+            const list = storeMessages.map((message, i) => {
+
+                const messageDetails = message.message_details || [];
+                const hasUnreadMessages = messageDetails.some(detail => detail.read_status === 0);
+
                 return `
-                    <li msg_id="${message.id}" class="email-item">
+                    <li msg_id="${message.id}" data-type="received" class="email-item ${hasUnreadMessages ? 'fw-bold text-dark' : ''}">
                         <div class="col-mail col-mail-1">
                             <div class="checkbox-wrapper-mail fs-14">
                                 ${i + 1}
@@ -514,7 +571,9 @@ $(document).ready(async function () {
                             <div id="type-sub">
                                 <span class="subject-title">${message.subject}</span>
                             </div>
-                            <div class="date" id="sent-date">${formatDate1(message.created_at)}</div>
+                            <div class="date" id="sent-date">
+                                ${formatDate1(message.created_at)}
+                            </div>
                         </div>
                     </li>
                 `;
@@ -522,12 +581,12 @@ $(document).ready(async function () {
 
             $('#msg-list').html(list);
             $('#elmLoader').hide();
-
         } catch (error) {
             $('#msg-list').html('<li class="text-center text-danger">Error loading messages</li>');
             console.error('Error fetching messages:', error);
         }
     }
+
 
 //===========================================================================================
 // update message count
@@ -536,25 +595,91 @@ $(document).ready(async function () {
     // Update All Message Count
     async function updateAllMessageCount() {
         try {
-            const messages = await commonFetchData('/user/allmessages');
-            const messageCount = messages.length;
-            $('#msg-count').text(messageCount);
+            const response = await fetch('/employee/allmessages', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            const sentMessages = data.sentMessages || [];
+            const receivedMessages = data.receivedMessages || [];
+
+            $('#msg-count').text(sentMessages.length + receivedMessages.length);
         } catch (error) {
             console.error('Error fetching messages:', error);
+            $('#msg-count').text('Error');
         }
     }
 
 
      // Update All Received Message Count
-     async function updateInboxMessageCount() {
+    async function updateInboxMessageCount() {
         try {
-            const messages = await commonFetchData('/user/inbox/messages');
-            const messageCount = messages.length;
-            $('#inbox-msg-count').text(messageCount);
+            const inbox = await commonFetchData('/employee/inbox/messages');
+            const inboxCount = inbox.length;
+            $('#inbox-msg-count').text(inboxCount);
         } catch (error) {
             console.error('Error fetching messages:', error);
         }
     }
+
+
+//===========================================================================================
+// update message read or not
+//===========================================================================================
+
+
+    $(document).on('click', '.email-item', async function () {
+        $('#error-msg').html('');
+
+        let $emailItem = $(this);
+        let messageControlId = $emailItem.attr('msg_id');
+        let messageType = $emailItem.data('type');
+
+        if (!messageControlId) {
+            console.error('No messageControlId found for this item.');
+            return;
+        }
+
+        if (messageType !== 'received') {
+            console.warn('This action is only for received messages.');
+            $('#error-msg').html('<p class="text-danger">This action is only for received messages.</p>');
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append('message_control_id', messageControlId);
+
+        const updateUrl = '/employee/messages/mark-as-read';
+
+        try {
+            let response = await commonSaveData(updateUrl, formData);
+
+            if (response.status === 'success') {
+                if (response.message === 'All messages are already marked as read.') {
+                    console.log(`All messages ${messageControlId} are already read.`);
+                } else {
+                    console.log(`Messages for message_control_id ${messageControlId} marked as read.`);
+
+                    // Remove the bold style to indicate it's read
+                    $emailItem.removeClass('fw-bold text-dark');
+                    $('#error-msg').html('');
+                }
+            } else {
+                console.error('Error updating read status:', response.message);
+                $('#error-msg').html('<p class="text-danger">Failed to mark messages as read. Please try again.</p>');
+            }
+        } catch (error) {
+            console.error('Error processing read status update:', error);
+            $('#error-msg').html('<p class="text-danger">An error occurred. Please try again later.</p>');
+        }
+    });
+
+
 
 //===========================================================================================
 // Open chat Message box
@@ -639,13 +764,9 @@ $(document).ready(async function () {
                     </div>
                 `;
 
-                // Append the delete button HTML inside
+                // Append
                 $('.delete-chat').append(deleteButtonHTML);
-
-                 // Append the reply button HTML inside
                  $('.reply-chat').append(replyButtonHTML);
-
-                // Render the messages and reply button
                 $('#message_content').html(`${messagesHTML}`);
 
             } else {
@@ -656,9 +777,10 @@ $(document).ready(async function () {
             console.error('Error fetching message details:', error);
             $('#error-msg').html('<p class="text-danger">Failed to load message details. Please try again.</p>');
         } finally {
-            $('#message_details_box').show(); // Show the message details box
+            $('#message_details_box').show();
         }
     });
+
 
 
     // Show sender message email EX:sanduni@evolve...
@@ -1038,7 +1160,6 @@ $(document).ready(async function () {
                 await renderReceivedMessages();
             }
 
-             // Update message counts
             await updateAllMessageCount();
             await updateInboxMessageCount();
 
@@ -1047,6 +1168,7 @@ $(document).ready(async function () {
         }
 
     }
+
 
 
 });
