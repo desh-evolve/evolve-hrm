@@ -189,12 +189,12 @@ let today = new Date().toISOString().split('T')[0];
         async function renderRequestTable() {
             let list = '';
             try {
-                const requestData = await commonFetchData(`/attendance/requests/${employee_Id}`);
+                const requestData = await commonFetchData(`/attendance/request/${employee_Id}`);
                 console.log('Fetched Data:', requestData);
 
                 // Flatten nested arrays
                 const requests = requestData && Array.isArray(requestData)
-                    ? requestData.reduce((acc, curr) => acc.concat(curr), []) 
+                    ? requestData.reduce((acc, curr) => acc.concat(curr), [])
                     : [];
 
                 console.log('Flattened Requests:', requests);
@@ -244,7 +244,7 @@ let today = new Date().toISOString().split('T')[0];
 
         async function getDropdownData() {
             try {
-              let dropdownCache = await commonFetchData('/attendance/requests/dropdown');
+              let dropdownCache = await commonFetchData('/attendance/request/dropdown');
 
                 // Populate user name dropdown
                 let userList = (dropdownCache?.users || [])
@@ -276,7 +276,7 @@ let today = new Date().toISOString().split('T')[0];
 
 
         $(document).on('click', '#request-send-confirm', async function () {
-            const createUrl = `/attendance/requests/create`;
+            const createUrl = `/attendance/request/create`;
 
             const type = $('#type_id').val();
             const description = $('#description').val();
@@ -355,7 +355,7 @@ let today = new Date().toISOString().split('T')[0];
         });
 
         async function deleteItem(id, $row) {
-            const url ='/attendance/requests/delete';
+            const url ='/attendance/request/delete';
             const title ='Request';
             try {
                 const res = await commonDeleteFunction(id, url, title, $row);

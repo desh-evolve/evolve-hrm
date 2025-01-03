@@ -77,7 +77,13 @@
                                     Mass Punch
                                 </a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Requests</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('request.index') }}"
+                                    class="nav-link {{ request()->routeIs('request.index') ? 'active' : '' }}">
+                                    Request
+                                </a>
+                            </li>
+
                             <li class="nav-item"><a href="#" class="nav-link">Apply Leaves</a></li>
                         </ul>
                     </div>

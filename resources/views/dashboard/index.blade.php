@@ -91,7 +91,7 @@
                                     <div class="d-flex justify-content-between">
                                         <div>
                                             <p class="fw-semibold text-white mb-0 fs-5">Approved Leaves</p>
-                                            <h2 class="mt-4 text-white fs-1 fw-semibold"><span class="leaves-count">10</span></h2>
+                                            <h2 class="mt-4 text-white fs-1 fw-semibold"><span class="leaves-count"></span></h2>
                                         </div>
                                         <div>
                                             <div class="avatar-sm flex-shrink-0">
@@ -109,10 +109,10 @@
                     <!-- New Messages -->
                     <div class="card" style="height: 360px">
                         <div class="card-header align-items-center d-flex ">
-                            <h4 class="card-title mb-0 flex-grow-1">New Messages</h4>
+                            <h4 class="card-title mb-1 flex-grow-1">New Messages</h4>
                         </div>
                         <div>
-                            <div data-simplebar style="height: 270px;" class="pt-3">
+                            <div data-simplebar style="height: 250px;" class="pt-3">
                                 <div class="table-card ps-3">
                                     <table class="table table-borderless table-centered align-middle table-nowrap mb-5">
                                         <thead class="text-muted table-light" style="position: sticky; top: 0; z-index: 1;">
@@ -135,6 +135,9 @@
                                 </div>
                             </div>
 
+                            <div class="mt-2 mb-3 text-center">
+                                <a href="/employee/messages" class="text-muted text-decoration-underline fs-5">View More</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -144,12 +147,12 @@
 
                 <!-- First Table -->
                 <div class="col-xl-6">
-                    <div class="card" style="height: 370px">
+                    <div class="card" style="height: 355px">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">New Request</h4>
+                            <h4 class="card-title mb-1 pt-2 flex-grow-1">New Request</h4>
                         </div>
                         <div>
-                            <div data-simplebar style="height: 280px;" class="pt-3">
+                            <div data-simplebar style="height: 240px;" class="pt-3">
                                 <div class="table-card ps-3">
                                     <table class="table table-borderless table-centered align-middle table-nowrap mb-5">
                                         <thead class="text-muted table-light" style="position: sticky; top: 0; z-index: 1;">
@@ -171,7 +174,10 @@
                                     </table>
                                 </div>
                             </div>
-
+                            {{-- view button --}}
+                            <div class="mt-2 mb-3 text-center">
+                                <a href="/attendance/request/index" class="text-muted text-decoration-underline fs-5">View More</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -180,12 +186,12 @@
 
                 <!-- Second Table -->
                 <div class="col-xl-6">
-                    <div class="card" style="height: 370px">
+                    <div class="card" style="height: 355px">
                         <div class="card-header align-items-center d-flex">
-                            <h4 class="card-title mb-0 flex-grow-1">New Leave Request</h4>
+                            <h4 class="card-title mb-1 pt-2 flex-grow-1">New Leave Request</h4>
                         </div>
                         <div>
-                            <div data-simplebar style="height: 280px;" class="pt-3">
+                            <div data-simplebar style="height: 240px;" class="pt-3">
                                 <div class="table-card ps-3">
                                     <table class="table table-borderless table-centered align-middle table-nowrap mb-5">
                                         <thead class="text-muted table-light" style="position: sticky; top: 0; z-index: 1;">
@@ -224,30 +230,13 @@
                                                 <td>2024/12/18</td>
                                             </tr>
 
-                                            <tr>
-                                                <td>5</td>
-                                                <td>Jane Smith</td>
-                                                <td>Inactive</td>
-                                                <td>2024/12/18</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>6</td>
-                                                <td>Jane Smith</td>
-                                                <td>Inactive</td>
-                                                <td>2024/12/18</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>7</td>
-                                                <td>Jane Smith</td>
-                                                <td>Inactive</td>
-                                                <td>2024/12/18</td>
-                                            </tr>
-
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                             {{-- view button --}}
+                             <div class="mt-2 mb-3 text-center">
+                                <a href="#" class="text-muted text-decoration-underline fs-5">View More</a>
                             </div>
                         </div>
 
@@ -259,15 +248,14 @@
 
 
         <!-- Right Side -->
-        <div class="col-lg-3">
-            <div class="overlay"></div>
+        <div class="col-lg-3 d-flex flex-column">
             <div>
-                <div class="card rounded-0" style="height: 908px">
+                <div class="card rounded-0 h-100">
                     <div class="card-body p-0">
                         <div class="p-3 bg-primary">
                             <h6 class="text-white mb-2 mt-1 text-uppercase fw-semibold fs-5">Recent Activity</h6>
                         </div>
-                        <div data-simplebar style="height: 320px;" class="p-3 pt-0">
+                        <div data-simplebar style="height: 414px;" class="p-3 pt-0">
 
                             <!-- Activity Timeline -->
                             <div class="acitivity-timeline acitivity-main mt-4">
@@ -369,6 +357,7 @@
 
     $(document).ready(async function () {
         updateEmployeeCount();
+        updateApprovedLeaveCount();
         renderNewMessages();
         renderRequest();
 
@@ -386,7 +375,7 @@
 
         async function updateEmployeeCount() {
             try {
-                let empCount = await commonFetchData('/dashboard/temp/employee/count');
+                let empCount = await commonFetchData('/dashboard/temp/count/employee');
 
                 let employeeCount = empCount || 0;
                 console.log('Employee Count:', employeeCount);
@@ -398,6 +387,18 @@
         }
 
 
+        async function updateApprovedLeaveCount() {
+            try {
+                let approvedLeave = await commonFetchData('/dashboard/temp/count/leave');
+
+                let Count = approvedLeave.data || 0;
+                console.log('Approved Leave Count:', leaveCount);
+
+                $('.leaves-count').text(Count).trigger('change');
+            } catch (error) {
+                console.error('Error updating approved leave count:', error);
+            }
+        }
 
 
 //======================================================================================================
@@ -414,11 +415,34 @@
                     $('#newMessage_table').html('<tr><td colspan="7" class="text-center">No messages available</td></tr>');
                     return;
                 } else {
-                    list = messages.map((message,i) => {
+
+                    const unreadMessages = messages.filter(message => {
+                        return Array.isArray(message.message_details) &&
+                        message.message_details.some(detail => detail.read_status === 0);
+                    });
+
+                    if (unreadMessages.length === 0) {
+                        $('#newMessage_table').html('<tr><td colspan="7" class="text-center">No unread messages available</td></tr>');
+                        return;
+                    }
+
+                    const sortedMessages = unreadMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                    // display only the first 4 messages
+                    const latestMessages = sortedMessages.slice(0, 4);
+
+
+                    list = latestMessages.map((message,i) => {
+
+                        // Extract sender_email from the first detail in message_details
+                        const senderEmail = Array.isArray(message.message_details) && message.message_details.length > 0
+                            ? message.message_details[0].sender_email
+                            : 'Unknown';
+
                         return`
                             <tr id="${message.id}">
                                 <th scope="row">${i + 1}</th>
-                                <td>${message.sender_name}</td>
+                                <td>${senderEmail}</td>
                                 <td>${message.type_name}</td>
                                 <td>${message.subject}</td>
                                 <td>${formatDate1(message.created_at)}</td>
@@ -436,6 +460,9 @@
             }
         }
 
+
+
+
 //======================================================================================================
 //render Requests
 //======================================================================================================
@@ -444,14 +471,21 @@
             try {
                 const requests = await commonFetchData('/dashboard/temp/requests');
 
-                let list = ''; 
+                let list = '';
                 const pendingRequests = requests.filter(req => req.status === 'pending');
 
                 if (pendingRequests.length === 0) {
                     $('#request_table_body').html('<tr><td colspan="4" class="text-center">No request available</td></tr>');
                     return;
                 } else {
-                    list = pendingRequests.map((req,i) => {
+
+                    const sortedRequest = pendingRequests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+                    // display only the first 4 messages
+                    const latestRequest = sortedRequest.slice(0, 4);
+
+
+                    list = latestRequest.map((req,i) => {
                         return`
                             <tr request_id="${req.id}">
                                 <th scope="row">${i + 1}</th>
