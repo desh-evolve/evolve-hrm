@@ -16,23 +16,23 @@ class EmployeePromotionController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee promotion', ['only' => [
+        $this->middleware('permission:view user promotion', ['only' => [
             'index',
             'getAllEmployeePromotion',
             'getAllEmployeeList',
             'getEmployeePromotionById',
             'getSingleEmployeePromotion',
         ]]);
-        $this->middleware('permission:create employee promotion', ['only' => ['createEmployeePromotion']]);
-        $this->middleware('permission:update employee promotion', ['only' => ['updateEmployeePromotion']]);
-        $this->middleware('permission:delete employee promotion', ['only' => ['deleteEmployeePromotion']]);
+        $this->middleware('permission:create user promotion', ['only' => ['createEmployeePromotion']]);
+        $this->middleware('permission:update user promotion', ['only' => ['updateEmployeePromotion']]);
+        $this->middleware('permission:delete user promotion', ['only' => ['deleteEmployeePromotion']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('employee_promotion.index');
+        return view('user_promotion.index');
     }
 
     public function createEmployeePromotion(Request $request)
@@ -40,7 +40,7 @@ class EmployeePromotionController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'current_designation' => 'required',
                     'new_designation' => 'required',
                     'current_salary' => 'required',
@@ -50,7 +50,7 @@ class EmployeePromotionController extends Controller
 
                 $table = 'emp_promotions';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'current_designation' => $request->current_designation,
                     'new_designation' => $request->new_designation,
                     'current_salary' => $request->current_salary,
@@ -80,7 +80,7 @@ class EmployeePromotionController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'current_designation' => 'required',
                     'new_designation' => 'required',
                     'current_salary' => 'required',
@@ -91,7 +91,7 @@ class EmployeePromotionController extends Controller
                 $table = 'emp_promotions';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'current_designation' => $request->current_designation,
                     'new_designation' => $request->new_designation,
                     'current_salary' => $request->current_salary,
@@ -128,28 +128,28 @@ class EmployeePromotionController extends Controller
     {
         $table = 'emp_promotions';
         $fields = '*';
-        $employee_promotion = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_promotion], 200);
+        $user_promotion = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $user_promotion], 200);
     }
 
     public function getEmployeePromotionById($id)
     {
-        $idColumn = 'employee_id';
+        $idColumn = 'user_id';
         $table = 'emp_promotions';
         $fields = '*';
-        $employee_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_promotion], 200);
+        $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_promotion], 200);
     }
     public function getEmployeeList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
-        // $employees = $this->common->commonGetAll($table, $fields);
+        $users = $this->common->commonGetAll('emp_employees', '*');
+        // $users = $this->common->commonGetAll($table, $fields);
         return response()->json([
             // 'data' => [
-            //     'employees' => $employees,
+            //     'users' => $users,
             // ]
-            'data' => $employees,
+            'data' => $users,
         ], 200);
     }
 
@@ -158,7 +158,7 @@ class EmployeePromotionController extends Controller
         $idColumn = 'id';
         $table = 'emp_promotions';
         $fields = '*';
-        $employee_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_promotion], 200);
+        $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_promotion], 200);
     }
 }

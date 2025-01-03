@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::table('emp_employees', function (Blueprint $table) {
             // Adding new columns after the 'gender' column
             $table->string('bond_period')->after('gender');
-            $table->integer('employee_status')->after('bond_period');
+            $table->integer('user_status')->after('bond_period');
             
             // Modifying 'religion' column from string to integer
             $table->integer('religion')->change();
@@ -33,7 +33,7 @@ return new class extends Migration
         Schema::table('emp_employees', function (Blueprint $table) {
             // Dropping the new columns
             $table->dropColumn('bond_period');
-            $table->dropColumn('employee_status');
+            $table->dropColumn('user_status');
             
             // Reverting 'religion' column back to string
             $table->string('religion')->change();

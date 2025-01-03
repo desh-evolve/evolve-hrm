@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('message_employees', function (Blueprint $table) {
+        Schema::create('com_user_designations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('message_id'); // Foreign key to messages table
-            $table->unsignedBigInteger('received_id'); // Foreign key for the receiver
-            $table->tinyInteger('read_status')->default(0)->comment('0: not_read, 1: read');
+            $table->string('emp_designation_name');
 
             $table->string('status')->default('active')->nullable();
             $table->timestamp('created_at')->useCurrent();
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('message_employee');
+        Schema::dropIfExists('com_user_designations');
     }
 };

@@ -24,7 +24,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <form action="{{ url('/employee/create') }}" method="POST" class="form-steps" autocomplete="on" enctype="multipart/form-data">
+                <form action="{{ url('/user/create') }}" method="POST" class="form-steps" autocomplete="on" enctype="multipart/form-data">
                     @csrf
 
                     <div class="card-header">
@@ -45,16 +45,16 @@
                     <div class="card-body">
                         <div class="tab-content">
 
-                            <!-- start employee identification tab pane -->
+                            <!-- start user identification tab pane -->
                             <div class="tab-pane fade show active" id="steparrow-basic-info" role="tabpanel" aria-labelledby="steparrow-basic-info-tab">
                                 <div class="row">
                                     <div class="col-lg-6 border-end">
                                         <div class="row">
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label req" for="employee_no">Employee Number</label>
-                                                    <input type="text" class="form-control" id="employee_no" name="employee_no" placeholder="Enter Employee Number" required />
-                                                    <div class="invalid-feedback">Please enter an employee number</div>
+                                                    <label class="form-label req" for="user_no">Employee Number</label>
+                                                    <input type="text" class="form-control" id="user_no" name="user_no" placeholder="Enter Employee Number" required />
+                                                    <div class="invalid-feedback">Please enter an user number</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -84,8 +84,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label req" for="employee_group_id">Employment Group</label>
-                                                    <select class="form-select" id="employee_group_id" name="employee_group_id" required>
+                                                    <label class="form-label req" for="user_group_id">Employment Group</label>
+                                                    <select class="form-select" id="user_group_id" name="user_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter an employment group</div>
@@ -111,11 +111,11 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label req" for="employee_status">Employee Status</label>
-                                                    <select class="form-select" id="employee_status" name="employee_status" required>
+                                                    <label class="form-label req" for="user_status">Employee Status</label>
+                                                    <select class="form-select" id="user_status" name="user_status" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter an employee status</div>
+                                                    <div class="invalid-feedback">Please enter an user status</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -192,11 +192,11 @@
                                         <div class="row border-bottom">
                                             <div class="col-lg-6">
                                                 <div class="mt-3 mb-3">
-                                                    <label class="form-label req" for="employee_status">Basis of Employment</label>
+                                                    <label class="form-label req" for="user_status">Basis of Employment</label>
                                                     <div id="employment_types">
                                                         
                                                     </div>
-                                                    <div class="invalid-feedback">Please enter an employee status</div>
+                                                    <div class="invalid-feedback">Please enter an user status</div>
                                                 </div>
                                             </div>
                                         
@@ -371,8 +371,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="employee_photo">Employee Photo</label>
-                                                    <input type="file" class="form-control" id="employee_photo" name="employee_photo" />
+                                                    <label class="form-label" for="user_photo">Employee Photo</label>
+                                                    <input type="file" class="form-control" id="user_photo" name="user_photo" />
                                                 </div>
                                             </div>
                                         </div>
@@ -539,7 +539,7 @@
                                 </table>
 
                                 <div class="d-flex align-items-start gap-3 mt-4">
-                                    <input type="hidden" name="employee_id" id="employee_id" />
+                                    <input type="hidden" name="user_id" id="user_id" />
                                     <button type="button" class="btn btn-light btn-label previestab" data-previous="steparrow-gen-info-tab"><i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to General</button>
                                     <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab emp_form_submit" data-nexttab="steparrow-document-info-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Submit</button>
                                 </div>
@@ -555,6 +555,6 @@
     </div>
 
     <!-- javascript functions -->
-    @include('employee.emp_form_js')
+    @include('user.emp_form_js')
 
 </x-app-layout>

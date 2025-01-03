@@ -27,7 +27,7 @@
                     <div class="col-lg-12 col-12">
                         <div class="p-2">
                             <p class="fs-14 mb-0">Employee No</p>
-                            <h4 class="text-white mb-1" id="title-employee-no">#243</h4>
+                            <h4 class="text-white mb-1" id="title-user-no">#243</h4>
                         </div>
                     </div>
                 </div>
@@ -226,11 +226,11 @@
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Employee Status :</th>
-                                                        <td class="text-muted" id="employee-status">Loading...</td>
+                                                        <td class="text-muted" id="user-status">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Employee Number :</th>
-                                                        <td class="text-muted" id="employee-number">Loading...</td>
+                                                        <td class="text-muted" id="user-number">Loading...</td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Punch Machine User ID :</th>
@@ -634,5 +634,5 @@
     </div>
 
     <!-- javascript functions -->
-    @include('employee.emp_profile_js')
+    @include('user.emp_profile_js')
 </x-app-layout>

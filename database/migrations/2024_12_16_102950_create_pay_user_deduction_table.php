@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pay_employee_deduction', function (Blueprint $table) {
+        Schema::create('pay_user_deduction', function (Blueprint $table) {
             $table->id();
-            $table->integer('employee_id')->unsigned();
+            $table->integer('user_id')->unsigned();
             $table->integer('company_deduction_id')->unsigned();
             $table->string('user_value1', 250)->nullable();
             $table->string('user_value2', 250)->nullable();
@@ -39,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pay_employee_deduction');
+        Schema::dropIfExists('pay_user_deduction');
     }
 };

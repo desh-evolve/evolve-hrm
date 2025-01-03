@@ -56,9 +56,9 @@
                             </div>
                             <div class="row">
                                 <div class="row mb-3 col-md-4">
-                                    <label for="employee_filter" class="form-label mb-1 col-md-3">Employee</label>
+                                    <label for="user_filter" class="form-label mb-1 col-md-3">Employee</label>
                                     <div class="col-md-9">
-                                        <select class="form-select" id="employee_filter">
+                                        <select class="form-select" id="user_filter">
                                         </select>
                                     </div>
                                 </div>
@@ -233,17 +233,17 @@
 
         async function getDropdownDataFunc(){
             try {
-                dropdownData = await commonFetchData('/employee/timesheet/dropdown');
+                dropdownData = await commonFetchData('/user/timesheet/dropdown');
 
                 branches = dropdownData.branches.length > 0 && dropdownData.branches.map(e => `<option value="${e.id}">${e.branch_name}</option>`).join('');
                 departments = dropdownData.departments.length > 0 && dropdownData.departments.map(e => `<option value="${e.id}">${e.department_name}</option>`).join('');
-                employee_groups = dropdownData.employee_groups.length > 0 && dropdownData.employee_groups.map(e => `<option value="${e.id}">${e.emp_group_name}</option>`).join('');
-                employees = dropdownData.employees.length > 0 && dropdownData.employees.map(e => `<option value="${e.id}">${e.first_name+' '+e.last_name}</option>`).join('');
+                user_groups = dropdownData.user_groups.length > 0 && dropdownData.user_groups.map(e => `<option value="${e.id}">${e.emp_group_name}</option>`).join('');
+                users = dropdownData.users.length > 0 && dropdownData.users.map(e => `<option value="${e.id}">${e.first_name+' '+e.last_name}</option>`).join('');
 
                 $('#group_filter').append(branches);
                 $('#branch_filter').append(departments);
-                $('#department_filter').append(employee_groups);
-                $('#employee_filter').append(employees);
+                $('#department_filter').append(user_groups);
+                $('#user_filter').append(users);
                 
             }catch(error){
                 console.error('error at attendance->timesheet->index->getDropdownDataFunc: ', error);

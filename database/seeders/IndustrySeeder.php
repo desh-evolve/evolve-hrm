@@ -10,36 +10,131 @@ class IndustrySeeder extends Seeder
 {
     public function run()
     {
-        DB::table('industries')->insert([
+        DB::table('com_industries')->insert([
             [
-                'industry_id'   => 1,
-                'industry_name' => 'Information Technology',
-                'status'        => 'Active',
-                'created_at'    => Carbon::now(),
-                'created_by'    => 1,
-                'updated_by'    => null,
-                'deleted_at'    => null,
-                'deleted_by'    => null,
+                'industry_name' => 'Agriculture, Forestry, Fishing and Hunting',
+                'created_by'    => 0,
+                'updated_by'    => 0,
             ],
             [
-                'industry_id'   => 2,
+                'industry_name' => 'Mining and Oil and Gas Extraction',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Utilities',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Construction',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
                 'industry_name' => 'Manufacturing',
-                'status'        => 'Active',
-                'created_at'    => Carbon::now(),
-                'created_by'    => 1,
-                'updated_by'    => null,
-                'deleted_at'    => null,
-                'deleted_by'    => null,
+                'created_by'    => 0,
+                'updated_by'    => 0,
             ],
             [
-                'industry_id'   => 3,
-                'industry_name' => 'Finance',
-                'status'        => 'Inactive',
-                'created_at'    => Carbon::now(),
-                'created_by'    => 2,
-                'updated_by'    => null,
-                'deleted_at'    => null,
-                'deleted_by'    => null,
+                'industry_name' => 'Wholesale Trade',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Retail Trade',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Transportation and Warehousing',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Information and Cultural Industries',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Finance and Insurance',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Real Estate and Rental and Leasing',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Professional, Scientific and Technical Services',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Management of Companies and Enterprises',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Educational Services',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Health Care and Social Assistance',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Arts, Entertainment and Recreation',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Accommodation and Food Services',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Government/Public Administration',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Publishing Industries (except Internet)',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Motion Picture and Sound Recording Industries',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Telecommunications',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Data Processing, Hosting and Related Services',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Administrative and Support Services',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Waste Management and Remediation Services',
+                'created_by'    => 0,
+                'updated_by'    => 0,
+            ],
+            [
+                'industry_name' => 'Other',
+                'created_by'    => 0,
+                'updated_by'    => 0,
             ],
         ]);
     }

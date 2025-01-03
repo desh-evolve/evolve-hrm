@@ -17,7 +17,7 @@
                     </div>
                     <div>
                         <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1"
-                            id="add-new-employee-family-btn">New Family Detail <i class="ri-add-line"></i></button>
+                            id="add-new-user-family-btn">New Family Detail <i class="ri-add-line"></i></button>
                     </div>
                 </div>
 
@@ -26,11 +26,11 @@
 
                     <div class="row mb-3 mb-4">
                         <div class="col-lg-2 d-flex align-items-center">
-                            <label for="employee_idname" class="form-label mb-1 req">Employee Name</label>
+                            <label for="user_idname" class="form-label mb-1 req">Employee Name</label>
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm js-example-basic-single" id="employeeDropdown">
+                            <select class="form-select form-select-sm js-example-basic-single" id="userDropdown">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
@@ -52,7 +52,7 @@
                                 <th class="col">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="employee-family-table-body">
+                        <tbody id="user-family-table-body">
                             <tr>
                                 <td colspan="7" class="text-center">Please Select a Employee ...</td>
                             </tr>
@@ -63,20 +63,20 @@
         </div>
     </div>
 
-    <div id="employee-family-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true"
+    <div id="user-family-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true"
         data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="employee-family-form-title">New Family Detail</h4>
+                    <h4 class="modal-title" id="user-family-form-title">New Family Detail</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="employee-family-form-body" class="row">
+                    <div id="user-family-form-body" class="row">
 
                         <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="employee_name" class="form-label mb-1">Employee Name</label>
-                            <input type="text" class="form-control" id="employee_name" value="" disabled>
+                            <label for="user_name" class="form-label mb-1">Employee Name</label>
+                            <input type="text" class="form-control" id="user_name" value="" disabled>
                         </div>
 
                         <div class="col-xxl-3 col-md-6 mb-3">
@@ -121,8 +121,8 @@
                         </div>
 
                         <div class="col-xxl-4 col-md-6 mb-3">
-                            <label for="employee_family_status" class="form-label mb-1 req">Status</label>
-                            <select class="form-select" id="employee_family_status">
+                            <label for="user_family_status" class="form-label mb-1 req">Status</label>
+                            <select class="form-select" id="user_family_status">
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
@@ -139,7 +139,7 @@
                             <input type="hidden" id="family_id" value="">
                             <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
                             <button type="button" class="btn w-sm btn-primary"
-                                id="employee-family-submit-confirm">Submit</button>
+                                id="user-family-submit-confirm">Submit</button>
                         </div>
                     </div>
                 </div>
@@ -147,21 +147,21 @@
         </div>
 
         <script>
-            let employeeId = '';
+            let userId = '';
 
-            // Fetch and render employees_family for the selected employee
+            // Fetch and render users_family for the selected user
             async function renderEmployeeFamilyTable() {
-                if (!employeeId) {
-                    $('#employee-family-table-body').html(
+                if (!userId) {
+                    $('#user-family-table-body').html(
                         '<tr><td colspan="7" class="text-center">No Employee Selected</td></tr>');
                     return;
                 }
                 
-                let employees_family = await commonFetchData(`/company/employee_family/${employeeId}`);
+                let users_family = await commonFetchData(`/company/user_family/${userId}`);
                 let list = '';
                 
-                if (employees_family && employees_family.length > 0) {
-                    employees_family.forEach((item, i) => {
+                if (users_family && users_family.length > 0) {
+                    users_family.forEach((item, i) => {
                         list += `
                 <tr family_id="${item.id}">
                     <td>${i + 1}</td>
@@ -177,10 +177,10 @@
                         ? `<span class="badge border border-success text-success">${item.status}</span>` 
                         : `<span class="badge border border-warning text-warning">${item.status}</span>`}</td>
                     <td>
-                        <button type="button" class="btn btn-info waves-effect waves-light btn-sm click-edit-employee-family" title="Edit" data-tooltip="tooltip" data-bs-placement="top">
+                        <button type="button" class="btn btn-info waves-effect waves-light btn-sm click-edit-user-family" title="Edit" data-tooltip="tooltip" data-bs-placement="top">
                             <i class="ri-pencil-fill"></i>
                         </button>
-                        <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click-delete-employee-family" title="Delete" data-tooltip="tooltip" data-bs-placement="top">
+                        <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click-delete-user-family" title="Delete" data-tooltip="tooltip" data-bs-placement="top">
                             <i class="ri-delete-bin-fill"></i>
                         </button>
                     </td>
@@ -191,56 +191,56 @@
                     list = `<tr><td colspan="7" class="text-danger text-center">No Employee Family Yet!</td></tr>`;
                 }
 
-                $('#employee-family-table-body').html(list);
+                $('#user-family-table-body').html(list);
             }
 
             async function getEmployeeList() {
-                let employees = await commonFetchData('/company/employee_family/dropdown');
+                let users = await commonFetchData('/company/user_family/dropdown');
 
             
                 
-                // Check if employees data is valid
-                if (employees && employees.length > 0) {
+                // Check if users data is valid
+                if (users && users.length > 0) {
                     // Target the dropdown element
-                    let dropdown = $('#employeeDropdown');
+                    let dropdown = $('#userDropdown');
 
                     // Clear existing options (optional)
                     dropdown.empty();
                     dropdown.append('<option value="">Select Employee</option>'); // Add a default option
 
-                    // Loop through the employees and add options
-                    employees.forEach(employee => {
+                    // Loop through the users and add options
+                    users.forEach(user => {
                         let option =
-                            `<option value="${employee.id}">${employee.first_name} ${employee.last_name}</option>`;
+                            `<option value="${user.id}">${user.first_name} ${user.last_name}</option>`;
                         dropdown.append(option);
                     });
                 } else {
-                    console.log('No employees found');
+                    console.log('No users found');
                 }
 
             }
 
-            // Populate employee dropdown and set up change event
+            // Populate user dropdown and set up change event
             $(document).ready(async function() {
                 await getEmployeeList();
 
-                $('#employeeDropdown').on('change', async function() {
-                    employeeId = $(this).val(); // Get selected employee ID
-                    let employeeName = $('#employeeDropdown option:selected').text();
-                    $('#employee_name').val(employeeName);
+                $('#userDropdown').on('change', async function() {
+                    userId = $(this).val(); // Get selected user ID
+                    let userName = $('#userDropdown option:selected').text();
+                    $('#user_name').val(userName);
 
-                    // Render table for the selected employee
+                    // Render table for the selected user
                     await renderEmployeeFamilyTable();
                 });
             });
 
-            $(document).on('click', '#add-new-employee-family-btn', function() {
+            $(document).on('click', '#add-new-user-family-btn', function() {
                 resetForm();
                 title = `Add New Employee Family`;
-                $('#employee-family-form-title').html(title);
-                $('#employee-family-form-modal').modal('show');
+                $('#user-family-form-title').html(title);
+                $('#user-family-form-modal').modal('show');
             });
-            $(document).on('click', '#employee-family-submit-confirm', async function() {
+            $(document).on('click', '#user-family-submit-confirm', async function() {
                 const family_id = $('#family_id').val();
                 const name = $('#name').val();
                 const relationship = $('#relationship').val();
@@ -252,10 +252,10 @@
                 const address_1 = $('#address_1').val();
                 const address_2 = $('#address_2').val();
                 const notes = $('#notes').val();
-                const employee_family_status = $('#employee_family_status').val();
+                const user_family_status = $('#user_family_status').val();
 
-                let createUrl = `/company/employee_family/create`;
-                let updateUrl = `/company/employee_family/update/${family_id}`;
+                let createUrl = `/company/user_family/create`;
+                let updateUrl = `/company/user_family/update/${family_id}`;
 
                 let formData = new FormData();
                 
@@ -266,7 +266,7 @@
                     $('#error-msg').html(''); // Clear error message if no issues
                 }
                 
-                formData.append('employee_id', employeeId);
+                formData.append('user_id', userId);
                 formData.append('name', name);
                 formData.append('relationship', relationship);
                 formData.append('dob', dob);
@@ -277,7 +277,7 @@
                 formData.append('address_1', address_1); 
                 formData.append('address_2', address_2); 
                 formData.append('notes', notes); 
-                formData.append('employee_family_status', employee_family_status);
+                formData.append('user_family_status', user_family_status);
 
                 const isUpdating = Boolean(family_id);
                 let url = isUpdating ? updateUrl : createUrl;
@@ -288,7 +288,7 @@
                     await commonAlert(res.status, res.message);
 
                     if (res.status === 'success') {
-                        $('#employee-family-form-modal').modal('hide');
+                        $('#user-family-form-modal').modal('hide');
                         await renderEmployeeFamilyTable(); // Re-render table on success
                     }
                 } catch (error) {
@@ -299,7 +299,7 @@
 
 
             // edit click event
-            $(document).on('click', '.click-edit-employee-family', async function() {
+            $(document).on('click', '.click-edit-user-family', async function() {
                 // resetForm();
                 let family_id = $(this).closest('tr').attr('family_id');
 
@@ -307,7 +307,7 @@
                 // Get branch data by id
                 try {
                     let family_data = await commonFetchData(
-                        `/company/single_employee_family/${family_id}`);
+                        `/company/single_user_family/${family_id}`);
                         family_data = family_data[0];
                     console.log('family_data', family_data);
 
@@ -323,7 +323,7 @@
                     $('#address_1').val(family_data?.address_1 || '');
                     $('#address_2').val(family_data?.address_2 || '');
                     $('#notes').val(family_data?.notes || '');
-                    $('#employee_family_status').val(family_data?.status || '');
+                    $('#user_family_status').val(family_data?.status || '');
                     // Load the country, province, and city accordingly
 
 
@@ -331,15 +331,15 @@
                     console.error('error at getWorkExperienceById: ', error);
                 } finally {
                     title = `Edit Employee Family`;
-                    $('#employee-family-form-title').html(title);
-                    $('#employee-family-form-modal').modal('show');
+                    $('#user-family-form-title').html(title);
+                    $('#user-family-form-modal').modal('show');
                 }
             });
-            $(document).on('click', '.click-delete-employee-family', async function() {
+            $(document).on('click', '.click-delete-user-family', async function() {
                 let family_id = $(this).closest('tr').attr('family_id');
 
                 try {
-                    let url = `/company/employee_family/delete`;
+                    let url = `/company/user_family/delete`;
                     const res = await commonDeleteFunction(family_id, url,
                         'Employee Family'); // Await the promise here
 
@@ -363,7 +363,7 @@
                 $('#address_1').val('');
                 $('#address_2').val('');
                 $('#notes').val('');
-                $('#employee_family_status').val('active'); // Reset status to default
+                $('#user_family_status').val('active'); // Reset status to default
                 $('#error-msg').html(''); // Clear error messages
             }
         </script>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('punch_control', function (Blueprint $table) {
             $table->id();
-            $table->integer('employee_date_id');
+            $table->integer('user_date_id');
             $table->integer('branch_id')->nullable();
             $table->integer('department_id')->nullable();
             $table->integer('total_time')->default(0);

@@ -47,17 +47,17 @@ class PayStubAmendmentController extends Controller
                     'pay_stub_entry_name_id' => 'required',
                     'ytd_adjustment' => 'nullable',
                     'type' => 'nullable',
-                    'employee_ids' => 'nullable|json',
+                    'user_ids' => 'nullable|json',
                 ]);
 
                 $payStubAmendId = null; // Initialize outside loop for response check.
 
-                if (!empty($request->employee_ids)) {
-                    $empIds = json_decode($request->employee_ids, true);
+                if (!empty($request->user_ids)) {
+                    $empIds = json_decode($request->user_ids, true);
                     if (is_array($empIds)) {
                         foreach ($empIds as $empId) {
                             $payStubAmendInput = [
-                                'employee_id' => $empId,
+                                'user_id' => $empId,
                                 'pay_stub_entry_name_id' => $request->pay_stub_entry_name_id,
                                 'effective_date' => $request->effective_date,
                                 'rate' => $request->rate,
@@ -100,20 +100,20 @@ class PayStubAmendmentController extends Controller
                     'pay_stub_entry_name_id' => 'required',
                     'ytd_adjustment' => 'nullable',
                     'type' => 'nullable',
-                    'employee_ids' => 'nullable|json',
+                    'user_ids' => 'nullable|json',
                 ]);
 
                 $table = 'pay_stub_amendment';
                 $idColumn = 'id';
                 $payStubAmendId = null; // Initialize outside loop for response check.
 
-                if (!empty($request->employee_ids)) {
-                    $empIds = json_decode($request->employee_ids, true);
+                if (!empty($request->user_ids)) {
+                    $empIds = json_decode($request->user_ids, true);
                     if (is_array($empIds)) {
                         foreach ($empIds as $empId) {
                             // Check if a record already exists
                             $existingRecord = DB::table($table)
-                                ->where('employee_id', $empId)
+                                ->where('user_id', $empId)
                                 ->where('pay_stub_entry_name_id', $request->pay_stub_entry_name_id)
                                 ->where('effective_date', $request->effective_date)
                                 ->first();
@@ -123,7 +123,7 @@ class PayStubAmendmentController extends Controller
                             }
 
                             $payStubAmendInput = [
-                                'employee_id' => $empId,
+                                'user_id' => $empId,
                                 'pay_stub_entry_name_id' => $request->pay_stub_entry_name_id,
                                 'effective_date' => $request->effective_date,
                                 'rate' => $request->rate,
@@ -172,7 +172,7 @@ class PayStubAmendmentController extends Controller
         $fields = ['pay_stub_amendment.*', 'pay_stub_entry_account.name as account_name', 'pay_stub_entry_account.type as account_type', 'pay_stub_amendment.id as id', 'emp_employees.first_name', 'emp_employees.last_name'];
 
         $joinsArr = [
-            'emp_employees' => ['emp_employees.id', '=', 'pay_stub_amendment.employee_id'],
+            'emp_employees' => ['emp_employees.id', '=', 'pay_stub_amendment.user_id'],
             'pay_stub_entry_account' => ['pay_stub_entry_account.id', '=', 'pay_stub_amendment.pay_stub_entry_name_id'],
         ];
         $pay_stub_account = $this->common->commonGetAll($table, $fields, $joinsArr);
@@ -190,14 +190,14 @@ class PayStubAmendmentController extends Controller
     public function getDropdownList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
+        $users = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
         $pay_stub_entry_accounts = $this->common->commonGetAll('pay_stub_entry_account', '*');
         return response()->json([
             'data' => [
-                'employees' => $employees,
+                'users' => $users,
                 'pay_stub_entry_accounts' => $pay_stub_entry_accounts,
             ]
-            // 'data' => $employees,
+            // 'data' => $users,
         ], 200);
     }
 }

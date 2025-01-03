@@ -16,23 +16,23 @@ class EmployeeFamilyController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee family', ['only' => [
+        $this->middleware('permission:view user family', ['only' => [
             'index',
             'getAllEmployeeFamily',
             'getAllEmployeeList',
             'getEmployeeFamilyById',
             'getSingleEmployeeFamily',
         ]]);
-        $this->middleware('permission:create employee family', ['only' => ['createEmployeeFamily']]);
-        $this->middleware('permission:update employee family', ['only' => ['updateEmployeeFamily']]);
-        $this->middleware('permission:delete employee family', ['only' => ['deleteEmployeeFamily']]);
+        $this->middleware('permission:create user family', ['only' => ['createEmployeeFamily']]);
+        $this->middleware('permission:update user family', ['only' => ['updateEmployeeFamily']]);
+        $this->middleware('permission:delete user family', ['only' => ['deleteEmployeeFamily']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('employee_family.index');
+        return view('user_family.index');
     }
 
     public function createEmployeeFamily(Request $request)
@@ -40,7 +40,7 @@ class EmployeeFamilyController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'name' => 'required',
                     'relationship' => 'required',
                     'dob' => 'required',
@@ -49,7 +49,7 @@ class EmployeeFamilyController extends Controller
 
                 $table = 'emp_family';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'name' => $request->name,
                     'relationship' => $request->relationship,
                     'dob' => $request->dob,
@@ -60,7 +60,7 @@ class EmployeeFamilyController extends Controller
                     'address_1' => $request->address_1,
                     'address_2' => $request->address_2,
                     'notes' => $request->notes,
-                    'status' => $request->employee_family_status,
+                    'status' => $request->user_family_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
@@ -82,7 +82,7 @@ class EmployeeFamilyController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'name' => 'required',
                     'relationship' => 'required',
                     'dob' => 'required',
@@ -92,7 +92,7 @@ class EmployeeFamilyController extends Controller
                 $table = 'emp_family';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'name' => $request->name,
                     'relationship' => $request->relationship,
                     'dob' => $request->dob,
@@ -103,7 +103,7 @@ class EmployeeFamilyController extends Controller
                     'address_1' => $request->address_1,
                     'address_2' => $request->address_2,
                     'notes' => $request->notes,
-                    'status' => $request->employee_family_status,
+                    'status' => $request->user_family_status,
                     'updated_by' => Auth::user()->id,
 
                 ];
@@ -133,29 +133,29 @@ class EmployeeFamilyController extends Controller
     {
         $table = 'emp_family';
         $fields = '*';
-        $employee_family = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_family], 200);
+        $user_family = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $user_family], 200);
     }
 
     public function getEmployeeFamilyById($id)
     {
         
-        $idColumn = 'employee_id';
+        $idColumn = 'user_id';
         $table = 'emp_family';
         $fields = '*';
-        $employee_family = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_family], 200);
+        $user_family = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_family], 200);
     }
     public function getEmployeeList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
-        // $employees = $this->common->commonGetAll($table, $fields);
+        $users = $this->common->commonGetAll('emp_employees', '*');
+        // $users = $this->common->commonGetAll($table, $fields);
         return response()->json([
             // 'data' => [
-            //     'employees' => $employees,
+            //     'users' => $users,
             // ]
-            'data' => $employees,
+            'data' => $users,
         ], 200);
     }
 
@@ -164,7 +164,7 @@ class EmployeeFamilyController extends Controller
         $idColumn = 'id';
         $table = 'emp_family';
         $fields = '*';
-        $employee_family = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_family], 200);
+        $user_family = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_family], 200);
     }
 }

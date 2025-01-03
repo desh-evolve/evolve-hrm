@@ -233,12 +233,12 @@
                             </div>
                         </div>
 
-                        <div id="employee_section">
+                        <div id="user_section">
                             <div class="row mb-3">
-                                <label for="employee_ids" class="form-label mb-1 col-md-3">Employees</label>
+                                <label for="user_ids" class="form-label mb-1 col-md-3">Employees</label>
                                 <div class="col-md-9">
-                                    <div class="ps-2" id="employeeContainer">
-                                        {{-- render employees dynamically --}}
+                                    <div class="ps-2" id="userContainer">
+                                        {{-- render users dynamically --}}
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +269,7 @@
 
 
     <script>
-        const employeeIds = '';
+        const userIds = '';
         let dropdownData = [];
 
         $(document).ready(async function() {
@@ -286,7 +286,7 @@
             try {
                 let dropdownData = await commonFetchData('/payroll/pay_period_schedule/dropdown')
 
-                console.log("Employees Data:", dropdownData?.employees);
+                console.log("Employees Data:", dropdownData?.users);
 
                 // Time Zone dropdown
                 let timeZoneList = (dropdownData?.time_zones || [])
@@ -295,10 +295,10 @@
                 $('#time_zone').html('<option value="">Select Time Zone</option>' +
                     timeZoneList);
 
-                // Initialize the multiSelector for employees
-                $('#employeeContainer').multiSelector({
+                // Initialize the multiSelector for users
+                $('#userContainer').multiSelector({
                     title: 'Employees',
-                    data: dropdownData?.employees || [],
+                    data: dropdownData?.users || [],
                 });
 
                 // Populate timesheet_verify_type dropdown
@@ -353,8 +353,8 @@
             console.log('pay_period_schedule_id',pay_period_schedule_id);
             
 
-            // Collect selected employee IDs from the multiSelector component
-            const selectedIds = $('#employeeContainer .selected-list option').map(function() {
+            // Collect selected user IDs from the multiSelector component
+            const selectedIds = $('#userContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
 
@@ -370,7 +370,7 @@
             //     $('#error-msg').html(''); // Clear error message if no issues
             // }
 
-            formData.append('employee_ids', JSON.stringify(selectedIds));
+            formData.append('user_ids', JSON.stringify(selectedIds));
             formData.append('name', $('#name').val());
             formData.append('description', $('#description').val());
             formData.append('start_week_day', $('#start_week_day').val());
@@ -575,13 +575,13 @@
                 $('#transaction_date_bd').val(data.transaction_date_bd);
                 $('#pay_period_schedule_status').val(data.status);
 
-                // employeeIds = data.employees.map(emp => emp.employee_id);
+                // userIds = data.users.map(emp => emp.user_id);
 
-                // // Initialize the multiSelector for employees
-                // $('#employeeContainer').multiSelector({
+                // // Initialize the multiSelector for users
+                // $('#userContainer').multiSelector({
                 //     title: 'Employees',
-                //     data: dropdownData?.employees || [],
-                //     selectedIds: employeeIds,
+                //     data: dropdownData?.users || [],
+                //     selectedIds: userIds,
                 // });
 
                 await changeType($('#type').val());

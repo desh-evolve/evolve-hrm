@@ -33,14 +33,6 @@ class TimeSheetController extends Controller
         $this->common = new CommonModel();
     }
 
-    /*
-    public function index()
-    {
-
-        return view('attendance.timesheet.index');
-    }
-    */
-
     public function index(Request $request)
     {
 
@@ -51,25 +43,26 @@ class TimeSheetController extends Controller
         $edc = new EmployeeDateController();
 
         $currentUser = Auth::user();
+
         $filter_data = $request->input('filter_data', [
             'company_id' => 1,
-            'employee_id' => $currentUser->id,
-            'date' => '2024-12-14',
+            'user_id' => $currentUser->id,
+            'date' => date('Y-m-d'),
             'group_ids' => -1,
             'branch_ids' => -1,
             'department_ids' => -1,
         ]);
 
-        $employee_id = $filter_data['employee_id'];
+        $user_id = $filter_data['user_id'];
 
-        //Get employee date info from filter date.
-        $em_date_arr = $edc->getByEmployeeDateUserIdAndDate($employee_id, $filter_data['date']);
+        //Get user date info from filter date.
+        $em_date_arr = $edc->getByEmployeeDateUserIdAndDate($user_id, $filter_data['date']);
         //print_r($em_date_arr);exit;
         $pay_period_obj = null;
         if ( count($em_date_arr) > 0 ) {
             $pay_period_id = $em_date_arr[0]->pay_period_id;
         } else {
-            $pay_period_arr = $cc->getPayPeriodByUserIdAndDate($employee_id, $filter_data['date']);
+            $pay_period_arr = $cc->getPayPeriodByUserIdAndDate($user_id, $filter_data['date']);
 
             if ( count($pay_period_arr) > 0 ) {
                 $pay_period_obj = $pay_period_arr[0];
@@ -88,7 +81,7 @@ class TimeSheetController extends Controller
         //print_r($pay_period_obj );exit;
 
         $current_user_prefs = $epc->getEmployeePreferencesByEmployeeId(Auth::user()->id);
-
+        
         // Get the start day of the week, defaulting to Monday
         $start_date = $cdc->getBeginWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day ); // Y-m-d format
 		$end_date = $cdc->getEndWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day ); // Y-m-d format
@@ -98,7 +91,7 @@ class TimeSheetController extends Controller
         //print_r($calendar_array);exit;
         
         // Fetch the punch list for the given week range
-        $punchList = $pc->getPunchesByEmployeeIdAndStartDateAndEndDate($filter_data['employee_id'], $start_date, $end_date);
+        $punchList = $pc->getPunchesByEmployeeIdAndStartDateAndEndDate($filter_data['user_id'], $start_date, $end_date);
         
         //print_r($punchList);exit;
         
@@ -319,10 +312,10 @@ class TimeSheetController extends Controller
         //Get date total rows.
         $meal_policy_options = $this->common->commonGetById($filter_data['company_id'], 'company_id', 'meal_policy', '*');
         
-        $employee_date_total = $edc->getByCompanyIDAndUserIdAndStatusAndTypeAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['employee_id'], 'in', 'normal', $start_date, $end_date);
+        $user_date_total = $edc->getByCompanyIDAndUserIdAndStatusAndTypeAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['user_id'], 'in', 'normal', $start_date, $end_date);
         
-        if ( count($employee_date_total) > 0 ){
-            foreach($employee_date_total as $udt_obj) {
+        if ( count($user_date_total) > 0 ){
+            foreach($user_date_total as $udt_obj) {
                 $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
                 if ( $udt_obj->meal_policy_id !== FALSE AND isset($meal_policy_options[$udt_obj->meal_policy_id]) ) {
@@ -334,7 +327,7 @@ class TimeSheetController extends Controller
                 $date_meal_totals[$user_date_stamp][] = array(
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
-                    'user_date_id' => $udt_obj->employee_date_id,
+                    'user_date_id' => $udt_obj->user_date_id,
                     'status' => $udt_obj->status,
                     'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
@@ -382,8 +375,8 @@ class TimeSheetController extends Controller
 
         $break_policy_options = $this->common->commonGetById($filter_data['company_id'], 'company_id', 'break_policy', '*');
 
-		if ( count($employee_date_total) > 0 ) {
-			foreach($employee_date_total as $udt_obj) {
+		if ( count($user_date_total) > 0 ) {
+			foreach($user_date_total as $udt_obj) {
                 $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
 				if ( $udt_obj->id !== FALSE AND isset($break_policy_options[$udt_obj->id]) ) {
@@ -395,7 +388,7 @@ class TimeSheetController extends Controller
 				$date_break_policy_totals[$user_date_stamp][] = array(
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
-                    'user_date_id' => $udt_obj->employee_date_id,
+                    'user_date_id' => $udt_obj->user_date_id,
                     'status' => $udt_obj->status,
                     'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
@@ -437,8 +430,8 @@ class TimeSheetController extends Controller
         }
 
         //Get only system totals.
-		if ( count($employee_date_total) > 0 ) {
-			foreach($employee_date_total as $udt_obj) {
+		if ( count($user_date_total) > 0 ) {
+			foreach($user_date_total as $udt_obj) {
                 $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
 				$type_and_policy_id = $udt_obj->type.(int)$udt_obj->over_time_policy_id;
@@ -446,7 +439,7 @@ class TimeSheetController extends Controller
 				$date_totals[$user_date_stamp][] = array(
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
-                    'user_date_id' => $udt_obj->employee_date_id,
+                    'user_date_id' => $udt_obj->user_date_id,
                     'status' => $udt_obj->status,
                     'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
@@ -517,10 +510,10 @@ class TimeSheetController extends Controller
 
         
 		//Get only worked totals.
-		if ( count($employee_date_total) > 0 ) {
-            foreach($employee_date_total as $udt_obj) {
+		if ( count($user_date_total) > 0 ) {
+            foreach($user_date_total as $udt_obj) {
                 $user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
-                //print_r($employee_date_total); exit;
+                //print_r($user_date_total); exit;
                 
 				if ( $udt_obj->id !== FALSE AND isset($premium_policy_options[$udt_obj->premium_policy_id]) ) {
 					$premium_policy = $premium_policy_options[$udt_obj->premium_policy_id];
@@ -531,7 +524,7 @@ class TimeSheetController extends Controller
 				$date_premium_totals[$user_date_stamp][] = array(
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
-                    'user_date_id' => $udt_obj->employee_date_id,
+                    'user_date_id' => $udt_obj->user_date_id,
                     'status' => $udt_obj->status,
                     'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
@@ -578,8 +571,8 @@ class TimeSheetController extends Controller
        
                 
 		//Get only worked totals.
-        if ( count($employee_date_total) > 0 ) {
-			foreach($employee_date_total as $udt_obj) {
+        if ( count($user_date_total) > 0 ) {
+			foreach($user_date_total as $udt_obj) {
 				$user_date_stamp = Carbon::parse($udt_obj->user_date_stamp)->timestamp;
 
 				if ( $udt_obj->absence_policy_id !== FALSE ) {
@@ -591,7 +584,7 @@ class TimeSheetController extends Controller
 				$date_absence_totals[$user_date_stamp][] = array(
                     'date_stamp' => $udt_obj->user_date_stamp,
                     'id' => $udt_obj->id,
-                    'user_date_id' => $udt_obj->employee_date_id,
+                    'user_date_id' => $udt_obj->user_date_id,
                     'status' => $udt_obj->status,
                     'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
@@ -634,7 +627,7 @@ class TimeSheetController extends Controller
         // Get Exceptions
         // ==================================================================================================================
         
-		$exceptions = $cc->getExceptionsByCompanyIDAndUserIdAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['employee_id'], $start_date, $end_date);
+		$exceptions = $cc->getExceptionsByCompanyIDAndUserIdAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['user_id'], $start_date, $end_date);
         
 		$punch_exceptions = array();
 
@@ -720,7 +713,7 @@ class TimeSheetController extends Controller
         // ==================================================================================================================
         // Get Pending Requests
         // ==================================================================================================================
-		$requests = $cc->getRequestsByCompanyIDAndUserIdAndStatusAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['employee_id'], '"pending"', $start_date, $end_date);
+		$requests = $cc->getRequestsByCompanyIDAndUserIdAndStatusAndStartDateAndEndDate( $filter_data['company_id'], $filter_data['user_id'], '"pending"', $start_date, $end_date);
 
 		if ( count($requests) > 0 ) {
 			foreach( $requests as $r_obj ) {
@@ -751,7 +744,7 @@ class TimeSheetController extends Controller
         // Get Holidays
         // ==================================================================================================================
         
-        $holiday_array = $cc->getHolidaysByPolicyGroupUserId($employee_id, $start_date, $end_date);
+        $holiday_array = $cc->getHolidaysByPolicyGroupUserId($user_id, $start_date, $end_date);
         
 
         // ==================================================================================================================
@@ -771,7 +764,7 @@ class TimeSheetController extends Controller
 				} else {
 					//Debug::text('Diff Pay Period...', __FILE__, __LINE__, __METHOD__,10);
 					//FIXME: Add some caching here perhaps?
-					$pplf = $cc->getPayPeriodByUserIdAndDate( $employee_id, $cal_arr['epoch'] );
+					$pplf = $cc->getPayPeriodByUserIdAndDate( $user_id, $cal_arr['epoch'] );
 					if ( count($pplf) > 0 ) {
 						$tmp_pay_period_obj = $pplf[0];
 						$pay_period_locked_rows[$cal_arr['epoch']] = $tmp_pay_period_obj->status == 'locked' ? TRUE : FALSE;
@@ -792,7 +785,7 @@ class TimeSheetController extends Controller
 
         if ( isset($pay_period_obj) AND is_object($pay_period_obj) ) {
 			$is_timesheet_superior = FALSE;
-			$pptsvlf = $cc->getPayPeriodTimeSheetByPayPeriodIdAndUserId( $pay_period_obj->id, $employee_id );
+			$pptsvlf = $cc->getPayPeriodTimeSheetByPayPeriodIdAndUserId( $pay_period_obj->id, $user_id );
 
 			if ( count($pptsvlf) > 0 ) {
 				$pptsv_obj = $pptsvlf[0];
@@ -829,13 +822,13 @@ class TimeSheetController extends Controller
 		//Sum all Paid Absences
 		//Sum all Dock Absences
 		//Sum all Regular/OverTime hours
-		$worked_total_time = $edc->getWorkedTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+		$worked_total_time = $edc->getWorkedTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
         
-		$paid_absence_total_time = $edc->getPaidAbsenceTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+		$paid_absence_total_time = $edc->getPaidAbsenceTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
         
-		$dock_absence_total_time = $edc->getDockAbsenceTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+		$dock_absence_total_time = $edc->getDockAbsenceTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
         
-		$udtlf = $edc->getRegularAndOverTimeSumByUserIDAndPayPeriodId( $employee_id, $pay_period_id );
+		$udtlf = $edc->getRegularAndOverTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
         
 		if ($udtlf && count($udtlf) > 0 ) {
 			//Get overtime policy names
@@ -1004,16 +997,16 @@ class TimeSheetController extends Controller
     
         // Fetch the department with connections
         $departments = $this->common->commonGetAll('com_departments', ['com_departments.*'], [], [], false, $connections);
-        $employee_groups = $this->common->commonGetAll('com_employee_groups', '*');
+        $user_groups = $this->common->commonGetAll('com_employee_groups', '*');
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
 
         return response()->json([
             'data' => [
                 'branches' => $branches,
                 'departments' => $departments,
-                'employee_groups' => $employee_groups,
-                'employees' => $employees, //should be filtered by hierarchy
+                'user_groups' => $user_groups,
+                'users' => $users, //should be filtered by hierarchy
             ]
         ], 200);
     }

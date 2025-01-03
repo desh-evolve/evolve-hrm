@@ -37,7 +37,7 @@ class PayPeriodScheduleController extends Controller
     public function getPayPeriodScheduleDropdownData()
     {
         $time_zones = $this->common->commonGetAll('time_zones', ['value as id', 'name']);
-        $employees = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
+        $users = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
 
         //type => create table
         $type = [
@@ -57,9 +57,9 @@ class PayPeriodScheduleController extends Controller
         //Timesheet verify on => create table
         $timesheet_verify_on = [
             ['id' => 1, 'name' => 'Disabled', 'value' => 'disabled'],
-            ['id' => 2, 'name' => 'Employee Only', 'value' => 'employee-only'],
+            ['id' => 2, 'name' => 'Employee Only', 'value' => 'user-only'],
             ['id' => 3, 'name' => 'Superior Only', 'value' => 'superior-only'],
-            ['id' => 4, 'name' => 'Employee & Superior', 'value' => 'employee-superior'],
+            ['id' => 4, 'name' => 'Employee & Superior', 'value' => 'user-superior'],
         ];
         $overtime_week = [
             ['id' => 1, 'name' => 'Sunday-Saturday', 'value' => 'sun-sat'],
@@ -89,7 +89,7 @@ class PayPeriodScheduleController extends Controller
         return response()->json([
             'data' => [
                 'time_zones' => $time_zones,
-                'employees' => $employees,
+                'users' => $users,
                 'type' => $type,
                 'assign_shift_to' => $assign_shift_to,
                 'timesheet_verify_on' => $timesheet_verify_on,
@@ -109,11 +109,11 @@ class PayPeriodScheduleController extends Controller
     public function getPayPeriodScheduleById($id)
     {
         $connections = [
-            'pay_period_schedule_employee' => [
-                'con_fields' => ['employee_id'],  // Fields to select from connected table
-                'con_where' => ['pay_period_schedule_employee.pay_period_schedule_id' => 'id'],  // Link to the main table 
+            'pay_period_schedule_user' => [
+                'con_fields' => ['user_id'],  // Fields to select from connected table
+                'con_where' => ['pay_period_schedule_user.pay_period_schedule_id' => 'id'],  // Link to the main table 
                 'con_joins' => [],
-                'con_name' => 'employees',  // Alias to store connected data in the result
+                'con_name' => 'users',  // Alias to store connected data in the result
                 'except_deleted' => true,  // Filter out soft-deleted records
             ],
         ];
@@ -142,7 +142,7 @@ class PayPeriodScheduleController extends Controller
                 $request->validate([
                     'name' => 'required|string|max:255',
                     'timesheet_verify_type' => 'required|string',
-                    'employee_ids' => 'nullable|json',
+                    'user_ids' => 'nullable|json',
                 ]);
 
                 $payPeriodScheduleInput = [
@@ -205,7 +205,7 @@ class PayPeriodScheduleController extends Controller
                 $request->validate([
                     'name' => 'required|string|max:255',
                     'timesheet_verify_type' => 'required|string',
-                    'employee_ids' => 'nullable|json',
+                    'user_ids' => 'nullable|json',
                 ]);
 
                 $payPeriodScheduleInput = [
@@ -266,26 +266,26 @@ class PayPeriodScheduleController extends Controller
 
     private function savePayPeriodScheduleEmployees($payPeriodScheduleId, $request)
     {
-        if (!empty($request->employee_ids)) {
-            $empIds = json_decode($request->employee_ids, true);
+        if (!empty($request->user_ids)) {
+            $empIds = json_decode($request->user_ids, true);
 
             if (is_array($empIds)) {
-                // Delete all existing employees for this pay period schedule
-                DB::table('pay_period_schedule_employee')
+                // Delete all existing users for this pay period schedule
+                DB::table('pay_period_schedule_user')
                     ->where('pay_period_schedule_id', $payPeriodScheduleId)
-                    ->whereIn('employee_id', $empIds)
+                    ->whereIn('user_id', $empIds)
                     ->delete();
 
                 // Prepare bulk insert data
                 $insertData = array_map(function ($empId) use ($payPeriodScheduleId) {
                     return [
                         'pay_period_schedule_id' => $payPeriodScheduleId,
-                        'employee_id' => $empId,
+                        'user_id' => $empId,
                     ];
                 }, $empIds);
 
-                // Insert all employees in a single query
-                DB::table('pay_period_schedule_employee')->insert($insertData);
+                // Insert all users in a single query
+                DB::table('pay_period_schedule_user')->insert($insertData);
             }
         }
     }

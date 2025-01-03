@@ -29,10 +29,10 @@
                                     </div>
                                 </div>
                                 <div class="row mb-3">
-                                    <label for="employee_ids" class="form-label mb-1 col-md-3">Employees</label>
+                                    <label for="user_ids" class="form-label mb-1 col-md-3">Employees</label>
                                     <div class="col-md-9">
-                                        <div class="ps-2" id="employeeContainer">
-                                            {{-- render employees dynamically --}}
+                                        <div class="ps-2" id="userContainer">
+                                            {{-- render users dynamically --}}
                                         </div>
                                     </div>
                                 </div>
@@ -153,10 +153,10 @@
                 populateDropdown('#holiday_policy_ids', dropdownData?.holiday_policies);
                 populateDropdown('#exception_policy_control_id', dropdownData?.exception_policies);
 
-                // Initialize the multiSelector for employees
-                $('#employeeContainer').multiSelector({
+                // Initialize the multiSelector for users
+                $('#userContainer').multiSelector({
                     title: 'Employees',
-                    data: dropdownData?.employees || [],
+                    data: dropdownData?.users || [],
                 });
 
             } catch (error) {
@@ -180,14 +180,14 @@
                 $('#name').val(data.name);
                 $('#policy_group_id').val(data.id);
 
-                // Set employee multiSelector values
-                const employeeIds = data.employees.map(emp => emp.employee_id);
+                // Set user multiSelector values
+                const userIds = data.users.map(emp => emp.user_id);
                 
-                // Initialize the multiSelector for employees
-                $('#employeeContainer').multiSelector({
+                // Initialize the multiSelector for users
+                $('#userContainer').multiSelector({
                     title: 'Employees',
-                    data: dropdownData?.employees || [],
-                    setSelected: employeeIds,
+                    data: dropdownData?.users || [],
+                    setSelected: userIds,
                 });
 
                 // Clear all dropdowns before populating to avoid duplication
@@ -305,11 +305,11 @@
             formData.append('exception_policy_control_id', $('#exception_policy_control_id').val());
 
             
-            // Collect selected employee IDs from the multiSelector component
-            const selectedIds = $('#employeeContainer .selected-list option').map(function () {
+            // Collect selected user IDs from the multiSelector component
+            const selectedIds = $('#userContainer .selected-list option').map(function () {
                 return $(this).val();
             }).get();
-            formData.append('employee_ids', JSON.stringify(selectedIds));
+            formData.append('user_ids', JSON.stringify(selectedIds));
 
             return formData;
         }

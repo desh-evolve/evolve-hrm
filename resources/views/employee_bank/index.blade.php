@@ -56,8 +56,8 @@
 
                         <div class="row">
                             <div class="col-xxl-3 col-md-12 mb-3">
-                                <input type="hidden" class="form-control-plaintext" id="employee_name" value="" disabled>
-                                <input type="hidden" class="form-control" id="employee_id" value="" disabled>
+                                <input type="hidden" class="form-control-plaintext" id="user_name" value="" disabled>
+                                <input type="hidden" class="form-control" id="user_id" value="" disabled>
                             </div>
                         </div>
 
@@ -111,15 +111,15 @@
     async function renderTableBody() {
         try {
 
-            const employees = await commonFetchData('/company/allemplyee');
+            const users = await commonFetchData('/company/allemplyee');
 
             let list = '';
 
-            if (employees.length === 0) {
+            if (users.length === 0) {
                 $('#table_body').html('<tr><td colspan="7" class="text-center">No data available</td></tr>');
                 return;
             } else {
-                list = employees.map((item, i) => {
+                list = users.map((item, i) => {
                     return `
                         <tr emp_id="${item.id}">
                             <th scope="row">${i + 1}</th>
@@ -153,7 +153,7 @@
 
 $(document).on('click', '#click_delete', async function () {
     const bankRecordId = $('#emp_id').val(); // Get the bank record ID
-    const employeeId = $('#employee_id').val(); // Get the employee ID
+    const userId = $('#user_id').val(); // Get the user ID
 
     if (!bankRecordId) {
         // If no bank record ID is found, show an error message
@@ -163,7 +163,7 @@ $(document).on('click', '#click_delete', async function () {
 
     try {
         // Perform the delete operation
-        let url = `/employee/bank/delete`;
+        let url = `/user/bank/delete`;
         const title ='Bank Details';
 
         const res = await commonDeleteFunction(bankRecordId,url,title);
@@ -188,7 +188,7 @@ $(document).on('click', '#click_delete', async function () {
 //======================================================================================================
 
     $(document).ready(async function () {
-        // Initialize and render the employee table
+        // Initialize and render the user table
         await renderTableBody();
 
         // Event handler for "Add or Edit Bank" button
@@ -196,25 +196,25 @@ $(document).on('click', '#click_delete', async function () {
             resetForm();
 
             const $row = $(this).closest('tr');
-            const employeeId = $row.attr('emp_id'); // Get employee ID
-            const employeeName = $row.find('td:nth-child(2)').text(); // Get employee name
+            const userId = $row.attr('emp_id'); // Get user ID
+            const userName = $row.find('td:nth-child(2)').text(); // Get user name
 
-            // Set employee name and ID in the modal
-            $('#employee_name').val(employeeName);
-            $('#employee_id').val(employeeId);
+            // Set user name and ID in the modal
+            $('#user_name').val(userName);
+            $('#user_id').val(userId);
 
 
-            // Update modal title with styled employee name
-            $('.modal-title').html(`Bank Account for <span class="text-info fw-bold">${employeeName}</span>`);
+            // Update modal title with styled user name
+            $('.modal-title').html(`Bank Account for <span class="text-info fw-bold">${userName}</span>`);
 
 
             try {
-                // Attempt to fetch bank details for the employee
-                let bank_data = await commonFetchData(`/employee/bank/${employeeId}`);
+                // Attempt to fetch bank details for the user
+                let bank_data = await commonFetchData(`/user/bank/${userId}`);
 
                 if (bank_data && bank_data[0]) {
                     bank_data = bank_data[0];
-                    console.log('employees_bank_data', bank_data);
+                    console.log('users_bank_data', bank_data);
 
                     // Populate modal with bank details
                     $('#emp_id').val(bank_data.id || ''); // Existing bank ID
@@ -223,7 +223,7 @@ $(document).on('click', '#click_delete', async function () {
                     $('#bank_branch').val(bank_data.bank_branch || '');
                     $('#account_number').val(bank_data.account_number || '');
                 } else {
-                    console.warn('No bank details found for this employee. You can add new details.');
+                    console.warn('No bank details found for this user. You can add new details.');
                 }
             } catch (error) {
                 console.error('Error fetching bank details:', error);
@@ -236,10 +236,10 @@ $(document).on('click', '#click_delete', async function () {
 
         // Submit (Add/Edit Bank Details)
         $(document).on('click', '#submit-confirm', async function () {
-            const employeeId = $('#employee_id').val();
+            const userId = $('#user_id').val();
             const empId = $('#emp_id').val();
             const isUpdating = Boolean(empId); // Determine if it's an update or a new entry
-            const url = isUpdating ? `/employee/bank/update/${empId}` : `/employee/bank/create`;
+            const url = isUpdating ? `/user/bank/update/${empId}` : `/user/bank/create`;
             const method = isUpdating ? 'PUT' : 'POST';
 
             const formFields = {
@@ -271,7 +271,7 @@ $(document).on('click', '#click_delete', async function () {
                 $('#error-msg').html('');
             }
 
-            formData.append('employee_id', employeeId);
+            formData.append('user_id', userId);
 
             // Debug the FormData being sent
             for (let pair of formData.entries()) {
@@ -303,7 +303,7 @@ $(document).on('click', '#click_delete', async function () {
     function resetForm() {
             $('#emp_id').val('');
             $('#bank_name').val('');
-            $('#employee_id').val('');
+            $('#user_id').val('');
             $('#bank_code').val('');
             $('#bank_branch').val('');
             $('#account_number').val('');

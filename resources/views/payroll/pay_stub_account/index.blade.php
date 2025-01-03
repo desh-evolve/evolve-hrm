@@ -63,7 +63,7 @@
                                 <select class="form-select" id="type" required>
                                     <option value="">Select a type...</option>
                                     <option value="earning">Earning</option>
-                                    <option value="employee_deduction">Employee Deduction</option>
+                                    <option value="user_deduction">Employee Deduction</option>
                                     <option value="employer_deduction">Employer Deduction</option>
                                     <option value="total">Total</option>
                                     <option value="accrual">Accrual</option>
@@ -141,7 +141,7 @@
                         list += `
                             <tr pay_stub_account_id="${ab.id}">
                                 <td>${i+1}</td>      
-                                <td>${ab.type == 'earning' ? 'Earning' : ab.type == 'employee_deduction' ? 'Employee Deduction' : ab.type == 'employer_deduction' ? 'Employer Deduction' : ab.type == 'total' ? 'Total' : 'Accrual'}</td>    
+                                <td>${ab.type == 'earning' ? 'Earning' : ab.type == 'user_deduction' ? 'Employee Deduction' : ab.type == 'employer_deduction' ? 'Employer Deduction' : ab.type == 'total' ? 'Total' : 'Accrual'}</td>    
                                 <td>${ab.name}</td>  
                                 <td>${ab.ps_order}</td>  
                                 <td>${ab.debit_account}</td>  
@@ -202,7 +202,7 @@
                     $('#accrual_id').val(data.accrual_pay_stub_entry_account_id);
                     $('#debit_account').val(data.debit_account);
                     $('#credit_account').val(data.credit_account);
-                    $('#employee_family_status').val(data.status);
+                    $('#user_family_status').val(data.status);
 
                 }
             } catch (error) {

@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->bigIncrements('id'); 
             $table->unsignedInteger('hierarchy_control_id'); 
             $table->integer('level'); 
-            $table->unsignedInteger('employee_id'); //user_id
+            $table->unsignedInteger('user_id'); //user_id
 
             // Audit fields
             $table->string('status')->default('active')->nullable();

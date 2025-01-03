@@ -19,10 +19,10 @@
                         <form action="javascript:void(0);">
                             <div class="row">
                                 <div class="row mb-3">
-                                    <label for="employee_ids" class="form-label">Employees</label>
+                                    <label for="user_ids" class="form-label">Employees</label>
                                     <div class="col-md-9">
-                                        <div class="ps-2" id="employeeContainer">
-                                            {{-- render employees dynamically --}}
+                                        <div class="ps-2" id="userContainer">
+                                            {{-- render users dynamically --}}
                                         </div>
                                     </div>
                                 </div>
@@ -165,7 +165,7 @@
         </div>
     </div>
     <script>
-        let employeeId = '';
+        let userId = '';
 
         $(document).ready(async function() {
             await getDropdownData();
@@ -188,10 +188,10 @@
                     .join('');
                 $('#department_id').html('<option value="">Select Department</option>' + departmentList);
 
-                // Initialize the multiSelector for employees (multiselector is in components->hrm->multiselector.blade.php)
-                $('#employeeContainer').multiSelector({
+                // Initialize the multiSelector for users (multiselector is in components->hrm->multiselector.blade.php)
+                $('#userContainer').multiSelector({
                     title: 'Employees',
-                    data: dropdownData?.employees || [],
+                    data: dropdownData?.users || [],
                     onSelectionChange: function(selectedIds) {
                         console.log("Selected IDs:", selectedIds);
                     }
@@ -254,13 +254,13 @@
                 $('#error-msg').html(''); // Clear error message if no issues
             }
 
-            // Collect selected employee IDs from the multiSelector component
-            // Collect selected employee IDs from the multiSelector component
-            const selectedIds = $('#employeeContainer .selected-list option').map(function() {
+            // Collect selected user IDs from the multiSelector component
+            // Collect selected user IDs from the multiSelector component
+            const selectedIds = $('#userContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
 
-            formData.append('employee_ids', JSON.stringify(selectedIds));
+            formData.append('user_ids', JSON.stringify(selectedIds));
             formData.append('punch_id', punch_id);
             formData.append('punch_type', punch_type);
             formData.append('punch_status', punch_status);

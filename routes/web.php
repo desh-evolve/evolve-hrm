@@ -4,6 +4,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
 // controller
 use App\Http\Controllers\Company\IndustryController;
 use App\Http\Controllers\Company\CompanyController;
@@ -54,9 +56,13 @@ use App\Http\Controllers\Payroll\CompanyDeductionController;
 use App\Http\Controllers\Payroll\PayStubEntryAccountLinkController;
 use App\Http\Controllers\Policy\CommonPolicyController;
 
+/*
 Route::get('/', function () {
     return view('welcome');
 });
+*/
+
+Route::get('/', [AuthenticatedSessionController::class, 'create']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -78,8 +84,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('roles/{roleId}/give-permissions', [App\Http\Controllers\RoleController::class, 'addPermissionToRole']);
     Route::put('roles/{roleId}/give-permissions', [App\Http\Controllers\RoleController::class, 'givePermissionToRole']);
 
-    Route::resource('users', App\Http\Controllers\UserController::class);
-    Route::get('users/{userId}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
+    Route::resource('users', App\Http\Controllers\employeeController::class);
+    Route::get('users/{userId}/delete', [App\Http\Controllers\employeeController::class, 'destroy']);
 
     //==============================================================================================================================
     // Industry

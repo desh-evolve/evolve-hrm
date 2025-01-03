@@ -16,8 +16,8 @@ class CompanySeeder extends Seeder
     {
         DB::table('com_companies')->insert([
             [
-                'company_name' => 'Tech Innovators Inc',
-                'company_short_name' => 'TechInno',
+                'company_name' => 'Evolve Technologies Pvt Ltd',
+                'company_short_name' => 'Evolve',
                 'industry_id' => 1,
                 'business_reg_no' => 'BRN12345',
                 'address_1' => '1234 Innovation St.',

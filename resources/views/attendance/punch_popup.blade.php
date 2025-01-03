@@ -10,8 +10,8 @@
                 <div id="punch-form-body" class="row">
 
                     <div class="col-xxl-3 col-md-6 mb-3">
-                        <label for="employee_name" class="form-label mb-1">Employee Name</label>
-                        <input type="text" class="form-control" id="employee_name" value="" disabled>
+                        <label for="user_name" class="form-label mb-1">Employee Name</label>
+                        <input type="text" class="form-control" id="user_name" value="" disabled>
                     </div>
 
                     <div class="col-xxl-3 col-md-6 mb-3">

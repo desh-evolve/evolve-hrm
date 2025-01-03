@@ -23,9 +23,9 @@
 
                         <div>
                             <div class="row mb-3">
-                                <label for="employee_ids" class="form-label mb-1 col-md-3">Employee</label>
+                                <label for="user_ids" class="form-label mb-1 col-md-3">Employee</label>
                                 <div class="col-md-9">
-                                    <div class="ps-2" id="employeeContainer">
+                                    <div class="ps-2" id="userContainer">
                                     </div>
                                 </div>
 
@@ -140,7 +140,7 @@
 
 
     <script>
-        let employeeId = '';
+        let userId = '';
         let dropdownData = [];
 
         $(document).ready(async function() {
@@ -159,7 +159,7 @@
             try {
                 let dropdownData = await commonFetchData('/payroll/pay_stub_amendment/dropdown')
 
-                console.log("Employees Data:", dropdownData?.employees);
+                console.log("Employees Data:", dropdownData?.users);
 
                 // pay_stub_entry_accounts dropdown
                 let payStubEntryAccountList = (dropdownData?.pay_stub_entry_accounts || [])
@@ -173,9 +173,9 @@
                 $('#percent_amount_entry_name_id').html('<option value="">Select Account</option>' +
                     payStubEntryAccountList);
 
-                $('#employeeContainer').multiSelector({
+                $('#userContainer').multiSelector({
                     title: 'Employees',
-                    data: dropdownData?.employees || [],
+                    data: dropdownData?.users || [],
                 });
 
                 $('#rate').closest('.row').show();
@@ -197,7 +197,7 @@
             let ytdAdjustment = $('#ytd_adjustment').is(':checked') ? 1 : 0;
 
 
-            const selectedIds = $('#employeeContainer .selected-list option').map(function() {
+            const selectedIds = $('#userContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
 
@@ -213,10 +213,10 @@
             //     $('#error-msg').html(''); // Clear error message if no issues
             // }
 
-            // Collect selected employee IDs from the multiSelector component
+            // Collect selected user IDs from the multiSelector component
 
             formData.append('ytd_adjustment', ytdAdjustment);
-            formData.append('employee_ids', JSON.stringify(selectedIds));
+            formData.append('user_ids', JSON.stringify(selectedIds));
             formData.append('pay_stub_entry_name_id', $('#pay_stub_entry_name_id').val());
             formData.append('effective_date', $('#effective_date').val());
             formData.append('rate', $('#rate').val());
@@ -297,28 +297,28 @@
                 $('#percent_amount_entry_name_id').val(data.percent_amount_entry_name_id || '');
                 $('#percent_amount').val(data.percent_amount || '');
                 $('#pay_stub_amendment_status').val(data.status);
-                // $('#employeeContainer').val(data.employee_id);
+                // $('#userContainer').val(data.user_id);
                 $('#ytd_adjustment').prop('checked', data.ytd_adjustment === 1);
 
-                if (Array.isArray(data.employees)) {
-                    const employeeIds = data.employees.map(emp => emp.id);
-                    // Initialize the multiSelector for employees
-                    $('#employeeContainer').multiSelector({
+                if (Array.isArray(data.users)) {
+                    const userIds = data.users.map(emp => emp.id);
+                    // Initialize the multiSelector for users
+                    $('#userContainer').multiSelector({
                         title: 'Employees',
-                        data: dropdownData?.employees || [],
-                        setSelected: employeeIds,
+                        data: dropdownData?.users || [],
+                        setSelected: userIds,
                     });
                 } else {
-                    console.error('Employees data is not an array or is missing:', data.employees);
+                    console.error('Employees data is not an array or is missing:', data.users);
                 }
 
-                // const employeeIds = data.employees.map(emp => emp.employee_id);
+                // const userIds = data.users.map(emp => emp.user_id);
 
-                // // Initialize the multiSelector for employees
-                // $('#employeeContainer').multiSelector({
+                // // Initialize the multiSelector for users
+                // $('#userContainer').multiSelector({
                 //     title: 'Employees',
-                //     data: dropdownData?.employees || [],
-                //     setSelected: employeeIds,
+                //     data: dropdownData?.users || [],
+                //     setSelected: userIds,
                 // });
 
             } catch (error) {

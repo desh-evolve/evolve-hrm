@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('pay_stub_amendment', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('employee_id');
+            $table->unsignedInteger('user_id');
             $table->unsignedInteger('pay_stub_entry_name_id');
             $table->integer('effective_date')->nullable();
             $table->decimal('rate', 20, 4)->nullable();

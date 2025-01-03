@@ -13,15 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('employee_date_total', function (Blueprint $table) {
+        Schema::table('user_date_total', function (Blueprint $table) {
             // Drop the column if it already exists
-            if (Schema::hasColumn('employee_date_total', 'punch_status')) {
+            if (Schema::hasColumn('user_date_total', 'punch_status')) {
                 $table->dropColumn('punch_status');
             }
-            if (Schema::hasColumn('employee_date_total', 'status')) {
+            if (Schema::hasColumn('user_date_total', 'status')) {
                 $table->dropColumn('status');
             }
-            if (Schema::hasColumn('employee_date_total', 'punch_type')) {
+            if (Schema::hasColumn('user_date_total', 'punch_type')) {
                 $table->dropColumn('punch_type');
             }
 
@@ -44,23 +44,23 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('employee_date_total', function (Blueprint $table) {
+        Schema::table('user_date_total', function (Blueprint $table) {
             // Drop the 'status' and 'type' columns added in the up method
-            if (Schema::hasColumn('employee_date_total', 'status')) {
+            if (Schema::hasColumn('user_date_total', 'status')) {
                 $table->dropColumn('status');
             }
-            if (Schema::hasColumn('employee_date_total', 'type')) {
+            if (Schema::hasColumn('user_date_total', 'type')) {
                 $table->dropColumn('type');
             }
 
             // Re-add the old columns removed in the up method
-            if (!Schema::hasColumn('employee_date_total', 'punch_status')) {
+            if (!Schema::hasColumn('user_date_total', 'punch_status')) {
                 $table->string('punch_status', 50)->nullable();
             }
-            if (!Schema::hasColumn('employee_date_total', 'punch_type')) {
+            if (!Schema::hasColumn('user_date_total', 'punch_type')) {
                 $table->string('punch_type', 50)->nullable();
             }
-            if (!Schema::hasColumn('employee_date_total', 'status')) {
+            if (!Schema::hasColumn('user_date_total', 'status')) {
                 $table->integer('status')->nullable();
             }
         });

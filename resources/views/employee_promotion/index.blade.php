@@ -26,11 +26,11 @@
 
                     <div class="row mb-3 mb-4">
                         <div class="col-lg-2 d-flex align-items-center">
-                            <label for="employee_idname" class="form-label mb-1 req">Employee Name</label>
+                            <label for="user_idname" class="form-label mb-1 req">Employee Name</label>
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm js-example-basic-single" id="employeeDropdown">
+                            <select class="form-select form-select-sm js-example-basic-single" id="userDropdown">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
@@ -73,8 +73,8 @@
                     <div id="promotion-form-body" class="row">
 
                         <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="employee_name" class="form-label mb-1">Employee Name</label>
-                            <input type="text" class="form-control" id="employee_name" value="" disabled>
+                            <label for="user_name" class="form-label mb-1">Employee Name</label>
+                            <input type="text" class="form-control" id="user_name" value="" disabled>
                         </div>
 
                         <div class="col-xxl-3 col-md-6 mb-3">
@@ -125,21 +125,21 @@
         </div>
 
         <script>
-            let employeeId = '';
+            let userId = '';
 
-            // Fetch and render employees_promotion for the selected employee
+            // Fetch and render users_promotion for the selected user
             async function renderPromotionTable() {
-                if (!employeeId) {
+                if (!userId) {
                     $('#promotion-table-body').html(
                         '<tr><td colspan="7" class="text-center">No Employee Selected</td></tr>');
                     return;
                 }
 
-                let employees_promotion = await commonFetchData(`/company/employee_promotion/${employeeId}`);
+                let users_promotion = await commonFetchData(`/company/user_promotion/${userId}`);
                 let list = '';
 
-                if (employees_promotion && employees_promotion.length > 0) {
-                    employees_promotion.forEach((item, i) => {
+                if (users_promotion && users_promotion.length > 0) {
+                    users_promotion.forEach((item, i) => {
                         list += `
                 <tr promotion_id="${item.id}">
                     <td>${i + 1}</td>
@@ -171,41 +171,41 @@
             }
 
             async function getEmployeeList() {
-                let employees = await commonFetchData('/company/employee_promotion/dropdown');
+                let users = await commonFetchData('/company/user_promotion/dropdown');
 
             
                 
-                // Check if employees data is valid
-                if (employees && employees.length > 0) {
+                // Check if users data is valid
+                if (users && users.length > 0) {
                     // Target the dropdown element
-                    let dropdown = $('#employeeDropdown');
+                    let dropdown = $('#userDropdown');
 
                     // Clear existing options (optional)
                     dropdown.empty();
                     dropdown.append('<option value="">Select Employee</option>'); // Add a default option
 
-                    // Loop through the employees and add options
-                    employees.forEach(employee => {
+                    // Loop through the users and add options
+                    users.forEach(user => {
                         let option =
-                            `<option value="${employee.id}">${employee.first_name} ${employee.last_name}</option>`;
+                            `<option value="${user.id}">${user.first_name} ${user.last_name}</option>`;
                         dropdown.append(option);
                     });
                 } else {
-                    console.log('No employees found');
+                    console.log('No users found');
                 }
 
             }
 
-            // Populate employee dropdown and set up change event
+            // Populate user dropdown and set up change event
             $(document).ready(async function() {
                 await getEmployeeList();
 
-                $('#employeeDropdown').on('change', async function() {
-                    employeeId = $(this).val(); // Get selected employee ID
-                    let employeeName = $('#employeeDropdown option:selected').text();
-                    $('#employee_name').val(employeeName);
+                $('#userDropdown').on('change', async function() {
+                    userId = $(this).val(); // Get selected user ID
+                    let userName = $('#userDropdown option:selected').text();
+                    $('#user_name').val(userName);
 
-                    // Render promotion table for the selected employee
+                    // Render promotion table for the selected user
                     await renderPromotionTable();
                 });
             });
@@ -226,8 +226,8 @@
                 const remarks = $('#remarks').val(); // Correctly fetch the remarks value
                 const promotion_status = $('#promotion_status').val();
 
-                let createUrl = `/company/employee_promotion/create`;
-                let updateUrl = `/company/employee_promotion/update/${promotion_id}`;
+                let createUrl = `/company/user_promotion/create`;
+                let updateUrl = `/company/user_promotion/update/${promotion_id}`;
 
                 let formData = new FormData();
 
@@ -238,7 +238,7 @@
                     $('#error-msg').html(''); // Clear error message if no issues
                 }
                 
-                formData.append('employee_id', employeeId);
+                formData.append('user_id', userId);
                 formData.append('current_designation', current_designation);
                 formData.append('new_designation', new_designation);
                 formData.append('current_salary', current_salary);
@@ -275,7 +275,7 @@
                 // Get branch data by id
                 try {
                     let promotion_data = await commonFetchData(
-                        `/company/single_employee_promotion/${promotion_id}`);
+                        `/company/single_user_promotion/${promotion_id}`);
                         promotion_data = promotion_data[0];
                     console.log('promotion_data', promotion_data);
 
@@ -303,7 +303,7 @@
                 let promotion_id = $(this).closest('tr').attr('promotion_id');
 
                 try {
-                    let url = `/company/employee_promotion/delete`;
+                    let url = `/company/user_promotion/delete`;
                     const res = await commonDeleteFunction(promotion_id, url,
                         'Promotion'); // Await the promise here
 

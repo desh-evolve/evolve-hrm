@@ -24,7 +24,7 @@ return new class extends Migration
         $table->integer('watch_window')->nullable()->comment('time in seconds')->change();
 
         // Add new email_notification as a string with default and comment
-        $table->string('email_notification')->default('both')->comment('none/employee/supervisor/both')->after('severity');
+        $table->string('email_notification')->default('both')->comment('none/user/supervisor/both')->after('severity');
 
         // Add new 'active' column after 'demerit'
         $table->boolean('active')->default(0)->after('demerit');

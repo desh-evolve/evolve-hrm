@@ -8,14 +8,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Register your seeder here
-        $this->call(IndustrySeeder::class);
-
+        // Register all seeders in an array
         $this->call([
+            UserRolePermissionSeeder::class,
             IndustrySeeder::class,
-            EmpEmployeesTableSeeder::class,
             ComWageTypesTableSeeder::class,
-            MessageTypesTableSeeder::class,
+            ObjectTypeSeeder::class,
+            OverTimePolicyTypesSeeder::class,
+            RoundIntervalPunchTypesSeeder::class,
+            TimeZoneSeeder::class,
         ]);
     }
 }

@@ -15,14 +15,14 @@ return new class extends Migration
             $table->increments('id'); // Auto-incrementing primary key
             $table->unsignedInteger('company_id'); // Foreign key to company
             $table->string('total_gross')->nullable();
-            $table->string('total_employee_deduction')->nullable();
+            $table->string('total_user_deduction')->nullable();
             $table->string('total_employer_deduction')->nullable();
             $table->string('total_net_pay')->nullable();
             $table->integer('regular_time')->nullable();
             $table->integer('monthly_advance')->nullable();
             $table->integer('monthly_advance_deduction')->nullable();
-            $table->integer('employee_cpp')->nullable();
-            $table->integer('employee_ei')->nullable();
+            $table->integer('user_cpp')->nullable();
+            $table->integer('user_ei')->nullable();
 
             // Audit fields
             $table->string('status')->default('active')->nullable();

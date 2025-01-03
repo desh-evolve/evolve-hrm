@@ -22,14 +22,14 @@
 
                     <div>
                         <h4 class="card-title mb-0 flex-grow-1">
-                            Bank Details for <span class="text-info fw-bold">{{ $employee->name_with_initials }}</span>
+                            Bank Details for <span class="text-info fw-bold">{{ $user->name_with_initials }}</span>
                         </h4>
                     </div>
 
 
                     <div class="justify-content-md-end">
                         <div class="d-flex justify-content-end">
-                            <a href="/employee/bank" class="btn btn-danger">Back</a>
+                            <a href="/user/bank" class="btn btn-danger">Back</a>
                         </div>
                     </div>
                 </div>
@@ -42,8 +42,8 @@
                             <div class="card-body">
                                 <form id="bank-details-form">
                                     @csrf
-                                    <input type="hidden" id="employee_name" value="">
-                                    <input type="hidden" id="employee_id" value="">
+                                    <input type="hidden" id="user_name" value="">
+                                    <input type="hidden" id="user_id" value="">
 
 
                                     <div class="row">
@@ -99,16 +99,16 @@
 
 $(document).ready(function () {
 
-    const employeeId = "{{ $employee->id }}";
+    const userId = "{{ $user->id }}";
 
     async function getBankDetails() {
         try {
-            // Fetch bank details for the employee
-            let bank_data = await commonFetchData(`/employee/bank/${employeeId}`);
+            // Fetch bank details for the user
+            let bank_data = await commonFetchData(`/user/bank/${userId}`);
 
             if (bank_data && bank_data[0]) {
                 bank_data = bank_data[0];
-                console.log('employees_bank_data', bank_data);
+                console.log('users_bank_data', bank_data);
 
                 // Populate form fields with existing data
                 $('#emp_id').val(bank_data.id || '');
@@ -117,7 +117,7 @@ $(document).ready(function () {
                 $('#bank_branch').val(bank_data.bank_branch || '');
                 $('#account_number').val(bank_data.account_number || '');
             } else {
-                console.warn('No bank details found for this employee. You can add new details.');
+                console.warn('No bank details found for this user. You can add new details.');
                 resetForm();
             }
         } catch (error) {
@@ -131,7 +131,7 @@ $(document).ready(function () {
         const empId = $('#emp_id').val();
 
         const isUpdating = Boolean(empId);
-        const url = isUpdating ? `/employee/bank/update/${empId}` : `/employee/bank/create`;
+        const url = isUpdating ? `/user/bank/update/${empId}` : `/user/bank/create`;
         const method = isUpdating ? 'PUT' : 'POST';
 
         const formFields = {
@@ -164,7 +164,7 @@ $(document).ready(function () {
             $('#error-msg').html('');
         }
 
-        formData.append('employee_id', employeeId); // Always append employee ID
+        formData.append('user_id', userId); // Always append user ID
 
         // Debugging FormData
         for (let pair of formData.entries()) {
@@ -200,7 +200,7 @@ $(document).ready(function () {
 
 $(document).on('click', '#click-delete', async function () {
     const bankRecordId = $('#emp_id').val();
-    const employeeId = $('#employee_id').val();
+    const userId = $('#user_id').val();
 
     if (!bankRecordId) {
         // If no bank record ID is found, show an error message
@@ -210,7 +210,7 @@ $(document).on('click', '#click-delete', async function () {
 
     try {
         // Perform the delete operation
-        let url = `/employee/bank/delete`;
+        let url = `/user/bank/delete`;
         const title ='Employee Bank Details';
 
         const res = await commonDeleteFunction(bankRecordId,url,title);
@@ -234,7 +234,7 @@ $(document).on('click', '#click-delete', async function () {
 // Reset Form Function
 function resetForm() {
         $('#emp_id').val('');
-        $('#employee_id').val('');
+        $('#user_id').val('');
         $('#bank_name').val('');
         $('#bank_code').val('');
         $('#bank_branch').val('');

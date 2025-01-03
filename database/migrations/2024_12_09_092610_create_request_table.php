@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('request', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('employee_date_id'); //from employee date table
+            $table->unsignedInteger('user_date_id'); //from user date table
             $table->unsignedInteger('type_id');
             $table->boolean('authorized')->default(0);
             $table->smallInteger('authorization_level')->default(99);

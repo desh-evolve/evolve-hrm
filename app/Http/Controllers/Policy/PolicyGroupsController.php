@@ -42,7 +42,7 @@ class PolicyGroupsController extends Controller
         $premium_policies = $this->common->commonGetAll('premium_policy', ['id', 'name']);
         $holiday_policies = $this->common->commonGetAll('holiday_policy', ['id', 'name']);
         $exception_policies = $this->common->commonGetAll('exception_policy_control', ['id', 'name']);
-        $employees = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
+        $users = $this->common->commonGetAll('emp_employees', ['id', 'full_name AS name']);
 
         return response()->json([
             'data' => [
@@ -54,7 +54,7 @@ class PolicyGroupsController extends Controller
                 'premium_policies' => $premium_policies,
                 'holiday_policies' => $holiday_policies,
                 'exception_policies' => $exception_policies,
-                'employees' => $employees,
+                'users' => $users,
             ]
         ], 200);
     }
@@ -66,11 +66,11 @@ class PolicyGroupsController extends Controller
 
     public function getPolicyGroupById($id){
         $connections = [
-            'policy_group_employees' => [
-                'con_fields' => ['employee_id'],  // Fields to select from connected table
-                'con_where' => ['policy_group_employees.policy_group_id' => 'id'],  // Link to the main table 
+            'policy_group_users' => [
+                'con_fields' => ['user_id'],  // Fields to select from connected table
+                'con_where' => ['policy_group_users.policy_group_id' => 'id'],  // Link to the main table 
                 'con_joins' => [],
-                'con_name' => 'employees',  // Alias to store connected data in the result
+                'con_name' => 'users',  // Alias to store connected data in the result
                 'except_deleted' => true,  // Filter out soft-deleted records
             ],
             'policy_group_policies' => [
@@ -112,7 +112,7 @@ class PolicyGroupsController extends Controller
                     'premium_policy_ids' => 'nullable|json',
                     'holiday_policy_ids' => 'nullable|json',
                     'exception_policy_control_id' => 'nullable|integer',
-                    'employee_ids' => 'nullable|json',
+                    'user_ids' => 'nullable|json',
                 ]);
 
                 $policyGroupInput = [
@@ -157,7 +157,7 @@ class PolicyGroupsController extends Controller
                     'premium_policy_ids' => 'nullable|json',
                     'holiday_policy_ids' => 'nullable|json',
                     'exception_policy_control_id' => 'nullable|integer',
-                    'employee_ids' => 'nullable|json',
+                    'user_ids' => 'nullable|json',
                 ]);
 
                 $policyGroupInput = [
@@ -227,13 +227,13 @@ class PolicyGroupsController extends Controller
 
     private function savePolicyEmployees($policyGroupId, $request)
     {
-        if (!empty($request->employee_ids)) {
-            $empIds = json_decode($request->employee_ids, true);
+        if (!empty($request->user_ids)) {
+            $empIds = json_decode($request->user_ids, true);
             if (is_array($empIds)) {
                 foreach ($empIds as $empId) {
-                    DB::table('policy_group_employees')->insert([
+                    DB::table('policy_group_users')->insert([
                         'policy_group_id' => $policyGroupId,
-                        'employee_id' => $empId,
+                        'user_id' => $empId,
                     ]);
                 }
             }

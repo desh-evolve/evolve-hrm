@@ -40,10 +40,10 @@ class EmpEmployeesTableSeeder extends Seeder
                 'dob' => '1990-01-01',
                 'gender' => 'Male',
                 'marital_status' => 'Single',
-                'employee_image' => 'john_doe.jpg',
+                'user_image' => 'john_doe.jpg',
                 'punch_machine_user_id' => 1001,
                 'designation_id' => 1,
-                'employee_group_id' => 1,
+                'user_group_id' => 1,
                 'policy_group_id' => 1,
                 'appointment_date' => '2020-01-01',
                 'appointment_note' => 'Permanent staff',
@@ -58,7 +58,7 @@ class EmpEmployeesTableSeeder extends Seeder
                 'pay_period_id' => 1,
                 'role_id' => 1,
                 'bond_period' => '2 years',
-                'employee_status' => 1,
+                'user_status' => 1,
             ],
             // Add more sample data if needed
         ]);

@@ -17,7 +17,7 @@ class DepartmentController extends Controller
     {
         $this->middleware('permission:view department', ['only' => [
             'index', 
-            'employees', 
+            'users', 
             'getAllDepartments',
             'getDepartmentByDepartmentId', 
             'getDepartmentDropdownData',
@@ -36,9 +36,9 @@ class DepartmentController extends Controller
         return view('company.department.index');
     }
 
-    public function employees()
+    public function users()
     {
-        return view('company.department.employees');
+        return view('company.department.users');
     }
 
     //desh(2024-10-22)
@@ -131,7 +131,7 @@ class DepartmentController extends Controller
                 // Handle branches - Update department branches
                 if ($request->has('branches')) {
                     $table2 = 'com_branch_departments';
-                    $employeeTable = 'com_branch_department_employees';
+                    $userTable = 'com_branch_department_users';
 
                     $newBranches = explode(',', $request->branches);  // Split new branches string into an array
                     $newBranches = array_map('trim', $newBranches);   // Trim any spaces
@@ -152,8 +152,8 @@ class DepartmentController extends Controller
                             ->whereIn('branch_id', $branchesToDelete)
                             ->update(['status' => 'delete']);  // Assuming you want to mark them as deleted
 
-                        // Also mark related employees as deleted based on department_id and branch_id
-                        DB::table($employeeTable)
+                        // Also mark related users as deleted based on department_id and branch_id
+                        DB::table($userTable)
                             ->where('department_id', $id)
                             ->whereIn('branch_id', $branchesToDelete)
                             ->update(['status' => 'delete']);
@@ -191,7 +191,7 @@ class DepartmentController extends Controller
     {
         $res =  $this->common->commonDelete($id, ['id' => $id], 'Department', 'com_departments');
         $this->common->commonDelete($id, ['department_id' => $id], 'Department Branches', 'com_branch_departments');
-        $this->common->commonDelete($id, ['department_id' => $id], 'Department Branches Employees', 'com_branch_department_employees');
+        $this->common->commonDelete($id, ['department_id' => $id], 'Department Branches Employees', 'com_branch_department_users');
 
         return $res;
     }
@@ -234,29 +234,29 @@ class DepartmentController extends Controller
     //desh(2024-10-25)
     public function getDepartmentBranchEmployees($branch_id, $department_id)
     {
-        $table = 'com_branch_department_employees';
-        $fields = ['com_branch_department_employees.employee_id', 'first_name', 'last_name'];
+        $table = 'com_branch_department_users';
+        $fields = ['com_branch_department_users.user_id', 'first_name', 'last_name'];
         $joinArr = [
-            'emp_employees' => ['emp_employees.id', '=', 'com_branch_department_employees.employee_id']
+            'emp_employees' => ['emp_employees.id', '=', 'com_branch_department_users.user_id']
         ];
         $whereArr = [
             'branch_id' => $branch_id,
             'department_id' => $department_id
         ];
         // Fetch the department with connections
-        $employees = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr);
+        $users = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr);
 
-        return response()->json(['data' => $employees], 200);
+        return response()->json(['data' => $users], 200);
     }
 
     //desh(2024-10-25)
-    public function deleteDepartmentBranchEmployees($department_id, $branch_id, $employee_id){
+    public function deleteDepartmentBranchEmployees($department_id, $branch_id, $user_id){
         $whereArr = [
             'department_id' => $department_id,
             'branch_id' => $branch_id,
-            'employee_id' => $employee_id,
+            'user_id' => $user_id,
         ];
-        $res =  $this->common->commonDelete($employee_id, $whereArr, 'Department Employee', 'com_branch_department_employees');
+        $res =  $this->common->commonDelete($user_id, $whereArr, 'Department Employee', 'com_branch_department_users');
         return $res;
     }
 
@@ -265,49 +265,49 @@ class DepartmentController extends Controller
         $emp = $this->common->commonGetAll('emp_employees', '*');
         return response()->json([
             'data' => [
-                'employees' => $emp,
+                'users' => $emp,
             ]
         ], 200);
     }
 
     //desh(2024-10-25)
 
-    //first you should check the db if same user exists by branch_id, department_id and employee_id and status = 'active'. if exist don't add. if not add. if status = 'delete' make id 'active'. if new array doesn't contain the employee_id make status = 'delete'
+    //first you should check the db if same user exists by branch_id, department_id and user_id and status = 'active'. if exist don't add. if not add. if status = 'delete' make id 'active'. if new array doesn't contain the user_id make status = 'delete'
     public function createDepartmentEmployees(Request $request) {
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
                     'branch_id' => 'required|integer|max:255',
                     'department_id' => 'required|integer',
-                    'employees' => 'required|string',
+                    'users' => 'required|string',
                 ]);
     
-                $table = 'com_branch_department_employees';
+                $table = 'com_branch_department_users';
                 $successCount = 0;
                 
-                // Get employees array from the request
-                $employeeIds = explode(',', $request->employees);
-                $employeeIds = array_map('trim', $employeeIds);
+                // Get users array from the request
+                $userIds = explode(',', $request->users);
+                $userIds = array_map('trim', $userIds);
     
-                // Fetch current employees from DB for given branch and department
+                // Fetch current users from DB for given branch and department
                 $existingEmployees = DB::table($table)
                     ->where('branch_id', $request->branch_id)
                     ->where('department_id', $request->department_id)
-                    ->pluck('status', 'employee_id')
+                    ->pluck('status', 'user_id')
                     ->toArray();
     
-                // Loop through each employee ID in the request
-                foreach ($employeeIds as $employeeId) {
-                    if (isset($existingEmployees[$employeeId])) {
-                        if ($existingEmployees[$employeeId] === 'active') {
+                // Loop through each user ID in the request
+                foreach ($userIds as $userId) {
+                    if (isset($existingEmployees[$userId])) {
+                        if ($existingEmployees[$userId] === 'active') {
                             // Employee already active, no need to add
                             continue;
-                        } elseif ($existingEmployees[$employeeId] === 'delete') {
-                            // Reactivate deleted employee
+                        } elseif ($existingEmployees[$userId] === 'delete') {
+                            // Reactivate deleted user
                             DB::table($table)
                                 ->where('branch_id', $request->branch_id)
                                 ->where('department_id', $request->department_id)
-                                ->where('employee_id', $employeeId)
+                                ->where('user_id', $userId)
                                 ->update([
                                     'status' => 'active',
                                     'updated_by' => Auth::user()->id,
@@ -316,11 +316,11 @@ class DepartmentController extends Controller
                             $successCount++;
                         }
                     } else {
-                        // New employee - insert into database
+                        // New user - insert into database
                         $inputArr = [
                             'department_id' => $request->department_id,
                             'branch_id' => $request->branch_id,
-                            'employee_id' => $employeeId,
+                            'user_id' => $userId,
                             'status' => 'active',
                             'created_by' => Auth::user()->id,
                             'updated_by' => Auth::user()->id,
@@ -332,13 +332,13 @@ class DepartmentController extends Controller
                     }
                 }
     
-                // Mark employees not in the new array as deleted
-                $employeesToDelete = array_diff(array_keys($existingEmployees), $employeeIds);
-                if (!empty($employeesToDelete)) {
+                // Mark users not in the new array as deleted
+                $usersToDelete = array_diff(array_keys($existingEmployees), $userIds);
+                if (!empty($usersToDelete)) {
                     DB::table($table)
                         ->where('branch_id', $request->branch_id)
                         ->where('department_id', $request->department_id)
-                        ->whereIn('employee_id', $employeesToDelete)
+                        ->whereIn('user_id', $usersToDelete)
                         ->update([
                             'status' => 'delete',
                             'updated_by' => Auth::user()->id,
@@ -350,13 +350,13 @@ class DepartmentController extends Controller
                 if ($successCount > 0) {
                     return response()->json([
                         'status' => 'success',
-                        'message' => 'Department employees updated successfully',
+                        'message' => 'Department users updated successfully',
                         'data' => ['updated_count' => $successCount]
                     ], 200);
                 } else {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'No changes were made to department employees',
+                        'message' => 'No changes were made to department users',
                         'data' => []
                     ], 500);
                 }

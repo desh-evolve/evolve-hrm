@@ -110,7 +110,7 @@
                     <td>
                         <select class="email-notification-dropdown">
                             <option value="none" ${ex.email_notification === 'none' ? 'selected' : ''}>None</option>
-                            <option value="employee" ${ex.email_notification === 'employee' ? 'selected' : ''}>Employee</option>
+                            <option value="user" ${ex.email_notification === 'user' ? 'selected' : ''}>Employee</option>
                             <option value="supervisor" ${ex.email_notification === 'supervisor' ? 'selected' : ''}>Supervisor</option>
                             <option value="both" ${ex.email_notification === 'both' ? 'selected' : ''}>Both</option>
                         </select>

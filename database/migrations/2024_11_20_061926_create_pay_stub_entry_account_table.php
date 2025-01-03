@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('pay_stub_entry_account', function (Blueprint $table) {
             $table->id();
             $table->integer('company_id')->unsigned();
-            $table->integer('type')->unsigned()->comment('earning/employee_deduction/employer_deduction/total/accrual');
+            $table->integer('type')->unsigned()->comment('earning/user_deduction/employer_deduction/total/accrual');
             $table->integer('ps_order')->unsigned();
             $table->string('name', 250);
             $table->integer('accrual_pay_stub_entry_account_id')->unsigned()->nullable();

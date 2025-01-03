@@ -39,36 +39,36 @@ class PunchController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    //     'employee_date_id' => 'required',
+                    //     'user_date_id' => 'required',
                     //     // 'total_time' => 'required',
                     //     // 'actual_total_time' => 'required',
                     //     // 'overlap' => 'required',
                     'punch_type' => 'required',
                     'punch_status' => 'required',
                 ]);
-                //-------------------for check if punch_controll insert for given employee , date-----------------
-                $employeeId = $request->employee_id;
-                $employeeDateId = DB::table('employee_date')
-                    ->select('employee_date.id as employee_date_id')
-                    ->where('employee_date.employee_id', $employeeId)
-                    ->where('employee_date.date_stamp', $request->date)
-                    ->groupBy('employee_date.id')
+                //-------------------for check if punch_controll insert for given user , date-----------------
+                $userId = $request->user_id;
+                $userDateId = DB::table('user_date')
+                    ->select('user_date.id as user_date_id')
+                    ->where('user_date.user_id', $userId)
+                    ->where('user_date.date_stamp', $request->date)
+                    ->groupBy('user_date.id')
                     ->first();
 
-                if ($employeeDateId) {
-                    $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
+                if ($userDateId) {
+                    $userDateId = $userDateId->user_date_id; // Extract the ID
 
                     // Check if punch_control exists
                     $countRaw = DB::table('punch_control')
                         ->select('punch_control.*')
-                        ->where('punch_control.employee_date_id', $employeeDateId)
+                        ->where('punch_control.user_date_id', $userDateId)
                         ->first();
 
                     if (!$countRaw) { // Check if record doesn't exist
                         $table_1 = 'punch_control';
                         // Insert new record into punch_control
                         $punchControlInputArr = [
-                            'employee_date_id' => $employeeDateId,
+                            'user_date_id' => $userDateId,
                             'branch_id' => $request->branch_id,
                             'department_id' => $request->department_id,
                             'total_time' => 0,
@@ -105,7 +105,7 @@ class PunchController extends Controller
                             ]);
                     }
                 } else {
-                    // Handle case where no employee_date record is found
+                    // Handle case where no user_date record is found
                     return response()->json(['message' => 'Employee Date not found'], 404);
                 }
 
@@ -152,21 +152,21 @@ class PunchController extends Controller
     //                 'punch_type' => 'required',
     //                 'punch_status' => 'required',
     //             ]);
-    //             $employeeId = $request->employee_id;
-    //             $employeeDateId = DB::table('employee_date')
-    //                 ->select('employee_date.id as employee_date_id')
-    //                 ->where('employee_date.employee_id', $employeeId)
-    //                 ->where('employee_date.date_stamp', $request->date)
-    //                 ->groupBy('employee_date.id')
+    //             $userId = $request->user_id;
+    //             $userDateId = DB::table('user_date')
+    //                 ->select('user_date.id as user_date_id')
+    //                 ->where('user_date.user_id', $userId)
+    //                 ->where('user_date.date_stamp', $request->date)
+    //                 ->groupBy('user_date.id')
     //                 ->first();
 
-    //             if ($employeeDateId) {
-    //                 $employeeDateId = $employeeDateId->employee_date_id; // Extract the ID
+    //             if ($userDateId) {
+    //                 $userDateId = $userDateId->user_date_id; // Extract the ID
 
     //                 // Check if punch_control exists
     //                 $countRaw = DB::table('punch_control')
     //                     ->select('punch_control.*')
-    //                     ->where('punch_control.employee_date_id', $employeeDateId)
+    //                     ->where('punch_control.user_date_id', $userDateId)
     //                     ->first();
     //             }
     //             $punchControlInsertId = $countRaw->id;
@@ -214,17 +214,17 @@ class PunchController extends Controller
     public function getEmployeePunchById($id)
     {
 
-        $idColumn = 'employee_date.employee_id';
+        $idColumn = 'user_date.user_id';
         // $table = 'emp_job_history';
         $table = 'punch';
-        $fields = ['punch.*', 'employee_date.date_stamp as date', 'emp_employees.name_with_initials'];
+        $fields = ['punch.*', 'user_date.date_stamp as date', 'emp_employees.name_with_initials'];
         $joinArr = [
             'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
-            'employee_date' => ['employee_date.id', '=', 'punch_control.employee_date_id'],
-            'emp_employees' => ['emp_employees.id', '=', 'employee_date.employee_id'],
+            'user_date' => ['user_date.id', '=', 'punch_control.user_date_id'],
+            'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
 
         ];
-        // $whereArr = ['employee_date.employee_id' => $idColumn];
+        // $whereArr = ['user_date.user_id' => $idColumn];
         $jobhistory = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
         return response()->json(['data' => $jobhistory], 200);
     }
@@ -232,9 +232,9 @@ class PunchController extends Controller
     public function getEmployeeList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         return response()->json([
-            'data' => $employees,
+            'data' => $users,
         ], 200);
     }
 
@@ -242,27 +242,27 @@ class PunchController extends Controller
     public function getDropdownData()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         $branches = $this->common->commonGetAll('com_branches', '*');
         $departments = $this->common->commonGetAll('com_departments', '*');
         return response()->json([
             'data' => [
-                'employees' => $employees,
+                'users' => $users,
                 'branches' => $branches,
                 'departments' => $departments,
             ]
         ], 200);
     }
 
-    public function getPunchesByEmployeeIdAndStartDateAndEndDate($employeeId, $startDate, $endDate){
+    public function getPunchesByEmployeeIdAndStartDateAndEndDate($userId, $startDate, $endDate){
         $table = 'punch';
-        $fields = ['punch.*', 'employee_date.date_stamp AS user_date_stamp', 'punch_control.note AS note'];
+        $fields = ['punch.*', 'user_date.date_stamp AS user_date_stamp', 'punch_control.note AS note'];
         $joinArr = [
             'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
-            'employee_date' => ['employee_date.id', '=', 'punch_control.employee_date_id'],
+            'user_date' => ['user_date.id', '=', 'punch_control.user_date_id'],
         ];
         $whereArr = [
-            ['employee_date.employee_id', '=', $employeeId],
+            ['user_date.user_id', '=', $userId],
             ['DATE(punch.time_stamp)', '>=', '"'.$startDate.'"'],
             ['DATE(punch.time_stamp)', '<=', '"'.$endDate.'"'],
         ];
@@ -280,7 +280,7 @@ class PunchController extends Controller
     //         'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
 
     //     ];
-    //     $employee_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
-    //     return response()->json(['data' => $employee_punch], 200);
+    //     $user_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
+    //     return response()->json(['data' => $user_punch], 200);
     // }
 }

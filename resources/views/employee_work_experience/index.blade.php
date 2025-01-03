@@ -26,11 +26,11 @@
 
                     <div class="row mb-3 mb-4">
                         <div class="col-lg-2 d-flex align-items-center">
-                            <label for="employee_idname" class="form-label mb-1 req">Employee Name</label>
+                            <label for="user_idname" class="form-label mb-1 req">Employee Name</label>
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm js-example-basic-single" id="employeeDropdown">
+                            <select class="form-select form-select-sm js-example-basic-single" id="userDropdown">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
@@ -73,8 +73,8 @@
                     <div id="work-experience-form-body" class="row">
 
                         <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="employee_name" class="form-label mb-1">Employee Name</label>
-                            <input type="text" class="form-control" id="employee_name" value="" disabled>
+                            <label for="user_name" class="form-label mb-1">Employee Name</label>
+                            <input type="text" class="form-control" id="user_name" value="" disabled>
                         </div>
 
                         <div class="col-xxl-3 col-md-6 mb-3">
@@ -125,21 +125,21 @@
         </div>
 
         <script>
-            let employeeId = '';
+            let userId = '';
 
-            // Fetch and render employees_work_experience for the selected employee
+            // Fetch and render users_work_experience for the selected user
             async function renderWorkExperienceTable() {
-                if (!employeeId) {
+                if (!userId) {
                     $('#work-experience-table-body').html(
                         '<tr><td colspan="7" class="text-center">No Employee Selected</td></tr>');
                     return;
                 }
 
-                let employees_work_experience = await commonFetchData(`/company/employee_work_experience/${employeeId}`);
+                let users_work_experience = await commonFetchData(`/company/user_work_experience/${userId}`);
                 let list = '';
 
-                if (employees_work_experience && employees_work_experience.length > 0) {
-                    employees_work_experience.forEach((item, i) => {
+                if (users_work_experience && users_work_experience.length > 0) {
+                    users_work_experience.forEach((item, i) => {
                         list += `
                 <tr work_experience_id="${item.id}">
                     <td>${i + 1}</td>
@@ -171,41 +171,41 @@
             }
 
             async function getEmployeeList() {
-                let employees = await commonFetchData('/company/employee_work_experience/dropdown');
+                let users = await commonFetchData('/company/user_work_experience/dropdown');
 
             
                 
-                // Check if employees data is valid
-                if (employees && employees.length > 0) {
+                // Check if users data is valid
+                if (users && users.length > 0) {
                     // Target the dropdown element
-                    let dropdown = $('#employeeDropdown');
+                    let dropdown = $('#userDropdown');
 
                     // Clear existing options (optional)
                     dropdown.empty();
                     dropdown.append('<option value="">Select Employee</option>'); // Add a default option
 
-                    // Loop through the employees and add options
-                    employees.forEach(employee => {
+                    // Loop through the users and add options
+                    users.forEach(user => {
                         let option =
-                            `<option value="${employee.id}">${employee.first_name} ${employee.last_name}</option>`;
+                            `<option value="${user.id}">${user.first_name} ${user.last_name}</option>`;
                         dropdown.append(option);
                     });
                 } else {
-                    console.log('No employees found');
+                    console.log('No users found');
                 }
 
             }
 
-            // Populate employee dropdown and set up change event
+            // Populate user dropdown and set up change event
             $(document).ready(async function() {
                 await getEmployeeList();
 
-                $('#employeeDropdown').on('change', async function() {
-                    employeeId = $(this).val(); // Get selected employee ID
-                    let employeeName = $('#employeeDropdown option:selected').text();
-                    $('#employee_name').val(employeeName);
+                $('#userDropdown').on('change', async function() {
+                    userId = $(this).val(); // Get selected user ID
+                    let userName = $('#userDropdown option:selected').text();
+                    $('#user_name').val(userName);
 
-                    // Render work_experience table for the selected employee
+                    // Render work_experience table for the selected user
                     await renderWorkExperienceTable();
                 });
             });
@@ -226,8 +226,8 @@
                 const remarks = $('#remarks').val(); // Correctly fetch the remarks value
                 const work_experience_status = $('#work_experience_status').val();
 
-                let createUrl = `/company/employee_work_experience/create`;
-                let updateUrl = `/company/employee_work_experience/update/${work_experience_id}`;
+                let createUrl = `/company/user_work_experience/create`;
+                let updateUrl = `/company/user_work_experience/update/${work_experience_id}`;
 
                 let formData = new FormData();
 
@@ -238,7 +238,7 @@
                     $('#error-msg').html(''); // Clear error message if no issues
                 }
                 
-                formData.append('employee_id', employeeId);
+                formData.append('user_id', userId);
                 formData.append('company', company);
                 formData.append('from_date', from_date);
                 formData.append('to_date', to_date);
@@ -275,7 +275,7 @@
                 // Get branch data by id
                 try {
                     let work_experience_data = await commonFetchData(
-                        `/company/single_employee_work_experience/${work_experience_id}`);
+                        `/company/single_user_work_experience/${work_experience_id}`);
                         work_experience_data = work_experience_data[0];
                     console.log('work_experience_data', work_experience_data);
 
@@ -303,7 +303,7 @@
                 let work_experience_id = $(this).closest('tr').attr('work_experience_id');
 
                 try {
-                    let url = `/company/employee_work_experience/delete`;
+                    let url = `/company/user_work_experience/delete`;
                     const res = await commonDeleteFunction(work_experience_id, url,
                         'Work Experience'); // Await the promise here
 

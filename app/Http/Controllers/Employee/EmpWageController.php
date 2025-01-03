@@ -16,23 +16,23 @@ class EmpWageController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee wage', ['only' => [
+        $this->middleware('permission:view user wage', ['only' => [
             'index',
             'getAllEmployeeWage',
             'getAllEmployeeList',
             'getEmployeeWageById',
             'getSingleEmployeeWage',
         ]]);
-        $this->middleware('permission:create employee wage', ['only' => ['createEmployeeWage']]);
-        $this->middleware('permission:update employee wage', ['only' => ['updateEmployeeWage']]);
-        $this->middleware('permission:delete employee wage', ['only' => ['deleteEmployeeWage']]);
+        $this->middleware('permission:create user wage', ['only' => ['createEmployeeWage']]);
+        $this->middleware('permission:update user wage', ['only' => ['updateEmployeeWage']]);
+        $this->middleware('permission:delete user wage', ['only' => ['deleteEmployeeWage']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('employee_wage.index');
+        return view('user_wage.index');
     }
 
     public function createEmployeeWage(Request $request)
@@ -40,7 +40,7 @@ class EmpWageController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'wage_group_id' => 'required',
                     'wage_type_id' => 'required',
                     'wage' => 'required',
@@ -50,7 +50,7 @@ class EmpWageController extends Controller
 
                 $table = 'emp_wage';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'wage_group_id' => $request->wage_group_id,
                     'wage_type_id' => $request->wage_type_id,
                     'wage' => $request->wage,
@@ -59,7 +59,7 @@ class EmpWageController extends Controller
                     'weekly_time' => $request->weekly_time,
                     'hourly_rate' => $request->hourly_rate,
                     'note' => $request->note,
-                    'status' => $request->employee_wage_status,
+                    'status' => $request->user_wage_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
@@ -81,7 +81,7 @@ class EmpWageController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
-                    'employee_id' => 'required',
+                    'user_id' => 'required',
                     'wage_group_id' => 'required',
                     'wage_type_id' => 'required',
                     'wage' => 'required',
@@ -92,7 +92,7 @@ class EmpWageController extends Controller
                 $table = 'emp_wage';
                 $idColumn = 'id';
                 $inputArr = [
-                    'employee_id' => $request->employee_id,
+                    'user_id' => $request->user_id,
                     'wage_group_id' => $request->wage_group_id,
                     'wage_type_id' => $request->wage_type_id,
                     'wage' => $request->wage,
@@ -101,7 +101,7 @@ class EmpWageController extends Controller
                     'weekly_time' => $request->weekly_time,
                     'hourly_rate' => $request->hourly_rate,
                     'note' => $request->note,
-                    'status' => $request->employee_wage_status,
+                    'status' => $request->user_wage_status,
                     'updated_by' => Auth::user()->id,
 
                 ];
@@ -131,14 +131,14 @@ class EmpWageController extends Controller
     {
         $table = 'emp_wage';
         $fields = '*';
-        $employee_wage = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $employee_wage], 200);
+        $user_wage = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $user_wage], 200);
     }
 
     public function getEmployeeWageById($id)
     {
 
-        $idColumn = 'employee_id';
+        $idColumn = 'user_id';
         $table = 'emp_wage';
         $fields = ['emp_wage.*', 'emp_wage.id as id', 'com_wage_groups.wage_group_name' , 'com_wage_type.name as wage_type_name', 'com_wage_type.wage_type'];
         $joinsArr = [
@@ -148,23 +148,23 @@ class EmpWageController extends Controller
 
         $whereArr = ['com_wage_groups.status' => 'active', 'com_wage_type.status' => 'active'];
 
-        $employee_wage = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinsArr, $whereArr);
-        return response()->json(['data' => $employee_wage], 200);
+        $user_wage = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinsArr, $whereArr);
+        return response()->json(['data' => $user_wage], 200);
     }
     public function getDropDownList()
     {
 
-        $employees = $this->common->commonGetAll('emp_employees', '*');
+        $users = $this->common->commonGetAll('emp_employees', '*');
         $wageGroups = $this->common->commonGetAll('com_wage_groups', '*');
         $wageTypes = $this->common->commonGetAll('com_wage_type', '*');
-        // $employees = $this->common->commonGetAll($table, $fields);
+        // $users = $this->common->commonGetAll($table, $fields);
         return response()->json([
             'data' => [
-                'employees' => $employees,
+                'users' => $users,
                 'wageGroups' => $wageGroups,
                 'wageTypes' => $wageTypes,
             ]
-            // 'data' => $employees,
+            // 'data' => $users,
         ], 200);
     }
 
@@ -173,7 +173,7 @@ class EmpWageController extends Controller
         $idColumn = 'id';
         $table = 'emp_wage';
         $fields = '*';
-        $employee_wage = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $employee_wage], 200);
+        $user_wage = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $user_wage], 200);
     }
 }

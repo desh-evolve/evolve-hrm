@@ -18,11 +18,11 @@
                         <h5 class="mb-0">Employees</h5>
                     </div>
                     <div>
-                        <a type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" href="/employee/form">New Employee <i class="ri-add-line"></i></a>
+                        <a type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" href="/user/form">New Employee <i class="ri-add-line"></i></a>
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="employee_table" class="table table-bordered dt-responsive nowrap table-striped align-middle datatable-example" style="width:100%">
+                    <table id="user_table" class="table table-bordered dt-responsive nowrap table-striped align-middle datatable-example" style="width:100%">
                         <thead class="bg-primary text-white"/>
                             <tr>
                                 <th class="col">#</th>
@@ -34,13 +34,13 @@
                                 <th class="col">
                                     Functions
                                     <br>
-                                    <a href="#" id="show_employee_functions">[ Employee ]</a>
+                                    <a href="#" id="show_user_functions">[ Employee ]</a>
                                     <a href="#" id="show_payroll_functions">[ Payroll ]</a>
                                 </th>
                                 <th class="col">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="employee_table_body">
+                        <tbody id="user_table_body">
                             
                         </tbody>
                     </table>
@@ -57,10 +57,10 @@
         })
 
         async function renderEmployeeTable() {
-            const employeeList = [
+            const userList = [
                 {
                     id: 1,
-                    employeeId: "0001",
+                    userId: "0001",
                     name: "Deshan Dissanayake",
                     nic: "980451785V",
                     contact: "0714567894",
@@ -68,7 +68,7 @@
                 },
                 {
                     id: 2,
-                    employeeId: "0002",
+                    userId: "0002",
                     name: "Indika Manori",
                     nic: "9704231325V",
                     contact: "0767734894",
@@ -76,18 +76,18 @@
                 },
             ];
 
-            const rows = employeeList.map((employee, index) => {
-                let stt = employee.status === 'active' ? '<span class="badge rounded-pill border border-success text-success">Active</span>' : '<span class="badge rounded-pill border border-warning text-warning">Inactive</span>';
+            const rows = userList.map((user, index) => {
+                let stt = user.status === 'active' ? '<span class="badge rounded-pill border border-success text-success">Active</span>' : '<span class="badge rounded-pill border border-warning text-warning">Inactive</span>';
                 return ( `
-                    <tr emp_id="${employee.id}">
+                    <tr emp_id="${user.id}">
                         <td>${index + 1}</td>
-                        <td>${employee.employeeId}</td>
-                        <td>${employee.name}</td>
-                        <td>${employee.nic}</td>
-                        <td>${employee.contact}</td>
+                        <td>${user.userId}</td>
+                        <td>${user.name}</td>
+                        <td>${user.nic}</td>
+                        <td>${user.contact}</td>
                         <td>${stt}</td>
                         <td>
-                            <div class="employee-functions button-se">
+                            <div class="user-functions button-se">
                                 <a href="#" >[ Qualifications ]</a>
                                 <a href="#" >[ Work Experience ]</a>
                                 <a href="#" >[ Promotion ]</a>
@@ -103,10 +103,10 @@
                             </div>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_employee" title="Edit Employee" data-tooltip="tooltip" data-bs-placement="top">
+                            <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_user" title="Edit Employee" data-tooltip="tooltip" data-bs-placement="top">
                                 <i class="ri-pencil-fill"></i>
                             </button>
-                            <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_employee" title="Delete Employee" data-tooltip="tooltip" data-bs-placement="top">
+                            <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_user" title="Delete Employee" data-tooltip="tooltip" data-bs-placement="top">
                                 <i class="ri-delete-bin-fill"></i>
                             </button>
                         </td>
@@ -115,35 +115,35 @@
             }).join('');
 
             DataTablesForAjax.destroy();
-            $('#employee_table_body').html(rows);
-            init_dataTable('#employee_table');
+            $('#user_table_body').html(rows);
+            init_dataTable('#user_table');
             $('[data-tooltip="tooltip"]').tooltip();
         }
 
         $(document).ready(function() {
-            $('#show_employee_functions').on('click', function(event) {
+            $('#show_user_functions').on('click', function(event) {
                 event.preventDefault();
-                $('.employee-functions').show();
+                $('.user-functions').show();
                 $('.payroll-functions').hide();
             });
 
             $('#show_payroll_functions').on('click', function(event) {
                 event.preventDefault();
                 $('.payroll-functions').show();
-                $('.employee-functions').hide();
+                $('.user-functions').hide();
             });
         });
 
-        $(document).on('click', '.click_edit_employee', function(){
+        $(document).on('click', '.click_edit_user', function(){
             let emp_id = $(this).closest('tr').attr('emp_id');
-            window.location.href = '/employee/form?emp_id=' + emp_id
+            window.location.href = '/user/form?emp_id=' + emp_id
         })
 
-        $(document).on('click', '.click_delete_employee', async function(){
+        $(document).on('click', '.click_delete_user', async function(){
             let emp_id = $(this).closest('tr').attr('emp_id');
 
             try {
-                let url = `/employee/delete`;
+                let url = `/user/delete`;
                 const res = await commonDeleteFunction(emp_id, url, 'Employee');  // Await the promise here
 
                 if (res) {

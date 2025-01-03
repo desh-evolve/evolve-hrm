@@ -152,7 +152,7 @@ class BranchController extends Controller
     {
         $res = $this->common->commonDelete($id, ['id' => $id], 'Branch', 'com_branches');
         $this->common->commonDelete($id, ['branch_id' => $id], 'Department Branches', 'com_branch_departments');
-        $this->common->commonDelete($id, ['branch_id' => $id], 'Department Branches Employees', 'com_branch_department_employees');
+        $this->common->commonDelete($id, ['branch_id' => $id], 'Department Branches Employees', 'com_branch_department_users');
         return $res;
     }
 

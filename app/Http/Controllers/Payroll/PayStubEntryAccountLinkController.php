@@ -65,7 +65,7 @@ class PayStubEntryAccountLinkController extends Controller
             return DB::transaction(function () use ($request) {
                 $request->validate([
                     'total_gross' => 'string',
-                    'total_employee_deduction' => 'string',
+                    'total_user_deduction' => 'string',
                     'total_employer_deduction' => 'string',
                     'regular_time' => 'string',
                 ]);
@@ -74,14 +74,14 @@ class PayStubEntryAccountLinkController extends Controller
                 $inputArr = [
                     'company_id' => 1,
                     'total_gross' => $request->total_gross,
-                    'total_employee_deduction' => $request->total_employee_deduction,
+                    'total_user_deduction' => $request->total_user_deduction,
                     'total_employer_deduction' => $request->total_employer_deduction,
                     'total_net_pay' => $request->total_net_pay,
                     'regular_time' => $request->regular_time,
                     'monthly_advance' => $request->monthly_advance,
                     'monthly_advance_deduction' => $request->monthly_advance_deduction,
-                    'employee_cpp' => $request->employee_cpp,
-                    'employee_ei' => $request->employee_ei,
+                    'user_cpp' => $request->user_cpp,
+                    'user_ei' => $request->user_ei,
                     'status' => $request->pay_stub_entry_account_link_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
@@ -106,7 +106,7 @@ class PayStubEntryAccountLinkController extends Controller
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
                     'total_gross' => 'string',
-                    'total_employee_deduction' => 'string',
+                    'total_user_deduction' => 'string',
                     'total_employer_deduction' => 'string',
                     'regular_time' => 'string',
                 ]);
@@ -116,14 +116,14 @@ class PayStubEntryAccountLinkController extends Controller
                 $inputArr = [
                     'company_id' => 1,
                     'total_gross' => $request->total_gross,
-                    'total_employee_deduction' => $request->total_employee_deduction,
+                    'total_user_deduction' => $request->total_user_deduction,
                     'total_employer_deduction' => $request->total_employer_deduction,
                     'total_net_pay' => $request->total_net_pay,
                     'regular_time' => $request->regular_time,
                     'monthly_advance' => $request->monthly_advance,
                     'monthly_advance_deduction' => $request->monthly_advance_deduction,
-                    'employee_cpp' => $request->employee_cpp,
-                    'employee_ei' => $request->employee_ei,
+                    'user_cpp' => $request->user_cpp,
+                    'user_ei' => $request->user_ei,
                     'status' => $request->pay_stub_entry_account_link_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,

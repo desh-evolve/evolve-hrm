@@ -40,11 +40,11 @@ return new class extends Migration
             $table->date('dob')->nullable();
             $table->string('gender', 10)->nullable();
             $table->string('marital_status', 20)->nullable();
-            $table->string('employee_image')->nullable();
+            $table->string('user_image')->nullable();
 
             $table->integer('punch_machine_user_id')->nullable();
             $table->integer('designation_id');
-            $table->integer('employee_group_id');
+            $table->integer('user_group_id');
             $table->integer('policy_group_id');
             $table->date('appointment_date');
             $table->text('appointment_note')->nullable();
