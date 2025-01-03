@@ -84,8 +84,8 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label req" for="user_group_id">Employment Group</label>
-                                                    <select class="form-select" id="user_group_id" name="user_group_id" required>
+                                                    <label class="form-label req" for="employee_group_id">Employment Group</label>
+                                                    <select class="form-select" id="employee_group_id" name="employee_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
                                                     <div class="invalid-feedback">Please enter an employment group</div>

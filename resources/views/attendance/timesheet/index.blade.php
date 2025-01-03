@@ -237,12 +237,12 @@
 
                 branches = dropdownData.branches.length > 0 && dropdownData.branches.map(e => `<option value="${e.id}">${e.branch_name}</option>`).join('');
                 departments = dropdownData.departments.length > 0 && dropdownData.departments.map(e => `<option value="${e.id}">${e.department_name}</option>`).join('');
-                user_groups = dropdownData.user_groups.length > 0 && dropdownData.user_groups.map(e => `<option value="${e.id}">${e.emp_group_name}</option>`).join('');
+                employee_groups = dropdownData.employee_groups.length > 0 && dropdownData.employee_groups.map(e => `<option value="${e.id}">${e.emp_group_name}</option>`).join('');
                 users = dropdownData.users.length > 0 && dropdownData.users.map(e => `<option value="${e.id}">${e.first_name+' '+e.last_name}</option>`).join('');
 
                 $('#group_filter').append(branches);
                 $('#branch_filter').append(departments);
-                $('#department_filter').append(user_groups);
+                $('#department_filter').append(employee_groups);
                 $('#user_filter').append(users);
                 
             }catch(error){

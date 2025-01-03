@@ -997,7 +997,7 @@ class TimeSheetController extends Controller
     
         // Fetch the department with connections
         $departments = $this->common->commonGetAll('com_departments', ['com_departments.*'], [], [], false, $connections);
-        $user_groups = $this->common->commonGetAll('com_employee_groups', '*');
+        $employee_groups = $this->common->commonGetAll('com_employee_groups', '*');
 
         $users = $this->common->commonGetAll('emp_employees', '*');
 
@@ -1005,7 +1005,7 @@ class TimeSheetController extends Controller
             'data' => [
                 'branches' => $branches,
                 'departments' => $departments,
-                'user_groups' => $user_groups,
+                'employee_groups' => $employee_groups,
                 'users' => $users, //should be filtered by hierarchy
             ]
         ], 200);

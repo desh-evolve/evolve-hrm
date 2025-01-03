@@ -95,8 +95,8 @@ async function loadEmployeeOverview(){
             $('#user-number').text(userData.id);
             $('#punch-id').text(userData.punch_machine_user_id);
             $('#branch').text(userData.province_id);
-            $('#department').text(userData.user_group_id);
-            $('#employment-group').text(userData.user_group_id);
+            $('#department').text(userData.employee_group_id);
+            $('#employment-group').text(userData.employee_group_id);
             $('#designation').text(userData.designation_id);
             $('#basis-employment').text(userData.employment_type_id);
             $('#currency').text(userData.currency_id);

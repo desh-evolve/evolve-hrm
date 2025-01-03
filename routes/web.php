@@ -64,14 +64,31 @@ Route::get('/', function () {
 
 Route::get('/', [AuthenticatedSessionController::class, 'create']);
 
+/*
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+*/
+//==============================================================================================================================
+// Dashboard (temp)
+//==============================================================================================================================
+
+// Main Dashboard Route
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard/temp', [DashboardController::class, 'index'])->name('dashboard.temp.index');
+
+Route::get('/dashboard/count/employee', [DashboardController::class, 'getAllEmployeeCount'])->name('dashboard.employee.count');
+Route::get('/dashboard/count/leave', [DashboardController::class, 'getAllLeaveCount'])->name('dashboard.leave.count');
+Route::get('/dashboard/messages', [DashboardController::class, 'getNewMessages'])->name('dashboard.new.messages');
+Route::get('/dashboard/requests', [DashboardController::class, 'getRequestsData'])->name('dashboard.requests');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/profile/preferences', [ProfileController::class, 'preferences'])->name('profile.preferences');
 });
 
 Route::group(['middleware' => ['role:super-admin|admin']], function () {
@@ -508,16 +525,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::post('/policy/policy_group/create', [PolicyGroupsController::class, 'createPolicyGroup'])->name('policy.policy_group.create');
     Route::put('/policy/policy_group/update/{id}', [PolicyGroupsController::class, 'updatePolicyGroup'])->name('policy.policy_group.update');
     Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.policy_group.getById');
-
-    //==============================================================================================================================
-    // Dashboard (temp)
-    //==============================================================================================================================
-
-    Route::get('/dashboard/temp', [DashboardController::class, 'index'])->name('dashboard.temp.index');
-    Route::get('/dashboard/temp/count/employee', [DashboardController::class, 'getAllEmployeeCount'])->name('dashboard.temp.employee.count');
-    Route::get('/dashboard/temp/count/leave', [DashboardController::class, 'getAllLeaveCount'])->name('dashboard.temp.leave.count');
-    Route::get('/dashboard/temp/messages', [DashboardController::class, 'getNewMessages'])->name('dashboard.temp.new.messages');
-    Route::get('/dashboard/temp/requests', [DashboardController::class, 'getRequestsData'])->name('dashboard.temp.requests');
 
 
     //==============================================================================================================================
