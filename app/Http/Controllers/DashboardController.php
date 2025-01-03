@@ -17,6 +17,7 @@ class DashboardController extends Controller
         $this->middleware('permission:view dashboard', ['only' => [
             'index',
             'getAllEmployeeCount',
+            'getAllLeaveCount',
             'getNewMessages',
             'getRequestsData'
             ]]);
@@ -46,56 +47,11 @@ class DashboardController extends Controller
     // pawanee(2024-12-17)
     public function getAllLeaveCount()
     {
-        $table = 'leaves';
+        $table = 'request';
         $fields = '*';
         $leaves = $this->common->commonGetAll($table, $fields);
-        $leaveCount = count($leaves); // Get the count of approved Leaves
-        return response()->json(['data' => $leaveCount], 200);
+        return response()->json(['data' => $leaves], 200);
     }
-
-
-    // public function getEmployeeStats()
-    // {
-    //     try {
-    //         // Get total employee count from the emp_employees table
-    //         $table = 'emp_employees';
-    //         $fields = '*';
-    //         $employees = $this->common->commonGetAll($table, $fields);
-    //         $employeeCount = count($employees); // Count total employees
-
-    //         // Get total approved leaves from the leaves table
-    //         $leavesTable = 'leaves';
-    //         $approvedLeaves = $this->common->commonGetAll($leavesTable, $fields);
-    //         $approvedLeavesCount = count(array_filter($approvedLeaves, function ($leave) {
-    //             return isset($leave['status']) && $leave['status'] === 'approved';
-    //         }));
-
-
-    //         return response()->json([
-    //             'data' => [
-    //                 'total_employees' => $employeeCount,
-    //                 'approved_leaves' => $approvedLeavesCount,
-    //             ]], 200);
-
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => 'Unable to fetch data', 'message' => $e->getMessage()], 500);
-    //     }
-
-    // }
-
-
-    // public function getNewMessages()
-    // {
-    //     $loggedInUserId = Auth::user()->id; // Get the logged-in user's ID
-
-    //     $whereArr = [['message_control.created_by', '!=', $loggedInUserId]]; // Exclude messages sent by the logged-in user
-    //     $table = 'message_control';
-    //     $fields = ['message_control.*', 'object_type.name AS type_name'];
-    //     $joinArr = ['object_type' => ['object_type.id', '=', 'message_control.type_id']];
-
-    //     $receivedMessages = $this->common->commonGetById($loggedInUserId, $whereArr, $table, $fields, $joinArr);
-    //     return response()->json(['data' => $receivedMessages], 200);
-    // }
 
 
 
@@ -104,27 +60,52 @@ class DashboardController extends Controller
     {
         $loggedInUserId = Auth::user()->id;
 
-        $whereArr = [['message_control.created_by', '!=', $loggedInUserId]];
         $table = 'message_control';
         $fields = [
             'message_control.*',
-            'object_type.name AS type_name',
-            'messages.sender_id',
-            'emp_employees.name_with_initials AS sender_name'
+            'object_type.name AS type_name'
         ];
+
         $joinArr = [
             'object_type' => ['object_type.id', '=', 'message_control.type_id'],
-            'messages' => ['messages.message_control_id', '=', 'message_control.id'],
-            'emp_employees' => ['emp_employees.id', '=', 'messages.sender_id']
+        ];
+
+        $connections = [
+            'messages' => [
+                'con_fields' => [
+                    'messages.*',
+                    'messages.id as message_id',
+                    'messages.message_control_id',
+                    'messages.description as message_description',
+                    'messages.created_at as sent_at',
+                    'sender.id as sender_id',
+                    'sender.work_email as sender_email',
+                    'message_employees.read_status',
+                ],
+                'con_where' => [
+                    'messages.message_control_id' => 'id',
+                    'message_employees.received_id' => $loggedInUserId
+                ],
+                'con_joins' => [
+                    'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'],
+                    'message_employees' => ['message_employees.message_id', '=', 'messages.id'],
+                ],
+                'con_name' => 'message_details',
+                'except_deleted' => true,
+            ],
+        ];
+
+        $whereArr = [
+            ['message_control.created_by', '!=', $loggedInUserId]
         ];
 
         try {
 
-            $receivedMessages = $this->common->commonGetById($loggedInUserId, $whereArr, $table, $fields, $joinArr);
+            $receivedMessages = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, false, $connections);
 
             return response()->json(['data' => $receivedMessages], 200);
         } catch (\Exception $e) {
-            Log::error('Error fetching messages: ' . $e->getMessage());
+            Log::error('Error fetching received messages: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
         }
     }
@@ -151,7 +132,7 @@ class DashboardController extends Controller
             $requestData = $this->common->commonGetAll($table, $fields, $joinArr, [], true);
 
             return response()->json(['data' => $requestData], 200);
-            
+
         } catch (\Exception $e) {
             Log::error('Error fetching request data: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);

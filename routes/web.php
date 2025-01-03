@@ -261,7 +261,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/employee_work_experience/dropdown', [EmployeeWorkExperienceController::class, 'getEmployeeList'])->name('company.employee_work_experience.dropdown');
     Route::get('/company/employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getEmployeeWorkExperienceById'])->name('company.employee_work_experience.getById');
 
-    // Employee employee promotion  
+    // Employee employee promotion
     Route::get('/company/employee_promotion/index', [EmployeePromotionController::class, 'index'])->name('company.employee_promotion.index');
     Route::post('/company/employee_promotion/create', [EmployeePromotionController::class, 'createEmployeePromotion'])->name('company.employee_promotion.create');
     Route::put('/company/employee_promotion/update/{id}', [EmployeePromotionController::class, 'updateEmployeePromotion'])->name('company.employee_promotion.update');
@@ -283,6 +283,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
     // Attendance
     //==============================================================================================================================
+
+    //   Employee request
+    Route::get('/attendance/request/index', [AttendanceRequestsController::class, 'index'])->name('request.index');
+    Route::get('/attendance/request/dropdown', [AttendanceRequestsController::class, 'getRequestDropdownData'])->name('request.dropdown');
+    Route::post('/attendance/request/create', [AttendanceRequestsController::class, 'createAttendenceRequests'])->name('request.create');
+    Route::get('/attendance/request/{id}', [AttendanceRequestsController::class, 'getRequestsByControlId'])->name('request.getById');
+    Route::delete('/attendance/request/delete/{id}', [AttendanceRequestsController::class, 'deleteAttendenceRequests'])->name('request.delete');
+
+
 
     //   Employee Punch
     Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
@@ -345,7 +354,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/payroll/company_deduction/dropdown', [CompanyDeductionController::class, 'getCompanyDeductionDropdownData'])->name('company.company_deduction.dropdown');
     Route::get('/payroll/company_deduction/AllCompanyDeduction', [CompanyDeductionController::class, 'getAllCompanyDeduction'])->name('payroll.company_deduction.all');
     Route::get('/payroll/company_deduction/{id}', [CompanyDeductionController::class, 'getCompanyDeductionById'])->name('payroll.company_deduction.getById');
-    
+
     //   Pay Pay Stub Entry Account Link
     Route::get('/payroll/pay_stub_entry_account_link', [PayStubEntryAccountLinkController::class, 'index'])->name('payroll.pay_stub_entry_account_link');
     Route::post('/payroll/pay_stub_entry_account_link/create', [PayStubEntryAccountLinkController::class, 'createPayStubEntryAccountLink'])->name('payroll.pay_stub_entry_account_link.create');
@@ -505,8 +514,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
 
     Route::get('/dashboard/temp', [DashboardController::class, 'index'])->name('dashboard.temp.index');
-    Route::get('/dashboard/temp/employee/count', [DashboardController::class, 'getAllEmployeeCount'])->name('dashboard.temp.employee.count');
-    Route::get('/dashboard/temp/leave/count', [DashboardController::class, 'getAllLeaveCount'])->name('dashboard.temp.leave.count');
+    Route::get('/dashboard/temp/count/employee', [DashboardController::class, 'getAllEmployeeCount'])->name('dashboard.temp.employee.count');
+    Route::get('/dashboard/temp/count/leave', [DashboardController::class, 'getAllLeaveCount'])->name('dashboard.temp.leave.count');
     Route::get('/dashboard/temp/messages', [DashboardController::class, 'getNewMessages'])->name('dashboard.temp.new.messages');
     Route::get('/dashboard/temp/requests', [DashboardController::class, 'getRequestsData'])->name('dashboard.temp.requests');
 

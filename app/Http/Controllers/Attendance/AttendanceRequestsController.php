@@ -21,7 +21,7 @@ class AttendanceRequestsController extends Controller
         $this->middleware('permission:view attendance requests', ['only' => [
             'index',
             'getRequestsByControlId',
-            'getEmployeeDropdownData',
+            'getRequestDropdownData',
 
         ]]);
         $this->middleware('permission:create attendance requests', ['only' => ['createAttendenceRequests']]);
@@ -118,7 +118,6 @@ class AttendanceRequestsController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
         }
     }
-
 
 
 
