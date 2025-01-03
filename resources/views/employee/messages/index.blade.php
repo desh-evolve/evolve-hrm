@@ -1135,6 +1135,8 @@ $(document).ready(async function () {
     });
 
 
+
+
    // Reset Function
     function resetForm() {
         $('#msg_id').val('');
@@ -1149,7 +1151,6 @@ $(document).ready(async function () {
 
     // All Render Function
     async function allRender() {
-
         try {
             // Check which tab is active and render the corresponding list
             if ($('#all-message').hasClass('active')) {
@@ -1162,11 +1163,9 @@ $(document).ready(async function () {
 
             await updateAllMessageCount();
             await updateInboxMessageCount();
-
         } catch (error) {
             console.error('error in allRender: ',error);
         }
-
     }
 
 

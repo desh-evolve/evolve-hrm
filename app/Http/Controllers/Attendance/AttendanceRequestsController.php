@@ -61,48 +61,55 @@ class AttendanceRequestsController extends Controller
     //pawanee(2024-12-09)
     public function getRequestsByControlId($userId)
     {
-        // Get the `id` from the `user_date` table where `user_id`
-        $userDateId = DB::table('user_date')
-            ->where('user_id', $userId)
-            ->value('id');
-
-        if (!$userDateId) {
-            return response()->json(['error' => 'No matching user_date record found for the given user_id'], 404);
-        }
-
-        $idColumn = 'user_date_id';
-        $table = 'request';
-        $fields = [
-            'request.*',
-            'object_type.name as type_name',
-        ];
-
-        $joinArr = [
-            'object_type'=>['object_type.id', '=', 'request.type_id']
-        ];
-
-        $connections = [
-            'message_control' => [
-                'con_fields' => ['message_control.id', 'messages.description AS request_status'],
-                'con_where' => ['message_control.ref_id' => 'id'],
-                'con_joins' => [
-                    'messages' => ['messages.message_control_id', '=', 'message_control.id'],
-                ],
-                'con_name' => 'status_details',
-                'except_deleted' => true,
-            ],
-            'user_date' => [
-                'con_fields' => ['date_stamp'],
-                'con_where' => ['user_date.id' => 'user_date_id'],
-                'con_joins' => [],
-                'con_name' => 'date_details',
-                'except_deleted' => true,
-            ],
-        ];
-
-
         try {
-            $attRequest = $this->common->commonGetById($userDateId, $idColumn, $table, $fields, $joinArr, [], true, $connections);
+            // Get all `employee_date_id`s for the given `employee_id`
+            $employeeDateIds = DB::table('employee_date')
+                ->where('employee_id', $employeeId)
+                ->pluck('id');
+
+            if ($employeeDateIds->isEmpty()) {
+                return response()->json(['error' => 'No matching employee_date records found for the given employee_id'], 404);
+            }
+
+            $idColumn = 'employee_date_id';
+            $table = 'request';
+            $fields = [
+                'request.*',
+                'object_type.name as type_name',
+            ];
+
+            $joinArr = [
+                'object_type' => ['object_type.id', '=', 'request.type_id']
+            ];
+
+            $connections = [
+                'message_control' => [
+                    'con_fields' => ['message_control.id', 'messages.description AS request_status'],
+                    'con_where' => ['message_control.ref_id' => 'id'],
+                    'con_joins' => [
+                        'messages' => ['messages.message_control_id', '=', 'message_control.id'],
+                    ],
+                    'con_name' => 'status_details',
+                    'except_deleted' => true,
+                ],
+                'employee_date' => [
+                    'con_fields' => ['date_stamp'],
+                    'con_where' => ['employee_date.id' => 'employee_date_id'],
+                    'con_joins' => [],
+                    'con_name' => 'date_details',
+                    'except_deleted' => true,
+                ],
+            ];
+
+
+            $attRequest = [];
+
+            foreach ($employeeDateIds as $employeeDateId) {
+                $result = $this->common->commonGetById($employeeDateId, $idColumn, $table, $fields, $joinArr, [], true, $connections);
+                if ($result) {
+                    $attRequest[] = $result;
+                }
+            }
 
             return response()->json(['data' => $attRequest], 200);
 
@@ -110,7 +117,6 @@ class AttendanceRequestsController extends Controller
             Log::error('Error fetching messages: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
         }
-
     }
 
 
@@ -223,17 +229,7 @@ class AttendanceRequestsController extends Controller
     }
 
 
-   
-    // public function deleteAttendenceRequests($id)
-    // {
-    //     $whereArr = ['id' => $id];
-    //     $title = 'Request Status';
-    //     $table = 'request';
-
-    //     return $this->common->commonDelete($id, $whereArr, $title, $table);
-    // }
-
-
+    //pawanee(2024-12-09)
     public function deleteAttendenceRequests($id)
     {
         $res = $this->common->commonDelete($id, ['id' => $id], 'Request Status', 'request');
