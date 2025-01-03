@@ -14,9 +14,9 @@ return new class extends Migration {
             $table->string('time_format', 250)->default('h:i:s'); 
             $table->string('time_unit_format', 250);
             $table->string('time_zone', 250); 
-            $table->unsignedInteger('items_per_page')->nullable(); 
-            $table->unsignedInteger('timesheet_view')->nullable(); 
-            $table->unsignedInteger('start_week_day')->nullable()->comment('1 = monday, 2 = tuesday, 3 = wednesday'); 
+            $table->unsignedInteger('items_per_page')->default('25'); 
+            $table->unsignedInteger('timesheet_view')->default('1'); 
+            $table->unsignedInteger('start_week_day')->default('1')->comment('1 = monday, 2 = tuesday, 3 = wednesday'); 
             $table->string('language', 5)->default('eng')->nullable(); 
             $table->boolean('enable_email_notification_exception')->default(0); 
             $table->boolean('enable_email_notification_message')->default(0); 

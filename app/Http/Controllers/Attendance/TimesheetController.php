@@ -33,14 +33,6 @@ class TimeSheetController extends Controller
         $this->common = new CommonModel();
     }
 
-    /*
-    public function index()
-    {
-
-        return view('attendance.timesheet.index');
-    }
-    */
-
     public function index(Request $request)
     {
 
@@ -51,10 +43,11 @@ class TimeSheetController extends Controller
         $edc = new EmployeeDateController();
 
         $currentUser = Auth::user();
+
         $filter_data = $request->input('filter_data', [
             'company_id' => 1,
             'user_id' => $currentUser->id,
-            'date' => '2024-12-14',
+            'date' => date('Y-m-d'),
             'group_ids' => -1,
             'branch_ids' => -1,
             'department_ids' => -1,
@@ -88,7 +81,7 @@ class TimeSheetController extends Controller
         //print_r($pay_period_obj );exit;
 
         $current_user_prefs = $epc->getEmployeePreferencesByEmployeeId(Auth::user()->id);
-
+        
         // Get the start day of the week, defaulting to Monday
         $start_date = $cdc->getBeginWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day ); // Y-m-d format
 		$end_date = $cdc->getEndWeekEpoch( $filter_data['date'], $current_user_prefs[0]->start_week_day ); // Y-m-d format
