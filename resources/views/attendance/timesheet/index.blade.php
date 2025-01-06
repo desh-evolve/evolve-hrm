@@ -78,24 +78,49 @@
                         </div>
                     </div>
                     <hr>
+
+
+                    @if ($pay_period_is_locked)
+                        <tr class="tblDataError">
+                            <td colspan="8">
+                                <b>{{ __('NOTICE:') }}</b> 
+                                {{ __('This pay period is currently') }} 
+                                @if ($pay_period_status_id == 'closed')
+                                    {{ __('closed') }}
+                                @else
+                                    {{ __('locked') }}
+                                @endif, 
+                                {{ __('modifications are not permitted.') }}
+                            </td>
+                        </tr>
+                    @elseif ($pay_period_status_id == 'post_adjustment')
+                        <tr class="tblDataWarning">
+                            <td colspan="8">
+                                <b>{{ __('NOTICE:') }}</b> 
+                                {{ __('This pay period is currently in the post adjustment state.') }}
+                            </td>
+                        </tr>
+                    @endif
+                
+
                     {{-- timesheet section --}}
                     <div>
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th class="bg-success text-white text-center"><i class="ri-printer-line cursor-pointer" data-toggle="tooltip" aria-label="print" data-bs-original-title="print" style="font-size: 18px;"></i></th>
-                                    <th class="bg-success text-white text-center">Mon <br><span>Dec 9</span></th>
-                                    <th class="bg-success text-white text-center">Tue <br><span>Dec 10</span></th>
-                                    <th class="bg-success text-white text-center">Wed <br><span>Dec 11</span></th>
-                                    <th class="bg-success text-white text-center">Thu <br><span>Dec 12</span></th>
-                                    <th class="bg-success text-white text-center">Fri <br><span>Dec 13</span></th>
-                                    <th class="bg-success text-white text-center">Sat <br><span>Dec 14</span></th>
-                                    <th class="bg-success text-white text-center">Sun <br><span>Dec 15</span></th>
+                                    <th class="bg-primary text-white text-center"><i class="ri-printer-line cursor-pointer" data-toggle="tooltip" aria-label="print" data-bs-original-title="print" style="font-size: 18px;"></i></th>
+                                    <th class="bg-primary text-white text-center">Mon <br><span>Dec 9</span></th>
+                                    <th class="bg-primary text-white text-center">Tue <br><span>Dec 10</span></th>
+                                    <th class="bg-primary text-white text-center">Wed <br><span>Dec 11</span></th>
+                                    <th class="bg-primary text-white text-center">Thu <br><span>Dec 12</span></th>
+                                    <th class="bg-primary text-white text-center">Fri <br><span>Dec 13</span></th>
+                                    <th class="bg-primary text-white text-center">Sat <br><span>Dec 14</span></th>
+                                    <th class="bg-primary text-white text-center">Sun <br><span>Dec 15</span></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="text-end bg-success text-white">In</td>
+                                    <td class="text-end bg-primary text-white">In</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -105,7 +130,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-end bg-success text-white">Out</td>
+                                    <td class="text-end bg-primary text-white">Out</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -115,23 +140,10 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="8" class="text-center bg-success text-white">Accumulated Time</td>
+                                    <td colspan="8" class="text-center bg-primary text-white">Accumulated Time</td>
                                 </tr>
                                 <tr>
-                                    <td class="text-end bg-success text-white">Total Time</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="8" class="text-center bg-success text-white">Branch</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-end bg-success text-white">Head Office</td>
+                                    <td class="text-end bg-primary text-white">Total Time</td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -141,7 +153,20 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="8" class="text-center bg-success text-white">
+                                    <td colspan="8" class="text-center bg-primary text-white">Branch</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end bg-primary text-white">Head Office</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="8" class="text-center bg-primary text-white">
                                         <strong>Pay Period: </strong>
                                         @if(isset($payPeriod))
                                             {{ date('Y-m-d', strtotime($payPeriod->start_date)) }} to 
@@ -160,10 +185,10 @@
                         <div class="col-md-4">
                             <table class="table table-bordered">
                                 <thead>
-                                    <tr><th colspan="2" class="bg-success text-white text-center">Exception Legend</th></tr>
+                                    <tr><th colspan="2" class="bg-primary text-white text-center">Exception Legend</th></tr>
                                     <tr>
-                                        <th class="bg-success text-white text-center">Code</th>
-                                        <th class="bg-success text-white text-center">Exception</th>
+                                        <th class="bg-primary text-white text-center">Code</th>
+                                        <th class="bg-primary text-white text-center">Exception</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -177,7 +202,7 @@
                         <div class="col-md-4">
                             <table class="table table-bordered">
                                 <thead>
-                                    <tr><th colspan="2" class="bg-success text-white text-center">Paid Time</th></tr>
+                                    <tr><th colspan="2" class="bg-primary text-white text-center">Paid Time</th></tr>
                                 </thead>
                                 <tbody>
                                     <tr>
@@ -194,7 +219,7 @@
                         <div class="col-md-4">
                             <table class="table table-bordered">
                                 <thead>
-                                    <tr><th colspan="2" class="bg-success text-white text-center">Accumulated Time</th></tr>
+                                    <tr><th colspan="2" class="bg-primary text-white text-center">Accumulated Time</th></tr>
                                 </thead>
                                 <tbody>
                                     <tr>
@@ -233,7 +258,7 @@
 
         async function getDropdownDataFunc(){
             try {
-                dropdownData = await commonFetchData('/user/timesheet/dropdown');
+                dropdownData = await commonFetchData('/employee/timesheet/dropdown');
 
                 branches = dropdownData.branches.length > 0 && dropdownData.branches.map(e => `<option value="${e.id}">${e.branch_name}</option>`).join('');
                 departments = dropdownData.departments.length > 0 && dropdownData.departments.map(e => `<option value="${e.id}">${e.department_name}</option>`).join('');

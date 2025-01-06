@@ -13,11 +13,13 @@ use Termwind\Components\Dd;
 use Carbon\Carbon;
 
 use App\Http\Controllers\Employee\EmployeePreferencesController;
+use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\CommonDateController;
 use App\Http\Controllers\EmployeeDateController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\Policy\MealPolicyController;
+use App\Http\Controllers\Payroll\PayPeriodScheduleController;
 
 class TimeSheetController extends Controller
 {
@@ -35,12 +37,52 @@ class TimeSheetController extends Controller
 
     public function index(Request $request)
     {
+        $rows = [];
+        $date_break_total_rows = [];
+        $date_break_policy_total_rows = [];
+        $date_meal_policy_total_rows = [];
+        $date_total_rows = [];
+        $date_branch_total_rows = [];
+        $date_department_total_rows = [];
+        $date_premium_total_rows = [];
+        $date_absence_total_rows = [];
+        $punch_exception = [];
+        $punch_control_exceptions = [];
+        $date_exception_total_rows = [];
+        $date_request_total_rows = [];
+        $unique_exceptions = [];
+        $pay_period_total_rows = [];
+        $holiday_array = [];
+        $pay_period_locked_rows = [];
+        $worked_total_time = [];
+        $paid_absence_total_time = [];
+        $dock_absence_total_time = [];
+        $time_sheet_verify = [];
+        //'pay_period_id' => optional($pay_period_obj)->getId(),
+        //'pay_period_start_date' => optional($pay_period_obj)->getStartDate(),
+        //'pay_period_end_date' => optional($pay_period_obj)->getEndDate(),
+        //'pay_period_verify_type_id' => optional($pay_period_obj)->getTimeSheetVerifyType(),
+        //'pay_period_verify_window_start_date' => optional($pay_period_obj)->getTimeSheetVerifyWindowStartDate(),
+        //'pay_period_verify_window_end_date' => optional($pay_period_obj)->getTimeSheetVerifyWindowEndDate(),
+        //'pay_period_transaction_date' => optional($pay_period_obj)->getTransactionDate(),
+        //'pay_period_is_locked' => optional($pay_period_obj)->getIsLocked(),
+        //'pay_period_status_id' => optional($pay_period_obj)->getStatus(),
+        //'action_options' => $action_options,
+        //'group_options' => $group_options,
+        //'branch_options' => $branch_options,
+        //'department_options' => $department_options,
+        //'user_options' => $user_options,
+        //'is_owner' => $is_owner,
+        //'is_child' => $is_child,
+        $current_time = date('h:i:s');
 
         $epc = new EmployeePreferencesController();
         $cdc = new CommonDateController();
         $cc = new CommonController();
         $pc = new PunchController();
         $edc = new EmployeeDateController();
+        $empc = new EmployeeController();
+        $ppsc = new PayPeriodScheduleController();
 
         $currentUser = Auth::user();
 
@@ -78,7 +120,8 @@ class TimeSheetController extends Controller
             $pay_period_obj = $pay_period_arr[0];
         }
 
-        //print_r($pay_period_obj );exit;
+        // Get user data
+        $user_obj = $empc->getEmployeeByUserId( $user_id );
 
         $current_user_prefs = $epc->getEmployeePreferencesByEmployeeId(Auth::user()->id);
         
@@ -862,7 +905,34 @@ class TimeSheetController extends Controller
         //print_r($pay_period_obj);
         //exit;
 
-        return view('attendance.timesheet.index', [
+        $is_assigned_pay_period_schedule = false;
+        $pay_period_data = [];
+
+        if (isset($pay_period_obj) && is_object($pay_period_obj)) {
+            $is_assigned_pay_period_schedule = true;
+
+            /*
+            $pay_period_data = [
+                'pay_period_id' => $pay_period_obj->getId() ?? null,
+                'pay_period_start_date' => $pay_period_obj->getStartDate() ?? null,
+                'pay_period_end_date' => $pay_period_obj->getEndDate() ?? null,
+                'pay_period_verify_type_id' => $pay_period_obj->getTimeSheetVerifyType() ?? null,
+                'pay_period_verify_window_start_date' => $pay_period_obj->getTimeSheetVerifyWindowStartDate() ?? null,
+                'pay_period_verify_window_end_date' => $pay_period_obj->getTimeSheetVerifyWindowEndDate() ?? null,
+                'pay_period_transaction_date' => $pay_period_obj->getTransactionDate() ?? null,
+                'pay_period_is_locked' => $pay_period_obj->getIsLocked() ?? false,
+                'pay_period_status_id' => $pay_period_obj->getStatus() ?? null,
+            ];
+            */
+        } else {
+            // Check if the employee is assigned to a pay period schedule
+            $pps_data = $ppsc->getPayPeriodScheduleByUserId($user_id);
+            if (!empty($pps_data)) {
+                $is_assigned_pay_period_schedule = true;
+            }
+        }
+
+        $parse_obj = [
             'payPeriod' => $pay_period_obj,
             'filter_data' => $filter_data,
             'calendar_array' => $calendar_array,
@@ -871,14 +941,9 @@ class TimeSheetController extends Controller
             'date_break_policy_total_rows' => $date_break_policy_total_rows,
             'date_meal_policy_total_rows' => $date_meal_policy_total_rows,
             'date_total_rows' => $date_total_rows,
-            //'date_branch_total_rows' => $date_branch_total_rows,
-            //'date_department_total_rows' => $date_department_total_rows,
-            //'date_job_total_rows' => $date_job_total_rows,
-            //'date_job_item_total_rows' => $date_job_item_total_rows,
             'date_premium_total_rows' => $date_premium_total_rows,
             'date_absence_total_rows' => $date_absence_total_rows,
             'punch_exceptions' => $punch_exceptions,
-            //'punch_control_exceptions' => $punch_control_exceptions,
             'date_exception_total_rows' => $date_exception_total_rows,
             'date_request_total_rows' => $date_request_total_rows,
             'exception_legend' => $unique_exceptions,
@@ -889,28 +954,27 @@ class TimeSheetController extends Controller
             'pay_period_paid_absence_total_time' => $paid_absence_total_time,
             'pay_period_dock_absence_total_time' => $dock_absence_total_time,
             'time_sheet_verify' => $time_sheet_verify,
-            //'is_assigned_pay_period_schedule' => $is_assigned_pay_period_schedule,
-            //'pay_period_id' => optional($pay_period_obj)->getId(),
-            //'pay_period_start_date' => optional($pay_period_obj)->getStartDate(),
-            //'pay_period_end_date' => optional($pay_period_obj)->getEndDate(),
-            //'pay_period_verify_type_id' => optional($pay_period_obj)->getTimeSheetVerifyType(),
-            //'pay_period_verify_window_start_date' => optional($pay_period_obj)->getTimeSheetVerifyWindowStartDate(),
-            //'pay_period_verify_window_end_date' => optional($pay_period_obj)->getTimeSheetVerifyWindowEndDate(),
-            //'pay_period_transaction_date' => optional($pay_period_obj)->getTransactionDate(),
-            //'pay_period_is_locked' => optional($pay_period_obj)->getIsLocked(),
-            //'pay_period_status_id' => optional($pay_period_obj)->getStatus(),
-            //'action_options' => $action_options,
-            //'group_options' => $group_options,
-            //'branch_options' => $branch_options,
-            //'department_options' => $department_options,
-            //'user_options' => $user_options,
-            //'is_owner' => $is_owner,
-            //'is_child' => $is_child,
-            //'user_obj' => $user_obj,
-            //'start_date' => $start_date,
-            //'end_date' => $end_date,
-            //'current_time' => $current_time
-        ]);
+            'is_assigned_pay_period_schedule' => $is_assigned_pay_period_schedule,
+
+            'pay_period_id' => null,
+            'pay_period_start_date' => null,
+            'pay_period_end_date' => null,
+            'pay_period_verify_type_id' => null,
+            'pay_period_verify_window_start_date' => null,
+            'pay_period_verify_window_end_date' => null,
+            'pay_period_transaction_date' => null,
+            'pay_period_is_locked' => false,
+            'pay_period_status_id' => 'open', //open/locked/closed
+
+            'user_obj' => $user_obj,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'current_time' => $current_time,
+
+        ];
+
+        return view('attendance.timesheet.index', $parse_obj);
+
     }
 
     /**

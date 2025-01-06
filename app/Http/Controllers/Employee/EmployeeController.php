@@ -16,7 +16,7 @@ class EmployeeController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:view user profile', ['only' => ['user_profile', 'getMyDataByEmployeeId']]);
+        $this->middleware('permission:view user profile', ['only' => ['user_profile', 'getMyDataByEmployeeId', 'getEmployeeByUserId']]);
         $this->middleware('permission:view user', ['only' => [
             'user_list',
             'getAllEmployees',
@@ -449,6 +449,18 @@ class EmployeeController extends Controller
 
         // Return the combined data as JSON
         return response()->json($response, 200);
+    }
+
+    public function getEmployeeByUserId($id)
+    {
+        // Fetch user data
+        $idColumn = 'user_id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $response = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Return the combined data as JSON
+        return $response[0];
     }
 
 

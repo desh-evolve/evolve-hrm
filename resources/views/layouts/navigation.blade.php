@@ -90,7 +90,8 @@
                 </li>
 
                 <!-- Schedule -->
-                <li class="nav-item">
+
+                {{-- <li class="nav-item">
                     <a class="nav-link menu-link" href="#schedule" data-bs-toggle="collapse" role="button"
                         aria-expanded="false">
                         <i class="ri-calendar-line"></i> <span>Schedule</span>
@@ -101,7 +102,7 @@
                             <li class="nav-item"><a href="#" class="nav-link">Mass Schedule</a></li>
                         </ul>
                     </div>
-                </li>
+                </li> --}}
 
                 <!-- Reports -->
                 <li class="nav-item">

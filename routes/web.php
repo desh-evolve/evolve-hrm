@@ -313,6 +313,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //   Employee Punch
     Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
     Route::get('/company/employee_punch/dropdown', [PunchController::class, 'getDropdownData'])->name('company.employee_punch.dropdown');
+    Route::get('/company/employee_punch/get_employees', [PunchController::class, 'getAllEmployees'])->name('company.employee_punch.get_employees');
     Route::post('/company/employee_punch/create', [PunchController::class, 'createEmployeePunch'])->name('company.employee_punch.create');
     Route::get('/company/employee_punch/{id}', [PunchController::class, 'getEmployeePunchById'])->name('company.employee_punch.getById');
     Route::get('/company/single_employee_punch/{id}', [PunchController::class, 'getSingleEmployeePunch'])->name('company.employee_punch.single');
