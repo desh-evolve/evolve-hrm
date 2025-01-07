@@ -370,8 +370,12 @@
                                     Employee Groups
                                 </a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link">Stations</a></li> <li class="nav-item">
+                                <a href="{{ route('company.hierarchy.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.hierarchy.index') ? 'active' : '' }}">
+                                    Hierarchy
+                                </a>
+                            </li>
                             <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
                         </ul>
                     </div>

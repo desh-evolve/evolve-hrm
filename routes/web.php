@@ -17,6 +17,7 @@ use App\Http\Controllers\Company\EmployeeGroupController;
 use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 use App\Http\Controllers\Company\BranchBankDetailsController;
+use App\Http\Controllers\Company\HierarchyController;
 
 // use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
@@ -155,6 +156,18 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/branches', [BranchController::class, 'getAllBranches'])->name('company.branches.all');
     Route::get('/company/branch/{id}', [BranchController::class, 'getBranchByBranchId'])->name('company.branch.getById');
 
+
+    //==============================================================================================================================
+    // Hierarchy
+    //==============================================================================================================================
+    Route::get('/company/hierarchy', [HierarchyController::class, 'index'])->name('company.hierarchy.index');
+    Route::get('/company/hierarchy/form', [HierarchyController::class, 'form'])->name('company.hierarchy.form');
+    Route::post('/company/hierarchy/create', [HierarchyController::class, 'createHierarchy'])->name('company.hierarchy.create');
+    Route::put('/company/hierarchy/update/{id}', [HierarchyController::class, 'updateHierarchy'])->name('company.hierarchy.update');
+    Route::delete('/company/hierarchy/delete/{id}', [HierarchyController::class, 'deleteHierarchy'])->name('company.hierarchy.delete');
+    Route::get('/company/hierarchies', [HierarchyController::class, 'getAllHierarchy'])->name('company.hierarchy.all');
+    Route::get('/company/hierarchy/dropdown', [HierarchyController::class, 'getHierarchyDropdownData'])->name('company.hierarchy.dropdown');
+    Route::get('/company/hierarchy/{id}', [HierarchyController::class, 'getHierarchyById'])->name('company.hierarchy.getById');
 
     //==============================================================================================================================
     // Branch Bank Details
