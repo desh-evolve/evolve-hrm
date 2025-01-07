@@ -49,7 +49,6 @@ class CurrencyController extends Controller
                     DB::table($table)->update(['is_default' => 0]);
                 }
 
-
                 $inputArr = [
                     'currency_name' => $request->currency_name,
                     'iso_code' => $request->iso_code,
@@ -63,7 +62,7 @@ class CurrencyController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr);
                 
                 if($request->is_default == '1'){
-                    $this->setDefaultCurrency($id);
+                    $this->setDefaultCurrency($insertId);
                 }
 
                 if ($insertId) {

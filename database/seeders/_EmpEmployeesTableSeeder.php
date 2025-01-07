@@ -43,7 +43,7 @@ class EmpEmployeesTableSeeder extends Seeder
                 'user_image' => 'john_doe.jpg',
                 'punch_machine_user_id' => 1001,
                 'designation_id' => 1,
-                'user_group_id' => 1,
+                'employee_group_id' => 1,
                 'policy_group_id' => 1,
                 'appointment_date' => '2020-01-01',
                 'appointment_note' => 'Permanent staff',

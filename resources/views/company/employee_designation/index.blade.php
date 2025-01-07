@@ -94,7 +94,7 @@
 
             let list = '';
             $('#table_body').html('<p>Loading...</p>');
-            let items = await commonFetchData('/company/user_designations');
+            let items = await commonFetchData('/company/employee_designations');
 
        
             if (items && items.length > 0) {
@@ -143,7 +143,7 @@
 
             // Get branch data by id
             try {
-                let designation_data = await commonFetchData(`/company/user_designation/${designation_id}`);
+                let designation_data = await commonFetchData(`/company/employee_designation/${designation_id}`);
                 designation_data = designation_data[0];
                 console.log('designation_data', designation_data);
 
@@ -168,8 +168,8 @@
             const emp_designation_name = $('#emp_designation_name').val();
             const designation_status = $('#designation_status').val();
 
-            let createUrl = `/company/user_designation/create`;
-            let updateUrl = `/company/user_designation/update/${designation_id}`;
+            let createUrl = `/company/employee_designation/create`;
+            let updateUrl = `/company/employee_designation/update/${designation_id}`;
 
             let formData = new FormData();
             
@@ -218,7 +218,7 @@
             let designation_id = $(this).closest('tr').attr('designation_id');
 
             try {
-                let url = `/company/user_designation/delete`;
+                let url = `/company/employee_designation/delete`;
                 const res = await commonDeleteFunction(designation_id, url, 'Designation');  // Await the promise here
 
                 if (res) {

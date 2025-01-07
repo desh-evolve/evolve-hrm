@@ -334,7 +334,7 @@ class MassPunchController extends Controller
     //         'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
 
     //     ];
-    //     $user_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
-    //     return response()->json(['data' => $user_punch], 200);
+    //     $employee_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
+    //     return response()->json(['data' => $employee_punch], 200);
     // }
 }

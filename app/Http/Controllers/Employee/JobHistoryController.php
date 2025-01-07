@@ -41,7 +41,7 @@ class JobHistoryController extends Controller
         $users = $this->common->commonGetAll('emp_employees', '*');
         $branches = $this->common->commonGetAll('com_branches', '*');
         $departments = $this->common->commonGetAll('com_departments', '*');
-        $designations = $this->common->commonGetAll('com_user_designations', '*');
+        $designations = $this->common->commonGetAll('com_employee_designations', '*');
         return response()->json([
             'data' => [
                 'users' => $users,
@@ -157,7 +157,7 @@ class JobHistoryController extends Controller
         $joinArr = [
             'com_branches'=>['com_branches.id', '=', 'emp_job_history.branch_id'],
             'com_departments'=>['com_departments.id', '=', 'emp_job_history.department_id'],
-            'com_user_designations'=>['com_user_designations.id', '=', 'emp_job_history.designation_id'],
+            'com_employee_designations'=>['com_employee_designations.id', '=', 'emp_job_history.designation_id'],
 
         ];
         $jobhistory = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);

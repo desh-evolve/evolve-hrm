@@ -24,13 +24,13 @@ async function getDropdownData() {
         $('#department_id').html('<option value="">Select a branch first</option>');
 
         // Populate user group dropdown
-        let empGroupList = (dropdownData?.user_groups || [])
+        let empGroupList = (dropdownData?.employee_groups || [])
             .map(empGroup => `<option value="${empGroup.id}">${empGroup.emp_group_name}</option>`)
             .join('');
-        $('#user_group_id').html('<option value="">Select an user group</option>' + empGroupList);
+        $('#employee_group_id').html('<option value="">Select an user group</option>' + empGroupList);
 
         // Populate user designation dropdown
-        let designationList = (dropdownData?.user_designations || [])
+        let designationList = (dropdownData?.employee_designations || [])
             .map(designation => `<option value="${designation.id}">${designation.emp_designation_name}</option>`)
             .join('');
         $('#designation_id').html('<option value="">Select a designation</option>' + designationList);
@@ -330,7 +330,7 @@ $(document).on('click', '.emp_form_submit', async function(e) {
 
     // Append standard form fields
     const fields = [
-        'user_no', 'punch_machine_user_id', 'branch_id', 'department_id', 'user_group_id', 'designation_id', 'policy_group_id', 'user_status', 'currency_id', 'pay_period_schedule_id', 'appointment_date', 'appointment_note', 'termination_date', 'confirmed_date', 'retirement_date', 'months', 'permission_group_id', 'email', 'password', 'title', 'name_with_initials', 'first_name', 'last_name', 'full_name', 'dob', 'nic', 'gender', 'religion_id', 'marital_status', 'personal_email', 'contact_1', 'contact_2', 'address_1', 'address_2', 'address_3', 'postal_code', 'country_id', 'province_id', 'city_id', 'work_email', 'work_contact', 'immediate_contact_person', 'immediate_contact_no', 'home_contact', 'epf_no'
+        'user_no', 'punch_machine_user_id', 'branch_id', 'department_id', 'employee_group_id', 'designation_id', 'policy_group_id', 'user_status', 'currency_id', 'pay_period_schedule_id', 'appointment_date', 'appointment_note', 'termination_date', 'confirmed_date', 'retirement_date', 'months', 'permission_group_id', 'email', 'password', 'title', 'name_with_initials', 'first_name', 'last_name', 'full_name', 'dob', 'nic', 'gender', 'religion_id', 'marital_status', 'personal_email', 'contact_1', 'contact_2', 'address_1', 'address_2', 'address_3', 'postal_code', 'country_id', 'province_id', 'city_id', 'work_email', 'work_contact', 'immediate_contact_person', 'immediate_contact_no', 'home_contact', 'epf_no'
     ];
 
     fields.forEach(field => {

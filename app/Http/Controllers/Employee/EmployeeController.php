@@ -16,7 +16,7 @@ class EmployeeController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:view user profile', ['only' => ['user_profile', 'getMyDataByEmployeeId']]);
+        $this->middleware('permission:view user profile', ['only' => ['user_profile', 'getMyDataByEmployeeId', 'getEmployeeByUserId']]);
         $this->middleware('permission:view user', ['only' => [
             'user_list',
             'getAllEmployees',
@@ -62,8 +62,8 @@ class EmployeeController extends Controller
     
         // Fetch the department with connections
         $departments = $this->common->commonGetAll('com_departments', ['com_departments.*'], [], [], false, $connections);
-        $user_groups = $this->common->commonGetAll('com_employee_groups', '*');
-        $user_designations = $this->common->commonGetAll('com_user_designations', '*');
+        $employee_groups = $this->common->commonGetAll('com_employee_groups', '*');
+        $employee_designations = $this->common->commonGetAll('com_employee_designations', '*');
         //policy groups => create table
         $policy_groups = [
             [ 'id' => 1, 'name' => 'PG 1'],
@@ -131,8 +131,8 @@ class EmployeeController extends Controller
             'data' => [
                 'branches' => $branches,
                 'departments' => $departments,
-                'user_groups' => $user_groups,
-                'user_designations' => $user_designations,
+                'employee_groups' => $employee_groups,
+                'employee_designations' => $employee_designations,
                 'policy_groups' => $policy_groups,
                 'user_status' => $user_status,
                 'currencies' => $currencies,
@@ -195,7 +195,7 @@ class EmployeeController extends Controller
                 'user_image' => 'nullable|string|max:255',
                 'punch_machine_user_id' => 'nullable|integer',
                 'designation_id' => 'required|integer',
-                'user_group_id' => 'required|integer',
+                'employee_group_id' => 'required|integer',
                 'policy_group_id' => 'required|integer',
                 'appointment_date' => 'required|date',
                 'appointment_note' => 'nullable|string',
@@ -261,7 +261,7 @@ class EmployeeController extends Controller
                 'user_image' => $request->user_image,
                 'punch_machine_user_id' => $request->punch_machine_user_id,
                 'designation_id' => $request->designation_id,
-                'user_group_id' => $request->user_group_id,
+                'employee_group_id' => $request->employee_group_id,
                 'policy_group_id' => $request->policy_group_id,
                 'appointment_date' => $request->appointment_date,
                 'appointment_note' => $request->appointment_note,
@@ -328,7 +328,7 @@ class EmployeeController extends Controller
                     'user_image' => 'nullable|string|max:255',
                     'punch_machine_user_id' => 'nullable|integer',
                     'designation_id' => 'required|integer',
-                    'user_group_id' => 'required|integer',
+                    'employee_group_id' => 'required|integer',
                     'policy_group_id' => 'required|integer',
                     'appointment_date' => 'required|date',
                     'appointment_note' => 'nullable|string',
@@ -379,7 +379,7 @@ class EmployeeController extends Controller
                     'user_image' => $request->user_image,
                     'punch_machine_user_id' => $request->punch_machine_user_id,
                     'designation_id' => $request->designation_id,
-                    'user_group_id' => $request->user_group_id,
+                    'employee_group_id' => $request->employee_group_id,
                     'policy_group_id' => $request->policy_group_id,
                     'appointment_date' => $request->appointment_date,
                     'appointment_note' => $request->appointment_note,
@@ -424,8 +424,8 @@ class EmployeeController extends Controller
     {
         $table = 'emp_employees';
         $fields = '*';
-        $user_designations = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $user_designations], 200);
+        $employee_designations = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $employee_designations], 200);
     }
 
     public function getEmployeeByEmployeeId($id)
@@ -449,6 +449,18 @@ class EmployeeController extends Controller
 
         // Return the combined data as JSON
         return response()->json($response, 200);
+    }
+
+    public function getEmployeeByUserId($id)
+    {
+        // Fetch user data
+        $idColumn = 'user_id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $response = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Return the combined data as JSON
+        return $response[0];
     }
 
 
