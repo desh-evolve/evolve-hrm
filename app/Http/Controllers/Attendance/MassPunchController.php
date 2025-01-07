@@ -88,7 +88,7 @@ class MassPunchController extends Controller
 
                         $userName = DB::table('emp_employees')
                             ->select('emp_employees.name_with_initials as name')
-                            ->where('emp_employees.id', $user)
+                            ->where('emp_employees.user_id', $user)
                             ->first();
 
                         if ($userDateId) {
@@ -292,7 +292,7 @@ class MassPunchController extends Controller
     //     $joinArr = [
     //         'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
     //         'user_date' => ['user_date.id', '=', 'punch_control.user_date_id'],
-    //         'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
+    //         'emp_employees' => ['emp_employees.user_id', '=', 'user_date.user_id'],
 
     //     ];
     //     // $whereArr = ['user_date.user_id' => $idColumn];
@@ -313,7 +313,7 @@ class MassPunchController extends Controller
     public function getDropdownData()
     {
 
-        $users = $this->common->commonGetAll('emp_employees', ['id', 'name_with_initials AS name']);
+        $users = $this->common->commonGetAll('emp_employees', ['id', 'user_id', 'name_with_initials AS name']);
         $branches = $this->common->commonGetAll('com_branches', '*');
         $departments = $this->common->commonGetAll('com_departments', '*');
         return response()->json([

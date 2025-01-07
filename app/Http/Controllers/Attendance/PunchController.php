@@ -221,7 +221,7 @@ class PunchController extends Controller
         $joinArr = [
             'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
             'user_date' => ['user_date.id', '=', 'punch_control.user_date_id'],
-            'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
+            'emp_employees' => ['emp_employees.user_id', '=', 'user_date.user_id'],
 
         ];
         // $whereArr = ['user_date.user_id' => $idColumn];

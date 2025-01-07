@@ -79,46 +79,193 @@
                     </div>
                     <hr>
 
+                    <table class="table">
+                        @if ($pay_period_is_locked)
+                            <tr class="bg-danger text-white">
+                                <td colspan="8">
+                                    <b>{{ __('NOTICE:') }}</b> 
+                                    {{ __('This pay period is currently') }} 
+                                    @if ($pay_period_status_id == 'closed')
+                                        {{ __('closed') }}
+                                    @else
+                                        {{ __('locked') }}
+                                    @endif, 
+                                    {{ __('modifications are not permitted.') }}
+                                </td>
+                            </tr>
+                        @elseif ($pay_period_status_id == 'post_adjustment')
+                            <tr class="bg-warning text-white">
+                                <td colspan="8">
+                                    <b>{{ __('NOTICE:') }}</b> 
+                                    {{ __('This pay period is currently in the post adjustment state.') }}
+                                </td>
+                            </tr>
+                        @endif
 
-                    @if ($pay_period_is_locked)
-                        <tr class="tblDataError">
-                            <td colspan="8">
-                                <b>{{ __('NOTICE:') }}</b> 
-                                {{ __('This pay period is currently') }} 
-                                @if ($pay_period_status_id == 'closed')
-                                    {{ __('closed') }}
-                                @else
-                                    {{ __('locked') }}
-                                @endif, 
-                                {{ __('modifications are not permitted.') }}
-                            </td>
-                        </tr>
-                    @elseif ($pay_period_status_id == 'post_adjustment')
-                        <tr class="tblDataWarning">
-                            <td colspan="8">
-                                <b>{{ __('NOTICE:') }}</b> 
-                                {{ __('This pay period is currently in the post adjustment state.') }}
-                            </td>
-                        </tr>
-                    @endif
-                
+                    </table>
 
                     {{-- timesheet section --}}
                     <div>
                         <table class="table table-bordered">
+                            {{-- header working -----------------------------------------------}}
                             <thead>
                                 <tr>
-                                    <th class="bg-primary text-white text-center"><i class="ri-printer-line cursor-pointer" data-toggle="tooltip" aria-label="print" data-bs-original-title="print" style="font-size: 18px;"></i></th>
-                                    <th class="bg-primary text-white text-center">Mon <br><span>Dec 9</span></th>
-                                    <th class="bg-primary text-white text-center">Tue <br><span>Dec 10</span></th>
-                                    <th class="bg-primary text-white text-center">Wed <br><span>Dec 11</span></th>
-                                    <th class="bg-primary text-white text-center">Thu <br><span>Dec 12</span></th>
-                                    <th class="bg-primary text-white text-center">Fri <br><span>Dec 13</span></th>
-                                    <th class="bg-primary text-white text-center">Sat <br><span>Dec 14</span></th>
-                                    <th class="bg-primary text-white text-center">Sun <br><span>Dec 15</span></th>
+                                    @foreach ($calendar_array as $index => $calendar)
+                                        @if ($loop->first)
+                                        <th class="bg-primary text-white text-center">
+                                                <i class="ri-printer-line cursor-pointer" data-toggle="tooltip" aria-label="print" data-bs-original-title="print" style="font-size: 18px;"></i>
+                                            </th>
+                                            @endif
+                                        <th class="bg-primary text-white text-center" 
+                                        @if ($calendar['epoch'] == $filter_data['date']) style="background-color: #33CCFF;" @endif
+                                        onclick="changeDate('{{ date('Y-m-d', $calendar['epoch']) }}')">
+                                        {{ $calendar['day_of_week'] }} <br>
+                                        <span>{{ $calendar['month_short_name'] }} {{ $calendar['day_of_month'] }}</span>
+                                        @if (isset($holidays[$calendar['epoch']]))
+                                        <br><span>({{ $holidays[$calendar['epoch']] }})</span>
+                                        @endif
+                                    </th>
+                                    @endforeach
                                 </tr>
                             </thead>
+                            {{-----------------------------------------------------------------}}
+                            
                             <tbody>
+
+                                @foreach ($rows as $row_num => $row)
+                                    @php
+                                        $row_class = $row['background'] == 0 ? ($loop->iteration % 2 == 0 ? 'table-secondary' : 'table-light') : '';
+                                    @endphp
+                                    <tr class="{{ $row_class }}">
+                                        <td class="fw-bold text-end">
+                                            {{ $row['status'] }}
+                                        </td>
+                                        @foreach ($row['data'] as $epoch => $day)
+                                            <td nowrap>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        @php
+                                                            $exception_arr = $punch_exceptions[$day['id'] ?? 0] ?? $punch_control_exceptions[$day['punch_control_id']] ?? null;
+                                                        @endphp
+                                                        @if ($exception_arr)
+                                                            <span class="text-start">
+                                                                @foreach ($exception_arr as $exception_data)
+                                                                    <span class="badge text-bg-warning" style="color: {{ $exception_data['color'] }};">
+                                                                        <b>{{ $exception_data['exception_policy_type_id'] }}</b>
+                                                                    </span>
+                                                                @endforeach
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="text-center">
+                                                        @if (isset($day['time_stamp']) && $day['time_stamp'] != '')
+                                                            @if ($day['has_note'] === true)*@endif
+                                                            {{ date('H:i', $day['time_stamp']) }}
+                                                        @else
+                                                            <span class="text-muted">&ndash;</span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="text-end">
+                                                        {{ $day['type_code'] ?? '' }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+
+                                @foreach ($date_break_total_rows as $date_break_total_row)
+                                    @php
+                                        $row_class = $loop->iteration % 2 == 0 ? 'table-secondary' : 'table-light'; // Alternating row classes
+                                    @endphp
+                                    <tr class="{{ $row_class }}">
+                                        <td class="fw-bold text-end">
+                                            {{ $date_break_total_row['name'] }}
+                                        </td>
+                                        @foreach ($date_break_total_row['data'] as $date_break_total_epoch => $date_break_total_day)
+                                            <td>
+                                                {{ sprintf('%02d:%02d', floor(($date_break_total_day['total_time'] ?? 0) / 60), ($date_break_total_day['total_time'] ?? 0) % 60) }}
+                                                @if (isset($date_break_total_day['total_breaks']) && $date_break_total_day['total_breaks'] > 1)
+                                                    ({{ $date_break_total_day['total_breaks'] }})
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            
+
+                                @foreach ($date_break_policy_total_rows as $date_break_policy_total_row)
+                                    @php
+                                        $row_class = $loop->iteration % 2 == 0 ? 'table-secondary' : 'table-light'; // Alternating row classes
+                                    @endphp
+                                    <tr class="{{ $row_class }}">
+                                        <td class="fw-bold text-end">
+                                            {{ $date_break_policy_total_row['name'] }}
+                                        </td>
+                                        @foreach ($date_break_policy_total_row['data'] as $date_break_policy_total_epoch => $date_break_policy_total_day)
+                                            <td>
+                                                @if (isset($date_break_policy_total_day['total_time']) && $date_break_policy_total_day['total_time'] < 0)
+                                                    <span class="text-danger">
+                                                        {{ $date_break_policy_total_day['total_time_display'] }}
+                                                    </span>
+                                                @else
+                                                    {{ $date_break_policy_total_day['total_time_display'] ?? 0 }}
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+
+                                @foreach ($date_meal_policy_total_rows as $date_meal_total_row)
+                                    @php
+                                        $row_class = $loop->iteration % 2 == 0 ? 'table-secondary' : 'table-light'; // Alternating row classes
+                                    @endphp
+                                    <tr class="{{ $row_class }}">
+                                        <td class="fw-bold text-end">
+                                            {{ $date_meal_total_row['name'] }}
+                                        </td>
+                                        @foreach ($date_meal_total_row['data'] as $date_meal_total_epoch => $date_meal_total_day)
+                                            <td>
+                                                @if (isset($date_meal_total_day['total_time']) && $date_meal_total_day['total_time'] < 0)
+                                                    <span class="text-danger">
+                                                        {{ $date_meal_total_day['total_time_display'] }}
+                                                    </span>
+                                                @else
+                                                    {{ $date_meal_total_day['total_time_display'] ?? '' }}
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+
+
+                                {{-- @if (isset($date_exception_total_rows))
+                                    <tr>
+                                        @foreach ($date_exception_total_rows as $date_exception_total_row)
+                                        @if ($loop->first)
+                                            <td class="fw-bold text-end">
+                                                {{ __('Exceptions') }}
+                                            </td>
+                                        @endif
+                                        <td>
+                                            <b>
+                                                @if(isset($date_exception_total_row) && count($date_exception_total_row) > 0)
+                                                    @foreach ($date_exception_total_row as $date_exception_total_day)
+                                                        <span style="color: {{ $date_exception_total_day['color'] }}">
+                                                            {{ $date_exception_total_day['exception_policy_type_id'] }}
+                                                        </span>
+                                                    @endforeach
+                                                @endif
+                                            </b>
+                                        </td>
+                                        @endforeach
+                                    </tr>
+                                @endif --}}
+
+
+                            
+{{-- 
+
                                 <tr>
                                     <td class="text-end bg-primary text-white">In</td>
                                     <td></td>
@@ -165,6 +312,7 @@
                                     <td></td>
                                     <td></td>
                                 </tr>
+                                 --}}
                                 <tr>
                                     <td colspan="8" class="text-center bg-primary text-white">
                                         <strong>Pay Period: </strong>
