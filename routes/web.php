@@ -29,6 +29,7 @@ use App\Http\Controllers\Employee\EmployeePromotionController;
 use App\Http\Controllers\Employee\EmployeeFamilyController;
 use App\Http\Controllers\Employee\EmpWageController;
 use App\Http\Controllers\Employee\EmployeeMessagesController;
+use App\Http\Controllers\Employee\UserPreferenceController;
 
 // policies
 use App\Http\Controllers\Policy\RoundingPolicyController;
@@ -241,6 +242,18 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/employee/bank/delete/{id}', [EmployeeBankDetailsController::class, 'deleteBankDetails'])->name('employee.bank.delete');
     Route::get('/employee/bank/{id}', [EmployeeBankDetailsController::class, 'getBankDetailsByEmpId'])->name('employee.bank.getById');
     Route::get('/company/allemplyee', [EmployeeBankDetailsController::class, 'getAllEmployee'])->name('company.employee.all');
+
+     //==============================================================================================================================
+    // User Preference
+    //==============================================================================================================================
+    Route::get('/employee/user_preference', [UserPreferenceController::class, 'index'])->name('employee.user_preference');
+    Route::get('/employee/user_preference/form', [UserPreferenceController::class, 'form'])->name('company.user_preference.form');
+    Route::post('/employee/user_preference/create', [UserPreferenceController::class, 'createUserPreference'])->name('company.user_preference.create');
+    Route::put('/employee/user_preference/update/{id}', [UserPreferenceController::class, 'updateUserPreference'])->name('company.user_preference.update');
+    Route::delete('/employee/user_preference/delete/{id}', [UserPreferenceController::class, 'deleteUserPreference'])->name('company.user_preference.delete');
+    Route::get('/employee/user_preferenceses', [UserPreferenceController::class, 'getAllUserPreference'])->name('company.user_preference.all');
+    Route::get('/employee/user_preference/dropdown', [UserPreferenceController::class, 'getUserPreferenceDropdownData'])->name('company.user_preference.dropdown');
+    Route::get('/employee/user_preference/{id}', [UserPreferenceController::class, 'getUserPreferenceById'])->name('company.user_preference.getById');
 
 
     //==============================================================================================================================

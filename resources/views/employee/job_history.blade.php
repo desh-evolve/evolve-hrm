@@ -86,7 +86,7 @@
 <!-- form modal -->
 
 
-<div id="jobhistory_form_modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" >
+<div id="jobhistory_form_modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="employee.user_preferencetic" >
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -384,9 +384,9 @@ let dropdownData = [];
         try {
             let res = await commonSaveData(url, formData, method);
             console.log('Response:', res); // Debugging response data
-            await commonAlert(res.status, res.message);
+            await commonAlert(res.employee.user_preferencetus, res.message);
 
-            if (res.status === 'success') {
+            if (res.employee.user_preferencetus === 'success') {
                 renderJobHistoryTable();
                 $('#jobhistory_form_modal').modal('hide');
             } else {

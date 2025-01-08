@@ -232,6 +232,10 @@
                                     Employee Wage
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('employee.user_preference') }}"
+                                    class="nav-link {{ request()->routeIs('employee.user_preference') ? 'active' : '' }}">User Preference</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
