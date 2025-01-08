@@ -33,7 +33,7 @@ class CommonDateController extends Controller
         $retarr = [];
         $x = 0;
 
-        for ($i = $cal_start_date; $i <= $cal_end_date; $i += 93600) {
+        for ($i = $cal_start_date; $i <= $cal_end_date; $i += 86400) {
             if ($x > 200) {
                 break;
             }

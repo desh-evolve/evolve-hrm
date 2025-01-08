@@ -237,7 +237,7 @@ class DepartmentController extends Controller
         $table = 'com_branch_department_users';
         $fields = ['com_branch_department_users.user_id', 'first_name', 'last_name'];
         $joinArr = [
-            'emp_employees' => ['emp_employees.id', '=', 'com_branch_department_users.user_id']
+            'emp_employees' => ['emp_employees.user_id', '=', 'com_branch_department_users.user_id']
         ];
         $whereArr = [
             'branch_id' => $branch_id,

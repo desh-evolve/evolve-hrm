@@ -87,7 +87,7 @@ class DashboardController extends Controller
                     'message_employees.received_id' => $loggedInUserId
                 ],
                 'con_joins' => [
-                    'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'],
+                    'emp_employees as sender' => ['sender.user_id', '=', 'messages.sender_id'],
                     'message_employees' => ['message_employees.message_id', '=', 'messages.id'],
                 ],
                 'con_name' => 'message_details',
@@ -126,7 +126,7 @@ class DashboardController extends Controller
             $joinArr = [
                 'object_type' => ['object_type.id', '=', 'request.type_id'],
                 'employee_date' => ['employee_date.id', '=', 'request.employee_date_id'],
-                'emp_employees' => ['emp_employees.id', '=', 'employee_date.employee_id'],
+                'emp_employees' => ['emp_employees.user_id', '=', 'employee_date.employee_id'],
             ];
 
             $requestData = $this->common->commonGetAll($table, $fields, $joinArr, [], true);
