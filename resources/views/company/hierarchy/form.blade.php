@@ -78,7 +78,7 @@
                                 <div class="col-md-9 d-flex align-items-center">
                                     <!-- Level Field -->
                                     <label for="level" class="form-label mb-1 me-2">Level</label>
-                                    <input type="text" class="form-control w-25 me-3" id="level" value="0">
+                                    <input type="text" class="form-control w-25 me-3" id="level" value="1">
 
                                     <!-- Superiors Field -->
                                     <label for="superiors_id" class="form-label mb-1 me-2">Superiors</label>
@@ -162,8 +162,7 @@
                     .map(superiors_type =>
                         `<option value="${superiors_type.id}">${superiors_type.name}</option>`)
                     .join('');
-                $('#superiors_id').html('<option value="">Select Superiors</option>' +
-                    superiorsList);
+                $('#superiors_id').html(superiorsList);
 
                 // Initialize the multiSelector for users
                 $('#userContainer').multiSelector({
@@ -188,22 +187,6 @@
 
             return selectedObjectIds; // Return the array of selected IDs
         }
-
-        function assignObjectTypeIdsToDropdown(objectTypesIds) {
-            if (!Array.isArray(objectTypesIds)) {
-                console.error('Invalid data: objectTypesIds is not an array');
-                return;
-            }
-
-            // Clear current selections
-            $('#object_type option').prop('selected', false);
-
-            // Iterate over the array and set the options as selected
-            objectTypesIds.forEach(id => {
-                $('#object_type option[value="' + id + '"]').prop('selected', true);
-            });
-        }
-
 
         //  click event
         $(document).on('click', '#form_submit', async function() {
@@ -266,7 +249,6 @@
             }
         });
 
-
         $('#addPermissionBtn').on('click', function() {
             // Get the values of Level and Superiors
             const levelValue = $('#level').val().trim();
@@ -298,7 +280,7 @@
                     superior: superiorsId
                 });
                 // Clear the input fields
-                $('#level').val('0');
+                $('#level').val('1');
                 $('#superiors_id').val('');
             } else {
                 alert('Please provide both Level and Superiors values.');
@@ -315,9 +297,8 @@
 
             // Remove the entry from the global list
             levelList = levelList.filter(item => item.level !== levelValue || item.superior !== superiorsId);
+
         });
-
-
 
         async function getUpdateData(id) {
             try {
@@ -352,17 +333,12 @@
             }
         }
 
-
         function resetForm() {
             $('#name').val('');
             $('#description').val('');
-            $('#start_week_day').val('');
-            $('#time_zone').val('');
-            $('#new_day_trigger_time').val('');
-            $('#maximum_shift_time').val('');
-            $('#shift_assigned_day').val('');
-            $('#timesheet_verify_type').val('');
-            $('#type').val('');
+            $('#object_type').val('');
+            $('#level').val('1');
+            $('#superiors_id').val('');
             $('#hierarchy_status').val('');
 
             // getDropdownData();

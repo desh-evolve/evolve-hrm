@@ -71,7 +71,7 @@ class HierarchyController extends Controller
             WHERE hot.hierarchy_control_id = hc.id
         ) as object_types")
             )
-            ->where('hc.status', 'active') 
+            ->where('hc.status', 'active')
             ->get();
         return response()->json(['data' => $data], 200);
     }
@@ -147,6 +147,7 @@ class HierarchyController extends Controller
                 // Save associated policies
                 $this->saveHierarchyObjectType($hierarchyControlId, $request);
                 $this->saveHierarchyUser($hierarchyControlId, $request);
+                $this->saveHierarchyLevel($hierarchyControlId, $request);
 
                 return response()->json(['status' => 'success', 'message' => 'Hierarchy created successfully', 'data' => ['id' => $hierarchyControlId]], 200);
             });
@@ -186,6 +187,7 @@ class HierarchyController extends Controller
 
                 $this->saveHierarchyObjectType($id, $request);
                 $this->saveHierarchyUser($id, $request);
+                $this->saveHierarchyLevel($id, $request);
 
                 return response()->json(['status' => 'success', 'message' => 'Hierarchy updated successfully', 'data' => ['id' => $id]], 200);
             });
@@ -251,6 +253,44 @@ class HierarchyController extends Controller
 
                 // Insert all users in a single query
                 DB::table('hierarchy_object_type')->insert($insertData);
+            }
+        }
+    }
+
+    private function saveHierarchyLevel($hierarchyControlId, $request)
+    {
+        if (!empty($request->level_list)) {
+            // Decode the level_list JSON
+            $levelList = json_decode($request->level_list, true);
+
+            if (is_array($levelList)) {
+                // Extract unique user IDs from 'level' and 'superior'
+                $userIds = collect($levelList)
+                    ->flatMap(function ($item) {
+                        return [$item['level'], $item['superior']];
+                    })
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                // Delete existing hierarchy user entries for the hierarchy_control_id
+                DB::table('hierarchy_level')
+                    ->where('hierarchy_control_id', $hierarchyControlId)
+                    ->whereIn('user_id', $userIds)
+                    ->delete();
+
+                // Prepare bulk insert data
+                $insertData = collect($levelList)->map(function ($item) use ($hierarchyControlId) {
+                    return [
+                        'hierarchy_control_id' => $hierarchyControlId,
+                        'level' => $item['level'],
+                        'user_id' => $item['superior'],
+                        'status' => 'active', // Default status
+                    ];
+                })->toArray();
+
+                // Insert new data into the database
+                DB::table('hierarchy_level')->insert($insertData);
             }
         }
     }
