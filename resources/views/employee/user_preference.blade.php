@@ -26,7 +26,7 @@
                             <div class="row mb-3">
                                 <label for="user_id" class="form-label mb-1 col-md-3">Employee</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control w-50" id="user_id" value="1">
+                                    <input type="text" class="form-control w-50" id="user_id" disabled>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -164,7 +164,7 @@
 
         $(document).ready(async function() {
             await getDropdownData();
-            await getUpdateData(1);
+            await getUpdateData();
         });
 
         async function getDropdownData() {
@@ -257,9 +257,9 @@
             }
         });
 
-        async function getUpdateData(id) {
+        async function getUpdateData() {
             try {
-                let response = await commonFetchData(`/employee/user_preference/${id}`);
+                let response = await commonFetchData(`/employee/user_preference_by_id`);
                 let data = response?.[0]; // Assuming the API returns an array with one item
 
                 if (!data) {
@@ -271,7 +271,7 @@
 
                 // Populate form fields
                 $('#user_preference_id').val(data.id || '');
-                $('#user_id').val(data.user_id || '');
+                $('#user_id').val(data.name_with_initials || '');
                 $('#date_format').val(data.date_format || '');
                 $('#time_format').val(data.time_format || '');
                 $('#time_unit_format').val(data.time_unit_format || '');

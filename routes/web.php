@@ -253,7 +253,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/employee/user_preference/delete/{id}', [UserPreferenceController::class, 'deleteUserPreference'])->name('company.user_preference.delete');
     Route::get('/employee/user_preferenceses', [UserPreferenceController::class, 'getAllUserPreference'])->name('company.user_preference.all');
     Route::get('/employee/user_preference/dropdown', [UserPreferenceController::class, 'getUserPreferenceDropdownData'])->name('company.user_preference.dropdown');
-    Route::get('/employee/user_preference/{id}', [UserPreferenceController::class, 'getUserPreferenceById'])->name('company.user_preference.getById');
+    Route::get('/employee/user_preference_by_id', [UserPreferenceController::class, 'getUserPreferenceById'])->name('company.user_preference.getById');
 
 
     //==============================================================================================================================

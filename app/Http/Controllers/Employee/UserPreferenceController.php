@@ -190,12 +190,24 @@ class UserPreferenceController extends Controller
         return response()->json(['data' => $user_preference], 200);
     }
 
-    public function getUserPreferenceById($id)
+    public function getUserPreferenceById()
     {
-        $idColumn = 'id';
+        $id = Auth::user()->id;
+    
         $table = 'user_preference';
-        $fields = '*';
-        $user_preference = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        $fields = [
+            'user_preference.*', 'user_preference.id as id', 'user_preference.status as status',
+            'emp_employees.name_with_initials', 'emp_employees.first_name', 'emp_employees.last_name',
+            'emp_employees.full_name'
+        ];
+        $joinsArr = [
+            'emp_employees' => ['emp_employees.user_id', '=', 'user_preference.user_id']
+        ];
+        $whereArr = [
+            ['user_preference.user_id', '=', $id],
+            ['user_preference.status', '=', '"active"'],
+        ];
+        $user_preference = $this->common->commonGetAll($table, $fields, $joinsArr, $whereArr, $exceptDel = true);
         return response()->json(['data' => $user_preference], 200);
     }
 }
