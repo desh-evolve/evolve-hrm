@@ -46,6 +46,7 @@ use App\Http\Controllers\Policy\PolicyGroupsController;
 use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
 use App\Http\Controllers\Attendance\TimeSheetController;
+use App\Http\Controllers\Attendance\LeavesController;
 use App\Http\Controllers\Attendance\AttendanceRequestsController;
 
 // Payroll
@@ -329,6 +330,10 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Timesheet
     Route::get('/employee/timesheet', [TimeSheetController::class, 'index'])->name('employee.timesheet');
     Route::get('/employee/timesheet/dropdown', [TimeSheetController::class, 'getDropdownData']);
+    
+    // Leaves
+    Route::get('/employee/apply_leaves', [LeavesController::class, 'form'])->name('employee.apply_leaves');
+    
 
     //==============================================================================================================================
     // Payroll

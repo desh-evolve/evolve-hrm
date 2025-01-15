@@ -580,10 +580,10 @@ class TimeSheetController extends Controller
                     'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
                     'premium_policy_id' => $udt_obj->premium_policy_id,
-                    'premium_policy' => $premium_policy,
+                    'premium_policy' => $premium_policy->name,
                     'department_id' => $udt_obj->department_id,
                     'total_time' => $udt_obj->total_time,
-                    //'name' => $udt_obj->getName(),
+                    //'name' => $premium_policy->name,
                     'override' => $udt_obj->override
 				);
 
@@ -610,10 +610,9 @@ class TimeSheetController extends Controller
 			sort($date_total_premium_ids);
             
 			$date_premium_total_rows = $this->TimeSheetFormatArrayByDate( $date_premium_total_group, $date_total_premium_ids, $calendar_array, 'premium_policy');
-			//var_dump($date_premium_total_rows);
+			//print_r($date_premium_total_rows);exit;
 		}
-        
-        
+
         // ==================================================================================================================
         // Get Absences
         // ==================================================================================================================
@@ -645,7 +644,7 @@ class TimeSheetController extends Controller
                     'type' => $udt_obj->type,
                     'over_time_policy_id' => $udt_obj->over_time_policy_id,
                     'absence_policy_id' => $udt_obj->absence_policy_id,
-                    'absence_policy' => $absence_policy,
+                    'absence_policy' => $absence_policy->name,
                     'department_id' => $udt_obj->department_id,
                     'total_time' => $udt_obj->total_time,
                     //'name' => $udt_obj->getName(),
@@ -690,7 +689,7 @@ class TimeSheetController extends Controller
 			foreach( $exceptions as $e_obj ) {
 
                 $user_date_stamp = Carbon::parse($e_obj->user_date_stamp)->timestamp;
-
+                
 				$exception_data_arr = array(
                     'type_id' => $e_obj->type_id,
                     'severity_id' => $e_obj->severity,
@@ -706,6 +705,7 @@ class TimeSheetController extends Controller
 				}
 
 				$date_exceptions[$user_date_stamp][] = $exception_data_arr;
+
 				if ( !isset($unique_exceptions[$e_obj->exception_policy_type_id])
 						OR ( $unique_exceptions[$e_obj->exception_policy_type_id]['severity_id'] < $exception_data_arr['severity_id']) ) {
 					$unique_exceptions[$e_obj->exception_policy_type_id] = $exception_data_arr;
@@ -724,7 +724,6 @@ class TimeSheetController extends Controller
 				$date_exception_total_rows[] = $exception_data;
 
 			}
-            //print_r($date_exception_total_rows);exit;
 		}
         
         //Get exception names for legend.
@@ -886,7 +885,7 @@ class TimeSheetController extends Controller
 		$dock_absence_total_time = $edc->getDockAbsenceTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
         
 		$udtlf = $edc->getRegularAndOverTimeSumByUserIDAndPayPeriodId( $user_id, $pay_period_id );
-        
+
 		if ($udtlf && count($udtlf) > 0 ) {
 			//Get overtime policy names
 			$over_time_policy_options = $cc->getOverTimePolicyOptions($filter_data['company_id']); 
@@ -916,7 +915,7 @@ class TimeSheetController extends Controller
 		}
 
         //==========================================================================
-        //print_r($pay_period_obj);
+        //print_r(is_object($pay_period_obj));
         //exit;
 
         $is_assigned_pay_period_schedule = false;
@@ -945,9 +944,7 @@ class TimeSheetController extends Controller
                 $is_assigned_pay_period_schedule = true;
             }
         }
-
-        //print_r($rows);exit;
-
+        
         $parse_obj = [
             'payPeriod' => $pay_period_obj,
             'filter_data' => $filter_data,
@@ -960,26 +957,27 @@ class TimeSheetController extends Controller
             'date_premium_total_rows' => $date_premium_total_rows,
             'date_absence_total_rows' => $date_absence_total_rows,
             'punch_exceptions' => $punch_exceptions,
+            'punch_control_exceptions' => $punch_control_exceptions,
             'date_exception_total_rows' => $date_exception_total_rows,
             'date_request_total_rows' => $date_request_total_rows,
             'exception_legend' => $unique_exceptions,
             'pay_period_total_rows' => $pay_period_total_rows,
             'holidays' => $holiday_array,
             'pay_period_locked_rows' => $pay_period_locked_rows,
-            'pay_period_worked_total_time' => $worked_total_time,
-            'pay_period_paid_absence_total_time' => $paid_absence_total_time,
-            'pay_period_dock_absence_total_time' => $dock_absence_total_time,
+            'pay_period_worked_total_time' => $worked_total_time[0]->total_time,
+            'pay_period_paid_absence_total_time' => $paid_absence_total_time[0]->total_time,
+            'pay_period_dock_absence_total_time' => $dock_absence_total_time[0]->total_time,
             'time_sheet_verify' => $time_sheet_verify,
             'is_assigned_pay_period_schedule' => $is_assigned_pay_period_schedule,
 
-            'pay_period_id' => null,
-            'pay_period_start_date' => null,
-            'pay_period_end_date' => null,
+            'pay_period_id' => $pay_period_obj->id ?? null,
+            'pay_period_start_date' => $pay_period_obj->start_date ?? null,
+            'pay_period_end_date' => $pay_period_obj->end_date ?? null,
             'pay_period_verify_type_id' => null,
             'pay_period_verify_window_start_date' => null,
             'pay_period_verify_window_end_date' => null,
-            'pay_period_transaction_date' => null,
-            'pay_period_is_locked' => false,
+            'pay_period_transaction_date' => $pay_period_obj->advance_transaction_date ?? null,
+            'pay_period_is_locked' => ($pay_period_obj->status == 'locked' ? true : false) ?? null,
             'pay_period_status_id' => 'post_adjustment', //open(10)/locked(12)/closed(20)/post_adjustment(30)
 
             'user_obj' => $user_obj,

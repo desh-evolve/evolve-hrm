@@ -83,8 +83,13 @@
                                     Request
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('employee.apply_leaves') }}"
+                                    class="nav-link {{ request()->routeIs('employee.apply_leaves') ? 'active' : '' }}">
+                                    Apply Leaves
+                                </a>
+                            </li>
 
-                            <li class="nav-item"><a href="#" class="nav-link">Apply Leaves</a></li>
                         </ul>
                     </div>
                 </li>
