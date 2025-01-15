@@ -17,6 +17,7 @@ use App\Http\Controllers\Company\EmployeeGroupController;
 use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 use App\Http\Controllers\Company\BranchBankDetailsController;
+use App\Http\Controllers\Company\HierarchyController;
 
 // use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\Employee\EmployeePromotionController;
 use App\Http\Controllers\Employee\EmployeeFamilyController;
 use App\Http\Controllers\Employee\EmpWageController;
 use App\Http\Controllers\Employee\EmployeeMessagesController;
+use App\Http\Controllers\Employee\UserPreferenceController;
 
 // policies
 use App\Http\Controllers\Policy\RoundingPolicyController;
@@ -56,6 +58,10 @@ use App\Http\Controllers\Payroll\PayPeriodScheduleController;
 use App\Http\Controllers\Payroll\CompanyDeductionController;
 use App\Http\Controllers\Payroll\PayStubEntryAccountLinkController;
 use App\Http\Controllers\Policy\CommonPolicyController;
+
+
+// Reports
+use App\Http\Controllers\Reports\EmployeeDetailReportController;
 
 /*
 Route::get('/', function () {
@@ -158,6 +164,18 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
 
     //==============================================================================================================================
+    // Hierarchy
+    //==============================================================================================================================
+    Route::get('/company/hierarchy', [HierarchyController::class, 'index'])->name('company.hierarchy.index');
+    Route::get('/company/hierarchy/form', [HierarchyController::class, 'form'])->name('company.hierarchy.form');
+    Route::post('/company/hierarchy/create', [HierarchyController::class, 'createHierarchy'])->name('company.hierarchy.create');
+    Route::put('/company/hierarchy/update/{id}', [HierarchyController::class, 'updateHierarchy'])->name('company.hierarchy.update');
+    Route::delete('/company/hierarchy/delete/{id}', [HierarchyController::class, 'deleteHierarchy'])->name('company.hierarchy.delete');
+    Route::get('/company/hierarchies', [HierarchyController::class, 'getAllHierarchy'])->name('company.hierarchy.all');
+    Route::get('/company/hierarchy/dropdown', [HierarchyController::class, 'getHierarchyDropdownData'])->name('company.hierarchy.dropdown');
+    Route::get('/company/hierarchy/{id}', [HierarchyController::class, 'getHierarchyById'])->name('company.hierarchy.getById');
+
+    //==============================================================================================================================
     // Branch Bank Details
     //==============================================================================================================================
 
@@ -229,6 +247,18 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/employee/bank/delete/{id}', [EmployeeBankDetailsController::class, 'deleteBankDetails'])->name('employee.bank.delete');
     Route::get('/employee/bank/{id}', [EmployeeBankDetailsController::class, 'getBankDetailsByEmpId'])->name('employee.bank.getById');
     Route::get('/company/allemplyee', [EmployeeBankDetailsController::class, 'getAllEmployee'])->name('company.employee.all');
+
+     //==============================================================================================================================
+    // User Preference
+    //==============================================================================================================================
+    Route::get('/employee/user_preference', [UserPreferenceController::class, 'index'])->name('employee.user_preference');
+    Route::get('/employee/user_preference/form', [UserPreferenceController::class, 'form'])->name('company.user_preference.form');
+    Route::post('/employee/user_preference/create', [UserPreferenceController::class, 'createUserPreference'])->name('company.user_preference.create');
+    Route::put('/employee/user_preference/update/{id}', [UserPreferenceController::class, 'updateUserPreference'])->name('company.user_preference.update');
+    Route::delete('/employee/user_preference/delete/{id}', [UserPreferenceController::class, 'deleteUserPreference'])->name('company.user_preference.delete');
+    Route::get('/employee/user_preferenceses', [UserPreferenceController::class, 'getAllUserPreference'])->name('company.user_preference.all');
+    Route::get('/employee/user_preference/dropdown', [UserPreferenceController::class, 'getUserPreferenceDropdownData'])->name('company.user_preference.dropdown');
+    Route::get('/employee/user_preference_by_id', [UserPreferenceController::class, 'getUserPreferenceById'])->name('company.user_preference.getById');
 
 
     //==============================================================================================================================
@@ -309,8 +339,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/attendance/request/{id}', [AttendanceRequestsController::class, 'getRequestsByControlId'])->name('request.getById');
     Route::delete('/attendance/request/delete/{id}', [AttendanceRequestsController::class, 'deleteAttendenceRequests'])->name('request.delete');
 
-
-
     //   Employee Punch
     Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
     Route::get('/company/employee_punch/dropdown', [PunchController::class, 'getDropdownData'])->name('company.employee_punch.dropdown');
@@ -320,12 +348,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/company/single_employee_punch/{id}', [PunchController::class, 'getSingleEmployeePunch'])->name('company.employee_punch.single');
     Route::put('/company/employee_punch/update/{id}', [PunchController::class, 'updateEmployeePunch'])->name('company.employee_punch.update');
 
-    //    Mass Punch
+    // Mass Punch
     Route::get('/company/mass_punch/index', [MassPunchController::class, 'index'])->name('company.mass_punch.index');
     Route::get('/company/mass_punch/dropdown', [MassPunchController::class, 'getDropdownData'])->name('company.mass_punch.dropdown');
     Route::post('/company/mass_punch/create', [MassPunchController::class, 'createMassPunch'])->name('company.mass_punch.create');
     Route::get('/company/mass_punch/list', [MassPunchController::class, 'showMassPunchList'])->name('company.mass_punch.mass_punch_list');
-
 
     // Timesheet
     Route::get('/employee/timesheet', [TimeSheetController::class, 'index'])->name('employee.timesheet');
@@ -339,7 +366,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Payroll
     //==============================================================================================================================
 
-    //   Pay stub account
+    // Pay stub account
     Route::get('/payroll/pay_stub_account', [PayStubAccountController::class, 'index'])->name('payroll.pay_stub_account');
     Route::post('/payroll/pay_stub_account/create', [PayStubAccountController::class, 'createPayStubAccount'])->name('payroll.pay_stub_account.create');
     Route::put('/payroll/pay_stub_account/update/{id}', [PayStubAccountController::class, 'updatePayStubAccount'])->name('payroll.pay_stub_account.update');
@@ -348,7 +375,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/payroll/pay_stub_account/{id}', [PayStubAccountController::class, 'getPayStubAccountById'])->name('payroll.pay_stub_account.getById');
 
 
-    //   Pay stub amendment
+    // Pay stub amendment
     Route::get('/payroll/pay_stub_amendment', [PayStubAmendmentController::class, 'index'])->name('payroll.pay_stub_amendment');
     Route::get('/payroll/pay_stub_amendment/form', [PayStubAmendmentController::class, 'form'])->name('payroll.pay_stub_amendment.form');
     Route::post('/payroll/pay_stub_amendment/create', [PayStubAmendmentController::class, 'createPayStubAmendment'])->name('payroll.pay_stub_amendment.create');
@@ -533,6 +560,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/policy/policy_group/{id}', [PolicyGroupsController::class, 'getPolicyGroupById'])->name('location.policy_group.getById');
 
 
+    // ========================================================================================================
+    // ============= Reports ==============================
+    // ========================================================================================================
+
+     // Employee Detail Report
+     Route::get('/reports/employee_detail_report', [EmployeeDetailReportController::class, 'index'])->name('reports.employee_detail_report');
+     Route::get('/reports/employee_detail_report/form', [EmployeeDetailReportController::class, 'form'])->name('reports.employee_detail_report.form');
+     Route::get('/reports/employee_detail_report/dropdown', [EmployeeDetailReportController::class, 'getPolicyGroupDropdownData'])->name('reports.employee_detail_report.dropdown');
+   
     //==============================================================================================================================
     // Company => this should be on the bottom of the page
     //==============================================================================================================================

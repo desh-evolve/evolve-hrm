@@ -118,7 +118,11 @@
                     <div class="collapse menu-dropdown" id="reports">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item"><a href="#" class="nav-link">EPF Report</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Employee Report</a></li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('reports.employee_detail_report') }}"
+                                    class="nav-link {{ request()->routeIs('reports.employee_detail_report') ? 'active' : '' }}">Employee Detail Report</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -236,6 +240,10 @@
                                     class="nav-link {{ request()->routeIs('employee_family.index') ? 'active' : '' }}">
                                     Employee Wage
                                 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('employee.user_preference') }}"
+                                    class="nav-link {{ request()->routeIs('employee.user_preference') ? 'active' : '' }}">User Preference</a>
                             </li>
                         </ul>
                     </div>
@@ -375,8 +383,12 @@
                                     Employee Groups
                                 </a>
                             </li>
-                            <li class="nav-item"><a href="#" class="nav-link">Stations</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Hierarchy</a></li>
+                            <li class="nav-item"><a href="#" class="nav-link">Stations</a></li> <li class="nav-item">
+                                <a href="{{ route('company.hierarchy.index') }}"
+                                    class="nav-link {{ request()->routeIs('company.hierarchy.index') ? 'active' : '' }}">
+                                    Hierarchy
+                                </a>
+                            </li>
                             <li class="nav-item"><a href="#" class="nav-link">Permission Groups</a></li>
                         </ul>
                     </div>
