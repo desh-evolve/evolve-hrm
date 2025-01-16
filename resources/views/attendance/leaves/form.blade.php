@@ -87,9 +87,9 @@
                                 <label for="leaveMethod" class="form-label">Leave Method</label>
                                 <select class="form-select" id="leaveMethod">
                                     <option value="">-- Please Choose --</option>
-                                    <option value="full_day">Full Day</option>
-                                    <option value="half_day">Half Day</option>
-                                    <option value="short_leave">Short Leave</option>
+                                    @foreach ($leave_methods as $leave_method)
+                                        <option value="{{ $leave_method->id }}">{{ $leave_method->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                 
@@ -183,6 +183,26 @@
                                 <td>0</td>
                             </tr>
                         @endforeach
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header align-items-center d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-0">Leaves Requests</h5>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>#</th>
+                            <th>Leave Type</th>
+                            <th>Amount</th>
+                            <th>Dates</th>
+                            <th>Status</th>
+                        </tr>
                     </table>
                 </div>
             </div>

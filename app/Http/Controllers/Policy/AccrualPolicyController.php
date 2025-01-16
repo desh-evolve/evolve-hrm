@@ -75,6 +75,7 @@ class AccrualPolicyController extends Controller
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
+
     public function createAccrualPolicy(Request $request)
     {
         try {
@@ -253,4 +254,14 @@ class AccrualPolicyController extends Controller
         }
     }    
 
+    public function getAccrualPolicyByCompanyIdAndType($company_id, $type){
+        $res = $this->common->commonGetAll(
+            'accrual_policy', 
+            ['id', 'name', 'type'],
+            [],
+            ['type' => $type]
+        );
+
+        return $res;
+    }
 }
