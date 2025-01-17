@@ -23,9 +23,57 @@
 
                         <div>
                             <div class="row mb-3">
-                                <label for="user_ids" class="form-label mb-1 col-md-3">Employee</label>
+                                <label for="user_status_ids" class="form-label mb-1 col-md-3">Employee Status</label>
                                 <div class="col-md-9">
-                                    <div class="ps-2" id="userContainer">
+                                    <div class="ps-2" id="userStatusContainer">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="group_ids" class="form-label mb-1 col-md-3">Group</label>
+                                <div class="col-md-9">
+                                    <div class="ps-2" id="groupContainer">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="branch_ids" class="form-label mb-1 col-md-3">Default Branch</label>
+                                <div class="col-md-9">
+                                    <div class="ps-2" id="branchContainer">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="_ids" class="form-label mb-1 col-md-3">Default Department</label>
+                                <div class="col-md-9">
+                                    <div class="ps-2" id="departmentContainer">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="user_title_ids" class="form-label mb-1 col-md-3">Employee Title</label>
+                                <div class="col-md-9">
+                                    <div class="ps-2" id="userTitleContainer">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="include_user_ids" class="form-label mb-1 col-md-3">Include Employees</label>
+                                <div class="col-md-9">
+                                    <div class="ps-2" id="includeUserContainer">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mb-3">
+                                <label for="user_ids" class="form-label mb-1 col-md-3">Exclude Employees</label>
+                                <div class="col-md-9">
+                                    <div class="ps-2" id="excludeUserContainer">
                                     </div>
                                 </div>
 
@@ -40,18 +88,10 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
-                                <label for="pay_stub_entry_name_id" class="form-label mb-1 col-md-3">Pay Stub
-                                    Account</label>
-                                <div class="col-md-9">
-                                    <select class="form-select w-50" id="pay_stub_entry_name_id">
-                                        <option value="">Select</option>
-                                    </select>
-                                </div>
-                            </div>
+
                         </div>
 
-                        <div id="Amount_section">
+                        {{-- <div id="Amount_section">
                             <u>
                                 <h5 class="bg-primary text-white">Amount</h5>
                             </u>
@@ -101,9 +141,9 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
-                        <div id="Options_section">
+                        {{-- <div id="Options_section">
                             <u>
                                 <h5 class="bg-primary text-white">Options</h5>
                             </u>
@@ -127,7 +167,8 @@
                                     <input type="checkbox" class="form-check-input" id="ytd_adjustment">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
+
                         <div class="d-flex justify-content-end mt-4">
                             <input type="hidden" id="holiday_policy_id" value="" />
                             <button type="button" class="btn btn-primary" id="form_submit">Submit</button>
@@ -146,28 +187,44 @@
         $(document).ready(async function() {
             await getDropdownData();
         });
-        
+
         async function getDropdownData() {
             try {
-                let dropdownData = await commonFetchData('/payroll/pay_stub_amendment/dropdown')
+                let dropdownData = await commonFetchData('/reports/employee_detail_report/dropdown')
 
-                console.log("Employees Data:", dropdownData?.users);
+                // // Assign the same list to #percent_amount_entry_name_id
+                // $('#percent_amount_entry_name_id').html('<option value="">Select Account</option>' +
+                //     payStubEntryAccountList);
 
-                // pay_stub_entry_accounts dropdown
-                let payStubEntryAccountList = (dropdownData?.pay_stub_entry_accounts || [])
-                    .map(account => `<option value="${account.id}">${account.type} - ${account.name}</option>`)
-                    .join('');
-                // Assign the generated list to #pay_stub_entry_name_id
-                $('#pay_stub_entry_name_id').html('<option value="">Select Account</option>' +
-                    payStubEntryAccountList);
-
-                // Assign the same list to #percent_amount_entry_name_id
-                $('#percent_amount_entry_name_id').html('<option value="">Select Account</option>' +
-                    payStubEntryAccountList);
-
-                $('#userContainer').multiSelector({
+                $('#excludeUserContainer').multiSelector({
                     title: 'Employees',
                     data: dropdownData?.users || [],
+                });
+                $('#includeUserContainer').multiSelector({
+                    title: 'Employees',
+                    data: dropdownData?.users || [],
+                });
+
+                $('#userStatusContainer').multiSelector({
+                    title: 'Employee Status',
+                    data: dropdownData?.emp_status || [],
+                });
+                $('#groupContainer').multiSelector({
+                    title: 'Group',
+                    data: dropdownData?.com_employee_groups || [],
+                });
+                $('#branchContainer').multiSelector({
+                    title: 'Branch',
+                    data: dropdownData?.com_branches || [],
+                });
+                $('#departmentContainer').multiSelector({
+                    title: 'Departments',
+                    data: dropdownData?.com_departments || [],
+                });
+
+                $('#userTitleContainer').multiSelector({
+                    title: 'Employee Title',
+                    data: dropdownData?.com_user_designations || [],
                 });
 
             } catch (error) {
@@ -180,59 +237,79 @@
 
             const pay_stub_amendment_id = $('#pay_stub_amendment_id').val();
 
-            let ytdAdjustment = $('#ytd_adjustment').is(':checked') ? 1 : 0;
 
-
-            const selectedIds = $('#userContainer .selected-list option').map(function() {
+            const selectedUserStatusIds = $('#userStatusContainer .selected-list option').map(function() {
                 return $(this).val();
             }).get();
 
-            let createUrl = `/payroll/pay_stub_amendment/create`;
-            let updateUrl = `/payroll/pay_stub_amendment/update/${pay_stub_amendment_id}`;
+            const selectedGroupIds = $('#groupContainer .selected-list option').map(function() {
+                return $(this).val();
+            }).get();
 
-            let formData = new FormData();
+            const selectedBranchIds = $('#branchContainer .selected-list option').map(function() {
+                return $(this).val();
+            }).get();
 
-          
-            formData.append('ytd_adjustment', ytdAdjustment);
-            formData.append('user_ids', JSON.stringify(selectedIds));
-            formData.append('pay_stub_entry_name_id', $('#pay_stub_entry_name_id').val());
-            formData.append('effective_date', $('#effective_date').val());
-            formData.append('rate', $('#rate').val());
-            formData.append('units', $('#units').val());
-            formData.append('amount', $('#amount').val());
-            formData.append('description', $('#description').val());
-            // formData.append('ytd_adjustment', $('#ytd_adjustment').val()); 
-            formData.append('type', $('#type').val());
-            formData.append('percent_amount_entry_name_id', $('#percent_amount_entry_name_id').val());
-            formData.append('percent_amount', $('#percent_amount').val());
-            formData.append('pay_stub_amendment_status', $('#pay_stub_amendment_status').val());
-            // formData.append('time_stamp', time_stamp);
+            const selectedDepartmentIds = $('#departmentContainer .selected-list option').map(function() {
+                return $(this).val();
+            }).get();
 
+            const selectedUserTitleIds = $('#userTitleContainer .selected-list option').map(function() {
+                return $(this).val();
+            }).get();
 
-            const isUpdating = Boolean(pay_stub_amendment_id);
-            let url = isUpdating ? updateUrl : createUrl;
-            let method = isUpdating ? 'PUT' : 'POST';
+            const selectedIncludeUserIds = $('#includeUserContainer .selected-list option').map(function() {
+                return $(this).val();
+            }).get();
+
+            const selectedExcludeUserIds = $('#excludeUserContainer .selected-list option').map(function() {
+                return $(this).val();
+            }).get();
+
+            // {
+            //     let formData = new FormData();
+
+            //     formData.append('user_status_ids', JSON.stringify(selectedUserStatusIds));
+            //     formData.append('group_ids', JSON.stringify(selectedGroupIds));
+            //     formData.append('branch_ids', JSON.stringify(selectedBranchIds));
+            //     formData.append('department_ids', JSON.stringify(selectedDepartmentIds));
+            //     formData.append('user_title_ids', JSON.stringify(selectedUserTitleIds));
+            //     formData.append('include_user_ids', JSON.stringify(selectedIncludeUserIds));
+            //     formData.append('exclude_user_ids', JSON.stringify(selectedExcludeUserIds));
+
+            //     formData.append('pay_stub_amendment_status', $('#pay_stub_amendment_status').val());
+            // }
+
+            const payStubAmendmentStatus = $('#pay_stub_amendment_status').val();
+            const queryParams = new URLSearchParams({
+                user_status_ids: selectedUserStatusIds.join(','),
+                group_ids: selectedGroupIds.join(','),
+                branch_ids: selectedBranchIds.join(','),
+                department_ids: selectedDepartmentIds.join(','),
+                user_title_ids: selectedUserTitleIds.join(','),
+                include_user_ids: selectedIncludeUserIds.join(','),
+                exclude_user_ids: selectedExcludeUserIds.join(','),
+                pay_stub_amendment_status: payStubAmendmentStatus,
+            });
 
             try {
-                let res = await commonSaveData(url, formData, method);
-                console.log('response here', res)
-                await commonAlert(res.status, res.message);
+                let response = await commonFetchData(
+                    `/reports/employee_detail_report/list?${queryParams.toString()}`);
+                // let data = response?.[0];
 
-                if (res.status === 'success') {
+
+                if (!response) {
                     resetForm();
-                    window.location.href = 'payroll/pay_stub_amendment';
-                }
-                if (res.status === 'success') {
-                    resetForm();
-                    window.location.href = '{{ route('payroll.pay_stub_amendment') }}';
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                } else {
+                    window.location.href = '/reports/employee_detail_report/report?data=' + JSON.stringify(
+                        response);
                 }
             } catch (error) {
                 console.error('Error:', error);
                 $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
             }
         });
-
-
 
 
         function resetForm() {

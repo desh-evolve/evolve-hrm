@@ -72,11 +72,11 @@ class EmployeeController extends Controller
         ];
         //user status => create table
         $user_status = [
-            [ 'id' => 1, 'name' => 'Active', 'description' => ''],
+            [ 'id' => 1, 'name' => 'Active', 'description' => 'active'],
             [ 'id' => 2, 'name' => 'Leave', 'description' => 'Illness/Injury'],
             [ 'id' => 3, 'name' => 'Leave', 'desription' => 'Maternity/Parental'],
-            [ 'id' => 3, 'name' => 'Leave', 'description' => 'Other'],
-            [ 'id' => 3, 'name' => 'Terminated', 'description' => ''],
+            [ 'id' => 4, 'name' => 'Leave', 'description' => 'Other'],
+            [ 'id' => 5, 'name' => 'Terminated', 'description' => 'terminated'],
         ];
         $currencies = $this->common->commonGetAll('com_currencies', '*');
         //pay period => create table
