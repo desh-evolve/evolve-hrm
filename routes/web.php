@@ -567,9 +567,10 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
      // Employee Detail Report
      Route::get('/reports/employee_detail_report', [EmployeeDetailReportController::class, 'index'])->name('reports.employee_detail_report');
-     Route::get('/reports/employee_detail_report/form', [EmployeeDetailReportController::class, 'form'])->name('reports.employee_detail_report.form');
-     Route::get('/reports/employee_detail_report/dropdown', [EmployeeDetailReportController::class, 'getPolicyGroupDropdownData'])->name('reports.employee_detail_report.dropdown');
-   
+     Route::get('/reports/employee_detail_report/report', [EmployeeDetailReportController::class, 'form'])->name('reports.employee_detail_report.report');
+     Route::get('/reports/employee_detail_report/dropdown', [EmployeeDetailReportController::class, 'getDropdownData'])->name('reports.employee_detail_report.dropdown');
+     Route::get('/reports/employee_detail_report/list', [EmployeeDetailReportController::class, 'getReportData'])->name('reports.employee_detail_report.list');
+
     //==============================================================================================================================
     // Company => this should be on the bottom of the page
     //==============================================================================================================================
