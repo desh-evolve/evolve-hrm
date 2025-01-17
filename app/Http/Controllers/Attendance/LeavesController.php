@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
 
 use App\Http\Controllers\Accrual\AccrualController;
+use App\Http\Controllers\Accrual\AccrualBalanceController;
 use App\Http\Controllers\Policy\AccrualPolicyController;
 use App\Http\Controllers\Attendance\LeavesRequestController;
 
@@ -99,7 +100,7 @@ class LeavesController extends Controller
 
             $alf = $ac->getByCompanyIdAndUserIdAndAccrualPolicyIdAndStatusForLeave($com_id, $user_id, $apf->id, 'awarded');
             
-            $header_leave[]['name']=$apf->name;
+            $header_leave[]['name'] = $apf->name;
             
             if(count($alf) > 0){
                 $af= $alf[0]; //get current accrual
@@ -148,9 +149,11 @@ class LeavesController extends Controller
             $user_id, 
             'user_id', 
             'emp_employees', 
-            '*', 
+            ['user_id', 'emp_employees.id', 'title', 'first_name', 'last_name', 'emp_designation_name'], 
             [ 'com_employee_designations' => ['com_employee_designations.id', '=', 'emp_employees.designation_id']]
         );
+
+        $current_user = $current_user[0]; //get current user
         
         $data['name'] = $current_user->first_name.' '.$current_user->last_name;
         //check here
@@ -159,18 +162,165 @@ class LeavesController extends Controller
         $data['leave_start_date'] = '';
 
         $parse_obj = [
-            'total_asign_leave' => $total_taken_leave,
+            'total_asign_leave' => $total_asign_leave,
             'total_taken_leave' => $total_taken_leave,
             'total_balance_leave' => $total_balance_leave,
             'header_leave' => $header_leave,
+            'leave_request' => $leave_request,
             'data' => $data,
-            'user' => $header_leave,
-            'header_leave' => $current_user
+            'user' => $current_user
         ];
 
-        print_r($parse_obj);exit;
+        //print_r($parse_obj);exit;
         return view('attendance.leaves.form', $parse_obj);
     }
+
+    public function create(Request $request)
+    {
+
+        $user_id = Auth::user()->id;
+        $com_id = Auth::user()->company_id ?? 1;
+
+        //=========================================================
+
+        $abc = new AccrualBalanceController();
+        
+        $ablf = $abc->getByUserIdAndAccrualPolicyId($user_id, $data['leave_type']);
+
+        if( count($ablf) > 0){
+            $abf = $ablf[0]; //get current accrual balance
+            $balance = $abf->balance;
+            $amount = $data['no_days'];
+            $amount_taken = 0;
+
+            if($data['method_type'] == 1){
+                $amount_taken = (($amount*8) * (28800/8));
+            } elseif($data['method_type'] == 2){
+                
+                if($amount<1){
+                     $amount_taken = (($amount*8) * (28800/8));
+                }
+                else{
+                    $amount_taken = (($amount*8) * (28800/8));
+                }
+            } elseif($data['method_type'] == 3){
+                $amount_taken = 4320;
+                 
+                $start_date_stamp = Carbon::parse($data['appt-time']);
+                $end_date_stamp = Carbon::parse($data['end-time']);
+                
+                $time_diff = $end_date_stamp - $start_date_stamp;
+                
+                if($time_diff <= 3600){
+                    $time_diff = 3600;
+                }
+                
+                
+                if($time_diff > 7200){
+                    $time_diff = 7200;
+                }
+               
+                $amount_taken =$time_diff * 0.8;
+             }
+            
+            $amount_taken = -1 * abs($amount_taken);
+             
+            $current_amount = abs($amount_taken);
+
+            if($current_amount <= $balance ){
+                $date_sh_array = explode(',', $data['leave_start_date']);
+                //check here    
+                $udc = new UserDateListFactory();
+                $udtlf_s = $udc->getByUserIdAndDate($user_id, $date_sh_array[0]);
+                
+                $udf_obj = $udtlf_s[0]; //get current userdate
+                $pp_id = $udf_obj->getPayPeriod();
+                
+                $pplf = new PayPeriodListFactory();
+                $pplf->getById($pp_id);
+                $pp_obj = $pplf->getCurrent();
+                // echo "foo".$pp_obj->getStartDate(TRUE);
+                
+                $lrlf_s = new LeaveRequestListFactory();
+                $row = $lrlf_s->getPayperiodsShortLeaveCount($current_user->getId(), $data['leave_type'], $pp_obj->getStartDate(TRUE), $pp_obj->getEndDate(TRUE));
+                $pp_short_leave_count=$row['count'];
+
+
+            }else{
+                $msg = "You don't have sufficent leave";
+            }
+
+        }else{
+            $msg = "You don't have this leave type";
+        }
+
+        /*
+        try {
+            return DB::transaction(function () use ($request) {
+                // Validate request
+                $request->validate([
+                    'name' => 'required|string|max:250',
+                    'designation' => 'required|string|max:250',
+                    'leaveType' => 'required|string',
+                    'leaveMethod' => 'required|string',
+                    'numberOfDays' => 'required|integer|min:1',
+                    'startTime' => 'required|date_format:Y-m-d H:i:s',
+                    'endTime' => 'required|date_format:Y-m-d H:i:s|after:startTime',
+                    'reason' => 'required|string',
+                    'contact' => 'nullable|string|max:250',
+                    'coverDuties' => 'required|string',
+                    'supervisor' => 'required|string',
+                    'selectedDates' => 'required|array|min:1',
+                    'selectedDates.*' => 'date_format:Y-m-d',
+                ]);
+
+                $table = 'leave_requests';
+                $inputArr = [
+                    'company_id' => 1, // Replace with dynamic company ID if applicable
+                    'user_id' => Auth::id(),
+                    'name' => $request->name,
+                    'designation' => $request->designation,
+                    'leave_type' => $request->leaveType,
+                    'leave_method' => $request->leaveMethod,
+                    'number_of_days' => $request->numberOfDays,
+                    'start_time' => $request->startTime,
+                    'end_time' => $request->endTime,
+                    'reason' => $request->reason,
+                    'contact' => $request->contact,
+                    'cover_duties' => $request->coverDuties,
+                    'supervisor' => $request->supervisor,
+                    'selected_dates' => json_encode($request->selectedDates),
+                    'status' => 'pending', // Default status
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ];
+
+                $leaveRequestId = $this->common->commonSave($table, $inputArr);
+
+                if ($leaveRequestId) {
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Leave request created successfully',
+                        'data' => ['id' => $leaveRequestId]
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Failed to create leave request',
+                        'data' => []
+                    ], 500);
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error occurred: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+        */
+    }
+
 
 }
 

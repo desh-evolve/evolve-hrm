@@ -360,6 +360,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     
     // Leaves
     Route::get('/employee/apply_leaves', [LeavesController::class, 'form'])->name('employee.apply_leaves');
+    Route::post('/employee/apply_leaves/create', [LeavesController::class, 'create']);
     
 
     //==============================================================================================================================

@@ -15,7 +15,7 @@ class AccrualController extends Controller
     
     public function __construct()
     {
-        $this->middleware('permission:apply leaves', ['only' => ['', '']]);
+        //$this->middleware('permission:apply leaves', ['only' => ['', '']]);
 
         $this->common = new CommonModel();
     }
@@ -38,12 +38,15 @@ class AccrualController extends Controller
             'accrual.user_id' => $user_id,
             //'users.company_id' => $company_id,
             'accrual.accrual_policy_id' => $accrual_policy_id,
-            'accrual.type' => $type, 
+            'accrual.type' => '"'.$type.'"', 
             'emp_employees.status' => '"active"',
             '( accrual.user_date_total_id IS NULL OR ( accrual.user_date_total_id IS NOT NULL AND user_date_total.status != "delete" AND user_date.status != "delete") )',
         ];
 
-        $res = $this->common->commonGetAll( $table, $fields, $joinArr, $whereArr, false, [], null,  );
+        $groupBy = 'user_date.date_stamp';
+        $orderBy = 'user_date.date_stamp desc, accrual.time_stamp desc';
+
+        $res = $this->common->commonGetAll( $table, $fields, $joinArr, $whereArr, false, [], $groupBy, $orderBy );
         
         return $res;
 	}
@@ -71,7 +74,10 @@ class AccrualController extends Controller
             '( accrual.user_date_total_id IS NULL OR ( accrual.user_date_total_id IS NOT NULL AND user_date_total.status != "delete" AND user_date.status != "delete") )',
         ];
 
-        $res = $this->common->commonGetAll( $table, $fields, $joinArr, $whereArr, false, [], null,  );
+        $groupBy = null;
+        $orderBy = 'user_date.date_stamp desc, accrual.time_stamp desc';
+
+        $res = $this->common->commonGetAll( $table, $fields, $joinArr, $whereArr, false, [], $groupBy, $orderBy );
         
         return $res;
     }

@@ -63,13 +63,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control" id="name" value="{{ $user_data->first_name . ' ' . $user_data->last_name }}" disabled>
+                                <input type="text" class="form-control" id="name" value="{{ $user->first_name . ' ' . $user->last_name }}" disabled>
                             </div>
-                            <input type="hidden" id="user_id" value="12345">
+                            <input type="hidden" id="user_id" value="{{ $user->user_id }}">
                 
                             <div class="col-md-6 mb-3">
                                 <label for="designation" class="form-label">Designation</label>
-                                <input type="text" class="form-control" id="designation" value="{{ $user_data->emp_designation_name }}" disabled>
+                                <input type="text" class="form-control" id="designation" value="{{ $user->emp_designation_name }}" disabled>
                             </div>
                 
                             <div class="col-md-6 mb-3">
@@ -77,8 +77,8 @@
                                 {{-- leave types = accrual policies --}}
                                 <select class="form-select" id="leaveType">
                                     <option value="">-- Please Choose --</option>
-                                    @foreach ($leave_types as $leave_type)
-                                        <option value="{{ $leave_type->id }}">{{ $leave_type->name }}</option>
+                                    @foreach ($data['leave_options'] as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -87,7 +87,7 @@
                                 <label for="leaveMethod" class="form-label">Leave Method</label>
                                 <select class="form-select" id="leaveMethod">
                                     <option value="">-- Please Choose --</option>
-                                    @foreach ($leave_methods as $leave_method)
+                                    @foreach ($data['method_options'] as $leave_method)
                                         <option value="{{ $leave_method->id }}">{{ $leave_method->name }}</option>
                                     @endforeach
                                 </select>
@@ -134,7 +134,7 @@
                                 <label for="coverDuties" class="form-label">Agreed to Cover Duties</label>
                                 <select class="form-select" id="coverDuties">
                                     <option value="">-- Please Choose --</option>
-                                    @foreach ( $emp_list as $emp )
+                                    @foreach ( $data['users_cover_options'] as $emp )
                                         <option value="{{ $emp->user_id }}">{{ $emp->first_name.' '.$emp->last_name }} (#{{ $emp->emp_id }})</option>
                                     @endforeach
                                 </select>
@@ -144,14 +144,14 @@
                                 <label for="supervisor" class="form-label">Supervisor</label>
                                 <select class="form-select" id="supervisor">
                                     <option value="">-- Please Choose --</option>
-                                    @foreach ( $emp_list as $emp )
+                                    @foreach ( $data['users_cover_options'] as $emp )
                                         <option value="{{ $emp->user_id }}">{{ $emp->first_name.' '.$emp->last_name }} (#{{ $emp->emp_id }})</option>
                                     @endforeach
                                 </select>
                             </div>
                 
                             <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="button" class="btn btn-primary" id="submit_click">Submit</button>
                             </div>
                         </div>
                     </form>
@@ -168,22 +168,26 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table class="table">
-                        <tr>
-                            <th></th>
-                            <th>Leave Entitlement</th>
-                            <th>Leave Taken</th>
-                            <th>Balance</th>
-                        </tr>
-                        @foreach ($leave_types as $leave_type)
+                    <table class="table table-bordered table-striped">
+                        <thead>
                             <tr>
-                                <th>{{ $leave_type->name }}</th>
-                                <td>0</td>
-                                <td>0</td>
-                                <td>0</td>
+                                <th></th>
+                                <th class="text-center">Leave Entitlement</th>
+                                <th class="text-center">Leave Taken</th>
+                                <th class="text-center">Balance</th>
                             </tr>
-                        @endforeach
-                    </table>
+                        </thead>
+                        <tbody>
+                            @foreach($header_leave as $index => $row)
+                                <tr>
+                                    <th>{{ $row['name'] }}</th>
+                                    <td class="text-center">{{ $total_asign_leave[$index]['asign'] ?? 0 }}</td>
+                                    <td class="text-center">{{ $total_taken_leave[$index]['taken'] ?? 0 }}</td>
+                                    <td class="text-center">{{ $total_balance_leave[$index]['balance'] ?? 0 }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>                    
                 </div>
             </div>
             <div class="card">
@@ -195,15 +199,39 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table class="table">
-                        <tr>
-                            <th>#</th>
-                            <th>Leave Type</th>
-                            <th>Amount</th>
-                            <th>Dates</th>
-                            <th>Status</th>
-                        </tr>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Leave Type</th>
+                                <th>Amount</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (count($leave_request) > 0)
+                                @foreach($leave_request as $row)
+                                    <tr>
+                                        <td class="cellRightEditTable">{{ $row['name'] }}</td>
+                                        <td class="cellRightEditTable">{{ $row['leave_type'] }}</td>
+                                        <td class="cellRightEditTable">{{ $row['amount'] }}</td>
+                                        <td class="cellRightEditTable">{{ $row['from'] }}</td>
+                                        <td class="cellRightEditTable">{{ $row['to'] }}</td>
+                                        <td class="cellRightEditTable">{{ $row['status'] }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr class="tblHeader">
+                                    <td colspan="6">
+                                        Sorry, You have no leave request.
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
                     </table>
+                    
                 </div>
             </div>
         </div>
@@ -211,10 +239,11 @@
 
     {{-- calander functions start --}}
     <script>
+        const selectedDates = new Set();
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+
         $(document).ready(function() {
-            const selectedDates = new Set();
-            let currentYear = new Date().getFullYear();
-            let currentMonth = new Date().getMonth();
     
             // Function to generate the calendar for the current month and year
             function generateCalendar(year, month, selected_dates) {
@@ -284,7 +313,7 @@
     
             // Update the selected dates list
             function updateSelectedDates() {
-                console.log(selectedDates)
+                //console.log(selectedDates)
                 $('#selectedDates').empty();
                 let count = 0;
                 selectedDates.forEach(date => {
@@ -332,7 +361,81 @@
 
     {{-- other functions start --}}
     <script>
+        $(document).on('click', '#submit_click', async function() {
+            let name = $('#name').val();
+            let designation = $('#designation').val();
+            let leaveType = $('#leaveType').val();
+            let leaveMethod = $('#leaveMethod').val();
+            let numberOfDays = $('#numberOfDays').val();
+            let startTime = $('#startTime').val();
+            let endTime = $('#endTime').val();
+            let reason = $('#reason').val();
+            let contact = $('#contact').val();
+            let coverDuties = $('#coverDuties').val();
+            let supervisor = $('#supervisor').val();
 
+            // Validation checks
+            if (!leaveType) {
+                alert('Please select leave type');
+                return; // Stop execution if validation fails
+            }
+
+            if (!leaveMethod) {
+                alert('Please select leave method');
+                return;
+            }
+
+            if (selectedDates.length == 0 || numberOfDays == 0) {
+                alert('Please select date');
+                return;
+            }
+
+            if (!reason) {
+                alert('Reason is empty');
+                return;
+            }
+
+            if (!coverDuties) {
+                alert('Please select leave cover duty');
+                return;
+            }
+
+            if (!supervisor) {
+                alert('Please select leave supervisor');
+                return;
+            }
+
+            // Prepare form data
+            let formData = new FormData();
+            formData.append('name', name);
+            formData.append('designation', designation);
+            formData.append('leaveType', leaveType);
+            formData.append('leaveMethod', leaveMethod);
+            formData.append('numberOfDays', numberOfDays);
+            formData.append('startTime', startTime);
+            formData.append('endTime', endTime);
+            formData.append('reason', reason);
+            formData.append('contact', contact);
+            formData.append('coverDuties', coverDuties);
+            formData.append('supervisor', supervisor);
+            formData.append('selectedDates', JSON.stringify(selectedDates)); // Ensure selectedDates is passed as a string or array
+
+            //=========================================================
+
+            // Append location_id if updating
+            let url = '/employee/apply_leaves/create';
+            let method = 'POST';
+
+            // Send data and handle response
+            let res = await commonSaveData(url, formData, method);
+            await commonAlert(res.status, res.message);
+
+            if (res.status === 'success') {
+                window.location.reload();
+            }
+
+            //=========================================================
+        });
     </script>
     {{-- other functions end --}}
 </x-app-layout>
