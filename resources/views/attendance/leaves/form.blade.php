@@ -363,6 +363,7 @@
     <script>
         $(document).on('click', '#submit_click', async function() {
             let name = $('#name').val();
+            let user_id = $('#user_id').val();
             let designation = $('#designation').val();
             let leaveType = $('#leaveType').val();
             let leaveMethod = $('#leaveMethod').val();
@@ -408,17 +409,22 @@
             // Prepare form data
             let formData = new FormData();
             formData.append('name', name);
-            formData.append('designation', designation);
-            formData.append('leaveType', leaveType);
-            formData.append('leaveMethod', leaveMethod);
-            formData.append('numberOfDays', numberOfDays);
-            formData.append('startTime', startTime);
-            formData.append('endTime', endTime);
+            formData.append('user_id', user_id);
+            formData.append('designation_id', designation);  
+            formData.append('accurals_policy_id', leaveType);  
+            formData.append('amount', numberOfDays);  
+            formData.append('leave_from', selectedDates.start);  
+            formData.append('leave_to', selectedDates.end);  
             formData.append('reason', reason);
-            formData.append('contact', contact);
-            formData.append('coverDuties', coverDuties);
-            formData.append('supervisor', supervisor);
-            formData.append('selectedDates', JSON.stringify(selectedDates)); // Ensure selectedDates is passed as a string or array
+            formData.append('address_telephone', contact);  
+            formData.append('covered_by', coverDuties);  
+            formData.append('supervisor_id', supervisor); 
+            formData.append('method', leaveMethod);  
+            formData.append('leave_time', startTime);  
+            formData.append('leave_end_time', endTime);  
+            formData.append('leave_dates', JSON.stringify(selectedDates));   
+
+            // Ensure selectedDates is passed as a string or array
 
             //=========================================================
 
@@ -428,11 +434,13 @@
 
             // Send data and handle response
             let res = await commonSaveData(url, formData, method);
-            await commonAlert(res.status, res.message);
 
-            if (res.status === 'success') {
-                window.location.reload();
-            }
+            console.log('leave request', res)
+            //await commonAlert(res.status, res.message);
+
+            //if (res.status === 'success') {
+                //window.location.reload();
+            //}
 
             //=========================================================
         });

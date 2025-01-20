@@ -119,7 +119,7 @@ class LeavesController extends Controller
             }
             else{
                 $total_taken_leave[]['taken'] = 0;
-                 $total_balance_leave[]['balance'] = 0;
+                $total_balance_leave[]['balance'] = 0;
             }
 
         }
@@ -158,8 +158,8 @@ class LeavesController extends Controller
         $data['name'] = $current_user->first_name.' '.$current_user->last_name;
         //check here
         $data['title'] = $current_user->title;
-        //$data['title_id'] = '0';
-        $data['leave_start_date'] = '';
+        //$data['designation_id'] = '0';
+        $data['leave_from'] = '';
 
         $parse_obj = [
             'total_asign_leave' => $total_asign_leave,
@@ -170,7 +170,7 @@ class LeavesController extends Controller
             'data' => $data,
             'user' => $current_user
         ];
-
+        
         //print_r($parse_obj);exit;
         return view('attendance.leaves.form', $parse_obj);
     }
@@ -181,21 +181,40 @@ class LeavesController extends Controller
         $user_id = Auth::user()->id;
         $com_id = Auth::user()->company_id ?? 1;
 
+        $request->validate([
+            'designation_id' => 'required|integer',
+            'accurals_policy_id' => 'required|integer', //leave type
+            'amount' => 'required|numeric|min:0',
+            'leave_from' => 'required|date|before_or_equal:leave_to',
+            'leave_to' => 'required|date|after_or_equal:leave_from',
+            'reason' => 'required|string|max:200',
+            'address_telephone' => 'required|string|max:200',
+            'covered_by' => 'required|integer',
+            'supervisor_id' => 'required|integer',
+            'method' => 'required|integer|in:1,2,3', // leave method = Absence leave id
+            'leave_time' => 'required|string|max:20',
+            'leave_end_time' => 'required|string|max:20',
+            'leave_dates' => 'required|string|max:2000', // Ensure JSON format if storing multiple dates
+        ]);
+
         //=========================================================
 
         $abc = new AccrualBalanceController();
         
-        $ablf = $abc->getByUserIdAndAccrualPolicyId($user_id, $data['leave_type']);
+        $ablf = $abc->getByUserIdAndAccrualPolicyId($user_id, $request->accurals_policy_id);
+
+        $stt = 'error';
+        $msg = 'Something went wrong';
 
         if( count($ablf) > 0){
             $abf = $ablf[0]; //get current accrual balance
             $balance = $abf->balance;
-            $amount = $data['no_days'];
+            $amount = $request->amount;
             $amount_taken = 0;
 
-            if($data['method_type'] == 1){
+            if($request->method == 1){ //full day leave
                 $amount_taken = (($amount*8) * (28800/8));
-            } elseif($data['method_type'] == 2){
+            } elseif($request->method == 2){ //half day leave
                 
                 if($amount<1){
                      $amount_taken = (($amount*8) * (28800/8));
@@ -203,11 +222,11 @@ class LeavesController extends Controller
                 else{
                     $amount_taken = (($amount*8) * (28800/8));
                 }
-            } elseif($data['method_type'] == 3){
+            } elseif($request->method == 3){ //short leave
                 $amount_taken = 4320;
                  
-                $start_date_stamp = Carbon::parse($data['appt-time']);
-                $end_date_stamp = Carbon::parse($data['end-time']);
+                $start_date_stamp = Carbon::parse($request->leave_time);
+                $end_date_stamp = Carbon::parse($request->leave_end_time);
                 
                 $time_diff = $end_date_stamp - $start_date_stamp;
                 
@@ -228,97 +247,162 @@ class LeavesController extends Controller
             $current_amount = abs($amount_taken);
 
             if($current_amount <= $balance ){
-                $date_sh_array = explode(',', $data['leave_start_date']);
+                $date_sh_array = explode(',', $request->leave_from);
                 //check here    
-                $udc = new UserDateListFactory();
+                $udc = new UserDateController();
                 $udtlf_s = $udc->getByUserIdAndDate($user_id, $date_sh_array[0]);
                 
                 $udf_obj = $udtlf_s[0]; //get current userdate
-                $pp_id = $udf_obj->getPayPeriod();
+                $pp_id = $udf_obj->pay_period;
                 
-                $pplf = new PayPeriodListFactory();
-                $pplf->getById($pp_id);
-                $pp_obj = $pplf->getCurrent();
-                // echo "foo".$pp_obj->getStartDate(TRUE);
+                $ppc = new PayPeriodController();
+                $pplf = $ppc->getById($pp_id);
+                $pp_obj = $pplf[0]; //get current
                 
-                $lrlf_s = new LeaveRequestListFactory();
-                $row = $lrlf_s->getPayperiodsShortLeaveCount($current_user->getId(), $data['leave_type'], $pp_obj->getStartDate(TRUE), $pp_obj->getEndDate(TRUE));
-                $pp_short_leave_count=$row['count'];
+                $lrc = new LeaveRequestController();
+                $row = $lrc->getPayperiodsShortLeaveCount($user_id, $request->accurals_policy_id, $pp_obj->start_date, $pp_obj->end_date);
+                $pp_short_leave_count = $row['count'];
 
+                if($pp_short_leave_count >= 2 && $request->accurals_policy_id == 8){ //short leave = 8
+                    $stt = 'warning';
+                    $msg = "You can apply only two short leaves"; 
+                }else{
+                    //save data
+                    $table = 'leave_request';
+
+                    $designation_id = $request->designation_id;
+                    $accurals_policy_id = $request->accurals_policy_id;
+                    $amount = $request->amount;
+                    $leave_from = $request->leave_from;
+                    $leave_to = $request->leave_to;
+                    $reason = $request->reason;
+                    $address_telephone = $request->address_telephone;
+                    $covered_by = $request->covered_by;
+                    $supervisor_id = $request->supervisor_id;
+                    $method = $request->method;
+                    $is_covered_approved = 1;
+                    $is_supervisor_approved = 0;
+                    $is_hr_approved = 0;
+                    $leave_time = $request->leave_time;
+                    $leave_end_time = $request->leave_end_time;
+                    $leave_dates = $request->leave_dates;
+
+                    if($request->accurals_policy_id == 3){ //duty leave
+                        $is_covered_approved = 1;
+                    }
+
+                    if($request->accurals_policy_id == 14){ //director approved leave
+                        $is_covered_approved = 1;
+                    }
+
+                    $lrc = new LeaveRequestController();
+                    $lrlf_b = $lrc->checkUserHasLeaveTypeForDay($current_user->getId(), $from_date->format('Y-m-d'), $request->accurals_policy_id);
+
+                    if(count($lrlf_b) > 0 && $request->accurals_policy_id == 8){ //short leave
+                        $stt = 'success';
+                        $msg = "You have This leave for the day";  
+                    }else{
+                        $inputArr = [
+                            'company_id' => $com_id, // Replace with dynamic company ID if applicable
+                            'user_id' => $user_id, 
+                            'designation_id' => $designation_id, 
+                            'accurals_policy_id' => $accurals_policy_id, 
+                            'amount' => $amount, 
+                            'leave_from' => $leave_from, 
+                            'leave_to' => $leave_to, 
+                            'reason' => $reason, 
+                            'address_telephone' => $address_telephone, 
+                            'covered_by' => $covered_by, 
+                            'supervisor_id' => $supervisor_id, 
+                            'method' => $method, 
+                            'is_covered_approved' => $is_covered_approved, 
+                            'is_supervisor_approved' => $is_supervisor_approved, 
+                            'is_hr_approved' => $is_hr_approved, 
+                            'leave_time' => $leave_time, 
+                            'leave_end_time' => $leave_end_time, 
+                            'leave_dates' => $leave_dates, 
+                            
+                            'created_by' => Auth::user()->id,
+                            'updated_by' => Auth::user()->id,
+                        ];
+    
+                        $leaveRequestId = $this->common->commonSave($table, $inputArr);
+
+                        $ec = new EmployeeController();
+                        $supervisors = $ec->getEmployeeByUserId(trim($request->supervisor_id));
+                        $supervisor_obj = $supervisors[0];
+
+
+                        $employeeLF = $ec->getEmployeeByUserId(trim($user_id));
+                        $employee_obj = $employeeLF->getCurrent();
+
+                        if ( $supervisor_obj->work_email != FALSE ) {
+                            $supervisor_primary_email = $supervisor_obj->work_email;
+                            if ( $supervisor_obj->home_email != FALSE ) {
+                                    $supervisor_secondary_email = $supervisor_obj->home_email;
+                            } else {
+                                    $supervisor_secondary_email = NULL;
+                            }
+                        } else {
+                                    $supervisor_primary_email = $supervisor_obj->home_email;
+                                    $supervisor_secondary_email = NULL;
+                        }
+
+                        if ( $employee_obj->work_email != FALSE ) {
+                            $employee_primary_email = $employee_obj->work_email;
+                            if ( $employee_obj->home_email != FALSE ) {
+                                    $employee_secondary_email = $employee_obj->home_email;
+                            } else {
+                                    $employee_secondary_email = NULL;
+                            }
+                        } else {
+                                    $employee_primary_email = $employee_obj->home_email;
+                                    $employee_secondary_email = NULL;
+                        }
+
+                        $aplf = new AccrualPolicyListFactory();
+                        $aplf->getById($request->accurals_policy_id);
+
+                        $email = new EmailController;
+
+                        $subject = "New leave request by ". $employee_obj->full_name;
+                        $body = '';
+                        $body .= '<p>Dear '.$supervisor_obj->full_name.'</p>';
+                        $body .= '<div style="background: rgb(55,110,55); padding-bottom: 0.1px; padding-top: 0.1px;" align="center"><h2 style="color: #fff">Below leave application is pending for your approval.</h2></div>';
+                        $body .= '<br><br><table><tr><td>Emp No </td>'. "<td>".$employee_obj->id."</td></tr>";
+                        $body .= '<tr><td>Name </td>'. "<td>".$employee_obj->first_name.' '.$employee_obj->last_name. "</td></tr>";
+                        $body .= '<tr><td>Leave Type </td>'. "<td>".  $aplf->leave_type."</td></tr>";
+                        $body .= '<tr><td>No. of days </td>'. "<td>".$request->amount."</td></tr>";
+                        $body .= '<tr><td>From </td>'. "<td>".$from_date->format('Y-m-d')."</td></tr>";
+                        $body .= '<tr><td>To </td>'. "<td>".$to_date->format('Y-m-d')."</td></tr></table>";
+                        $body .= '<tr><td>Dates </td>'. "<td>".$request->leave_from."</td></tr></table>";
+                        $body .= '<p><b><i><span style="font-family: Helvetica,sans-serif; color:#440062">HR Department</span></i></b></p>"';
+
+                        $from = "careers@aquafresh.lk";
+                        $to = $supervisor_primary_email;
+
+                        $email->sendEmail($subject, $body, $from, $to);
+
+                        $stt = 'success';
+                        $msg = "You have successfully apply leave";  
+                    }
+                }
 
             }else{
+                $stt = 'warning';
                 $msg = "You don't have sufficent leave";
             }
 
         }else{
+            $stt = 'warning';
             $msg = "You don't have this leave type";
         }
 
-        /*
-        try {
-            return DB::transaction(function () use ($request) {
-                // Validate request
-                $request->validate([
-                    'name' => 'required|string|max:250',
-                    'designation' => 'required|string|max:250',
-                    'leaveType' => 'required|string',
-                    'leaveMethod' => 'required|string',
-                    'numberOfDays' => 'required|integer|min:1',
-                    'startTime' => 'required|date_format:Y-m-d H:i:s',
-                    'endTime' => 'required|date_format:Y-m-d H:i:s|after:startTime',
-                    'reason' => 'required|string',
-                    'contact' => 'nullable|string|max:250',
-                    'coverDuties' => 'required|string',
-                    'supervisor' => 'required|string',
-                    'selectedDates' => 'required|array|min:1',
-                    'selectedDates.*' => 'date_format:Y-m-d',
-                ]);
-
-                $table = 'leave_requests';
-                $inputArr = [
-                    'company_id' => 1, // Replace with dynamic company ID if applicable
-                    'user_id' => Auth::id(),
-                    'name' => $request->name,
-                    'designation' => $request->designation,
-                    'leave_type' => $request->leaveType,
-                    'leave_method' => $request->leaveMethod,
-                    'number_of_days' => $request->numberOfDays,
-                    'start_time' => $request->startTime,
-                    'end_time' => $request->endTime,
-                    'reason' => $request->reason,
-                    'contact' => $request->contact,
-                    'cover_duties' => $request->coverDuties,
-                    'supervisor' => $request->supervisor,
-                    'selected_dates' => json_encode($request->selectedDates),
-                    'status' => 'pending', // Default status
-                    'created_by' => Auth::id(),
-                    'updated_by' => Auth::id(),
-                ];
-
-                $leaveRequestId = $this->common->commonSave($table, $inputArr);
-
-                if ($leaveRequestId) {
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => 'Leave request created successfully',
-                        'data' => ['id' => $leaveRequestId]
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Failed to create leave request',
-                        'data' => []
-                    ], 500);
-                }
-            });
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Error occurred: ' . $e->getMessage(),
-                'data' => []
-            ], 500);
-        }
-        */
+        return response()->json([
+            'status' => $stt,
+            'message' => $msg,
+            'data' => [],
+        ], 201);
     }
 
 

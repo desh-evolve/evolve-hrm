@@ -21,7 +21,6 @@
                     </div>
                 </div>
 
-
                 <div class="card-body">
 
                     <div class="row mb-3 mb-4">
@@ -38,7 +37,7 @@
 
                     </div>
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Wage Group</th>
