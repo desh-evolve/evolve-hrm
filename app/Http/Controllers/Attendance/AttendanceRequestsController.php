@@ -62,16 +62,16 @@ class AttendanceRequestsController extends Controller
     public function getRequestsByControlId($userId)
     {
         try {
-            // Get all `employee_date_id`s for the given `employee_id`
-            $employeeDateIds = DB::table('employee_date')
-                ->where('employee_id', $employeeId)
+            // Get all `user_date_id`s for the given `employee_id`
+            $employeeDateIds = DB::table('user_date')
+                ->where('user_id', $userId)
                 ->pluck('id');
 
             if ($employeeDateIds->isEmpty()) {
-                return response()->json(['error' => 'No matching employee_date records found for the given employee_id'], 404);
+                return response()->json(['error' => 'No matching user date records found for the given user_id'], 404);
             }
 
-            $idColumn = 'employee_date_id';
+            $idColumn = 'user_date_id';
             $table = 'request';
             $fields = [
                 'request.*',
@@ -92,9 +92,9 @@ class AttendanceRequestsController extends Controller
                     'con_name' => 'status_details',
                     'except_deleted' => true,
                 ],
-                'employee_date' => [
+                'user_date' => [
                     'con_fields' => ['date_stamp'],
-                    'con_where' => ['employee_date.id' => 'employee_date_id'],
+                    'con_where' => ['user_date.id' => 'user_date_id'],
                     'con_joins' => [],
                     'con_name' => 'date_details',
                     'except_deleted' => true,
@@ -208,7 +208,7 @@ class AttendanceRequestsController extends Controller
                     $table4 = 'message_users';
                     $inputArr4 = [
                         'message_id' => $messageId, // Message ID from messages table
-                        'received_id' => $request->user_id,
+                        'receiver_id' => $request->user_id,
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id,
                     ];

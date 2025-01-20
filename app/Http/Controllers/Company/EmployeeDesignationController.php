@@ -19,21 +19,21 @@ class EmployeeDesignationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user designation', ['only' => [
-            'index', 
-            'getAllEmployeeDesignations', 
-            'getEmployeeDesignationById', 
+        $this->middleware('permission:view employee designation', ['only' => [
+            'index',
+            'getAllEmployeeDesignations',
+            'getEmployeeDesignationById',
         ]]);
-        $this->middleware('permission:create user designation', ['only' => ['createEmployeeDesignation']]);
-        $this->middleware('permission:update user designation', ['only' => ['updateEmployeeDesignation']]);
-        $this->middleware('permission:delete user designation', ['only' => ['deleteEmployeeDesignation']]);
+        $this->middleware('permission:create employee designation', ['only' => ['createEmployeeDesignation']]);
+        $this->middleware('permission:update employee designation', ['only' => ['updateEmployeeDesignation']]);
+        $this->middleware('permission:delete employee designation', ['only' => ['deleteEmployeeDesignation']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('company.user_designation.index');
+        return view('company.employee_designation.index');
     }
 
     public function createEmployeeDesignation(Request $request)

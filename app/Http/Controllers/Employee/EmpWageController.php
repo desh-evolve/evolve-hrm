@@ -16,23 +16,24 @@ class EmpWageController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user wage', ['only' => [
+        $this->middleware('permission:view employee wage', ['only' => [
             'index',
             'getAllEmployeeWage',
             'getAllEmployeeList',
             'getEmployeeWageById',
             'getSingleEmployeeWage',
+            'getWageDropDownList',
         ]]);
-        $this->middleware('permission:create user wage', ['only' => ['createEmployeeWage']]);
-        $this->middleware('permission:update user wage', ['only' => ['updateEmployeeWage']]);
-        $this->middleware('permission:delete user wage', ['only' => ['deleteEmployeeWage']]);
+        $this->middleware('permission:create employee wage', ['only' => ['createEmployeeWage']]);
+        $this->middleware('permission:update employee wage', ['only' => ['updateEmployeeWage']]);
+        $this->middleware('permission:delete employee wage', ['only' => ['deleteEmployeeWage']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('user_wage.index');
+        return view('employee_wage.index');
     }
 
     public function createEmployeeWage(Request $request)
@@ -76,6 +77,8 @@ class EmpWageController extends Controller
         }
     }
 
+
+
     public function updateEmployeeWage(Request $request, $id)
     {
         try {
@@ -118,6 +121,8 @@ class EmpWageController extends Controller
         }
     }
 
+
+
     public function deleteEmployeeWage($id)
     {
         $whereArr = ['id' => $id];
@@ -127,6 +132,8 @@ class EmpWageController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
+
+
     public function getAllEmployeeWage()
     {
         $table = 'emp_wage';
@@ -134,6 +141,7 @@ class EmpWageController extends Controller
         $user_wage = $this->common->commonGetAll($table, $fields);
         return response()->json(['data' => $user_wage], 200);
     }
+
 
     public function getEmployeeWageById($id)
     {
@@ -151,22 +159,23 @@ class EmpWageController extends Controller
         $user_wage = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinsArr, $whereArr);
         return response()->json(['data' => $user_wage], 200);
     }
-    public function getDropDownList()
-    {
 
+
+    public function getWageDropDownList()
+    {
         $users = $this->common->commonGetAll('emp_employees', '*');
         $wageGroups = $this->common->commonGetAll('com_wage_groups', '*');
         $wageTypes = $this->common->commonGetAll('com_wage_type', '*');
-        // $users = $this->common->commonGetAll($table, $fields);
         return response()->json([
             'data' => [
                 'users' => $users,
                 'wageGroups' => $wageGroups,
                 'wageTypes' => $wageTypes,
             ]
-            // 'data' => $users,
         ], 200);
     }
+
+
 
     public function getSingleEmployeeWage($id)
     {
@@ -176,4 +185,5 @@ class EmpWageController extends Controller
         $user_wage = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_wage], 200);
     }
+    
 }

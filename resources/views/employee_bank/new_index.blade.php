@@ -92,8 +92,8 @@ $(document).ready(async function () {
 
         }
 
-         // Navigate to Employee Bank Details Page
-         $(document).on('click', '.manage-bank', function () {
+        // Navigate to Employee Bank Details Page
+        $(document).on('click', '.manage-bank', function () {
             const userId = $(this).data('id');
             window.location.href = `/user/bank/details/${userId}`;
         });

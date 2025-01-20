@@ -13,16 +13,16 @@ class EmployeeBankDetailsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user bank details', ['only' => [
+        $this->middleware('permission:view employee bank details', ['only' => [
             'index',
             'getBankDetailsByEmpId',
             'getAllEmployee',
             'showBankDetails',
             ]]);
 
-        $this->middleware('permission:create user bank details', ['only' => ['createBankDetails']]);
-        $this->middleware('permission:update user bank details', ['only' => ['updateBankDetails']]);
-        $this->middleware('permission:delete user bank details', ['only' => ['deleteBankDetails']]);
+        $this->middleware('permission:create employee bank details', ['only' => ['createBankDetails']]);
+        $this->middleware('permission:update employee bank details', ['only' => ['updateBankDetails']]);
+        $this->middleware('permission:delete employee bank details', ['only' => ['deleteBankDetails']]);
 
         $this->common = new CommonModel();
     }

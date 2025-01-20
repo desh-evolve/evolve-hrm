@@ -42,14 +42,8 @@ class CurrencyController extends Controller
                     'is_default' => 'required|boolean',
                 ]);
 
+
                 $table = 'com_currencies';
-
-                 // If the new currency is-default, reset all others to non-default
-                if ($request->is_default == 1) {
-                    DB::table($table)->update(['is_default' => 0]);
-                }
-
-
                 $inputArr = [
                     'currency_name' => $request->currency_name,
                     'iso_code' => $request->iso_code,
@@ -61,9 +55,10 @@ class CurrencyController extends Controller
 
 
                 $insertId = $this->common->commonSave($table, $inputArr);
-                
+
+
                 if($request->is_default == '1'){
-                    $this->setDefaultCurrency($id);
+                    $this->setDefaultCurrency($insertId);
                 }
 
                 if ($insertId) {
@@ -77,6 +72,8 @@ class CurrencyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
       }
+
+
 
       //pawanee(2024-10-24)
       public function updateCurrency(Request $request, $id){
@@ -92,13 +89,6 @@ class CurrencyController extends Controller
 
                 $table = 'com_currencies';
                 $idColumn = 'id';
-
-                // If updating to be the default, reset all others to non-default
-                if ($request->is_default == 1) {
-                    DB::table($table)->where('id', '!=', $id)->update(['is_default' => 0]);
-                }
-
-
                 $inputArr = [
                     'currency_name' => $request->currency_name,
                     'iso_code' => $request->iso_code,
@@ -108,7 +98,7 @@ class CurrencyController extends Controller
                 ];
 
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
-                
+
                 if($request->is_default == '1'){
                     $this->setDefaultCurrency($id);
                 }
@@ -123,7 +113,9 @@ class CurrencyController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
+
       }
+
 
     private function setDefaultCurrency($currency_id){
         $table = 'com_currencies';
@@ -133,6 +125,8 @@ class CurrencyController extends Controller
         $id = $this->common->commonSave($table, ['is_default' => '1'], $currency_id, 'id');
         return $id ? true : false;
     }
+
+
 
     //pawanee(2024-10-24)
     public function deleteCurrency($id)
@@ -150,8 +144,8 @@ class CurrencyController extends Controller
     {
         $table = 'com_currencies';
         $fields = '*';
-        $wageGroups = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $wageGroups], 200);
+        $currency = $this->common->commonGetAll($table, $fields);
+        return response()->json(['data' => $currency], 200);
     }
 
 
@@ -160,9 +154,10 @@ class CurrencyController extends Controller
         $idColumn = 'id';
         $table = 'com_currencies';
         $fields = '*';
-        $wageGroups = $this->common->commonGetById($id, $idColumn, $table, $fields);
-        return response()->json(['data' => $wageGroups], 200);
+        $currency = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return response()->json(['data' => $currency], 200);
     }
+
 
 
 }

@@ -226,6 +226,103 @@ $(document).on('click', '.add_doc_to_list', function() {
 });
 
 
+//==
+
+$(document).on('click', '.add_doc_to_list', function () {
+    const doc_type_id = $('#doc_type_id').val(); // Get selected document type
+    const doc_type_name = $('#doc_type_id option:selected').text(); // Get document type name
+    const doc_title = $('#doc_title').val(); // Get document title
+    const files = $('#doc_file')[0].files; // Get selected files
+
+    // Check if all fields are filled
+    if (!doc_type_name || files.length === 0) {
+        alert('Please fill in all fields and select at least one file.');
+        return;
+    }
+
+    // Check if the document type already exists in filesArray
+    let docTypeExists = filesArray.find(doc => doc.doc_type_id === doc_type_id);
+
+    // If the document type exists, append files; otherwise, create a new entry
+    if (docTypeExists) {
+        Array.from(files).forEach(file => {
+            docTypeExists.files.push({
+                file: file,
+                doc_title: doc_title || 'Untitled'
+            });
+        });
+    } else {
+        filesArray.push({
+            doc_type_id: doc_type_id,
+            doc_type_name: doc_type_name,
+            files: Array.from(files).map(file => ({
+                file: file,
+                doc_title: doc_title || 'Untitled'
+            }))
+        });
+    }
+
+    // Update the table
+    renderDocumentTable();
+
+    // Reset the input fields
+    $('#doc_type_id').val('');
+    $('#doc_title').val('');
+    $('#doc_file').val('');
+});
+
+// Render the table dynamically
+function renderDocumentTable() {
+    let rows = '';
+
+    filesArray.forEach(doc => {
+        doc.files.forEach((fileEntry, index) => {
+            rows += `
+                <tr>
+                    <td>${doc.doc_type_name}</td>
+                    <td>${fileEntry.doc_title}</td>
+                    <td>${fileEntry.file.name}</td>
+                    <td>
+                        <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_download_document" title="Download Document">
+                            <i class="ri-download-2-line"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_document" data-doc-type-id="${doc.doc_type_id}" data-file-index="${index}" title="Remove Document">
+                            <i class="ri-delete-bin-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+
+    // If no documents, show "Not any Document" row
+    if (!rows) {
+        rows = `<tr><td colspan="4" class="text-center">Not any Document</td></tr>`;
+    }
+
+    $('#document_tbody').html(rows);
+}
+
+// Delete a document from the list
+$(document).on('click', '.click_delete_document', function () {
+    const docTypeId = $(this).data('doc-type-id');
+    const fileIndex = $(this).data('file-index');
+
+    // Find the document type and remove the specific file
+    const docType = filesArray.find(doc => doc.doc_type_id === docTypeId);
+    if (docType) {
+        docType.files.splice(fileIndex, 1); // Remove the specific file
+        if (docType.files.length === 0) {
+            // Remove the document type if no files are left
+            filesArray = filesArray.filter(doc => doc.doc_type_id !== docTypeId);
+        }
+    }
+
+    // Re-render the table
+    renderDocumentTable();
+});
+
+
 //==============================================
 
 // Delete document from the list
@@ -278,246 +375,46 @@ $(document).on('change', 'input[name="employment_type"]', function() {
     }
 });
 
-
-//=========================================================================================================
-// change & validate department according to branch
-//=========================================================================================================
-
-$(document).on('change', '#branch_id', function () {
-    let branchId = $(this).val();
-
-    if (!branchId) {
-        // If no branch is selected, reset and display error for both branch and department
+// change department according to branch
+$(document).on('change', '#branch_id', function() {
+    let branch_id = $(this).val();
+    if (branch_id == '') {
         $('#department_id').html('<option value="">Select a branch first</option>');
-        $('#department_id').addClass('is-invalid');
-        $('#department_id').siblings('.invalid-feedback').text('This field is required');
-
-        $('#branch_id').addClass('is-invalid');
-        $('#branch_id').siblings('.invalid-feedback').text('This field is required');
-    } else {
-        // If a branch is selected, remove branch error and populate department dropdown
-        $('#branch_id').removeClass('is-invalid');
-        $('#branch_id').siblings('.invalid-feedback').text('');
-
-        let departmentList = (dropdownData?.departments || [])
-            .filter(department => department.branch_departments.some(br_dep => br_dep.branch_id == branchId))
-            .map(department => `<option value="${department.id}">${department.department_name}</option>`)
-            .join('');
-
-        $('#department_id').html('<option value="">Select a department</option>' + departmentList);
-
+        return;
     }
-});
 
+    // Populate department dropdown
+    let departmentList = (dropdownData?.departments || [])
+        .filter(department => department.branch_departments.some(br_dep => br_dep.branch_id == branch_id)) // Check if branch_id exists in branch_departments
+        .map(department => `<option value="${department.id}">${department.department_name}</option>`)
+        .join('');
+
+    $('#department_id').html('<option value="">Select a department</option>' + departmentList);
+});
 
 //=========================================================================================================
 // validation part in go to next page
 //=========================================================================================================
 
-$(document).on('click', '#first-form-button', function () {
-    let allFieldsValid = true;
-
-    // Define required field IDs
-    const requiredFields = [
-        'user_no',
-        'branch_id',
-        'department_id',
-        'user_group_id',
-        'designation_id',
-        'policy_group_id',
-        'user_status',
-        'currency_id',
-        'pay_period_schedule_id',
-        'appointment_date',
-        'permission_group_id',
-        'email',
-        'password',
-        'confirm_password'
-    ];
-
-    const employmentTypeId = 'employment_types';
-
-    // Iterate through required fields
-    requiredFields.forEach(fieldId => {
-        const field = $(`#${fieldId}`);
-        const errorMessage = field.siblings('.invalid-feedback');
-
-        if (!field.val()?.trim()) {
-            allFieldsValid = false;
-            errorMessage.text('This field is required');
-            field.addClass('is-invalid');
-        } else {
-            errorMessage.text('');
-            field.removeClass('is-invalid');
-        }
-    });
-
-    // Validate employment_types separately
-    const empTypeContainer = $(`#${employmentTypeId}`);
-    const selectedEmpType = empTypeContainer.find("input[name='employment_type']:checked").val();
-    const empTypeErrorMessage = empTypeContainer.siblings('.invalid-feedback');
 
 
-    if (!selectedEmpType) {
-        allFieldsValid = false;
-        empTypeErrorMessage.text('This field is required');
-        empTypeContainer.addClass('is-invalid');
-        empTypeContainer.find("input[name='employment_type']").addClass('is-invalid');
-    } else {
-        empTypeErrorMessage.text('');
-        empTypeContainer.removeClass('is-invalid');
-        empTypeContainer.find("input[name='employment_type']").removeClass('is-invalid');
-    }
-
-
-     // Validate "Duration Months" only if required
-     const durationRequiredTypes = ["1", "2", "3"]; // Replace with actual IDs for Contract, Training, Permanent (With Probation)
-    if (durationRequiredTypes.includes(selectedEmpType)) {
-        const monthsField = $('#months');
-        const monthsErrorMessage = monthsField.siblings('.invalid-feedback');
-
-        if (!monthsField.val()?.trim()) {
-            allFieldsValid = false;
-            monthsErrorMessage.text('This field is required');
-            monthsField.addClass('is-invalid');
-        } else {
-            monthsErrorMessage.text('');
-            monthsField.removeClass('is-invalid');
-        }
-    }
-
-
-    // Navigate to the next tab if all fields are valid
-    if (allFieldsValid) {
-        $('#steparrow-contact-info-tab').tab('show');
-    } else {
-        $('.error-msgs').html(`
-            <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow" role="alert">
-                <i class="ri-error-warning-line label-icon"></i>
-                <strong>Error!</strong> Please fill out all required fields before proceeding.
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `);
-    }
-});
-
-// Real-time validation for individual fields
-$(document).on('input change', '[required], select', function () {
-    const field = $(this);
-    const errorMessage = field.siblings('.invalid-feedback');
-
-    if (field.val()?.trim()) {
-        errorMessage.text('');
-        field.removeClass('is-invalid');
-    } else {
-        errorMessage.text('This field is required');
-        field.addClass('is-invalid');
-    }
-});
-
-
-// Real-time validation for employment_types
-$(document).on('change', "input[name='employment_type']", function () {
-    const empTypeContainer = $('#employment_types');
-    const empTypeErrorMessage = empTypeContainer.siblings('.invalid-feedback');
-
-    if ($(this).is(':checked')) {
-        empTypeErrorMessage.text('');
-        empTypeContainer.removeClass('is-invalid');
-        empTypeContainer.find("input[name='employment_type']").removeClass('is-invalid');
-    }
-});
-
-
-//=========================================================================================================
 // check whether password and confirm password matches
-//=========================================================================================================
+$(document).on('keyup', '#password, #confirm_password', function(e) {
+    let password = $('#password').val();
+    let confirm_password = $('#confirm_password').val();
 
-$(document).on('keyup', '#password, #confirm_password', function () {
-    const password = $('#password').val();
-    const confirmPassword = $('#confirm_password').val();
-
-    // Password validation criteria
-    const passwordValidation = [
-        { regex: /.{8,}/, message: "Password must be at least 8 characters long." },
-        { regex: /[A-Z]/, message: "Password must include at least one uppercase letter." },
-        { regex: /[a-z]/, message: "Password must include at least one lowercase letter." },
-        { regex: /[0-9]/, message: "Password must include at least one number." },
-        { regex: /[\W_]/, message: "Password must include at least one special character." },
-    ];
-
-    // Clear existing error messages
-    $('.error-msgs').html('');
-    let isPasswordValid = true;
-    let errorMessages = [];
-
-    // Check password against each validation criterion
-    passwordValidation.forEach(criteria => {
-        if (!criteria.regex.test(password)) {
-            isPasswordValid = false;
-            errorMessages.push(criteria.message);
-        }
-    });
-
-    // Display combined validation errors in a single alert
-    if (!isPasswordValid) {
-        $('.error-msgs').append(`
-            <div class="alert alert-danger alert-dismissible alert-additional fade show material-shadow" role="alert">
-                <div class="alert-body">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    <div class="d-flex">
-                        <div class="flex-shrink-0 me-3">
-                            <i class="ri-error-warning-line fs-16 align-middle"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <h5 class="alert-heading">Important message !</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="alert-content">
-                    <p class="mb-0">${errorMessages.join('<br>')}</p>
-                </div>
-            </div>
-        `);
-    }
-
-    // Check if passwords match
-    if (isPasswordValid && password !== confirmPassword) {
+    if (password !== confirm_password) {
         $('[data-nexttab="steparrow-contact-info-tab"]').prop('disabled', true);
-        $('.error-msgs').append(`
-            <div class="alert alert-danger alert-dismissible bg-danger text-white alert-label-icon fade show material-shadow right" role="alert">
-                <i class="ri-error-warning-line label-icon"></i>
-                <strong>Error!</strong> Passwords don't match.
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `);
-    } else if (isPasswordValid) {
-        $('[data-nexttab="steparrow-contact-info-tab"]').prop('disabled', false);
-    }
-});
-
-
-
-// show and hide password
-$(document).on('click', '.toggle-password', function () {
-    const targetField = $(this).siblings('input'); // Get the input field in the same group
-    const icon = $(this).find('i'); // Get the icon inside the button
-
-    // Toggle the field type
-    if (targetField.attr('type') === 'password') {
-        targetField.attr('type', 'text'); // Show password
-        icon.removeClass('bi-eye').addClass('bi-eye-slash'); // Change icon
+        if ($('.password_error').length === 0) { // Check if the message already exists
+            $('.error-msgs').html('<p class="text-danger password_error m-0">Passwords don\'t match</p>');
+        }
     } else {
-        targetField.attr('type', 'password'); // Hide password
-        icon.removeClass('bi-eye-slash').addClass('bi-eye'); // Change icon
+        $('[data-nexttab="steparrow-contact-info-tab"]').prop('disabled', false);
+        $('.error-msgs').html('');
     }
 });
 
-
-//=========================================================================================================
 //submit the form
-//=========================================================================================================
-
 $(document).on('click', '.emp_form_submit', async function(e) {
     e.preventDefault(); // Prevent default form submission
 
@@ -590,18 +487,6 @@ $(document).on('click', '.emp_form_submit', async function(e) {
 });
 
 
-
-// Reset the form fields
-$(document).on('click', 'button[type="reset"]', function () {
-    const form = $(this).closest('form')[0];
-    if (form) form.reset(); // Reset the form fields to their initial state
-
-    // Clear error messages and validation states
-    $('.is-invalid').removeClass('is-invalid'); // Remove invalid field highlights
-    $('.invalid-feedback').text(''); // Clear error messages
-    $('.error-msgs').html(''); // Clear the error message container
-    $('#first-form-button').prop('disabled', false);
-});
 
 
 </script>

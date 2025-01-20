@@ -1,5 +1,5 @@
 <script>
-    
+
 const user_id = "<?= isset($_GET['emp']) && is_numeric($_GET['emp']) ? $_GET['emp'] : '' ?>";
 
 $(document).ready(function() {
@@ -19,10 +19,10 @@ $(document).ready(function() {
         event.preventDefault(); // Prevent default link behavior if needed
 
         // Get the ID or any data you need (for example, href or tab id)
-        const targetTab = $(this).attr('href'); 
+        const targetTab = $(this).attr('href');
 
         // Call a function to load data based on the tab clicked
-        loadTabData(targetTab); 
+        loadTabData(targetTab);
     });
 
     // Example function to load data based on the tab clicked
@@ -64,8 +64,8 @@ $(document).ready(function() {
 
 async function loadEmployeeOverview(){
     try {
-        let data = await commonFetchData(`/user/${user_id}`);
-        
+        let data = await commonFetchData(`/employees/${user_id}`);
+
         if(data){
             let userData = data.user[0];
             let companyData = data.company[0];

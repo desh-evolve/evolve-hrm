@@ -29,6 +29,7 @@
                 <div class="justify-content-md-end">
                     <div class="d-flex justify-content-end">
                         <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">New Job History<i class="ri-add-line"></i></button>
+                        <a href="/employee/list" class="btn btn-danger">Back</a>
                     </div>
                 </div>
             </div>
@@ -39,11 +40,11 @@
 
                         <div class="row mb-3 mb-4">
                             <div class="col-lg-2">
-                                <label for="user_id" class="form-label mb-1 req">Employee Name</label>
+                                <label for="user_idname" class="form-label mb-1 req">Employee Name</label>
                             </div>
 
                             <div class="col-lg-10">
-                                <select class="form-select" id="user_id" >
+                                <select class="form-select" id="userDropdown" >
 
                                 </select>
                             </div>
@@ -98,9 +99,9 @@
                 <div id="jobhistory-form-body" class="row">
 
                     <div class="col-xxl-12 col-md-12 mb-3">
-                        <label for="employee_name" class="form-label mb-1">Employee Name</label>
-                        <input type="text" class="form-control" id="employee_name" value="" disabled>
-                        <input type="hidden" class="form-control" id="employee_id" value="" disabled>
+                        <label for="user_name" class="form-label mb-1">Employee Name</label>
+                        <input type="text" class="form-control" id="user_name" value="" disabled>
+                        <input type="hidden" class="form-control" id="user_id" value="" disabled>
                     </div>
 
                     <div class="col-xxl-4 col-md-4 mb-3">
@@ -161,7 +162,7 @@
 //======================================================================================================
 // RENDER TABLE
 //======================================================================================================
-let user_id = '';
+let userId = "{{ $user->id }}";
 
 let dropdownData = [];
 
@@ -169,27 +170,25 @@ let dropdownData = [];
         $(document).ready(async function(){
             await getDropdownData();
 
-            $('#add_new_btn').prop('disabled', true); // Disable Addnew button
 
         });
 
         // Get user data when selecting user name
-                $(document).on('change', '#user_id', async function () {
-                    user_id = $(this).val();
-                    let userName = $('#user_id option:selected').text();
+                $(document).on('change', '#userDropdown', async function () {
+                    userId = $(this).val();
+                    let userName = $('#userDropdown option:selected').text();
                     $('#user_name').val(userName);
-                    $('#user_id').val(user_id);
 
                     // Enable button if user is selected
-                    if (user_id) {
+                    if (userId) {
                         $('#add_new_btn').prop('disabled', false);
                     } else {
                         $('#add_new_btn').prop('disabled', true);
                     }
 
 
-                    if (employee_Id === "") {
-                        $('#table_body').html('<tr><td colspan="8" class="text-center">Please Select a Employee...</td></tr>');
+                    if (userId === "") {
+                        $('#table_body').html('<tr><td colspan="8" class="text-center">Select Employee...</td></tr>');
                         $('#employee_name').val('');
                         $('#employee_id').val('');
                     } else {
@@ -201,7 +200,7 @@ let dropdownData = [];
           async function renderJobHistoryTable(){
             let list = '';
 
-            const jobs = await commonFetchData(`/user/jobhistory/${user_id}`);
+            const jobs = await commonFetchData(`/employee/jobhistory/${userId}`);
 
             if(jobs && jobs.length > 0){
                 jobs.map((job, i) => {
@@ -239,14 +238,24 @@ let dropdownData = [];
 
         async function getDropdownData() {
             try {
-              let dropdownData = await commonFetchData('/user/jobhistory/dropdown');
+              let dropdownData = await commonFetchData('/employee/jobhistory/dropdown');
 
+              if (dropdownData) {
                 // Populate user name dropdown
                 let userList = (dropdownData?.users || [])
-                    .map(user => `<option value="${user.id}">${user.name_with_initials}</option>`)
+                    .map(user => `<option value="${user.id}">${user.first_name} ${user.last_name}</option>`)
                     .join('');
-                $('#user_id').html('<option value="">Select Employee Name</option>' + userList);
+                $('#userDropdown').html('<option value="">Select Employee</option>' + userList);
 
+                // Check if a userId is already selected
+                if (userId) {
+                    $('#userDropdown').val(userId); // Pre-select the dropdown value
+                    $('#user_name').val($('#userDropdown option:selected').text()); // Display name
+                    await renderJobHistoryTable(userId); // Render table for the selected user
+                }
+            } else {
+                    console.log('No users found');
+            }
 
                 // Populate branch dropdown
                 let branchList = (dropdownData?.branches || [])
@@ -274,6 +283,7 @@ let dropdownData = [];
             }
         }
 
+
 //======================================================================================================
 // DELETE FUNCTION
 //======================================================================================================
@@ -287,7 +297,7 @@ let dropdownData = [];
     });
 
     async function deleteItem(id, $row) {
-        const url ='/user/jobhistory/delete';
+        const url ='/employee/jobhistory/delete';
         const title ='Employee Job History';
         try {
                     const res = await commonDeleteFunction(id, url, title, $row);
@@ -321,7 +331,7 @@ let dropdownData = [];
         let jobhistory_id = $(this).closest('tr').attr('jobhistory_id');
 
         try {
-            let job_data = await commonFetchData(`/user/single_jobhistory/${jobhistory_id}`);
+            let job_data = await commonFetchData(`/employee/single_jobhistory/${jobhistory_id}`);
             job_data = job_data[0];
                 console.log('users_data', job_data);
 
@@ -348,7 +358,7 @@ let dropdownData = [];
         const jobhistory_id = $('#jobhistory_id').val();
 
         const isUpdating = Boolean(jobhistory_id);
-        const url = isUpdating ? `/user/jobhistory/update/${jobhistory_id}` : `/user/jobhistory/create`;
+        const url = isUpdating ? `/employee/jobhistory/update/${jobhistory_id}` : `/employee/jobhistory/create`;
         const method = isUpdating ? 'PUT' : 'POST';
 
         const formFields = {
@@ -379,7 +389,7 @@ let dropdownData = [];
             $('#error-msg').html('');
         }
 
-            formData.append('user_id', user_id);
+            formData.append('user_id', userId);
 
         try {
             let res = await commonSaveData(url, formData, method);

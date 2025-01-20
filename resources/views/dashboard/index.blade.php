@@ -65,7 +65,7 @@
                     <div class="row">
                         <!-- Employee Count -->
                         <div class="col-md-6">
-                            <div class="card card-animate">
+                            <div class="card card-animate" style="height: 125px;">
                                 <div class="card-body bg-success">
                                     <div class="d-flex justify-content-between">
                                         <div>
@@ -86,12 +86,12 @@
 
                         <!-- Approved Leave Count -->
                         <div class="col-md-6">
-                            <div class="card card-animate">
+                            <div class="card card-animate" style="height: 125px;">
                                 <div class="card-body bg-danger">
                                     <div class="d-flex justify-content-between">
                                         <div>
                                             <p class="fw-semibold text-white mb-0 fs-5">Approved Leaves</p>
-                                            <h2 class="mt-4 text-white fs-1 fw-semibold"><span class="leaves-count"></span></h2>
+                                            <h2 class="mt-4 text-white fs-1 fw-semibold"><span class="leaves-count">0</span></h2>
                                         </div>
                                         <div>
                                             <div class="avatar-sm flex-shrink-0">
@@ -385,6 +385,7 @@
                 console.error('Error updating employee count:', error);
             }
         }
+
 
 
         async function updateApprovedLeaveCount() {
