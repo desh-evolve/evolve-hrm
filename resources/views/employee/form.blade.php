@@ -24,7 +24,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <form action="{{ url('/employee/create') }}" method="POST" class="form-steps" autocomplete="on" enctype="multipart/form-data">
+                <form action="{{ url('/user/create') }}" method="POST" class="form-steps" autocomplete="on" enctype="multipart/form-data">
                     @csrf
 
                     <div class="card-header">
@@ -55,14 +55,14 @@
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="user_no">Employee Number</label>
                                                     <input type="text" class="form-control" id="user_no" name="user_no" placeholder="Enter Employee Number" required />
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an user number</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="punch_machine_user_id">Punch Machine User ID</label>
                                                     <input type="text" class="form-control" id="punch_machine_user_id" name="punch_machine_user_id" placeholder="Enter Punch Machine User ID" />
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a punch machine user ID</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -71,7 +71,7 @@
                                                     <select class="form-select" id="branch_id" name="branch_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a branch</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -80,16 +80,16 @@
                                                     <select class="form-select" id="department_id" name="department_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a department</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label req" for="employee_group_id">Employment Group</label>
-                                                    <select class="form-select" id="employee_group_id" name="employee_group_id" required>
+                                                    <label class="form-label req" for="user_group_id">Employment Group</label>
+                                                    <select class="form-select" id="user_group_id" name="user_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an employment group</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -98,7 +98,7 @@
                                                     <select class="form-select" id="designation_id" name="designation_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a designation</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -107,7 +107,7 @@
                                                     <select class="form-select" id="policy_group_id" name="policy_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a policy_group</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -116,7 +116,7 @@
                                                     <select class="form-select" id="user_status" name="user_status" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an user status</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -128,7 +128,7 @@
                                                     <select class="form-select" id="currency_id" name="currency_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a currency</div>
                                                 </div>
                                             </div>
 
@@ -138,7 +138,7 @@
                                                     <select class="form-select" id="pay_period_schedule_id" name="pay_period_schedule_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a Pay Period</div>
                                                 </div>
                                             </div>
 
@@ -148,24 +148,24 @@
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="appointment_date">Appointment Date</label>
                                                     <input type="date" class="form-control" id="appointment_date" name="appointment_date" required />
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an appointment date</div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="appointment_note">Appointment Note</label>
                                                     <textarea class="form-control" id="appointment_note" name="appointment_note" placeholder="Enter Appointment Note"></textarea>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an appointment note</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="termination_date">Termination Date</label>
                                                     <input type="date" class="form-control" id="termination_date" name="termination_date" />
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an termination date</div>
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="form-label" for="termination_note">Termination Note</label>
                                                     <textarea class="form-control" id="termination_note" name="termination_note" placeholder="Enter Termination Note"></textarea>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an termination note</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -178,7 +178,7 @@
                                                 <div class="mt-2 mb-3">
                                                     <label class="form-label" for="confirmed_date">Confirmed Date</label>
                                                     <input type="date" class="form-control" id="confirmed_date" name="confirmed_date" />
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a confirmed date</div>
                                                 </div>
                                             </div>
 
@@ -186,7 +186,7 @@
                                                 <div class="mt-3 mb-3">
                                                     <label class="form-label" for="retirement_date">Retirement Date</label>
                                                     <input type="date" class="form-control" id="retirement_date" name="retirement_date" />
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a retirement date</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -198,7 +198,7 @@
                                                     <div id="employment_types">
 
                                                     </div>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an user status</div>
                                                 </div>
                                             </div>
 
@@ -206,7 +206,7 @@
                                                 <div class="mt-3 mb-3">
                                                     <label class="form-label" for="months">Select Duration in Months</label>
                                                     <input type="number" class="form-control numonly" id="months" name="months" min="1" max="12" placeholder="Enter months">
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a valid month duration</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -217,55 +217,36 @@
                                                     <select class="form-select" id="permission_group_id" name="permission_group_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter a permission group</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="email">Email</label>
                                                     <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required autocomplete="new-password" >
-                                                    <div class="invalid-feedback"></div>
+                                                    <div class="invalid-feedback">Please enter an email address</div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="password">Password</label>
-                                                    <div class="input-group">
-                                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required autocomplete="new-password">
-                                                        <button type="button" class="btn btn-secondary toggle-password" id="togglePassword">
-                                                            <i class="bi bi-eye"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div class="invalid-feedback"></div>
+                                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required autocomplete="new-password" >
+                                                    <div class="invalid-feedback">Please enter a password</div>
                                                 </div>
                                             </div>
-
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="confirm_password">Confirm Password</label>
-                                                    <div class="input-group">
-                                                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter confirm password" required >
-                                                        <button type="button" class="btn btn-secondary toggle-password" id="toggleConfirmPassword">
-                                                            <i class="bi bi-eye"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div class="invalid-feedback"></div>
+                                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Enter confirm password" required >
+                                                    <div class="invalid-feedback">Please enter a confirm password</div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Error Messages -->
-                                <div class="d-flex justify-content-end">
-                                    <div class="error-msgs" style="width: auto"></div>
-                                </div>
-
-                                <div class="d-flex justify-content-end mb-2 align-items-start gap-1">
-                                    <!-- Offset Position -->
-                                    <button type="reset" data-toast data-toast-text="Clear All fields!" data-toast-gravity="top" data-toast-position="right" data-toast-duration="3000" data-toast-offset data-toast-close="close" class="btn btn-secondary">Clear</button>
-                                    <button type="button" class="btn btn-success btn-label right" data-nexttab="steparrow-contact-info-tab" id="first-form-button">
-                                        <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to contact info</button>
+                                <div class="error-msgs text-end"></div>
+                                <div class="d-flex align-items-start gap-3 mt-4">
+                                    <button type="button" class="btn btn-success btn-label right ms-auto" data-nexttab="steparrow-contact-info-tab" id="first-form-button"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to contact info</button>
                                 </div>
                             </div>
                             <!-- end user identification tab pane -->

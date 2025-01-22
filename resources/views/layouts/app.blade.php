@@ -30,6 +30,9 @@
 
         <link rel="stylesheet" href="{{ asset('assets/css/datatables/buttons.dataTables.min.css') }}">
 
+        {{-- icons boostrap --}}
+        <link rel="stylesheet" href="{{ asset('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css') }}" />
+
         <!-- select2 -->
         <link rel="stylesheet" href="{{ asset('assets/libs/select2/select2.min.css') }}">
 

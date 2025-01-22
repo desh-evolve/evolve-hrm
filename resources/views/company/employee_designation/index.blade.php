@@ -63,7 +63,7 @@
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
-                        
+
                     </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
@@ -96,7 +96,6 @@
             $('#table_body').html('<p>Loading...</p>');
             let items = await commonFetchData('/company/employee_designations');
 
-       
             if (items && items.length > 0) {
                 items.map((item, i) => {
                     list += `
@@ -139,7 +138,7 @@
         $(document).on('click', '.click_edit_designation', async function() {
             resetForm();
             let designation_id = $(this).closest('tr').attr('designation_id');
-            
+
 
             // Get branch data by id
             try {
@@ -152,7 +151,7 @@
                 $('#emp_designation_name').val(designation_data?.emp_designation_name || '');
                 $('#designation_status').val(designation_data?.status || '');
                 // Load the country, province, and city accordingly
-                
+
 
             } catch (error) {
                 console.error('error at getBranchById: ', error);
@@ -172,7 +171,7 @@
             let updateUrl = `/company/employee_designation/update/${designation_id}`;
 
             let formData = new FormData();
-            
+
 
             if(!emp_designation_name || !designation_status){
                 $('#error-msg').html('<p class="text-danger">All fields are required: ');
@@ -180,7 +179,7 @@
             } else {
                 $('#error-msg').html(''); // Clear error message if no issues
             }
-            
+
             formData.append('emp_designation_name', emp_designation_name );
             formData.append('designation_status', designation_status );
 

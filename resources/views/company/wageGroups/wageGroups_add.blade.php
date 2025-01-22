@@ -165,7 +165,7 @@
     });
 
     async function deleteItem(id, $row) {
-        const url ='company/wagegroups/delete';
+        const url ='/company/wagegroups/delete';
         const title ='Wage Group';
 
 

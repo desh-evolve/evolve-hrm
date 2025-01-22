@@ -374,7 +374,7 @@ $(document).ready(async function () {
 
     async function getDropdownData() {
         try {
-            dropdownData = await commonFetchData('/user/name/dropdown');
+            dropdownData = await commonFetchData('/employee/name/dropdown');
             // Populate users dropdown
             let userList = (dropdownData?.users || [])
                 .map(user => `<option value="${user.id}">${user.work_email}</option>`)
@@ -485,7 +485,7 @@ $(document).ready(async function () {
 
     async function renderSentMessages() {
         try {
-            const messages = await commonFetchData('/user/sent/messages');
+            const messages = await commonFetchData('/employee/sent/messages');
 
             if (messages.length === 0) {
                 $('#msg-list').html('<li class="text-center">No sent messages available</li>');
@@ -532,7 +532,7 @@ $(document).ready(async function () {
 
     async function renderReceivedMessages() {
         try {
-            const messages = await commonFetchData('/user/inbox/messages');
+            const messages = await commonFetchData('/employee/inbox/messages');
 
             if (messages.length === 0) {
                 $('#msg-list').html('<li class="text-center">No inbox messages available</li>');
@@ -689,7 +689,6 @@ $(document).ready(async function () {
     $(document).on('click', '.email-item', async function () {
         resetForm();
 
-        // Get the subject directly from the clicked row
         const $row = $(this);
         const subjectName = $row.find('.subject-title').text();
         const typeName = $row.find('.title-name').text();
@@ -698,7 +697,7 @@ $(document).ready(async function () {
         $('#message-box-subject').text(subjectName || 'No Subject');
         $('#message-box-type').text(typeName || 'No message type');
 
-        // Get the message ID from the row attribute
+
         let msg_id = $row.attr('msg_id');
 
         if (!msg_id) {
@@ -708,17 +707,17 @@ $(document).ready(async function () {
         }
 
         try {
-            let messageData = await commonFetchData(`/user/messages/${msg_id}`);
+            let messageData = await commonFetchData(`/employee/messages/${msg_id}`);
 
             if (Array.isArray(messageData) && messageData.length > 0) {
                 console.log('Fetched Message Data:', messageData);
 
-                // Generate HTML for all messages
+
                 const messagesHTML = messageData.map((message) => {
                     // Extract receiver emails
                     let displayedReceivers = 'Receiver Unknown';
                     if (Array.isArray(message.receiver_details)) {
-                        let receiverEmail = message.receiver_details.map(receiver => receiver.receiver_email); // Extract receiver_email
+                        let receiverEmail = message.receiver_details.map(receiver => receiver.receiver_email);
                        if (receiverEmail.length > 3) {
                             displayedReceivers = receiverEmail.slice(0,3).join(', ') + ', ....'; // Show first 3 and append ...
                        } else {
@@ -764,7 +763,7 @@ $(document).ready(async function () {
                     </div>
                 `;
 
-                // Append
+
                 $('.delete-chat').append(deleteButtonHTML);
                  $('.reply-chat').append(replyButtonHTML);
                 $('#message_content').html(`${messagesHTML}`);
@@ -816,7 +815,7 @@ $(document).ready(async function () {
 
 
         try {
-            let message_data = await commonFetchData(`/user/single_message/${message_id}`);
+            let message_data = await commonFetchData(`/employee/single_message/${message_id}`);
 
             if (message_data && message_data[0]) {
                 message_data = message_data[0];
@@ -867,7 +866,6 @@ $(document).ready(async function () {
             console.error('Error fetching message details:', error);
             $('#message-details-error-msg').html('<p class="text-danger">Failed to load message details. Please try again.</p>');
         } finally {
-            // Show the reply modal
             $('#message-details-modal').modal('show');
         }
     });
@@ -890,7 +888,7 @@ $(document).ready(async function () {
 
 
     $(document).on('click', '#message-send-confirm', async function() {
-        let createUrl = `/user/messages/create`;
+        let createUrl = `/employee/messages/create`;
 
         let subject = $('#subject').val();
         let description = $('#description').val();
@@ -968,8 +966,7 @@ $(document).ready(async function () {
         }
 
         try {
-            // Fetch message data using the control ID
-            let replyMessageData = await commonFetchData(`/user/messages/${messageControlId}`);
+            let replyMessageData = await commonFetchData(`/employee/messages/${messageControlId}`);
 
             if (replyMessageData && Array.isArray(replyMessageData)) {
                 replyMessageData = replyMessageData[0];
@@ -980,7 +977,7 @@ $(document).ready(async function () {
                     email: receiver.receiver_email
                 })) || [];
 
-                 // Include the sender in the reply receivers (if not logged-in user)
+
                 if (replyMessageData.sender_id !== loggedUserId) {
                     receivers.push({
                         id: replyMessageData.sender_id,
@@ -988,18 +985,16 @@ $(document).ready(async function () {
                     });
                 }
 
-                // Filter out duplicates and logged-in user
+
                 receivers = receivers.filter((receiver, index, self) =>
                     receiver.id !== loggedUserId &&
                     index === self.findIndex(r => r.id === receiver.id)
                 );
 
 
-                // Extract subject from subject_details
                 const subjectDetails = replyMessageData?.subject_details || {};
                 const messageSubject = subjectDetails[0]?.message_subject || 'No Subject';
 
-                // Prepend "Re: " to the subject
                 const replySubject = `Re: ${messageSubject}`;
 
 
@@ -1041,7 +1036,7 @@ $(document).ready(async function () {
 
 
     $(document).on('click', '#message-reply-confirm', async function() {
-        let createUrl = `/user/messages/reply`;
+        let createUrl = `/employee/messages/reply`;
 
         let message_control_id = $('#message_control_id').val();
         let reply_subject = $('#reply_subject').val();
@@ -1056,7 +1051,6 @@ $(document).ready(async function () {
         if (!reply_body) missingFields.push('reply_body');
         if (!reply_receivers || reply_receivers.length == 0) missingFields.push('reply_receivers');
 
-        // If there are any missing fields, display the error message and stop execution
         if (missingFields.length > 0) {
             let errorMsg = '<p class="text-danger">The following fields are required: ';
             errorMsg += missingFields.map(field => field.replace('_', ' ')).join(', ') + '.</p>';
@@ -1066,7 +1060,7 @@ $(document).ready(async function () {
             $('#reply-error-msg').html('');
         }
 
-        // Append form data
+
         formData.append('message_control_id', message_control_id);
         formData.append('reply_subject', reply_subject);
         formData.append('reply_body', reply_body);
@@ -1084,10 +1078,10 @@ $(document).ready(async function () {
                 await commonAlert(res.status, res.message);
 
                 await allRender();
-                // Reload the message details box
+
                 let $row = $(`li[msg_id="${message_control_id}"]`);
                 if ($row.length) {
-                    $row.trigger('click'); // Simulate a click on the message to reload its details
+                    $row.trigger('click');
                 }
 
                 $('#reply-modal').modal('hide');
@@ -1108,7 +1102,6 @@ $(document).ready(async function () {
 
 
     $(document).on('click', '.remove-mail', async function () {
-        // Get the message_control_id from the parent container
         const messageControlId = $(this).data('message-control-id');
 
         if (!messageControlId) {
@@ -1117,7 +1110,7 @@ $(document).ready(async function () {
         }
 
         try {
-            const url = `/user/message/delete`;
+            const url = `/employee/message/delete`;
             const title = 'Chat';
 
             const res = await commonDeleteFunction(messageControlId, url, title);
@@ -1152,7 +1145,7 @@ $(document).ready(async function () {
     // All Render Function
     async function allRender() {
         try {
-            // Check which tab is active and render the corresponding list
+            
             if ($('#all-message').hasClass('active')) {
                 await renderAllMessages();
             } else if ($('#sent-message').hasClass('active')) {

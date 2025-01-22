@@ -15,15 +15,15 @@ class JobHistoryController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user job history', ['only' => [
+        $this->middleware('permission:view employee job history', ['only' => [
             'index',
             'getJobHistoryByEmployeeId',
             'getJobHistoryDropdownData',
             'getJobHistoryBySingleEmployee',
         ]]);
-        $this->middleware('permission:create user job history', ['only' => ['createJobHistory']]);
-        $this->middleware('permission:update user job history', ['only' => ['updateJobHistory']]);
-        $this->middleware('permission:delete user job history', ['only' => ['deleteJobHistory']]);
+        $this->middleware('permission:create employee job history', ['only' => ['createJobHistory']]);
+        $this->middleware('permission:update employee job history', ['only' => ['updateJobHistory']]);
+        $this->middleware('permission:delete employee job history', ['only' => ['deleteJobHistory']]);
 
         $this->common = new CommonModel();
     }
@@ -32,7 +32,7 @@ class JobHistoryController extends Controller
     //pawanee(2024-10-28)
     public function index()
     {
-        return view('user.job_history');
+        return view('employee_job_history.index');
     }
 
 
@@ -177,5 +177,5 @@ class JobHistoryController extends Controller
 
 
 
-    
+
 }

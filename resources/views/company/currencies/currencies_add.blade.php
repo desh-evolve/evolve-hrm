@@ -186,9 +186,9 @@
 
     // Add currency
     $(document).on('click', '#add_new_btn', function () {
-        resetForm(); // Reset the form
-        $('.modal-title').text('Add Currency');  // Set modal title for adding
-        $('#currency_form_modal').modal('show'); // Show the modal for adding a new currency
+        resetForm();
+        $('.modal-title').text('Add Currency');
+        $('#currency_form_modal').modal('show');
     });
 
 
@@ -203,7 +203,7 @@
             $('.modal-title').text('Edit Currency');
         }
 
-        // Get currency data by ID
+
         try {
             let currency_data = await commonFetchData(`/company/currency/${currency_id}`);
             currency_data = currency_data[0];
@@ -216,7 +216,7 @@
             $('#previous_rate').val(currency_data?.previous_rate || '');
 
             // Check the checkbox based on the is_default value (assuming it's a number)
-            $('#is_default').prop('checked', currency_data?.is_default === 1); // Compare with the number 1
+            $('#is_default').prop('checked', currency_data?.is_default === 1);
 
         } catch (error) {
             console.error('Error at getCurrencyById:', error);
@@ -247,7 +247,7 @@
         // Validate only required fields
         for (const key in formFields) {
             const fieldId = key;
-            const value = $('#' + fieldId).val(); // Fetch value using the ID
+            const value = $('#' + fieldId).val();
 
             // Check only required fields
             if (formFields[key] === 'required' && !value) {
@@ -255,12 +255,11 @@
             }
 
             // Append all fields to formData
-            formData.append(key, value || ''); // Append empty string if no value for optional fields
+            formData.append(key, value || '');
         }
 
         // Capture the actual value of is_default from the form
         formData.append('is_default', $('#is_default').is(':checked') ? '1' : '0');
-
 
 
         // If there are missing required fields, display an error message
@@ -270,21 +269,21 @@
             $('#error-msg').html(errorMsg);
             return;
         } else {
-            $('#error-msg').html(''); // Clear error message if no issues
+            $('#error-msg').html('');
         }
 
 
         // Check if updating
         const isUpdating = Boolean(currency_id);
         let url = isUpdating ? updateUrl : createUrl;
-        let method = isUpdating ? 'PUT' : 'POST'; // Set method based on update/create
+        let method = isUpdating ? 'PUT' : 'POST';
 
         if (isUpdating) {
-            formData.append('id', currency_id); // Append ID if updating
+            formData.append('id', currency_id);
         }
 
         try {
-            // Send data and handle response
+
             let res = await commonSaveData(url, formData, method);
             await commonAlert(res.status, res.message);
 
@@ -308,14 +307,14 @@
         $('#iso_code').val('');
         $('#conversion_rate').val('');
         $('#previous_rate').val('');
-        $('#is_default').prop('checked', false); // Uncheck the checkbox
+        $('#is_default').prop('checked', false);
         $('#error-msg').html('');
     }
 
 
-    //==================================================================================================
-    // DELETE FUNCTION
-    //==================================================================================================
+//==================================================================================================
+// DELETE FUNCTION
+//==================================================================================================
 
 
     $(document).on('click', '.click_delete', function() {
@@ -327,7 +326,7 @@
     });
 
     async function deleteItem(id, $row) {
-        const url ='company/currency/delete';
+        const url ='/company/currency/delete';
         const title ='Currency';
 
         try {

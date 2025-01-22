@@ -18,7 +18,7 @@ class EmployeeMessagesController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user messages', ['only' => [
+        $this->middleware('permission:view employee messages', ['only' => [
             'index',
             'getAllMessages',
             'getMessagesByControlId',
@@ -37,7 +37,7 @@ class EmployeeMessagesController extends Controller
     //pawanee(2024-11-20)
     public function index()
     {
-        return view('user.messages.index');
+        return view('employee.messages.index');
     }
 
 
@@ -104,12 +104,11 @@ class EmployeeMessagesController extends Controller
                     foreach ($users as $user){
                         $inputArr3 = [
                             'message_id' => $messageId, // Message ID from messages table
-                            'received_id' => trim($user), // Employee ID
+                            'receiver_id' => trim($user), // Employee ID
                         ];
                         $this->common->commonSave($table3, $inputArr3);
                     }
                 }
-
 
                 if ($insertId) {
                     return response()->json(['status' => 'success', 'message' => 'Message Sent successfully', 'data' => ['id' => $insertId]], 200);
@@ -150,15 +149,15 @@ class EmployeeMessagesController extends Controller
                     'messages.created_at as sent_at',
                     'sender.id as sender_id',
                     'sender.work_email as sender_email',
-                    'message_employees.read_status',
+                    'message_users.read_status',
                 ],
                 'con_where' => [
                     'messages.message_control_id' => 'id',
-                    'message_employees.received_id' => $loggedInUserId
+                    'message_users.receiver_id' => $loggedInUserId
                 ],
                 'con_joins' => [
                     'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'],
-                    'message_employees' => ['message_employees.message_id', '=', 'messages.id'],
+                    'message_users' => ['message_users.message_id', '=', 'messages.id'],
                 ],
                 'con_name' => 'message_details',
                 'except_deleted' => true,
@@ -229,15 +228,15 @@ class EmployeeMessagesController extends Controller
                     'messages.created_at as sent_at',
                     'sender.id as sender_id',
                     'sender.work_email as sender_email',
-                    'message_employees.read_status',
+                    'message_users.read_status',
                 ],
                 'con_where' => [
                     'messages.message_control_id' => 'id',
-                    'message_employees.received_id' => $loggedInUserId
+                    'message_users.receiver_id' => $loggedInUserId
                 ],
                 'con_joins' => [
                     'emp_employees as sender' => ['sender.id', '=', 'messages.sender_id'],
-                    'message_employees' => ['message_employees.message_id', '=', 'messages.id'],
+                    'message_users' => ['message_users.message_id', '=', 'messages.id'],
                 ],
                 'con_name' => 'message_details',
                 'except_deleted' => true,
@@ -282,9 +281,9 @@ class EmployeeMessagesController extends Controller
                 }
 
                 // Check if there are any unread messages
-                $unreadMessages = DB::table('message_employees')
+                $unreadMessages = DB::table('message_users')
                     ->whereIn('message_id', $messageIds)
-                    ->where('received_id', $loggedInUserId)
+                    ->where('receiver_id', $loggedInUserId)
                     ->where('read_status', 0)
                     ->exists();
 
@@ -293,9 +292,9 @@ class EmployeeMessagesController extends Controller
                 }
 
                 // Update read_status
-                $updatedRows = DB::table('message_employees')
+                $updatedRows = DB::table('message_users')
                     ->whereIn('message_id', $messageIds)
-                    ->where('received_id', $loggedInUserId)
+                    ->where('receiver_id', $loggedInUserId)
                     ->where('read_status', 0)
                     ->update(['read_status' => 1]);
 
@@ -341,7 +340,7 @@ class EmployeeMessagesController extends Controller
                 'con_fields' => ['receiver.id AS receiver_id', 'receiver.work_email AS receiver_email'],
                 'con_where' => ['message_users.message_id' => 'id'],
                 'con_joins' => [
-                    'emp_employees as receiver' => ['receiver.id', '=', 'message_users.received_id'],
+                    'emp_employees as receiver' => ['receiver.id', '=', 'message_users.receiver_id'],
                 ],
                 'con_name' => 'receiver_details',
                 'except_deleted' => true,
@@ -395,7 +394,7 @@ class EmployeeMessagesController extends Controller
                 'con_fields' => ['receiver.id AS receiver_id', 'receiver.work_email AS receiver_email'],
                 'con_where' => ['message_users.message_id' => 'id'],
                 'con_joins' => [
-                    'emp_employees as receiver' => ['receiver.id', '=', 'message_users.received_id'],
+                    'emp_employees as receiver' => ['receiver.id', '=', 'message_users.receiver_id'],
                 ],
                 'con_name' => 'receiver_details',
                 'except_deleted' => true,
@@ -460,7 +459,7 @@ class EmployeeMessagesController extends Controller
                 foreach ($request->reply_receivers as $replyReceiver) {
                     $inputArr2 = [
                         'message_id' => $insertId, // The new message ID
-                        'received_id' => $replyReceiver, // Receiver ID
+                        'receiver_id' => $replyReceiver, // Receiver ID
                     ];
                     $this->common->commonSave($table2, $inputArr2);
                 }
@@ -489,7 +488,7 @@ class EmployeeMessagesController extends Controller
                 ->where('id', $id)
                 ->first();
 
-                
+
             if (!$messageControl) {
                 return response()->json(['status' => 'error', 'message' => 'Message control record not found.'], 404);
             }
