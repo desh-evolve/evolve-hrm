@@ -43,13 +43,14 @@ use App\Http\Controllers\Policy\HolidayPolicyController;
 use App\Http\Controllers\Policy\AbsencePolicyController;
 use App\Http\Controllers\Policy\SchedulePolicyController;
 use App\Http\Controllers\Policy\PolicyGroupsController;
+use App\Http\Controllers\Policy\CommonPolicyController;
 
 // Attendance
 use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
 use App\Http\Controllers\Attendance\TimeSheetController;
 use App\Http\Controllers\Attendance\LeavesController;
-use App\Http\Controllers\Attendance\AttendanceRequestsController;
+use App\Http\Controllers\Attendance\RequestController;
 
 // Payroll
 use App\Http\Controllers\Payroll\PayStubAccountController;
@@ -57,7 +58,7 @@ use App\Http\Controllers\Payroll\PayStubAmendmentController;
 use App\Http\Controllers\Payroll\PayPeriodScheduleController;
 use App\Http\Controllers\Payroll\CompanyDeductionController;
 use App\Http\Controllers\Payroll\PayStubEntryAccountLinkController;
-use App\Http\Controllers\Policy\CommonPolicyController;
+use App\Http\Controllers\Payroll\ProcessPayrollController;
 
 
 // Reports
@@ -333,11 +334,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
 
     //   Employee request
-    Route::get('/attendance/request/index', [AttendanceRequestsController::class, 'index'])->name('request.index');
-    Route::get('/attendance/request/dropdown', [AttendanceRequestsController::class, 'getRequestDropdownData'])->name('request.dropdown');
-    Route::post('/attendance/request/create', [AttendanceRequestsController::class, 'createAttendenceRequests'])->name('request.create');
-    Route::get('/attendance/request/{id}', [AttendanceRequestsController::class, 'getRequestsByControlId'])->name('request.getById');
-    Route::delete('/attendance/request/delete/{id}', [AttendanceRequestsController::class, 'deleteAttendenceRequests'])->name('request.delete');
+    Route::get('/attendance/request/index', [RequestController::class, 'index'])->name('request.index');
+    Route::get('/attendance/request/dropdown', [RequestController::class, 'getRequestDropdownData'])->name('request.dropdown');
+    Route::post('/attendance/request/create', [RequestController::class, 'createAttendenceRequests'])->name('request.create');
+    Route::get('/attendance/request/{id}', [RequestController::class, 'getRequestsByControlId'])->name('request.getById');
+    Route::delete('/attendance/request/delete/{id}', [RequestController::class, 'deleteAttendenceRequests'])->name('request.delete');
 
     //   Employee Punch
     Route::get('/company/employee_punch/index', [PunchController::class, 'index'])->name('company.employee_punch.index');
@@ -396,6 +397,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/payroll/pay_period_schedule/dropdown', [PayPeriodScheduleController::class, 'getPayPeriodScheduleDropdownData'])->name('company.pay_period_schedule.dropdown');
     Route::get('/payroll/pay_period_schedule/AllPayPeriodSchedules', [PayPeriodScheduleController::class, 'getAllPayPeriodSchedules'])->name('payroll.pay_period_schedule.all');
     Route::get('/payroll/pay_period_schedule/{id}', [PayPeriodScheduleController::class, 'getPayPeriodScheduleById'])->name('payroll.pay_period_schedule.getById');
+    
     //   Pay Period Schedule
     Route::get('/payroll/company_deduction', [CompanyDeductionController::class, 'index'])->name('payroll.company_deduction');
     Route::get('/payroll/company_deduction/form', [CompanyDeductionController::class, 'form'])->name('payroll.company_deduction.form');
@@ -412,6 +414,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::put('/payroll/pay_stub_entry_account_link/update/{id}', [PayStubEntryAccountLinkController::class, 'updatePayStubEntryAccountLink'])->name('payroll.pay_stub_entry_account_link.update');
     Route::get('/payroll/pay_stub_entry_account_link/dropdown', [PayStubEntryAccountLinkController::class, 'getPayStubEntryAccountLinkDropdownData'])->name('company.pay_stub_entry_account_link.dropdown');
     Route::get('/payroll/pay_stub_entry_account_link/{id}', [PayStubEntryAccountLinkController::class, 'getPayStubEntryAccountLinkById'])->name('payroll.pay_stub_entry_account_link.getById');
+    
+    // Process Payroll (End of pay period)
+    Route::get('/payroll/process_payroll', [ProcessPayrollController::class, 'index'])->name('payroll.process_payroll');
+    
+    
 
     //==============================================================================================================================
     // Employee Job History

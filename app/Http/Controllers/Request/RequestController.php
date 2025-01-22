@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Attendance;
+namespace App\Http\Controllers\Request;
 
 use App\Models\CommonModel;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class AttendanceRequestsController extends Controller
+class RequestController extends Controller
 {
 
     // not complete
@@ -235,6 +235,10 @@ class AttendanceRequestsController extends Controller
         $this->common->commonDelete($id, ['ref_id' => $id], 'Request Status', 'message_control');
 
         return $res;
+    }
+
+    public function getSumByPayPeriodIdAndStatus(){
+        
     }
 
 }

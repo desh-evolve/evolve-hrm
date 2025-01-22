@@ -31,6 +31,35 @@ class PayPeriodController extends Controller
         return $res;
     }
 
+    public function getByCompanyIdAndStatus($company_id, $status_ids){
+        if ( $company_id == '' ) {
+			return FALSE;
+		}
+
+		if ( $status_ids == '' ) {
+			return FALSE;
+		}
+
+        $table = 'pay_period';
+        $fields = '*';
+        $joinArr = [];
+        
+        $whereArr = [
+            //['company_id', '=', $company_id],
+            'pay_period.status in ('.implode(',', array_map(fn($id) => "'$id'", $status_ids)).')',
+        ];
+
+        $exceptDel = true;
+        $connections = [];
+        $groupBy = null;
+        $orderBy = 'pay_period.transaction_date ASC';
+
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel, $connections, $groupBy, $orderBy);
+        
+        return $res;
+
+    }
+
 }
 
 ?>
