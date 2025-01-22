@@ -44,6 +44,12 @@ class CurrencyController extends Controller
 
 
                 $table = 'com_currencies';
+
+                 // If the new currency is-default, reset all others to non-default
+                if ($request->is_default == 1) {
+                    DB::table($table)->update(['is_default' => 0]);
+                }
+
                 $inputArr = [
                     'currency_name' => $request->currency_name,
                     'iso_code' => $request->iso_code,

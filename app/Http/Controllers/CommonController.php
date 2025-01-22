@@ -58,7 +58,7 @@ class CommonController extends Controller
         // Define table joins
         $joinArr = [
             'user_date' => ['user_date.id', '=', 'exception.user_date_id'],
-            'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
+            'emp_employees' => ['emp_employees.user_id', '=', 'user_date.user_id'],
             'exception_policy' => ['exception_policy.id', '=', 'exception.exception_policy_id']
         ];
     
@@ -111,7 +111,7 @@ class CommonController extends Controller
         // Define table joins
         $joinArr = [
             'user_date' => ['user_date.id', '=', 'request.user_date_id'],
-            'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
+            'emp_employees' => ['emp_employees.user_id', '=', 'user_date.user_id'],
         ];
     
         // Define where conditions

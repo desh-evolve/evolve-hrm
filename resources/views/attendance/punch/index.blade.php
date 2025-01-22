@@ -8,57 +8,49 @@
             background-color: #ddd;
         }
     </style>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header align-items-center d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-0">Punches</h5>
-                    </div>
-                    <div>
-                        {{-- <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1"
-                            id="add_new_punch_btn">New Punch <i class="ri-add-line"></i></button> --}}
 
+                <div class="card-header align-items-center d-flex justify-content-between">
+                    <h5 class="mb-0">Punches</h5>
+                    {{-- <div class="text-end">
                         <button type="button" class="btn btn-primary" id="add_new_punch_btn">
                             New Punch <i class="ri-add-line"></i>
                         </button>
-                    </div>
-
-
+                        <p class="text-danger emp_error m-0 d-none">Please select an Employee</p>
+                    </div> --}}
                 </div>
 
-
                 <div class="card-body">
-
-                    <div class="row mb-3 mb-4">
+                    <div class="row mb-3">
                         <div class="col-lg-2 d-flex align-items-center">
-                            <label for="user_idname" class="form-label mb-1 req">Employee Name</label>
+                            <label for="userId" class="form-label mb-1 req">Employee Name</label>
                         </div>
-
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm js-example-basic-single" id="user_id">
+                            <select class="form-select" id="userId">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
-
-
                     </div>
+
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
-                                <th class="col">#</th>
-                                <th class="col">Employee</th>
-                                <th class="col">Punch Type</th>
-                                <th class="col">Punch Status</th>
-                                <th class="col">Time</th>
-                                <th class="col">Date</th>
-                                <th class="col">Status</th>
-                                <th class="col">Action</th>
+                                <th>#</th>
+                                <th>Employee</th>
+                                <th>Punch Type</th>
+                                <th>Punch Status</th>
+                                <th>Time</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="punch_table_body">
                             <tr>
-                                <td colspan="7" class="text-center">Please Select a Employee ...</td>
+                                <td colspan="8" class="text-center">Please Select an Employee...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -67,236 +59,142 @@
         </div>
     </div>
 
-
-    <!-- Include the popup modal here -->
     @include('attendance.punch_popup')
 
     <script>
         let userId = '';
 
-        $(document).ready(async function() {
-            await getDropdownData();
-
+        $(document).ready(async function () {
+            await getEmployeeData();
         });
 
-        // Get user data when selecting user name
-        $(document).on('change', '#user_id', async function() {
+        async function getEmployeeData() {
+            try {
+                const employeeData = await commonFetchData('/company/employee_punch/get_employees');
+                const employeeList = (employeeData?.users || [])
+                    .map(emp => `<option value="${emp.user_id}">${emp.first_name} ${emp.last_name} (Emp ID: ${emp.id})</option>`)
+                    .join('');
+                $('#userId').html('<option value="">Select Employee Name</option>' + employeeList);
+            } catch (error) {
+                console.error('Error fetching employee data:', error);
+            }
+        }
+
+        $(document).on('change', '#userId', async function () {
+            $('.emp_error').removeClass('d-block').addClass('d-none');
             userId = $(this).val();
-            let userName = $('#user_id option:selected').text();
-            $('#user_name').val(userName);
-            $('#user_id').val(userId);
 
-            if (userId === "") {
-
-                $('#table_body').html(
-                    '<tr><td colspan="8" class="text-center text-info">Please Select a Employee</td></tr>');
-                $('#user_name').val('');
-                $('#user_id').val('');
+            if (!userId) {
+                $('#punch_table_body').html(
+                    '<tr><td colspan="8" class="text-center text-info">Please Select an Employee</td></tr>'
+                );
             } else {
                 await renderPunchTable();
             }
         });
 
-        // Fetch and render punchs for the selected user
         async function renderPunchTable() {
             if (!userId) {
                 $('#punch_table_body').html(
-                    '<tr><td colspan="7" class="text-center">No Employee Selected</td></tr>');
+                    '<tr><td colspan="8" class="text-center">No Employee Selected</td></tr>'
+                );
                 return;
             }
 
-            let users_punchs = await commonFetchData(`/company/user_punch/${userId}`);
-            let list = '';
-
-            if (users_punchs && users_punchs.length > 0) {
-                users_punchs.forEach((item, i) => {
-                    list += `
-                <tr punch_id="${item.id}">
-                    <td>${i + 1}</td>
-                    <td>${item.name_with_initials}</td>
-                    <td>${item.punch_type}</td>
-                    <td>${item.punch_status}</td>
-                    <td>${item.time_stamp}</td>
-                    <td>${item.date}</td>
-                    <td class="text-capitalize">${item.status === 'active'
-                        ? `<span class="badge border border-success text-success">${item.status}</span>`
-                        : `<span class="badge border border-warning text-warning">${item.status}</span>`}</td>
-                    <td>
-                        <button type="button" class="btn btn-info waves-effect waves-light btn-sm click-edit-punch" title="Edit" data-tooltip="tooltip" data-bs-placement="top">
-                            <i class="ri-pencil-fill"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_punch" title="Delete" data-tooltip="tooltip" data-bs-placement="top">
-                            <i class="ri-delete-bin-fill"></i>
-                        </button>
-                    </td>
-                </tr>
-                    `;
-                });
-            } else {
-                list = `<tr><td colspan="7" class="text-danger text-center">No Qualification Yet!</td></tr>`;
-            }
-
-            $('#punch_table_body').html(list);
-        }
-
-        //get dropdown data
-        async function getDropdownData() {
             try {
-                let dropdownData = await commonFetchData('/company/user_punch/dropdown');
+                const punches = await commonFetchData(`/company/employee_punch/${userId}`);
+                let rows = '';
 
-                // Populate user name dropdown
-                let userList = (dropdownData?.users || [])
-                    .map(user => `<option value="${user.id}">${user.name_with_initials}</option>`)
-                    .join('');
-                $('#user_id').html('<option value="">Select Employee Name</option>' + userList);
-
-
-                // Populate branch dropdown
-                let branchList = (dropdownData?.branches || [])
-                    .map(branch => `<option value="${branch.id}">${branch.branch_name}</option>`)
-                    .join('');
-                $('#branch_id').html('<option value="">Select Branch</option>' + branchList);
-
-
-                // Populate department dropdown
-                let departmentList = (dropdownData?.departments || [])
-                    .map(department => `<option value="${department.id}">${department.department_name}</option>`)
-                    .join('');
-                $('#department_id').html('<option value="">Select Department</option>' + departmentList);
-            } catch (error) {
-                console.error('Error fetching dropdown data:', error);
-            }
-        }
-
-        $(document).on('click', '#add_new_punch_btn', function() {
-            resetForm();
-            title = `Add New Punch`;
-            $('#punch-form-title').html(title);
-            $('#punch-form-modal').modal('show');
-        });
-
-
-        //  click event
-        $(document).on('click', '#punch-submit-confirm', async function() {
-            const punch_id = $('#punch_id').val();
-            const time = $('#time').val();
-            const date = $('#date').val();
-            const punch_type = $('#punch_type').val();
-            const branch_id = $('#branch_id').val();
-            const department_id = $('#department_id').val();
-            const station = $('#station').val();
-            const note = $('#note').val();
-            const punch_status = $('#punch_status').val();
-            const emp_punch_status = $('#emp_punch_status').val();
-
-            const time_stamp = `${date}T${time}`; // Format: "2024-11-11T16:19"
-
-            let createUrl = `/company/user_punch/create`;
-            let updateUrl = `/company/user_punch/update/${punch_id}`;
-
-            let formData = new FormData();
-
-            if (!punch_type || !punch_status) {
-                $('#error-msg').html('<p class="text-danger">All fields are required</p>');
-                return;
-            } else {
-                $('#error-msg').html(''); // Clear error message if no issues
-            }
-
-            formData.append('user_id', userId);
-            formData.append('punch_id', punch_id);
-            formData.append('punch_type', punch_type);
-            formData.append('punch_status', punch_status);
-            formData.append('branch_id', branch_id);
-            formData.append('department_id', department_id);
-            formData.append('station', station);
-            formData.append('note', note);
-            formData.append('time_stamp', time_stamp);
-            formData.append('emp_punch_status', emp_punch_status);
-            formData.append('date', date);
-            formData.append('time', time);
-
-            const isUpdating = Boolean(punch_id);
-            let url = isUpdating ? updateUrl : createUrl;
-            let method = isUpdating ? 'PUT' : 'POST';
-
-            try {
-                let res = await commonSaveData(url, formData, method);
-                await commonAlert(res.status, res.message);
-
-                if (res.status === 'success') {
-                    $('#punch-form-modal').modal('hide');
-                    await renderPunchTable(); // Re-render table on success
+                if (punches && punches.length > 0) {
+                    punches.forEach((item, i) => {
+                        rows += `
+                            <tr punch_id="${item.id}">
+                                <td>${i + 1}</td>
+                                <td>${item.name_with_initials}</td>
+                                <td>${item.punch_type}</td>
+                                <td>${item.punch_status}</td>
+                                <td>${item.time_stamp}</td>
+                                <td>${item.date}</td>
+                                <td class="text-capitalize">
+                                    <span class="badge border ${item.status === 'active' ? 'border-success text-success' : 'border-warning text-warning'}">
+                                        ${item.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm click-edit-punch" title="Edit">
+                                        <i class="ri-pencil-fill"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm click_delete_punch" title="Delete">
+                                        <i class="ri-delete-bin-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    rows = '<tr><td colspan="8" class="text-danger text-center">No Punches Yet!</td></tr>';
                 }
+
+                $('#punch_table_body').html(rows);
             } catch (error) {
-                console.error('Error:', error);
-                $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
+                console.error('Error fetching punch data:', error);
             }
-        });
-        $(document).on('click', '.click-edit-punch', async function() {
-            // resetForm();
-            let punch_id = $(this).closest('tr').attr('punch_id');
+        }
 
+        $(document).on('click', '#add_new_punch_btn', function () {
+            resetForm();
 
-            // Get branch data by id
-            try {
-                let punch_data = await commonFetchData(
-                    `/company/single_user_punch/${punch_id}`);
-                punch_data = punch_data[0];
-                console.log('punch_data', punch_data);
-
-                var datePart = punch_data.time_stamp.split(' ')[0]; // "2024-11-21"
-                var timePart = punch_data.time_stamp.split(' ')[1];
+            let userId = $('#userId').val();
+            if(!userId){
+                $('.emp_error').removeClass('d-none').addClass('d-block');
+                $('#user_name').val('');
+                $('#user_id').val('');
+            }else{
+                $('.emp_error').removeClass('d-block').addClass('d-none');
+                $('#punch-form-title').text('Add New Punch');
                 
-                console.log('punch_data', datePart);
-                // Set initial form values
-                $('#punch_id').val(punch_id);
-                $('#date').val(datePart || '');
-                $('#time').val(timePart || '');
-                $('#punch_type').val(punch_data?.punch_type || '');
-                $('#punch_status').val(punch_data?.punch_status || '');
-                $('#branch_id').val(punch_data?.branch_id || '');
-                $('#department_id').val(punch_data?.department_id || '');
-                $('#note').val(punch_data?.note || '');
-                $('#emp_punch_status').val(punch_data?.status || '');
-                // Load the country, province, and city accordingly
-
-
-            } catch (error) {
-                console.error('error at getQulificationById: ', error);
-            } finally {
-                title = `Edit Qualification`;
-                $('#punch-form-title').html(title);
+                const userName = $('#userId option:selected').text();
+                $('#user_name').val(userName);
+                $('#user_id').val(userId);
+                
                 $('#punch-form-modal').modal('show');
             }
         });
-        $(document).on('click', '.click_delete_punch', async function() {
-            let punch_id = $(this).closest('tr').attr('punch_id');
+
+        $(document).on('click', '.click-edit-punch', async function () {
+            const punchId = $(this).closest('tr').attr('punch_id');
 
             try {
-                let url = `/company/user_punch/delete`;
-                const res = await commonDeleteFunction(punch_id, url,
-                    'Designation'); // Await the promise here
+                let punchData = await commonFetchData(`/company/single_employee_punch/${punchId}`);
+                punchData = punchData[0];
 
-                if (res) {
-                    await renderPunchTable();
-                }
+                const [datePart, timePart] = punchData.time_stamp.split(' ');
+                $('#punch_id').val(punchId);
+                $('#date').val(datePart);
+                $('#time').val(timePart);
+                $('#punch_type').val(punchData.punch_type);
+                $('#punch_status').val(punchData.punch_status);
+                $('#branch_id').val(punchData.branch_id);
+                $('#department_id').val(punchData.department_id);
+                $('#note').val(punchData.note);
+                $('#emp_punch_status').val(punchData.status);
+
+                $('#punch-form-title').text('Edit Punch');
+                $('#punch-form-modal').modal('show');
             } catch (error) {
-                console.error(`Error during Qualification deletion:`, error);
+                console.error('Error fetching punch data:', error);
             }
-        })
+        });
 
-        function resetForm() {
-            $('#punch_id').val('');
-            $('#punch').val('');
-            $('#institute').val('');
-            $('#year').val('');
-            $('#remarks').val('');
-            $('#punch_status').val('active'); // Reset status to default
-            $('#error-msg').html(''); // Clear error messages
-        }
+        $(document).on('click', '.click_delete_punch', async function () {
+            const punchId = $(this).closest('tr').attr('punch_id');
+
+            try {
+                const res = await commonDeleteFunction(punchId, '/company/employee_punch/delete', 'Punch');
+                if (res) await renderPunchTable();
+            } catch (error) {
+                console.error('Error deleting punch:', error);
+            }
+        });
     </script>
-
-
-
 </x-app-layout>

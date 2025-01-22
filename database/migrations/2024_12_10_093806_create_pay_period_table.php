@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->unsignedInteger('is_hr_process')->default(0); 
 
             // Audit fields
-            $table->string('status', 25)->default('open')->comment('open/locked/closed');
+            $table->string('status', 25)->default('open')->comment('open(10)/locked(12)/closed(20)/post_adjustment(30)');
             $table->timestamp('created_at')->useCurrent();
             $table->integer('created_by')->default(0)->nullable();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
