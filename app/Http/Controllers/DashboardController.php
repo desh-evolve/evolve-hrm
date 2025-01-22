@@ -49,9 +49,11 @@ class DashboardController extends Controller
     {
         $table = 'request';
         $fields = '*';
-        $leaves = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $leaves], 200);
+        $whereArr = ['status' => 'authorized'];
+        $authorizedRequests = $this->common->commonGetAll($table, $fields, [], $whereArr);
+        return response()->json(['data' => $authorizedRequests], 200);
     }
+
 
 
 

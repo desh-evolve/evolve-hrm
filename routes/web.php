@@ -242,7 +242,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Employee Bank Details
     //==============================================================================================================================
     Route::get('/employee/bank', [EmployeeBankDetailsController::class, 'index'])->name('employee.bank.index');
-    Route::get('/employee/bank/details/{id}', [EmployeeBankDetailsController::class, 'showBankDetails'])->name('employee.bank.details');
     Route::post('/employee/bank/create', [EmployeeBankDetailsController::class, 'createBankDetails'])->name('employee.bank.create');
     Route::put('/employee/bank/update/{id}', [EmployeeBankDetailsController::class, 'updateBankDetails'])->name('employee.bank.update');
     Route::delete('/employee/bank/delete/{id}', [EmployeeBankDetailsController::class, 'deleteBankDetails'])->name('employee.bank.delete');
@@ -293,41 +292,41 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
     // Employee Qualification
     //==============================================================================================================================
-    Route::get('/company/employee_qualification/index', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification.index');
-    Route::post('/company/employee_qualification/create', [EmployeeQualificationController::class, 'createEmployeeQualification'])->name('company.employee_qualification.create');
-    Route::put('/company/employee_qualification/update/{id}', [EmployeeQualificationController::class, 'updateEmployeeQualification'])->name('company.employee_qualification.update');
-    Route::delete('/company/employee_qualification/delete/{id}', [EmployeeQualificationController::class, 'deleteEmployeeQualification'])->name('company.employee_qualification.delete');
-    Route::get('/company/single_employee_qualification/{id}', [EmployeeQualificationController::class, 'getSingleEmployeeQualification'])->name('company.employee_qualification.single');
-    Route::get('/company/employee_qualification/dropdown', [EmployeeQualificationController::class, 'getEmployeeList'])->name('company.employee_qualification.dropdown');
-    Route::get('/company/employee_qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQualificationById'])->name('company.employee_qualification.getById');
+    Route::get('/employee/qualification', [EmployeeQualificationController::class, 'index'])->name('company.employee_qualification.index');
+    Route::post('/employee/qualification/create', [EmployeeQualificationController::class, 'createEmployeeQualification'])->name('company.employee_qualification.create');
+    Route::put('/employee/qualification/update/{id}', [EmployeeQualificationController::class, 'updateEmployeeQualification'])->name('company.employee_qualification.update');
+    Route::delete('/employee/qualification/delete/{id}', [EmployeeQualificationController::class, 'deleteEmployeeQualification'])->name('company.employee_qualification.delete');
+    Route::get('/employee/single_qualification/{id}', [EmployeeQualificationController::class, 'getSingleEmployeeQualification'])->name('company.employee_qualification.single');
+    Route::get('/employee/qualification/dropdown', [EmployeeQualificationController::class, 'getEmployeeList'])->name('company.employee_qualification.dropdown');
+    Route::get('/employee/qualification/{id}', [EmployeeQualificationController::class, 'getEmployeeQualificationById'])->name('company.employee_qualification.getById');
 
     // Employee employee work experience
-    Route::get('/company/employee_work_experience/index', [EmployeeWorkExperienceController::class, 'index'])->name('company.employee_work_experience.index');
-    Route::post('/company/employee_work_experience/create', [EmployeeWorkExperienceController::class, 'createEmployeeWorkExperience'])->name('company.employee_work_experience.create');
-    Route::put('/company/employee_work_experience/update/{id}', [EmployeeWorkExperienceController::class, 'updateEmployeeWorkExperience'])->name('company.employee_work_experience.update');
-    Route::delete('/company/employee_work_experience/delete/{id}', [EmployeeWorkExperienceController::class, 'deleteEmployeeWorkExperience'])->name('company.employee_work_experience.delete');
-    Route::get('/company/single_employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getSingleEmployeeWorkExperience'])->name('company.employee_work_experience.single');
-    Route::get('/company/employee_work_experience/dropdown', [EmployeeWorkExperienceController::class, 'getEmployeeList'])->name('company.employee_work_experience.dropdown');
-    Route::get('/company/employee_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getEmployeeWorkExperienceById'])->name('company.employee_work_experience.getById');
+    Route::get('/employee/work_experience', [EmployeeWorkExperienceController::class, 'index'])->name('company.employee_work_experience.index');
+    Route::post('/employee/work_experience/create', [EmployeeWorkExperienceController::class, 'createEmployeeWorkExperience'])->name('company.employee_work_experience.create');
+    Route::put('/employee/work_experience/update/{id}', [EmployeeWorkExperienceController::class, 'updateEmployeeWorkExperience'])->name('company.employee_work_experience.update');
+    Route::delete('/employee/work_experience/delete/{id}', [EmployeeWorkExperienceController::class, 'deleteEmployeeWorkExperience'])->name('company.employee_work_experience.delete');
+    Route::get('/employee/single_work_experience/{id}', [EmployeeWorkExperienceController::class, 'getSingleEmployeeWorkExperience'])->name('company.employee_work_experience.single');
+    Route::get('/employee/work_experience/dropdown', [EmployeeWorkExperienceController::class, 'getEmployeeList'])->name('company.employee_work_experience.dropdown');
+    Route::get('/employee/work_experience/{id}', [EmployeeWorkExperienceController::class, 'getEmployeeWorkExperienceById'])->name('company.employee_work_experience.getById');
 
     // Employee employee promotion
-    Route::get('/company/employee_promotion/index', [EmployeePromotionController::class, 'index'])->name('company.employee_promotion.index');
-    Route::post('/company/employee_promotion/create', [EmployeePromotionController::class, 'createEmployeePromotion'])->name('company.employee_promotion.create');
-    Route::put('/company/employee_promotion/update/{id}', [EmployeePromotionController::class, 'updateEmployeePromotion'])->name('company.employee_promotion.update');
-    Route::delete('/company/employee_promotion/delete/{id}', [EmployeePromotionController::class, 'deleteEmployeePromotion'])->name('company.employee_promotion.delete');
-    Route::get('/company/single_employee_promotion/{id}', [EmployeePromotionController::class, 'getSingleEmployeePromotion'])->name('company.employee_promotion.single');
-    Route::get('/company/employee_promotion/dropdown', [EmployeePromotionController::class, 'getEmployeeList'])->name('company.employee_promotion.dropdown');
-    Route::get('/company/employee_promotion/{id}', [EmployeePromotionController::class, 'getEmployeePromotioneById'])->name('company.employee_promotion.getById');
+    Route::get('/employee/promotion', [EmployeePromotionController::class, 'index'])->name('company.employee_promotion.index');
+    Route::post('/employee/promotion/create', [EmployeePromotionController::class, 'createEmployeePromotion'])->name('company.employee_promotion.create');
+    Route::put('/employee/promotion/update/{id}', [EmployeePromotionController::class, 'updateEmployeePromotion'])->name('company.employee_promotion.update');
+    Route::delete('/employee/promotion/delete/{id}', [EmployeePromotionController::class, 'deleteEmployeePromotion'])->name('company.employee_promotion.delete');
+    Route::get('/employee/single_promotion/{id}', [EmployeePromotionController::class, 'getSingleEmployeePromotion'])->name('company.employee_promotion.single');
+    Route::get('/employee/promotion/dropdown', [EmployeePromotionController::class, 'getPromoEmployeeList'])->name('company.employee_promotion.dropdown');
+    Route::get('/employee/promotion/{id}', [EmployeePromotionController::class, 'getEmployeePromotionById'])->name('company.employee_promotion.getById');
 
 
     // Employee employee promotion
-    Route::get('/company/employee_family/index', [EmployeeFamilyController::class, 'index'])->name('company.employee_family.index');
-    Route::post('/company/employee_family/create', [EmployeeFamilyController::class, 'createEmployeeFamily'])->name('company.employee_family.create');
-    Route::put('/company/employee_family/update/{id}', [EmployeeFamilyController::class, 'updateEmployeeFamily'])->name('company.employee_family.update');
-    Route::delete('/company/employee_family/delete/{id}', [EmployeeFamilyController::class, 'deleteEmployeeFamily'])->name('company.employee_family.delete');
-    Route::get('/company/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
-    Route::get('/company/employee_family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
-    Route::get('/company/employee_family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
+    Route::get('/employee/family', [EmployeeFamilyController::class, 'index'])->name('company.employee_family.index');
+    Route::post('/employee/family/create', [EmployeeFamilyController::class, 'createEmployeeFamily'])->name('company.employee_family.create');
+    Route::put('/employee/family/update/{id}', [EmployeeFamilyController::class, 'updateEmployeeFamily'])->name('company.employee_family.update');
+    Route::delete('/employee/family/delete/{id}', [EmployeeFamilyController::class, 'deleteEmployeeFamily'])->name('company.employee_family.delete');
+    Route::get('/employee/single_employee_family/{id}', [EmployeeFamilyController::class, 'getSingleEmployeeFamily'])->name('company.employee_family.single');
+    Route::get('/employee/family/dropdown', [EmployeeFamilyController::class, 'getEmployeeList'])->name('company.employee_family.dropdown');
+    Route::get('/employee/family/{id}', [EmployeeFamilyController::class, 'getEmployeeFamilyById'])->name('company.employee_family.getById');
 
     //==============================================================================================================================
     // Attendance
@@ -437,7 +436,14 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Employee wage
     //===============================================================================================================================
 
-    Route::get('/employee-wage', [EmpWageController::class, 'index'])->name('employee_wage.index');
+    Route::get('/employee/wage', [EmpWageController::class, 'index'])->name('employee_wage.index');
+    Route::get('/employee/wage/dropdown', [EmpWageController::class, 'getWageDropDownList'])->name('employee_wage.dropdown');
+    Route::post('/employee/wage/create', [EmpWageController::class, 'createEmployeeWage'])->name('employee_wage.create');
+    Route::put('/employee/wage/update/{id}', [EmpWageController::class, 'updateEmployeeWage'])->name('employee_wage.update');
+    Route::delete('/employee/wage/delete/{id}', [EmpWageController::class, 'deleteEmployeeWage'])->name('employee_wage.delete');
+    Route::get('/employee/wage/{id}', [EmpWageController::class, 'getEmployeeWageById'])->name('employee_wage.getById');
+    Route::get('/employee/single_wage/{id}', [EmpWageController::class, 'getSingleEmployeeWage'])->name('employee_wage.single');
+    Route::get('/employee/wage/all', [EmpWageController::class, 'getAllEmployeeWage'])->name('employee_wage.all');
 
 
     //==============================================================================================================================
@@ -445,9 +451,18 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
     Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
     Route::get('/employee/form', [EmployeeController::class, 'employee_form'])->name('employee.form');
+    Route::get('/emp/form', [EmployeeController::class, 'emp_form'])->name('emp.form');
     Route::get('/employee/profile', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
     Route::get('/employee/dropdown', [EmployeeController::class, 'getEmployeeDropdownData'])->name('employee.dropdown');
     Route::get('/employee/next_employee_id', [EmployeeController::class, 'getNextEmployeeId'])->name('employee.nextEmployeeId');
+
+    Route::get('/employee/bank/details/{id}', [EmployeeController::class, 'showBankDetails'])->name('employee.bank.details');
+    Route::get('/employee/wage/details/{id}', [EmployeeController::class, 'showWageDetails'])->name('employee.wage.details');
+    Route::get('/employee/qualification/details/{id}', [EmployeeController::class, 'showQualificationDetails'])->name('employee.qualification.details');
+    Route::get('/employee/work_experience/details/{id}', [EmployeeController::class, 'showWorkExperianceDetails'])->name('employee.work_experience.details');
+    Route::get('/employee/promotion/details/{id}', [EmployeeController::class, 'showPromotionDetails'])->name('employee.promotion.details');
+    Route::get('/employee/family/details/{id}', [EmployeeController::class, 'showFamilyDetails'])->name('employee.family.details');
+    Route::get('/employee/jobhistory/details/{id}', [EmployeeController::class, 'showJobHistoryDetails'])->name('employee.jobhistory.details');
 
     Route::post('/employee/create', [EmployeeController::class, 'createEmployee'])->name('employee.create');
     Route::get('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');

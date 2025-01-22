@@ -29,7 +29,7 @@
 
                     <div class="justify-content-md-end">
                         <div class="d-flex justify-content-end">
-                            <a href="/user/bank" class="btn btn-danger">Back</a>
+                            <a href="/employee/list" class="btn btn-danger">Back</a>
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,7 @@ $(document).ready(function () {
     async function getBankDetails() {
         try {
             // Fetch bank details for the user
-            let bank_data = await commonFetchData(`/user/bank/${userId}`);
+            let bank_data = await commonFetchData(`/employee/bank/${userId}`);
 
             if (bank_data && bank_data[0]) {
                 bank_data = bank_data[0];
@@ -131,7 +131,7 @@ $(document).ready(function () {
         const empId = $('#emp_id').val();
 
         const isUpdating = Boolean(empId);
-        const url = isUpdating ? `/user/bank/update/${empId}` : `/user/bank/create`;
+        const url = isUpdating ? `/employee/bank/update/${empId}` : `/employee/bank/create`;
         const method = isUpdating ? 'PUT' : 'POST';
 
         const formFields = {
@@ -210,7 +210,7 @@ $(document).on('click', '#click-delete', async function () {
 
     try {
         // Perform the delete operation
-        let url = `/user/bank/delete`;
+        let url = `/employee/bank/delete`;
         const title ='Employee Bank Details';
 
         const res = await commonDeleteFunction(bankRecordId,url,title);

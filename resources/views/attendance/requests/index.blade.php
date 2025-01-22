@@ -114,8 +114,8 @@
                     </div>
 
                     <div class="col-xxl-6 col-md-6 mb-3">
-                        <label for="employee_date_id" class="form-label mb-1 req">Date</label>
-                        <input type="date" class="form-control" id="employee_date_id" value="">
+                        <label for="user_date_id" class="form-label mb-1 req">Date</label>
+                        <input type="date" class="form-control" id="user_date_id" value="">
                     </div>
                 </div>
 
@@ -174,10 +174,10 @@ let today = new Date().toISOString().split('T')[0];
             }
 
             // Render the table if employee is selected
-            if (employee_Id === "") {
+            if (user_id === "") {
                 $('#table_body').html('<tr><td colspan="8" class="text-center">Please Select a Employee...</td></tr>');
-                $('#employee_name').val('');
-                $('#employee_id').val('');
+                $('#user_name').val('');
+                $('#user_id').val('');
             } else {
                 await renderRequestTable();
             }
@@ -189,7 +189,7 @@ let today = new Date().toISOString().split('T')[0];
         async function renderRequestTable() {
             let list = '';
             try {
-                const requestData = await commonFetchData(`/attendance/request/${employee_Id}`);
+                const requestData = await commonFetchData(`/attendance/request/${user_id}`);
                 console.log('Fetched Data:', requestData);
 
                 // Flatten nested arrays
@@ -231,7 +231,6 @@ let today = new Date().toISOString().split('T')[0];
             } catch (error) {
                 console.error('Error fetching or rendering data:', error);
                 list = '<tr><td colspan="8" class="text-center text-danger">Error loading data!</td></tr>';
-
             }
 
             $('#table_body').html(list);

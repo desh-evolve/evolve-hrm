@@ -16,23 +16,23 @@ class EmployeeQualificationController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user qualification', ['only' => [
+        $this->middleware('permission:view employee qualification', ['only' => [
             'index',
             'getAllEmployeeQualification',
             'getAllEmployeeList',
             'getEmployeeQualificationById',
             'getSingleEmployeeQualification',
         ]]);
-        $this->middleware('permission:create user qualification', ['only' => ['createEmployeeQualification']]);
-        $this->middleware('permission:update user qualification', ['only' => ['updateEmployeeQualification']]);
-        $this->middleware('permission:delete user qualification', ['only' => ['deleteEmployeeQualification']]);
+        $this->middleware('permission:create employee qualification', ['only' => ['createEmployeeQualification']]);
+        $this->middleware('permission:update employee qualification', ['only' => ['updateEmployeeQualification']]);
+        $this->middleware('permission:delete employee qualification', ['only' => ['deleteEmployeeQualification']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('user_qualification.index');
+        return view('employee_qualification.index');
     }
 
     public function createEmployeeQualification(Request $request)
@@ -72,6 +72,7 @@ class EmployeeQualificationController extends Controller
         }
     }
 
+
     public function updateEmployeeQualification(Request $request, $id)
     {
         try {
@@ -109,6 +110,7 @@ class EmployeeQualificationController extends Controller
         }
     }
 
+
     public function deleteEmployeeQualification($id)
     {
         $whereArr = ['id' => $id];
@@ -118,6 +120,7 @@ class EmployeeQualificationController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
+
     public function getAllEmployeeQualification()
     {
         $table = 'emp_qualifications';
@@ -125,6 +128,7 @@ class EmployeeQualificationController extends Controller
         $user_qualifications = $this->common->commonGetAll($table, $fields);
         return response()->json(['data' => $user_qualifications], 200);
     }
+
 
     public function getEmployeeQualificationById($id)
     {
@@ -134,18 +138,16 @@ class EmployeeQualificationController extends Controller
         $user_qualifications = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_qualifications], 200);
     }
+
+
     public function getEmployeeList()
     {
-
         $users = $this->common->commonGetAll('emp_employees', '*');
-        // $users = $this->common->commonGetAll($table, $fields);
         return response()->json([
-            // 'data' => [
-            //     'users' => $users,
-            // ]
             'data' => $users,
         ], 200);
     }
+
 
     public function getSingleEmployeeQualification($id)
     {
@@ -155,4 +157,5 @@ class EmployeeQualificationController extends Controller
         $user_qualification = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_qualification], 200);
     }
+    
 }

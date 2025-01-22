@@ -18,143 +18,220 @@
                         <h5 class="mb-0">Employees</h5>
                     </div>
                     <div>
-                        <a type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" href="/user/form">New Employee <i class="ri-add-line"></i></a>
+                        <a type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" href="/employee/form">Add New Employee <i class="ri-add-line"></i></a>
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="user_table" class="table table-bordered dt-responsive nowrap table-striped align-middle datatable-example" style="width:100%">
-                        <thead class="bg-primary text-white"/>
-                            <tr>
-                                <th class="col">#</th>
-                                <th class="col">Employee ID</th>
-                                <th class="col">Name</th>
-                                <th class="col">NIC</th>
-                                <th class="col">Contact</th>
-                                <th class="col">Status</th>
-                                <th class="col">
-                                    Functions
-                                    <br>
-                                    <a href="#" id="show_user_functions">[ Employee ]</a>
-                                    <a href="#" id="show_payroll_functions">[ Payroll ]</a>
-                                </th>
-                                <th class="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user_table_body">
-                            
-                        </tbody>
-                    </table>
-
+                    <div class="table-responsive">
+                        <table id="user_table" class="table table-bordered table-striped align-middle" style="width:100%">
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    <th class="col">#</th>
+                                    <th class="col">Employee ID</th>
+                                    <th class="col">Name</th>
+                                    <th class="col">NIC</th>
+                                    <th class="col">Contact</th>
+                                    <th class="col">Status</th>
+                                    <th class="col">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>Function</span>
+                                            <div class="text-warning">
+                                                <a href="#" id="show_user_functions" class="text-warning">[ Employee ]</a> |
+                                                <a href="#" id="show_payroll_functions" class="text-warning">[ Payroll ]</a>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user_table_body">
+                                <tr>
+                                    <td colspan="8" class="text-center">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
+<script>
 
-        $(document).ready(function(){
-            renderEmployeeTable();
-        })
+    $(document).ready(function () {
+        renderEmployeeTable();
+        bindFunctionToggles();
 
+//===================================================================================
+// Render Employee Table
+//===================================================================================
         async function renderEmployeeTable() {
-            const userList = [
-                {
-                    id: 1,
-                    userId: "0001",
-                    name: "Deshan Dissanayake",
-                    nic: "980451785V",
-                    contact: "0714567894",
-                    status: "active",
-                },
-                {
-                    id: 2,
-                    userId: "0002",
-                    name: "Indika Manori",
-                    nic: "9704231325V",
-                    contact: "0767734894",
-                    status: "inactive",
-                },
-            ];
+            try {
+                const users = await commonFetchData('/employees');
+                console.log('data', users);
 
-            const rows = userList.map((user, index) => {
-                let stt = user.status === 'active' ? '<span class="badge rounded-pill border border-success text-success">Active</span>' : '<span class="badge rounded-pill border border-warning text-warning">Inactive</span>';
-                return ( `
-                    <tr emp_id="${user.id}">
-                        <td>${index + 1}</td>
-                        <td>${user.userId}</td>
-                        <td>${user.name}</td>
-                        <td>${user.nic}</td>
-                        <td>${user.contact}</td>
-                        <td>${stt}</td>
-                        <td>
-                            <div class="user-functions button-se">
-                                <a href="#" >[ Qualifications ]</a>
-                                <a href="#" >[ Work Experience ]</a>
-                                <a href="#" >[ Promotion ]</a>
-                                <a href="#" >[ Family ]</a>
-                                <a href="#" >[ Job History ]</a>
-                                <a href="#" >[ KPI ]</a>
-                            </div>
-                            <div class="payroll-functions button-set" style="display: none;">
-                                <a href="#" >[ Bank ]</a>
-                                <a href="#" >[ Wage ]</a>
-                                <a href="#" >[ Tax ]</a>
-                                <a href="#" >[ PS Amendments ]</a>
-                            </div>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_user" title="Edit Employee" data-tooltip="tooltip" data-bs-placement="top">
-                                <i class="ri-pencil-fill"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_user" title="Delete Employee" data-tooltip="tooltip" data-bs-placement="top">
-                                <i class="ri-delete-bin-fill"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `);
-            }).join('');
+                if (!Array.isArray(users) || users.length === 0) {
+                    console.warn('No users available to render');
+                    $('#user_table_body').html('<tr><td colspan="8" class="text-center">No data available</td></tr>');
+                    return;
+                }
 
-            DataTablesForAjax.destroy();
-            $('#user_table_body').html(rows);
-            init_dataTable('#user_table');
-            $('[data-tooltip="tooltip"]').tooltip();
+                const rows = users.map((user, i) => {
+                    let stt =
+                        user.status === 'active'
+                            ? '<span class="badge rounded-pill border border-success text-success">Active</span>'
+                            : '<span class="badge rounded-pill border border-warning text-warning">Inactive</span>';
+
+                    return `
+                        <tr emp_id="${user.id}">
+                            <td>${i + 1}</td>
+                            <td>${user.id || 'N/A'}</td>
+                            <td>${user.name_with_initials || 'N/A'}</td>
+                            <td>${user.nic || 'N/A'}</td>
+                            <td>${user.contact_1 || 'N/A'}</td>
+                            <td>${stt}</td>
+                            <td>
+                                <div class="user-functions button-set text-center">
+                                    <a href="#" class="text-primary manage-qualification" data-id="${user.id}">[Qualifications]</a>
+                                    <a href="#" class="text-primary manage-work" data-id="${user.id}">[Work Experience]</a>
+                                    <a href="#" class="text-primary manage-promotion" data-id="${user.id}">[Promotion]</a>
+                                    <a href="#" class="text-primary manage-family" data-id="${user.id}">[Family]</a>
+                                    <a href="#" class="text-primary manage-jobhistory" data-id="${user.id}">[Job History]</a>
+                                </div>
+                                <div class="payroll-functions button-set" style="display: none;">
+                                    <a href="#" class="text-primary bg-success manage-bank" data-id="${user.id}">[Bank]</a>
+                                    <a href="#" class="text-primary bg-success manage-wage" data-id="${user.id}">[Wage]</a>
+                                    <a href="#" class="text-primary manage-tax" data-id="${user.id}">[Tax]</a>
+                                    <a href="#" class="text-primary manage-amendments" data-id="${user.id}">[PS Amendments]</a>
+                                </div>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_user" title="Edit Employee">
+                                    <i class="ri-pencil-fill"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_user" title="Delete Employee">
+                                    <i class="ri-delete-bin-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                $('#user_table_body').html(rows);
+                bindFunctionToggles();
+            } catch (error) {
+                $('#user_table_body').html('<tr><td colspan="8" class="text-center text-danger">Error loading data</td></tr>');
+                console.error('Error fetching data:', error);
+            }
         }
 
-        $(document).ready(function() {
-            $('#show_user_functions').on('click', function(event) {
+//===================================================================================
+ // Event Listeners for Function Toggles
+ //===================================================================================
+        function bindFunctionToggles() {
+            $('#show_user_functions').off('click').on('click', function (event) {
                 event.preventDefault();
                 $('.user-functions').show();
                 $('.payroll-functions').hide();
             });
 
-            $('#show_payroll_functions').on('click', function(event) {
+            $('#show_payroll_functions').off('click').on('click', function (event) {
                 event.preventDefault();
                 $('.payroll-functions').show();
                 $('.user-functions').hide();
             });
+
+        }
+
+//===================================================================================
+// Edit and Delete Event Handlers
+//===================================================================================
+
+        $(document).on('click', '.click_edit_user', function () {
+            let emp_id = $(this).closest('tr').attr('emp_id');
+            window.location.href = '/user/form?emp_id=' + emp_id;
         });
 
-        $(document).on('click', '.click_edit_user', function(){
-            let emp_id = $(this).closest('tr').attr('emp_id');
-            window.location.href = '/user/form?emp_id=' + emp_id
-        })
-
-        $(document).on('click', '.click_delete_user', async function(){
+        $(document).on('click', '.click_delete_user', async function () {
             let emp_id = $(this).closest('tr').attr('emp_id');
 
             try {
                 let url = `/user/delete`;
-                const res = await commonDeleteFunction(emp_id, url, 'Employee');  // Await the promise here
+                const res = await commonDeleteFunction(emp_id, url, 'Employee');
 
                 if (res) {
                     $(this).closest('tr').remove();
                 }
             } catch (error) {
-                console.error(`Error during branch deletion:`, error);
+                console.error(`Error during employee deletion:`, error);
             }
-        })
+        });
+
+//========================================================================================
+// Navigate to Employees' payroll details
+//========================================================================================
+
+        // Navigate to Employee Bank Details Page
+        $(document).on('click', '.manage-bank', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/bank/details/${userId}`;
+        });
+
+        // Navigate to Employee wage Details Page
+        $(document).on('click', '.manage-wage', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/wage/details/${userId}`;
+        });
 
 
-    </script>
+        // Navigate to Employee tax Details Page
+        $(document).on('click', '.manage-tax', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/tax/details/${userId}`;
+        });
+
+        // Navigate to Employee ps amendments Details Page
+        $(document).on('click', '.manage-amendments', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/amendments/details/${userId}`;
+        });
+
+//========================================================================================
+// Navigate to Employees' employee details
+//========================================================================================
+
+        // Navigate to Employee qualification Details Page
+        $(document).on('click', '.manage-qualification', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/qualification/details/${userId}`;
+        });
+
+         // Navigate to Employee work-experience Details Page
+         $(document).on('click', '.manage-work', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/work_experience/details/${userId}`;
+        });
+
+         // Navigate to Employee promotion Details Page
+         $(document).on('click', '.manage-promotion', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/promotion/details/${userId}`;
+        });
+
+         // Navigate to Employee family Details Page
+         $(document).on('click', '.manage-family', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/family/details/${userId}`;
+        });
+
+         // Navigate to Employee job-history Details Page
+         $(document).on('click', '.manage-jobhistory', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/jobhistory/details/${userId}`;
+        });
+
+    });
+
+</script>
 
 </x-app-layout>

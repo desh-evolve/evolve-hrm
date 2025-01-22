@@ -16,23 +16,23 @@ class EmployeeWorkExperienceController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user work experience', ['only' => [
+        $this->middleware('permission:view employee work experience', ['only' => [
             'index',
             'getAllEmployeeWorkExperience',
             'getAllEmployeeList',
             'getEmployeeWorkExperienceById',
             'getSingleEmployeeWorkExperience',
         ]]);
-        $this->middleware('permission:create user work experience', ['only' => ['createEmployeeWorkExperience']]);
-        $this->middleware('permission:update user work experience', ['only' => ['updateEmployeeWorkExperience']]);
-        $this->middleware('permission:delete user work experience', ['only' => ['deleteEmployeeWorkExperience']]);
+        $this->middleware('permission:create employee work experience', ['only' => ['createEmployeeWorkExperience']]);
+        $this->middleware('permission:update employee work experience', ['only' => ['updateEmployeeWorkExperience']]);
+        $this->middleware('permission:delete employee work experience', ['only' => ['deleteEmployeeWorkExperience']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('user_work_experience.index');
+        return view('employee_work_experience.index');
     }
 
     public function createEmployeeWorkExperience(Request $request)
@@ -141,6 +141,8 @@ class EmployeeWorkExperienceController extends Controller
         $user_work_experience = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_work_experience], 200);
     }
+
+    
     public function getEmployeeList()
     {
 
