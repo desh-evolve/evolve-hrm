@@ -89,6 +89,12 @@
                                     Apply Leaves
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('accrual.index') }}"
+                                    class="nav-link {{ request()->routeIs('accrual.index') ? 'active' : '' }}">
+                                    Accruals
+                                </a>
+                            </li>
 
                         </ul>
                     </div>

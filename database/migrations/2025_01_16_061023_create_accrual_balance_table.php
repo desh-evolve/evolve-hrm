@@ -22,6 +22,9 @@ return new class extends Migration
 
             $table->string('status', 25)->default('active')->comment('active/delete');
             $table->timestamp('created_at')->useCurrent();
+            $table->integer('created_by')->default(0)->nullable();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->integer('updated_by')->default(0)->nullable();
         });
     }
 

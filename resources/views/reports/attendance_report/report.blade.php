@@ -5,7 +5,7 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-0">Employee Detail Report</h5>
+                        <h5 class="mb-0">Attendance Report</h5>
                     </div>
                 </div>
                 <div class="card-body">

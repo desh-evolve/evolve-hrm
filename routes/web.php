@@ -50,6 +50,8 @@ use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
 use App\Http\Controllers\Attendance\TimeSheetController;
 use App\Http\Controllers\Attendance\LeavesController;
+use App\Http\Controllers\Attendance\AttendanceRequestsController;
+use App\Http\Controllers\Accrual\AccrualBalanceController;
 use App\Http\Controllers\Attendance\RequestController;
 
 // Payroll
@@ -63,6 +65,7 @@ use App\Http\Controllers\Payroll\ProcessPayrollController;
 
 // Reports
 use App\Http\Controllers\Reports\EmployeeDetailReportController;
+use App\Http\Controllers\Reports\AttendanceReportController;
 
 /*
 Route::get('/', function () {
@@ -362,6 +365,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/apply_leaves', [LeavesController::class, 'form'])->name('employee.apply_leaves');
     Route::post('/employee/apply_leaves/create', [LeavesController::class, 'create']);
     
+    // Accrual
+    Route::get('/accrual/index', [AccrualBalanceController::class, 'index'])->name('accrual.index');
+    Route::post('/accrual/create', [AccrualBalanceController::class, 'createEmployeeFamily'])->name('accrual.create');
+    Route::put('/accrual/update/{id}', [AccrualBalanceController::class, 'updateEmployeeFamily'])->name('accrual.update');
+    Route::delete('/accrual/delete/{id}', [AccrualBalanceController::class, 'deleteEmployeeFamily'])->name('accrual.delete');
+    Route::get('/accrual/single_accrual/{id}', [AccrualBalanceController::class, 'getSingleEmployeeFamily'])->name('accrual.single');
+    Route::get('/accrual/dropdown', [AccrualBalanceController::class, 'getEmployeeList'])->name('accrual.dropdown');
+    Route::get('/accrual/accrual_list/{id}', [AccrualBalanceController::class, 'getEmployeeFamilyById'])->name('accrual.accrual_list.getById');
+
 
     //==============================================================================================================================
     // Payroll
@@ -592,6 +604,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
      Route::get('/reports/employee_detail_report/report', [EmployeeDetailReportController::class, 'form'])->name('reports.employee_detail_report.report');
      Route::get('/reports/employee_detail_report/dropdown', [EmployeeDetailReportController::class, 'getDropdownData'])->name('reports.employee_detail_report.dropdown');
      Route::get('/reports/employee_detail_report/list', [EmployeeDetailReportController::class, 'getReportData'])->name('reports.employee_detail_report.list');
+     // Employee Detail Report
+     Route::get('/reports/attendance_report', [AttendanceReportController::class, 'index'])->name('reports.attendance_report');
+     Route::get('/reports/attendance_report/report', [AttendanceReportController::class, 'form'])->name('reports.attendance_report.report');
+     Route::get('/reports/attendance_report/dropdown', [AttendanceReportController::class, 'getDropdownData'])->name('reports.attendance_report.dropdown');
+     Route::get('/reports/attendance_report/list', [AttendanceReportController::class, 'getReportData'])->name('reports.attendance_report.list');
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page
