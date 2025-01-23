@@ -144,7 +144,11 @@
                     </a>
                     <div class="collapse menu-dropdown" id="payroll">
                         <ul class="nav nav-sm flex-column">
-                            <li class="nav-item"><a href="#" class="nav-link">End of Pay Period</a></li>
+                            <li class="nav-item">
+                                <a href="{{ route('payroll.process_payroll') }}"
+                                    class="nav-link {{ request()->routeIs('payroll.process_payroll') ? 'active' : '' }}">Process Payroll</a>
+                            </li>
+
                             <li class="nav-item">
                                 <a href="{{ route('payroll.pay_stub_amendment') }}"
                                     class="nav-link {{ request()->routeIs('payroll.pay_stub_amendment') ? 'active' : '' }}">Pay
@@ -209,42 +213,10 @@
                                     Employee Messages
                                 </a>
                             </li>
-
                             <li class="nav-item">
-                                <a href="{{ route('employee.jobhistory.index') }}"
-                                    class="nav-link {{ request()->routeIs('employee.jobhistory.index') ? 'active' : '' }}">
-                                    Employee Job History
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="{{ route('company.employee_qualification.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_qualification.index') ? 'active' : '' }}">
-                                    Employee Qulifications
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('company.employee_work_experience.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_work_experience.index') ? 'active' : '' }}">
-                                    Employee Work Experience
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('company.employee_promotion.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_promotion.index') ? 'active' : '' }}">
-                                    Employee Promotion
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('company.employee_family.index') }}"
-                                    class="nav-link {{ request()->routeIs('company.employee_family.index') ? 'active' : '' }}">
-                                    Employee Family
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('employee_wage.index') }}"
-                                    class="nav-link {{ request()->routeIs('employee_family.index') ? 'active' : '' }}">
-                                    Employee Wage
+                                <a href="{{ route('emp.form') }}"
+                                    class="nav-link {{ request()->routeIs('emp.form') ? 'active' : '' }}">
+                                    Emp Form
                                 </a>
                             </li>
                             <li class="nav-item">

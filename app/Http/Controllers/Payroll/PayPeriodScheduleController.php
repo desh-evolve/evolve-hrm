@@ -118,7 +118,8 @@ class PayPeriodScheduleController extends Controller
             ],
         ];
         $pg = $this->common->commonGetById($id, 'id', 'pay_period_schedule', '*', [], [], false, $connections);
-        return response()->json(['data' => $pg], 200);
+        //return response()->json(['data' => $pg], 200);
+        return $pg; //this is used in process payroll. change above json get later.
     }
 
     // $id, $idColumn, $table, $fields, $joinsArr = [], $whereArr = [], $exceptDel = false, $connections = [], $groupBy = null, $orderBy = null

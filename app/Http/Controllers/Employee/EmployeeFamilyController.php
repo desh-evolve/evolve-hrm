@@ -16,23 +16,23 @@ class EmployeeFamilyController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user family', ['only' => [
+        $this->middleware('permission:view employee family', ['only' => [
             'index',
             'getAllEmployeeFamily',
             'getAllEmployeeList',
             'getEmployeeFamilyById',
             'getSingleEmployeeFamily',
         ]]);
-        $this->middleware('permission:create user family', ['only' => ['createEmployeeFamily']]);
-        $this->middleware('permission:update user family', ['only' => ['updateEmployeeFamily']]);
-        $this->middleware('permission:delete user family', ['only' => ['deleteEmployeeFamily']]);
+        $this->middleware('permission:create employee family', ['only' => ['createEmployeeFamily']]);
+        $this->middleware('permission:update employee family', ['only' => ['updateEmployeeFamily']]);
+        $this->middleware('permission:delete employee family', ['only' => ['deleteEmployeeFamily']]);
 
         $this->common = new CommonModel();
     }
 
     public function index()
     {
-        return view('user_family.index');
+        return view('employee_family.index');
     }
 
     public function createEmployeeFamily(Request $request)
@@ -139,13 +139,14 @@ class EmployeeFamilyController extends Controller
 
     public function getEmployeeFamilyById($id)
     {
-        
+
         $idColumn = 'user_id';
         $table = 'emp_family';
         $fields = '*';
         $user_family = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_family], 200);
     }
+
     public function getEmployeeList()
     {
 
@@ -167,4 +168,5 @@ class EmployeeFamilyController extends Controller
         $user_family = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_family], 200);
     }
+    
 }

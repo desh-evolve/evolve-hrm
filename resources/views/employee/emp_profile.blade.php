@@ -179,7 +179,7 @@
                                         </div>
                                     </div>
                                 </div>
-                    
+
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Other Contact Info</h5>
@@ -216,7 +216,7 @@
                                     </div>
                                 </div>
                             </div>
-                    
+
                             <div class="col-xxl-6">
                                 <div class="card">
                                     <div class="card-body">
@@ -269,7 +269,7 @@
                                         </div>
                                     </div>
                                 </div>
-                    
+
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Other Employment Info</h5>
@@ -634,5 +634,5 @@
     </div>
 
     <!-- javascript functions -->
-    @include('user.emp_profile_js')
+    @include('employee.emp_profile_js')
 </x-app-layout>

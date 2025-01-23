@@ -16,24 +16,26 @@ class EmployeePromotionController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user promotion', ['only' => [
+        $this->middleware('permission:view employee promotion', ['only' => [
             'index',
             'getAllEmployeePromotion',
-            'getAllEmployeeList',
+            'getPromoEmployeeList',
             'getEmployeePromotionById',
             'getSingleEmployeePromotion',
         ]]);
-        $this->middleware('permission:create user promotion', ['only' => ['createEmployeePromotion']]);
-        $this->middleware('permission:update user promotion', ['only' => ['updateEmployeePromotion']]);
-        $this->middleware('permission:delete user promotion', ['only' => ['deleteEmployeePromotion']]);
+        $this->middleware('permission:create employee promotion', ['only' => ['createEmployeePromotion']]);
+        $this->middleware('permission:update employee promotion', ['only' => ['updateEmployeePromotion']]);
+        $this->middleware('permission:delete employee promotion', ['only' => ['deleteEmployeePromotion']]);
 
         $this->common = new CommonModel();
     }
 
+
     public function index()
     {
-        return view('user_promotion.index');
+        return view('employee_promotion.index');
     }
+
 
     public function createEmployeePromotion(Request $request)
     {
@@ -75,6 +77,7 @@ class EmployeePromotionController extends Controller
         }
     }
 
+
     public function updateEmployeePromotion(Request $request, $id)
     {
         try {
@@ -115,14 +118,16 @@ class EmployeePromotionController extends Controller
         }
     }
 
+
     public function deleteEmployeePromotion($id)
     {
         $whereArr = ['id' => $id];
-        $title = 'Employee Qualifications';
+        $title = 'Employee Promotion';
         $table = 'emp_promotions';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
+
 
     public function getAllEmployeePromotion()
     {
@@ -132,6 +137,7 @@ class EmployeePromotionController extends Controller
         return response()->json(['data' => $user_promotion], 200);
     }
 
+
     public function getEmployeePromotionById($id)
     {
         $idColumn = 'user_id';
@@ -140,18 +146,16 @@ class EmployeePromotionController extends Controller
         $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_promotion], 200);
     }
-    public function getEmployeeList()
-    {
 
+
+    public function getPromoEmployeeList()
+    {
         $users = $this->common->commonGetAll('emp_employees', '*');
-        // $users = $this->common->commonGetAll($table, $fields);
         return response()->json([
-            // 'data' => [
-            //     'users' => $users,
-            // ]
             'data' => $users,
         ], 200);
     }
+
 
     public function getSingleEmployeePromotion($id)
     {
@@ -161,4 +165,5 @@ class EmployeePromotionController extends Controller
         $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $user_promotion], 200);
     }
+
 }

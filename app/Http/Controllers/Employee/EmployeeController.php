@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Employee;
 
-use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
@@ -13,36 +13,202 @@ use App\Models\CommonModel;
 class EmployeeController extends Controller
 {
     private $common = null;
-    
+
     public function __construct()
     {
-        $this->middleware('permission:view user profile', ['only' => ['user_profile', 'getMyDataByEmployeeId', 'getEmployeeByUserId']]);
-        $this->middleware('permission:view user', ['only' => [
-            'user_list',
+        $this->middleware('permission:view employee profile', ['only' => ['employee_profile', 'getMyDataByEmployeeId', 'getEmployeeByEmployeeId']]);
+        $this->middleware('permission:view employee', ['only' => [
+            'employee_list',
             'getAllEmployees',
             'getEmployeeByEmployeeId',
         ]]);
-        $this->middleware('permission:create user', ['only' => ['user_form', 'getEmployeeDropdownData', 'createEmployee']]);
-        $this->middleware('permission:update user', ['only' => ['user_form', 'getEmployeeDropdownData', 'updateEmployee']]);
-        $this->middleware('permission:delete user', ['only' => ['deleteEmployee']]);
+        $this->middleware('permission:create employee', ['only' => ['employee_form', 'getEmployeeDropdownData', 'createEmployee']]);
+        $this->middleware('permission:update employee', ['only' => ['employee_form', 'getEmployeeDropdownData', 'updateEmployee']]);
+        $this->middleware('permission:delete employee', ['only' => ['deleteEmployee']]);
 
         $this->common = new CommonModel();
     }
 
-    public function user_list()
+    public function employee_list()
     {
-        return view('user.emp_list');
+        return view('employee.emp_list');
     }
 
-    public function user_form()
+    public function employee_form()
     {
-        return view('user.emp_form');
+        return view('employee.emp_form');
     }
 
-    public function user_profile()
+    public function employee_profile()
     {
-        return view('user.emp_profile');
+        return view('employee.emp_profile');
     }
+
+
+    public function emp_form()
+    {
+        return view('employee.form');
+    }
+
+//========================================================================================
+// Navigate to Employees' payroll
+//========================================================================================
+
+    public function showBankDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        // Fetch bank details associated with the user
+        $bankDetails = $this->common->commonGetById($id, 'user_id', 'emp_bank_details', '*');
+
+        // Pass the user and bank details to the view
+        return view('employee_bank.edit', ['user' => $user[0], 'bankDetails' => $bankDetails, ]);
+    }
+
+
+    public function showWageDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        // Fetch wage details associated with the user
+        $wageDetails = $this->common->commonGetById($id, 'user_id', 'emp_wage', '*');
+
+        // Pass the user and wage details to the view
+        return view('employee_wage.index', ['user' => $user[0], 'wageDetails' => $wageDetails, ]);
+    }
+
+//========================================================================================
+// Navigate to Employees' employee
+//========================================================================================
+
+    public function showQualificationDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        $qualificationDetails = $this->common->commonGetById($id, 'user_id', 'emp_qualifications', '*');
+
+        return view('employee_qualification.index', ['user' => $user[0], 'qualificationDetails' => $qualificationDetails]);
+    }
+
+
+    public function showWorkExperianceDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        $workDetails = $this->common->commonGetById($id, 'user_id', 'emp_work_experience', '*');
+
+        return view('employee_work_experience.index', ['user' => $user[0], 'workExperianceDetails' => $workDetails]);
+    }
+
+
+    public function showPromotionDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        $promotionDetails = $this->common->commonGetById($id, 'user_id', 'emp_promotions', '*');
+
+        return view('employee_promotion.index', ['user' => $user[0], 'promotionDetails' => $promotionDetails]);
+    }
+
+
+    public function showFamilyDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        $familyDetails = $this->common->commonGetById($id, 'user_id', 'emp_family', '*');
+
+        return view('employee_family.index', ['user' => $user[0], 'familyDetails' => $familyDetails]);
+    }
+
+
+    public function showJobHistoryDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        $jobHistoryDetails = $this->common->commonGetById($id, 'user_id', 'emp_job_history', '*');
+
+        return view('employee_job_history.index', ['user' => $user[0], 'jobHistoryDetails' => $jobHistoryDetails]);
+    }
+
+
+    public function showKpiDetails($id)
+    {
+        $idColumn = 'id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Check if the user exists
+        if (!$user || count($user) === 0) {
+            abort(404, 'Employee not found.');
+        }
+
+        $kpiDetails = $this->common->commonGetById($id, 'user_id', 'emp_kpi', '*');
+
+
+        return view('employee_kpi.index', ['user' => $user[0], 'kpiDetails' => $kpiDetails]);
+    }
+
+
+    //================================================================
 
     public function getEmployeeDropdownData(){
         $branches = $this->common->commonGetAll('com_branches', '*');
@@ -59,7 +225,7 @@ class EmployeeController extends Controller
                 'except_deleted' => false,  // Filter out soft-deleted records
             ],
         ];
-    
+
         // Fetch the department with connections
         $departments = $this->common->commonGetAll('com_departments', ['com_departments.*'], [], [], false, $connections);
         $employee_groups = $this->common->commonGetAll('com_employee_groups', '*');
@@ -70,8 +236,8 @@ class EmployeeController extends Controller
             [ 'id' => 2, 'name' => 'PG 2'],
             [ 'id' => 3, 'name' => 'PG 3'],
         ];
-        //user status => create table
-        $user_status = [
+        //employee status => create table
+        $employee_status = [
             [ 'id' => 1, 'name' => 'Active', 'description' => 'active'],
             [ 'id' => 2, 'name' => 'Leave', 'description' => 'Illness/Injury'],
             [ 'id' => 3, 'name' => 'Leave', 'desription' => 'Maternity/Parental'],
@@ -95,7 +261,7 @@ class EmployeeController extends Controller
             [ 'id' => 1, 'name' => 'Super Admin', 'value' => 'super-admin'],
             [ 'id' => 2, 'name' => 'Admin', 'value' => 'admin'],
             [ 'id' => 3, 'name' => 'Staff', 'value' => 'staff'],
-            [ 'id' => 4, 'name' => 'User', 'value' => 'user'],
+            [ 'id' => 4, 'name' => 'Employee', 'value' => 'employee'],
         ];
         //religion => create table
         $religion = [
@@ -115,7 +281,7 @@ class EmployeeController extends Controller
             [ 'id' => 5, 'name' => 'Resign', 'is_duration' => 0],
             [ 'id' => 6, 'name' => 'External', 'is_duration' => 0],
         ];
-        
+
         $countries = $this->common->commonGetAll('loc_countries', '*');
         $provinces = $this->common->commonGetAll('loc_provinces', '*');
         $cities = $this->common->commonGetAll('loc_cities', '*');
@@ -134,7 +300,7 @@ class EmployeeController extends Controller
                 'employee_groups' => $employee_groups,
                 'employee_designations' => $employee_designations,
                 'policy_groups' => $policy_groups,
-                'user_status' => $user_status,
+                'employee_status' => $employee_status,
                 'currencies' => $currencies,
                 'pay_period' => $pay_period,
                 'roles' => $roles,
@@ -148,6 +314,7 @@ class EmployeeController extends Controller
         ], 200);
     }
 
+
     public function getNextEmployeeId()
     {
         // Using raw SQL to get the next auto-increment ID
@@ -158,6 +325,7 @@ class EmployeeController extends Controller
             'data' => $nextId
         ], 200);
     }
+
 
     public function createEmployee(Request $request)
     {
@@ -190,9 +358,9 @@ class EmployeeController extends Controller
                 'dob' => 'nullable|date',
                 'gender' => 'nullable|string|max:10',
                 'bond_period' => 'nullable|string|max:255',
-                'user_status' => 'required|integer',
+                'employee_status' => 'required|integer',
                 'marital_status' => 'nullable|string|max:20',
-                'user_image' => 'nullable|string|max:255',
+                'employee_image' => 'nullable|string|max:255',
                 'punch_machine_user_id' => 'nullable|integer',
                 'designation_id' => 'required|integer',
                 'employee_group_id' => 'required|integer',
@@ -209,27 +377,27 @@ class EmployeeController extends Controller
                 'currency_id' => 'nullable|integer',
                 'pay_period_id' => 'nullable|integer',
                 'permission_group_id' => 'nullable|string',
-                'email' => 'required|email|max:255|unique:users,email',
+                'email' => 'required|email|max:255|unique:employees,email',
                 'password' => 'required|string|min:4|max:20', // Password validation
             ]);
-    
+
             //===========================================================================================================
-            // create user and user persmission
+            // create employee and employee persmission
             //===========================================================================================================
-            // Prepare user data and insert into the 'users' table
-            $user = User::create([
+            // Prepare employee data and insert into the 'employees' table
+            $employee = Employee::create([
                 'name' => $request->full_name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
             
-            // Attach roles to the user
-            $user->syncRoles([$request->permission_group_id]);
+            // Attach roles to the employee
+            $employee->syncRoles([$request->permission_group_id]);
             //===========================================================================================================
             
-            // Prepare user data and insert into the 'emp_employees' table
-            $userData = [
-                'user_id' => $user->id, // Use the newly created user ID
+            // Prepare employee data and insert into the 'emp_employees' table
+            $employeeData = [
+                'user_id' => $employee->id, // Use the newly created employee ID
                 'title' => $request->title,
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -256,9 +424,9 @@ class EmployeeController extends Controller
                 'dob' => $request->dob,
                 'gender' => $request->gender,
                 'bond_period' => $request->bond_period,
-                'user_status' => $request->user_status,
+                'employee_status' => $request->employee_status,
                 'marital_status' => $request->marital_status,
-                'user_image' => $request->user_image,
+                'employee_image' => $request->employee_image,
                 'punch_machine_user_id' => $request->punch_machine_user_id,
                 'designation_id' => $request->designation_id,
                 'employee_group_id' => $request->employee_group_id,
@@ -278,18 +446,17 @@ class EmployeeController extends Controller
                 'updated_by' => Auth::id(),
             ];
     
-            $userId = DB::table('emp_employees')->insertGetId($userData);
+            $employeeId = DB::table('emp_employees')->insertGetId($employeeData);
     
             // Return a successful response
             return response()->json([
                 'status' => 'success',
                 'message' => 'Employee added successfully',
-                'data' => ['id' => $userId],
+                'data' => ['id' => $employeeId],
             ], 201);
         });
     }
-    
-    
+
 
     public function updateEmployeeDesignation(Request $request, $id)
     {
@@ -323,9 +490,9 @@ class EmployeeController extends Controller
                     'dob' => 'nullable|date',
                     'gender' => 'nullable|string|max:10',
                     'bond_period' => 'nullable|string|max:255',
-                    'user_status' => 'required|integer',
+                    'employee_status' => 'required|integer',
                     'marital_status' => 'nullable|string|max:20',
-                    'user_image' => 'nullable|string|max:255',
+                    'employee_image' => 'nullable|string|max:255',
                     'punch_machine_user_id' => 'nullable|integer',
                     'designation_id' => 'required|integer',
                     'employee_group_id' => 'required|integer',
@@ -342,7 +509,7 @@ class EmployeeController extends Controller
                     'currency_id' => 'nullable|integer',
                     'pay_period_id' => 'nullable|integer',
                     'role_id' => 'nullable|integer',
-                    // 'email' => 'required|email|max:255|unique:users,email', // Validate email in users table
+                    // 'email' => 'required|email|max:255|unique:employees,email', // Validate email in employees table
                 ]);
 
                 $table = 'emp_employees';
@@ -374,9 +541,9 @@ class EmployeeController extends Controller
                     'dob' => $request->dob,
                     'gender' => $request->gender,
                     'bond_period' => $request->bond_period,
-                    'user_status' => $request->user_status,
+                    'employee_status' => $request->employee_status,
                     'marital_status' => $request->marital_status,
-                    'user_image' => $request->user_image,
+                    'employee_image' => $request->employee_image,
                     'punch_machine_user_id' => $request->punch_machine_user_id,
                     'designation_id' => $request->designation_id,
                     'employee_group_id' => $request->employee_group_id,
@@ -394,8 +561,8 @@ class EmployeeController extends Controller
                     'pay_period_id' => $request->pay_period_id,
                     'role_id' => $request->role_id,
 
-                    'status' => $request->user_status,
-                    'updated_by' => Auth::user()->id,
+                    'status' => $request->employee_status,
+                    'updated_by' => Auth::employee()->id,
                 ];
 
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
@@ -411,6 +578,7 @@ class EmployeeController extends Controller
         }
     }
 
+
     public function deleteEmployee($id)
     {
         $whereArr = ['id' => $id];
@@ -420,6 +588,7 @@ class EmployeeController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
+
     public function getAllEmployees()
     {
         $table = 'emp_employees';
@@ -428,21 +597,22 @@ class EmployeeController extends Controller
         return response()->json(['data' => $employee_designations], 200);
     }
 
+
     public function getEmployeeByEmployeeId($id)
     {
         // Fetch company data
         $company = $this->common->commonGetById(1, 'id', 'com_companies', '*');
         
-        // Fetch user data
+        // Fetch employee data
         $idColumn = 'id';
         $table = 'emp_employees';
         $fields = '*';
-        $users = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        $employees = $this->common->commonGetById($id, $idColumn, $table, $fields);
 
-        // Combine the user data with company data
+        // Combine the employee data with company data
         $response = [
             'data' => [
-                'user' => $users,
+                'employee' => $employees,
                 'company' => $company
             ],
         ];
@@ -453,7 +623,7 @@ class EmployeeController extends Controller
 
     public function getEmployeeByUserId($id)
     {
-        // Fetch user data
+        // Fetch employee data
         $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
