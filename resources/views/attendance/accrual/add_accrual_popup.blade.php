@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
-                    <input type="hidden" id="accrual_id" value="">
+                    <input type="hidden" id="accrual_balance_id" value="">
                     <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn w-sm btn-primary" id="accrual-submit-confirm">Submit</button>
                 </div>
@@ -65,27 +65,29 @@
     //get dropdown data
     async function getDropdownData() {
         try {
-            let dropdownData = await commonFetchData('/company/employee_punch/dropdown');
-            // Populate branch dropdown
-            let branchList = (dropdownData?.branches || [])
-                .map(branch => `<option value="${branch.id}">${branch.branch_name}</option>`)
-                .join('');
-            $('#branch_id').html('<option value="">Select Branch</option>' + branchList);
+            const dropdownData = await commonFetchData('/accrual/dropdown');
 
-            // Populate department dropdown
-            let departmentList = (dropdownData?.departments || [])
-                .map(department => `<option value="${department.id}">${department.department_name}</option>`)
+            const accrualpolicyList = (dropdownData?.accrual_policy || [])
+                .map(accrual => `<option value="${accrual.id}">${accrual.name}</option>`)
                 .join('');
-            $('#department_id').html('<option value="">Select Department</option>' + departmentList);
+            $('#accrual_policy_id').html('<option value="">Select Accrual policy</option>' + accrualpolicyList);
+
+            const typeList = (dropdownData?.type || [])
+                .map(type => `<option value="${type.id}">${type.name}</option>`)
+                .join('');
+            $('#type').html('<option value="">Select Type</option>' + typeList);
+
+
         } catch (error) {
-            console.error('Error fetching dropdown data:', error);
+            console.error('Error fetching employee data:', error);
         }
     }
 
 
     //  click event
     $(document).on('click', '#accrual-submit-confirm', async function() {
-        const accrual_id = $('#accrual_id').val();
+
+        const accrual_balance_id = $('#accrual_balance_id').val();
         const amount = $('#amount').val();
         const time_stamp = $('#time_stamp').val();
         const type = $('#type').val();
@@ -96,7 +98,8 @@
         // const time_stamp = `${date}T${time}`; // Format: "2024-11-11T16:19"
 
         let createUrl = `/accrual/create`;
-        let updateUrl = `/accrual/update/${accrual_id}`;
+        let updateUrl = `/accrual/update/${accrualId}`;
+
 
         let formData = new FormData();
 
@@ -107,7 +110,8 @@
             $('#error-msg').html(''); // Clear error message if no issues
         }
 
-        formData.append('accrual_id', accrual_id);
+        formData.append('accrual_id', accrualId);
+        formData.append('accrual_balance_id', accrual_balance_id);
         formData.append('user_id', user_id);
         formData.append('amount', amount);
         formData.append('time_stamp', time_stamp);
@@ -115,7 +119,7 @@
         formData.append('accrual_policy_id', accrual_policy_id);
         formData.append('accrual_status', accrual_status);
 
-        const isUpdating = Boolean(accrual_id);
+        const isUpdating = Boolean(accrualId);
         let url = isUpdating ? updateUrl : createUrl;
         let method = isUpdating ? 'PUT' : 'POST';
 
@@ -126,8 +130,12 @@
             if (res.status === 'success') {
                 $('#accrual-form-modal').modal('hide');
                 await renderAccrualTable(); // Re-render table on success
+                window.location.reload();
                 // await accrual-form-modal();
             }
+            //  else {
+            //     window.location.reload();
+            // }
         } catch (error) {
             console.error('Error:', error);
             $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
@@ -135,7 +143,7 @@
     });
 
     function resetForm() {
-        $('#accrual_id').val('');
+        $('#accrual_balance_id').val('');
         $('#amount').val('00:00');
         $('#time_stamp').val('');
         $('#type').val('');
