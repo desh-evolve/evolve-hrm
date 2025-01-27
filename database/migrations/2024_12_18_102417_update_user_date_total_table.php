@@ -29,11 +29,11 @@ return new class extends Migration
             $table->string('type', 25)
                   ->after('comment_ot')
                   ->default('total')
-                  ->comment('total/regular/overtime/premium/lunch/break');
+                  ->comment('total(10), regular(20), overtime(30), premium(40), lunch(100), break(110)');
             $table->string('status', 25)
                   ->after('type')
                   ->default('system')
-                  ->comment('system/worked/absence/delete');
+                  ->comment('system(10), worked(20), absence(30), delete');
         });
     }
 

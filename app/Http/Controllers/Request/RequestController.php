@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Attendance;
+namespace App\Http\Controllers\Request;
 
 use App\Models\CommonModel;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class AttendanceRequestsController extends Controller
+class RequestController extends Controller
 {
 
     // not complete
@@ -235,6 +235,30 @@ class AttendanceRequestsController extends Controller
         $this->common->commonDelete($id, ['ref_id' => $id], 'Request Status', 'message_control');
 
         return $res;
+    }
+
+    public function getSumByPayPeriodIdAndStatus($pay_period_id, $status){
+
+        $table = 'request';
+        $fields = [DB::raw('user_date.pay_period_id as pay_period_id, count(*) as total')];
+        $joinArr = [
+           'user_date' => ['user_date.id', '=', 'request.user_date_id'] 
+        ];
+        
+        $whereArr = [
+            ['request.status', '=', '"'.$status.'"'],
+            'user_date.pay_period_id in ('.$pay_period_id.')'
+        ];
+
+        $exceptDel = true;
+        $connections = [];
+        $groupBy = 'pay_period_id';
+        $orderBy = null;
+
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel, $connections, $groupBy, $orderBy);
+        
+        return $res;
+
     }
 
 }

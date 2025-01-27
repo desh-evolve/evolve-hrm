@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Accrual;
+namespace App\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
