@@ -367,12 +367,13 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     
     // Accrual
     Route::get('/accrual/index', [AccrualBalanceController::class, 'index'])->name('accrual.index');
-    Route::post('/accrual/create', [AccrualBalanceController::class, 'createEmployeeFamily'])->name('accrual.create');
-    Route::put('/accrual/update/{id}', [AccrualBalanceController::class, 'updateEmployeeFamily'])->name('accrual.update');
-    Route::delete('/accrual/delete/{id}', [AccrualBalanceController::class, 'deleteEmployeeFamily'])->name('accrual.delete');
-    Route::get('/accrual/single_accrual/{id}', [AccrualBalanceController::class, 'getSingleEmployeeFamily'])->name('accrual.single');
-    Route::get('/accrual/dropdown', [AccrualBalanceController::class, 'getEmployeeList'])->name('accrual.dropdown');
-    Route::get('/accrual/accrual_list/{id}', [AccrualBalanceController::class, 'getEmployeeFamilyById'])->name('accrual.accrual_list.getById');
+    Route::post('/accrual/create', [AccrualBalanceController::class, 'createAccrualBalance'])->name('accrual.create');
+    Route::put('/accrual/update/{id}', [AccrualBalanceController::class, 'updateAccrualBalance'])->name('accrual.update');
+    Route::delete('/accrual/delete/{id}', [AccrualBalanceController::class, 'deleteAccrualBalance'])->name('accrual.delete');
+    Route::get('/accrual/single_accrual/{id}', [AccrualBalanceController::class, 'getAccrualById'])->name('accrual.single');
+    Route::get('/accrual/dropdown', [AccrualBalanceController::class, 'getCompanyDeductionDropdownData'])->name('accrual.dropdown');
+    Route::get('/accrual/accrual_list/{id}', [AccrualBalanceController::class, 'getAccrualTypeByAccrualId'])->name('accrual.accrual_list.getById');
+    Route::get('/accrual/accrual_list/all/{id}', [AccrualBalanceController::class, 'getAllAccrualBalance'])->name('accrual.accrual_list.all');
 
 
     //==============================================================================================================================
