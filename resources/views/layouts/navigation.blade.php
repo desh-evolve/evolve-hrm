@@ -212,9 +212,9 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('emp.form') }}"
-                                    class="nav-link {{ request()->routeIs('emp.form') ? 'active' : '' }}">
-                                    Emp Form
+                                <a href="{{ route('emp.my_profile') }}"
+                                    class="nav-link {{ request()->routeIs('emp.my_profile') ? 'active' : '' }}">
+                                    Emp tempory profile
                                 </a>
                             </li>
                         </ul>

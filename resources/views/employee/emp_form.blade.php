@@ -263,9 +263,10 @@
 
                                 <div class="d-flex justify-content-end mb-2 align-items-start gap-1">
                                     <!-- Offset Position -->
-                                    <button type="reset" data-toast data-toast-text="Clear All fields!" data-toast-gravity="top" data-toast-position="right" data-toast-duration="3000" data-toast-offset data-toast-close="close" class="btn btn-secondary">Clear</button>
+                                    <button type="reset" data-toast data-toast-text="Clear All fields!" data-toast-gravity="top" data-toast-position="right" data-toast-duration="3000" data-toast-offset data-toast-close="close" class="btn btn-secondary reset-user-form">Clear</button>
                                     <button type="button" class="btn btn-success btn-label right" data-nexttab="steparrow-contact-info-tab" id="first-form-button">
-                                        <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to contact info</button>
+                                        <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to contact info
+                                    </button>
                                 </div>
                             </div>
                             <!-- end user identification tab pane -->
@@ -287,14 +288,14 @@
                                                         <option value="Miss">Miss</option>
                                                         <option value="Hon">Hon</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="name_with_initials">Name with initials</label>
                                                     <input type="text" class="form-control" id="name_with_initials" name="name_with_initials" placeholder="Enter Name with initials" required />
-                                                    <div class="invalid-feedback">Please enter name with initials</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -302,21 +303,21 @@
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="first_name">First Name</label>
                                                     <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter First Name" required />
-                                                    <div class="invalid-feedback">Please enter first name</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="last_name">Last Name</label>
                                                     <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter Last Name" required />
-                                                    <div class="invalid-feedback">Please enter last name</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="full_name">Full Name</label>
                                                     <textarea class="form-control" id="full_name" name="full_name" placeholder="Enter Full Name" required ></textarea>
-                                                    <div class="invalid-feedback">Please enter full name</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -324,7 +325,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="dob">DOB</label>
                                                     <input type="date" class="form-control" id="dob" name="dob" placeholder="Enter DOB" required />
-                                                    <div class="invalid-feedback">Please enter date of birth</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -332,7 +333,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="nic">NIC</label>
                                                     <input type="text" class="form-control" id="nic" name="nic" placeholder="Enter NIC" required />
-                                                    <div class="invalid-feedback">Please enter NIC</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -345,57 +346,75 @@
                                                         <option value="female">Female</option>
                                                         <option value="other">Other</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please select gender</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="religion_id">Religion</label>
+                                                    <label class="form-label req" for="religion_id">Religion</label>
                                                     <select class="form-select" id="religion_id" name="religion_id">
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please select religion</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="marital_status">Marital Status</label>
+                                                    <label class="form-label req" for="marital_status">Marital Status</label>
                                                     <select class="form-select" id="marital_status" name="marital_status">
                                                         <option value="">Select</option>
                                                         <option value="single">Single</option>
                                                         <option value="married">Married</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please select marital status</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
+
+                                            {{-- <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label req" for="bond_period">Bond Period</label>
+                                                    <select class="form-select" id="bond_period" name="bond_period">
+                                                        <option value="">Select</option>
+                                                        <option value="single">3</option>
+                                                        <option value="married">6</option>
+                                                        <option value="married">9</option>
+                                                        <option value="married">12</option>
+                                                        <option value="married">18</option>
+                                                        <option value="married">24</option>
+                                                        <option value="married">30</option>
+                                                        <option value="married">36</option>
+                                                    </select>
+                                                    <div class="invalid-feedback"></div>
+                                                </div>
+                                            </div> --}}
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="personal_email">Personal Email</label>
                                                     <input type="text" class="form-control" id="personal_email" name="personal_email" placeholder="Enter Personal Email" required />
-                                                    <div class="invalid-feedback">Please enter an email</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="contact_1">Contact 1</label>
                                                     <input type="text" class="form-control" id="contact_1" name="contact_1" placeholder="Enter Contact 1" required />
-                                                    <div class="invalid-feedback">Please enter a contact number</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="contact_2">Contact 2</label>
                                                     <input type="text" class="form-control" id="contact_2" name="contact_2" placeholder="Enter Contact 2" />
-                                                    <div class="invalid-feedback">Please enter a contact number</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="user_photo">Employee Photo</label>
-                                                    <input type="file" class="form-control" id="user_photo" name="user_photo" />
+                                                    <label class="form-label" for="user_image">Employee Photo</label>
+                                                    <input type="file" class="form-control" id="user_image" name="user_image" />
                                                 </div>
                                             </div>
                                         </div>
@@ -407,7 +426,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label req" for="address_1">Address Line 1</label>
                                                     <input type="text" class="form-control" id="address_1" name="address_1" placeholder="Enter Address Line 1" required />
-                                                    <div class="invalid-feedback">Please enter a address</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -415,7 +434,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="address_2">Address Line 2</label>
                                                     <input type="text" class="form-control" id="address_2" name="address_2" placeholder="Enter Address Line 2" />
-                                                    <div class="invalid-feedback">Please enter a address</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -423,14 +442,14 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="address_3">Address Line 3</label>
                                                     <input type="text" class="form-control" id="address_3" name="address_3" placeholder="Enter Address Line 3" />
-                                                    <div class="invalid-feedback">Please enter a address</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="postal_code">Postal Code</label>
                                                     <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="Enter Postal Code" />
-                                                    <div class="invalid-feedback">Please enter a postal code</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -440,7 +459,7 @@
                                                     <select class="form-select" id="country_id" name="country_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please select a country</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -449,7 +468,7 @@
                                                     <select class="form-select" id="province_id" name="province_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please select a province</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
@@ -458,7 +477,7 @@
                                                     <select class="form-select" id="city_id" name="city_id" required>
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div class="invalid-feedback">Please select a city</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <hr>
@@ -466,14 +485,14 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="work_email">Work Email</label>
                                                     <input type="text" class="form-control" id="work_email" name="work_email" placeholder="Enter Work Email" />
-                                                    <div class="invalid-feedback">Please enter work email</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="work_contact">Work Contact</label>
                                                     <input type="text" class="form-control" id="work_contact" name="work_contact" placeholder="Enter Work Contact" />
-                                                    <div class="invalid-feedback">Please enter a title</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
@@ -481,41 +500,59 @@
                                                 <div class="mb-3">
                                                     <label class="form-label" for="immediate_contact_person">Immediate Contact Person</label>
                                                     <input type="text" class="form-control" id="immediate_contact_person" name="immediate_contact_person" placeholder="Enter Immediate Contact Person" />
-                                                    <div class="invalid-feedback">Please enter an immediate contact person</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="immediate_contact_no">Immediate Contact No</label>
                                                     <input type="text" class="form-control" id="immediate_contact_no" name="immediate_contact_no" placeholder="Enter Immediate Contact No" />
-                                                    <div class="invalid-feedback">Please enter an immediate contact number</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label" for="home_contact">Home Contact</label>
                                                     <input type="text" class="form-control" id="home_contact" name="home_contact" placeholder="Enter Home Contact" />
-                                                    <div class="invalid-feedback">Please enter home contact</div>
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="epf_no">EPF Reg No</label>
-                                                    <input type="text" class="form-control" id="epf_no" name="epf_no" placeholder="Enter EPF Reg No" />
-                                                    <div class="invalid-feedback">Please enter EPF Reg No</div>
+                                                    <label class="form-label" for="epf_reg_no">EPF Reg No</label>
+                                                    <input type="text" class="form-control" id="epf_reg_no" name="epf_no" placeholder="Enter EPF Reg No" />
+                                                    <div class="invalid-feedback"></div>
                                                 </div>
                                             </div>
 
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex align-items-start gap-3 mt-4">
-                                    <button type="button" class="btn btn-light btn-label previestab" data-previous="steparrow-basic-info-tab"><i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to Employee Identification</button>
-                                    <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab" data-nexttab="steparrow-document-info-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to Documents</button>
+
+                                 <!-- Error Messages -->
+                                 <div class="d-flex justify-content-end">
+                                    <div class="second-part-error-msgs" style="width: auto"></div>
                                 </div>
+
+
+                                <div class="d-flex align-items-start mt-4 justify-content-between">
+                                    <!-- Back Button aligned to the left end -->
+                                    <button type="button" class="btn btn-light btn-label previestab border" data-previous="steparrow-basic-info-tab" id="back-button">
+                                        <i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to Employee Identification
+                                    </button>
+
+                                    <!-- Right-aligned buttons -->
+                                    <div>
+                                        <button type="reset" data-toast data-toast-text="Clear All fields!" data-toast-gravity="top" data-toast-position="right" data-toast-duration="3000" data-toast-offset data-toast-close="close" class="btn btn-secondary reset-contact-form">Clear</button>
+                                        <button type="button" class="btn btn-success btn-label right ms-auto" data-nexttab="steparrow-document-info-tab" id="second-form-button">
+                                            <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to Documents
+                                        </button>
+                                    </div>
+                                </div>
+
                             </div>
-                            <!-- end contact information tab pane -->
+
 
 
                             <!-- form 03 -->
@@ -571,7 +608,7 @@
 
                                 <div class="d-flex align-items-start gap-3 mt-6">
                                     <input type="hidden" name="user_id" id="user_id" />
-                                    <button type="button" class="btn btn-light btn-label previestab" data-previous="steparrow-gen-info-tab"><i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to General</button>
+                                    <button type="button" class="btn btn-light btn-label previestab border" data-previous="steparrow-gen-info-tab"><i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to General</button>
                                     <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab emp_form_submit" data-nexttab="steparrow-document-info-tab"><i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Submit</button>
                                 </div>
                             </div>

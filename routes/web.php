@@ -18,11 +18,11 @@ use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 use App\Http\Controllers\Company\BranchBankDetailsController;
 
-// use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
 use App\Http\Controllers\Employee\EmployeeBankDetailsController;
 use App\Http\Controllers\Employee\JobHistoryController;
-use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Employee\MyProfileController;
 use App\Http\Controllers\Employee\EmployeeWorkExperienceController;
 use App\Http\Controllers\Employee\EmployeePromotionController;
 use App\Http\Controllers\Employee\EmployeeFamilyController;
@@ -393,8 +393,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
     Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
     Route::get('/employee/form', [EmployeeController::class, 'employee_form'])->name('employee.form');
-    Route::get('/emp/form', [EmployeeController::class, 'emp_form'])->name('emp.form');
-    Route::get('/employee/profile', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
+    Route::get('/employee/my_profile', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
+    Route::get('/employee/my_profile/details', [EmployeeController::class, 'getLoggedInUserProfile'])->name('employee.my_profile.details');
     Route::get('/employee/dropdown', [EmployeeController::class, 'getEmployeeDropdownData'])->name('employee.dropdown');
     Route::get('/employee/next_employee_id', [EmployeeController::class, 'getNextEmployeeId'])->name('employee.nextEmployeeId');
 
@@ -411,6 +411,19 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/employee/delete/{id}', [EmployeeController::class, 'deleteEmployee'])->name('employee.delete');
     Route::get('/employees', [EmployeeController::class, 'getAllEmployees'])->name('employee.all');
     Route::get('/employee/{id}', [EmployeeController::class, 'getEmployeeByEmployeeId'])->name('employee.getById');
+
+    //employee profile tab views
+    Route::get('/employee/profile/qualification/{id}', [EmployeeController::class, 'getQualificationByEmployeeId'])->name('employee.profile.qualification');
+    Route::get('/employee/profile/bank/{id}', [EmployeeController::class, 'getBankDetailsByEmployeeId'])->name('employee.profile.bank');
+    Route::get('/employee/profile/work_experience/{id}', [EmployeeController::class, 'getWorkExperienceByEmployeeId'])->name('employee.profile.work_experience');
+    Route::get('/employee/profile/jobhistory/{id}', [EmployeeController::class, 'getJobHistoryByEmployeeId'])->name('employee.profile.jobhistory');
+    Route::get('/employee/profile/kpi/{id}', [EmployeeController::class, 'getKpiByEmployeeId'])->name('employee.profile.kpi');
+    Route::get('/employee/profile/promotion/{id}', [EmployeeController::class, 'getPromotionsByEmployeeId'])->name('employee.profile.promotion');
+    Route::get('/employee/profile/documents/{id}', [EmployeeController::class, 'getDocumentsByEmployeeId'])->name('employee.profile.documents');
+
+    // my profile
+    Route::get('/temp_my_profile', [MyProfileController::class, 'index'])->name('emp.my_profile');
+    Route::get('/temp_my_profile/load', [MyProfileController::class, 'getMyProfileById'])->name('emp.my_profile.getId');
 
     //==============================================================================================================================
     // Policies
