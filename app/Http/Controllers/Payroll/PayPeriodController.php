@@ -25,8 +25,9 @@ class PayPeriodController extends Controller
         $fields = '*';
         $joinArr = [];
         $whereArr = [];
+        $exceptDel = true;
 
-        $res = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr, $whereArr);
+        $res = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr, $whereArr, $exceptDel);
 
         return $res;
     }

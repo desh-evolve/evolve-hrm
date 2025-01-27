@@ -429,7 +429,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     
     // Process Payroll (End of pay period)
     Route::get('/payroll/process_payroll', [ProcessPayrollController::class, 'index'])->name('payroll.process_payroll');
-    
+    Route::post('/payroll/change_status', [ProcessPayrollController::class, 'changeStatus'])->name('payroll.change_status');
     
 
     //==============================================================================================================================

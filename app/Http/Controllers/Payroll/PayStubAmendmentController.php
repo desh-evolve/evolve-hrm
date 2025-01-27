@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
+use Carbon\Carbon;
 
 class PayStubAmendmentController extends Controller
 {
@@ -199,5 +200,53 @@ class PayStubAmendmentController extends Controller
             ]
             // 'data' => $users,
         ], 200);
+    }
+
+    public function getByUserIdAndAuthorizedAndStartDateAndEndDate($user_id, $authorized, $start_date, $end_date){
+        if ( $user_id == '' || $authorized == '' || $start_date == '' || $end_date == '') {
+			return FALSE;
+		}
+
+        $table = 'pay_stub_amendment';
+        $fields = 'pay_stub_amendment.*';
+        $joinArr = [
+           'pay_stub_entry_account' => ['pay_stub_entry_account.id', '=', 'pay_stub_amendment.pay_stub_entry_name_id'] 
+        ];
+        
+        $whereArr = [
+            ['pay_stub_amendment.authorized', '=', $authorized],
+            ['pay_stub_amendment.effective_date', '>=', '"'.Carbon::parse($start_date)->format('Y-m-d').'"'],
+            ['pay_stub_amendment.effective_date', '<=', '"'.Carbon::parse($end_date)->format('Y-m-d').'"'],
+            //'pay_stub_amendment.user_id IN '. $user_id,
+            ['pay_stub_amendment.user_id', '=', $user_id],
+            ['pay_stub_entry_account.status', '!=', '"delete"'],
+            
+        ];
+
+        $exceptDel = true;
+        $connections = [];
+        $groupBy = null;
+        $orderBy = 'pay_stub_amendment.effective_date asc, pay_stub_amendment.type asc';
+
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel, $connections, $groupBy, $orderBy);
+        
+        return $res;
+
+        //================================================
+        //old system comments
+        //================================================
+        
+		//CalculatePayStub uses this to find PS amendments.
+		//Because of percent amounts, make sure we order by effective date FIRST,
+		//Then FIXED amounts, then percents.
+        
+		//Pay period end dates never equal the start start date, so >= and <= are proper.
+
+		//06-Oct-06: Start including YTD_adjustment entries for the new pay stub calculation system.
+		//						AND ytd_adjustment = 0
+        
+		//Make sure we ignore any pay stub amendments that happen to belong to deleted pay stub accounts.
+        //================================================
+      
     }
 }
