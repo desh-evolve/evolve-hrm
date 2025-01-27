@@ -62,6 +62,8 @@ use App\Http\Controllers\Payroll\CompanyDeductionController;
 use App\Http\Controllers\Payroll\PayStubEntryAccountLinkController;
 use App\Http\Controllers\Payroll\ProcessPayrollController;
 
+// Progress Bar
+use App\Http\Controllers\ProgressBar\ProgressBarController;
 
 // Reports
 use App\Http\Controllers\Reports\EmployeeDetailReportController;
@@ -430,7 +432,12 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Process Payroll (End of pay period)
     Route::get('/payroll/process_payroll', [ProcessPayrollController::class, 'index'])->name('payroll.process_payroll');
     Route::post('/payroll/change_status', [ProcessPayrollController::class, 'changeStatus'])->name('payroll.change_status');
-    
+    Route::post('/payroll/generate_paystubs', [ProcessPayrollController::class, 'generatePayStubs'])->name('payroll.generate_paystubs');
+
+    // progress bar
+    Route::get('/progress_bar/initiate', [ProgressBarController::class, 'initProgressBar'])->name('progress_bar.initiate');
+
+
 
     //==============================================================================================================================
     // Employee Job History

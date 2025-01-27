@@ -101,7 +101,7 @@
                             </tr>
                         @endforeach
 
-                        <form method="get" action="{{ request()->url() }}">
+                        <form>
                             <tr>
                                 <td class="text-end" colspan="10">
                                     <br>
@@ -174,7 +174,7 @@
                             @endif
                         </form>
                         
-                        <form method="get" action="{{ request()->url() }}">
+                        <form>
                             <tr>
                                 <td class="text-end" colspan="10">
                                     <br>
@@ -211,7 +211,7 @@
                             @endforeach
                         </form>
                         
-                        <form method="get" action="{{ request()->url() }}">
+                        <form>
                             <tr>
                                 <td class="text-end" colspan="10">
                                     <br>
@@ -261,12 +261,12 @@
                                     <br>
                                 </th>
                                 <th colspan="2" class="text-center">
-                                    <input type="submit" name="action:generate_pay_stubs" value="Generate Final Pay">
+                                    <input type="button" id="generate_paystubs" value="Generate Final Pay">
                                 </th>
                             </tr>
                         </form>
                         
-                        <form method="get" action="{{ request()->url() }}">
+                        <form>
                             <tr>
                                 <td class="text-end" colspan="10">
                                     <br>
@@ -318,7 +318,7 @@
                             @endforeach
                         </form>
                         
-                        <form method="get" action="{{ request()->url() }}">
+                        <form>
                             <tr>
                                 <td class="text-end" colspan="10">
                                     <br>
@@ -420,11 +420,22 @@
                 return;
             }
 
-            await submitFunc(action, pay_period_ids);
+            let url = `/payroll/change_status`;
+            await submitFunc(url, action, pay_period_ids);
         });
 
+        $(document).on('click', '#generate_paystubs', async function(){
+            let url = `/payroll/generate_paystubs`;
+            let action = 'generate_paystubs';
+            let pay_period_ids = [];
+            $('.step_4_checkbox:checked').each(function () {
+                pay_period_ids.push($(this).val());
+            });
 
-        async function submitFunc(action, pay_period_ids) {
+            await submitFunc(url, action, pay_period_ids);
+        })
+
+        async function submitFunc(url, action, pay_period_ids) {
             let formData = new FormData();
             formData.append('action', action);
 
@@ -432,7 +443,6 @@
                 formData.append('pay_period_ids[]', id);
             });
 
-            let url = `/payroll/change_status`;
             let method = 'POST';
 
             try {
@@ -453,6 +463,7 @@
 
             checkboxes.prop('checked', masterCheckbox.prop('checked'));
         }
+
 
 
     </script>

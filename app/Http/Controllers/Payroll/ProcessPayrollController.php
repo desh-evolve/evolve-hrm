@@ -18,6 +18,7 @@ use App\Http\Controllers\Payroll\PayStubController;
 use App\Http\Controllers\Core\ExceptionController;
 use App\Http\Controllers\Core\UserDateTotalController;
 use App\Http\Controllers\Request\RequestController;
+use App\Http\Controllers\ProgressBar\ProgressBarController;
 
 class ProcessPayrollController extends Controller
 {
@@ -229,14 +230,33 @@ class ProcessPayrollController extends Controller
 		}
 	}
 
-	public function generatePayStubs(){
-		/*
-		Debug::Text('Generate Pay Stubs ', __FILE__, __LINE__, __METHOD__,10);
-		//var_dump($pay_stub_pay_period_ids); die;
-		Redirect::Page( URLBuilder::getURL( array('action' => 'generate_paystubs', 'pay_period_ids' => $pay_stub_pay_period_ids, 'next_page' => '../payperiod/ClosePayPeriod.php' ), '../progress_bar/ProgressBarControl.php') );
+	public function generatePayStubs(Request $request)
+	{
+		$pbc = new ProgressBarController();
 
-		*/
+		$action = 'generate_paystubs';
+		$next_page = null;
+		$pay_period_ids = null;
+		$filter_user_id = null;
+		$pay_stub_ids = null;
+		$data = null;
+
+		$dataArr = [
+			'action' => $action,
+			'next_page' => $next_page,
+			'pay_period_ids' => $pay_period_ids,
+			'filter_user_id' => $filter_user_id,
+			'pay_stub_ids' => $pay_stub_ids,
+			'data' => $data,
+		];
+
+		$res = $pbc->initProgressBar($dataArr);
+
+		return $res;
 	}
+
+
+
 }
 
 ?>
