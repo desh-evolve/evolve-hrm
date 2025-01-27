@@ -96,7 +96,6 @@
             $('#table_body').html('<p>Loading...</p>');
             let items = await commonFetchData('/company/employee_designations');
 
-
             if (items && items.length > 0) {
                 items.map((item, i) => {
                     list += `

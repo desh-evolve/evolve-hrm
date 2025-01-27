@@ -31,7 +31,7 @@ class PunchController extends Controller
 
     public function index()
     {
-        return view('attendance.mass_punch.index');
+        return view('attendance.punch.index');
     }
 
     public function createEmployeePunch(Request $request)
@@ -106,7 +106,7 @@ class PunchController extends Controller
                     }
                 } else {
                     // Handle case where no user_date record is found
-                    return response()->json(['message' => 'Employee Date not found'], 404);
+                    return response()->json(['status' => 'error', 'message' => 'Employee Date not found', 'data' => []], 500);
                 }
 
                 if ($punchControlInsertId) {
@@ -221,7 +221,7 @@ class PunchController extends Controller
         $joinArr = [
             'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
             'user_date' => ['user_date.id', '=', 'punch_control.user_date_id'],
-            'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
+            'emp_employees' => ['emp_employees.user_id', '=', 'user_date.user_id'],
 
         ];
         // $whereArr = ['user_date.user_id' => $idColumn];
@@ -241,15 +241,23 @@ class PunchController extends Controller
 
     public function getDropdownData()
     {
-
-        $users = $this->common->commonGetAll('emp_employees', '*');
         $branches = $this->common->commonGetAll('com_branches', '*');
         $departments = $this->common->commonGetAll('com_departments', '*');
         return response()->json([
             'data' => [
-                'users' => $users,
                 'branches' => $branches,
                 'departments' => $departments,
+            ]
+        ], 200);
+    }
+
+
+    public function getAllEmployees()
+    {
+        $users = $this->common->commonGetAll('emp_employees', '*');
+        return response()->json([
+            'data' => [
+                'users' => $users,
             ]
         ], 200);
     }
@@ -280,7 +288,7 @@ class PunchController extends Controller
     //         'punch_control' => ['punch_control.id', '=', 'punch.punch_control_id'],
 
     //     ];
-    //     $user_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
-    //     return response()->json(['data' => $user_punch], 200);
+    //     $employee_punch = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr);
+    //     return response()->json(['data' => $employee_punch], 200);
     // }
 }

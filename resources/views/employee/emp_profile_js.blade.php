@@ -100,10 +100,10 @@ async function loadEmployeeOverview(){
             $('#user-status').text(userData.user_status == 1 ? 'Active' : 'Inactive');
             $('#user-number').text(userData.user_id);
             $('#punch-id').text(userData.punch_machine_user_id);
-            $('#branch').text(userData.province_name);
+            $('#branch').text(userData.province_id);
             $('#department').text(userData.user_group_id);
             $('#employment-group').text(userData.user_group_id);
-            $('#designation').text(userData.emp_designation_name);
+            $('#designation').text(userData.designation_id);
             $('#basis-employment').text(userData.employment_type_id);
             $('#currency').text(userData.currency_name);
             $('#pay-period').text(userData.pay_period_id || 'N/A');

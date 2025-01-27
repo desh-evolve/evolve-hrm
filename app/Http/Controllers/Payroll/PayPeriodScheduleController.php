@@ -16,7 +16,7 @@ class PayPeriodScheduleController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view pay period schedule', ['only' => ['index', 'getAllPayPeriodSchedules']]);
+        $this->middleware('permission:view pay period schedule', ['only' => ['index', 'getAllPayPeriodSchedules', 'getPayPeriodScheduleByUserId']]);
         $this->middleware('permission:create pay period schedule', ['only' => ['form', 'getPayPeriodScheduleDropdownData', 'createPayPeriodSchedule']]);
         $this->middleware('permission:update pay period schedule', ['only' => ['form', 'getPayPeriodScheduleDropdownData', 'getPayPeriodScheduleById', 'updatePayPeriodSchedule']]);
         $this->middleware('permission:delete pay period schedule', ['only' => ['deletePayPeriodSchedule']]);
@@ -288,5 +288,16 @@ class PayPeriodScheduleController extends Controller
                 DB::table('pay_period_schedule_user')->insert($insertData);
             }
         }
+    }
+
+    public function getPayPeriodScheduleByUserId($id    ){
+        // Fetch user data
+        $idColumn = 'user_id';
+        $table = 'pay_period_schedule_user';
+        $fields = '*';
+        $response = $this->common->commonGetById($id, $idColumn, $table, $fields);
+
+        // Return the combined data as JSON
+        return $response;
     }
 }

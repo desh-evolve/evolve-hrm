@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             OverTimePolicyTypesSeeder::class,
             RoundIntervalPunchTypesSeeder::class,
             TimeZoneSeeder::class,
+            AccrualPolicySeeder::class,
         ]);
     }
 }

@@ -45,7 +45,7 @@ class EmployeeDateController extends Controller
         $fields = ['user_date_total.*', 'user_date.date_stamp as user_date_stamp'];
         $joinArr = [
             'user_date' => ['user_date.id', '=', 'user_date_total.user_date_id'],
-            'emp_employees' => ['emp_employees.id', '=', 'user_date.user_id'],
+            'emp_employees' => ['emp_employees.user_id', '=', 'user_date.user_id'],
             'overtime_policy' => ['overtime_policy.id', '=', 'user_date_total.over_time_policy_id']
         ];
         $whereArr = [

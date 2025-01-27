@@ -172,7 +172,7 @@ class PayStubAmendmentController extends Controller
         $fields = ['pay_stub_amendment.*', 'pay_stub_entry_account.name as account_name', 'pay_stub_entry_account.type as account_type', 'pay_stub_amendment.id as id', 'emp_employees.first_name', 'emp_employees.last_name'];
 
         $joinsArr = [
-            'emp_employees' => ['emp_employees.id', '=', 'pay_stub_amendment.user_id'],
+            'emp_employees' => ['emp_employees.user_id', '=', 'pay_stub_amendment.user_id'],
             'pay_stub_entry_account' => ['pay_stub_entry_account.id', '=', 'pay_stub_amendment.pay_stub_entry_name_id'],
         ];
         $pay_stub_account = $this->common->commonGetAll($table, $fields, $joinsArr);

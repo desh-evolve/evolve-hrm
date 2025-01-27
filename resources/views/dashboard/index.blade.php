@@ -23,6 +23,14 @@
 
 
     <div class="row">
+
+        {{-- <div class="col-lg-12">
+            <div class="alert alert-danger alert-dismissible fade show material-shadow" role="alert">
+                <strong>Locations</strong> list is empty. Click here to add new locations.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div> --}}
+
         <!-- Left Side -->
         <div class="col-lg-9">
             <div class="row">

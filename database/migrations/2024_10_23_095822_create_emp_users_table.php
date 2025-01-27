@@ -44,7 +44,7 @@ return new class extends Migration
 
             $table->integer('punch_machine_user_id')->nullable();
             $table->integer('designation_id');
-            $table->integer('user_group_id');
+            $table->integer('employee_group_id');
             $table->integer('policy_group_id');
             $table->date('appointment_date');
             $table->text('appointment_note')->nullable();
