@@ -7,9 +7,8 @@ use App\Models\TableSequence;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-//use Intervention\Image\Facades\Image;
-use Intervention\Image\ImageManagerStatic as Image;
-
+use Intervention\Image\Facades\Image;
+use InvalidArgumentException;
 
 class CommonModel extends Model
 {
@@ -52,8 +51,8 @@ class CommonModel extends Model
                 // Handle unexpected cases
                 throw new InvalidArgumentException('Invalid condition format in whereArr.');
             }
-        }        
-       
+        }
+
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
             $query->whereRaw($statusCondition);
@@ -124,7 +123,7 @@ class CommonModel extends Model
                 // Handle unexpected cases
                 throw new InvalidArgumentException('Invalid condition format in whereArr.');
             }
-        }                
+        }
 
         if ($exceptDel !== 'all') {
             $statusCondition = $exceptDel ? "$table.status != 'delete'" : "$table.status = 'active'";
@@ -255,6 +254,11 @@ class CommonModel extends Model
     // desh(2024-10-18)
     public function uploadImage($imageId, $imageFile, $uploadPath, $thumbPath, $thumbWidth = 300, $thumbHeight = 300, $saveName = null)
     {
+         // Ensure the directory exists
+         if (!Storage::disk('public')->exists($uploadPath)) {
+            Storage::disk('public')->makeDirectory($uploadPath);
+        }
+
         // Check if the file was uploaded successfully
         if (!$imageFile->isValid()) {
             return response()->json(['stt' => 'error', 'msg' => 'File not uploaded!!!', 'data' => '']);
@@ -298,6 +302,56 @@ class CommonModel extends Model
 
         return response()->json($imageData);
     }
+
+
+
+    public function uploadDocument($docId, $docFile, $uploadDocPath, $saveDocName = null)
+    {
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($uploadDocPath)) {
+            Storage::disk('public')->makeDirectory($uploadDocPath);
+        }
+
+        // Check if the file was uploaded successfully
+        if (!$docFile->isValid()) {
+            return response()->json(['status' => 'error', 'message' => 'Doc File not uploaded!', 'data' => '']);
+        }
+
+        // Generate new file name if not provided
+        if ($saveDocName === null) {
+            $randomNumber = rand(100, 999);
+            $saveDocName = $docId . $randomNumber . now()->format('YmdHis');
+        }
+
+        // Get file extension
+        $fileExt = strtolower($docFile->getClientOriginalExtension());
+
+        // Supported document extensions
+        $supportedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
+        if (!in_array($fileExt, $supportedExtensions)) {
+            return response()->json(['status' => 'error', 'message' => 'Unsupported doc file type!']);
+        }
+
+        // Define the full file name
+        $fileName = $saveDocName . '.' . $fileExt;
+
+        // Store the uploaded file
+        $docFile->storeAs($uploadDocPath, $fileName, 'public');
+
+        // Prepare document data for return
+        $documentData = [
+            'docId' => $docId,
+            'saveDocName' => $saveDocName,
+            'documentExtension' => '.' . $fileExt,
+            'documentPath' => $uploadDocPath,
+            'fileName' => $fileName,
+        ];
+
+        return response()->json(['status' => 'success', 'message' => 'File uploaded successfully!', 'data' => $documentData]);
+    }
+
+
+
 
 
 }

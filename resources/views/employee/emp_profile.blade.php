@@ -14,11 +14,17 @@
             </div>
             <div class="col">
                 <div class="p-2">
-                    <h3 class="text-white mb-1" id="title-name"></h3>
+                    <h3 class="text-white text-capitalize mb-1" id="title-name"></h3>
                     <p class="text-white text-opacity-75" id="title-role"></p>
-                    <div class="text-white-50 gap-1">
-                        <div class="me-2"><i class="ri-building-line me-1 text-white text-opacity-75 fs-16 align-middle" id="title-company"></i></div>
-                        <div class="me-2"><i class="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-16 align-middle" id="title-company-address"></i></div>
+                    <div class="text-white-50">
+                        <!-- Company Title -->
+                        <div class="me-2">
+                            <i class="ri-building-line me-1 text-white text-opacity-75 fs-18 align-middle" id="title-company"></i>
+                        </div>
+                        <!-- Company Address -->
+                        <div class="me-2">
+                            <i class="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-18 align-middle" id="title-company-address"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -52,11 +58,11 @@
                                     <i class="ri-folder-4-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Documents</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link fs-14" data-bs-toggle="tab" href="#activities" role="tab">
                                     <i class="ri-list-unordered d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Activities</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
                                 <a class="nav-link fs-14" data-bs-toggle="tab" href="#qualifications" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Qualifications</span>
@@ -77,11 +83,11 @@
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Job History</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link fs-14" data-bs-toggle="tab" href="#kpi" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">KPI</span>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
                                 <a class="nav-link fs-14" data-bs-toggle="tab" href="#bank" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Bank</span>
@@ -124,7 +130,7 @@
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Basic Contact Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0" id="basic-contact-info">
+                                            <table class="table table-bordered border-secondary mb-0" id="basic-contact-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Name :</th>
@@ -184,7 +190,7 @@
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Other Contact Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0" id="other-contact-info">
+                                            <table class="table table-bordered border-secondary mb-0" id="other-contact-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Work Contact :</th>
@@ -222,7 +228,7 @@
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Basic Employment Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0" id="basic-employment-info">
+                                            <table class="table table-bordered border-secondary mb-0" id="basic-employment-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Employee Status :</th>
@@ -274,7 +280,7 @@
                                     <div class="card-body">
                                         <h5 class="card-title mb-3">Other Employment Info</h5>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered mb-0" id="other-employment-info">
+                                            <table class="table table-bordered border-secondary mb-0" id="other-employment-info">
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">Appointment Date :</th>
@@ -320,36 +326,19 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered align-middle mb-0">
-                                                <thead class="table-light">
+                                            <table class="table table-bordered border-secondary">
+                                                <thead class="bg-secondary text-white">
                                                     <tr>
+                                                        <th scope="col">#</th>
                                                         <th scope="col">File Name</th>
                                                         <th scope="col">Type</th>
                                                         <th scope="col">Upload Date</th>
                                                         <th scope="col">Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="documents-table-body">
                                                     <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="avatar-sm">
-                                                                    <div class="avatar-title bg-info-subtle text-info rounded fs-20 material-shadow">
-                                                                        <i class="ri-folder-line"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="ms-3 flex-grow-1">
-                                                                    <h6 class="fs-15 mb-0"><a href="javascript:void(0);">Project Screenshots Collection</a></h6>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>Floder File</td>
-                                                        <td>08 Nov 2021</td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_download_document" title="Download Document" data-tooltip="tooltip" data-bs-placement="top">
-                                                                <i class="ri-download-2-line"></i>
-                                                            </button>
-                                                        </td>
+                                                        <td colspan="5" class="text-center">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -360,6 +349,7 @@
                         </div>
                     </div>
                     <!--end tab-pane-->
+
 
                     <div class="tab-pane fade" id="activities" role="tabpanel">
                         <div class="card">
@@ -401,8 +391,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered align-middle mb-0">
-                                                <thead class="table-light">
+                                            <table class="table table-bordered border-secondary">
+                                                <thead class="bg-secondary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Qualification</th>
@@ -411,20 +401,9 @@
                                                         <th scope="col">Remarks</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="qualification-table-body">
                                                     <tr>
-                                                        <td>1</td>
-                                                        <td>BSc</td>
-                                                        <td>Colombo University</td>
-                                                        <td>2022</td>
-                                                        <td>First Class</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>MSc</td>
-                                                        <td>Colombo University</td>
-                                                        <td>2024</td>
-                                                        <td>Batch Top</td>
+                                                        <td colspan="5" class="text-center">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -445,8 +424,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered align-middle mb-0">
-                                                <thead class="table-light">
+                                            <table class="table table-bordered border-secondary">
+                                                <thead class="bg-secondary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Company</th>
@@ -456,14 +435,9 @@
                                                         <th scope="col">Remarks</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="work-experience-table-body">
                                                     <tr>
-                                                        <td>1</td>
-                                                        <td>Evolve</td>
-                                                        <td>2024-10-24 to now</td>
-                                                        <td>Software Department</td>
-                                                        <td>Software Engineer</td>
-                                                        <td>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusamus, enim?</td>
+                                                        <td colspan="6" class="text-center">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -484,8 +458,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered align-middle mb-0">
-                                                <thead class="table-light">
+                                            <table class="table table-bordered border-secondary">
+                                                <thead class="bg-secondary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Prev Designation</th>
@@ -496,15 +470,9 @@
                                                         <th scope="col">Remarks</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="promotion-table-body">
                                                     <tr>
-                                                        <td>1</td>
-                                                        <td>Software Engineer</td>
-                                                        <td>Senior Software Engineer</td>
-                                                        <td>100000.00</td>
-                                                        <td>250000.00</td>
-                                                        <td>2024-12-31</td>
-                                                        <td>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni doloribus fuga quod dolores reprehenderit quae!</td>
+                                                        <td colspan="7" class="text-center">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -522,25 +490,27 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title mb-3">Job History</h5>
-                                <div class="acitivity-timeline">
-                                    <div class="acitivity-item d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="{{asset('assets/images/users/avatar-1.jpg')}}" alt="" class="avatar-xs rounded-circle acitivity-avatar material-shadow" />
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-1">Oliver Phillips</h6>
-                                            <p class="text-muted mb-2">We talked about a project on linkedin.</p>
-                                            <small class="mb-0 text-muted">Today</small>
-                                        </div>
-                                    </div>
-                                    <div class="acitivity-item py-3 d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="{{asset('assets/images/users/avatar-6.jpg')}}" alt="" class="avatar-xs rounded-circle acitivity-avatar material-shadow" />
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h6 class="mb-1">Bethany Johnson</h6>
-                                            <p class="text-muted mb-2">added a new member to velzon dashboard</p>
-                                            <small class="mb-0 text-muted">19 Nov</small>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered border-secondary">
+                                                <thead class="bg-secondary text-white">
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">Branch</th>
+                                                        <th scope="col">Department</th>
+                                                        <th scope="col">Designation</th>
+                                                        <th scope="col">First Worked Date</th>
+                                                        <th scope="col">Last Worked Date</th>
+                                                        <th scope="col">Note</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="jobhistory-table-body">
+                                                    <tr>
+                                                        <td colspan="7" class="text-center">Loading...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
@@ -558,8 +528,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered align-middle mb-0">
-                                                <thead class="table-light">
+                                            <table class="table table-bordered border-secondary">
+                                                <thead class="bg-secondary text-white">
                                                     <tr>
                                                         <th scope="col">File Name</th>
                                                         <th scope="col">Type</th>
@@ -567,27 +537,9 @@
                                                         <th scope="col">Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody id="kpi-table-body">
                                                     <tr>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="avatar-sm">
-                                                                    <div class="avatar-title bg-info-subtle text-info rounded fs-20 material-shadow">
-                                                                        <i class="ri-folder-line"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="ms-3 flex-grow-1">
-                                                                    <h6 class="fs-15 mb-0"><a href="javascript:void(0);">Project Screenshots Collection</a></h6>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>Floder File</td>
-                                                        <td>08 Nov 2021</td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_download_document" title="Download Document" data-tooltip="tooltip" data-bs-placement="top">
-                                                                <i class="ri-download-2-line"></i>
-                                                            </button>
-                                                        </td>
+                                                        <td colspan="5" class="text-center">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -608,8 +560,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered align-middle mb-0">
-                                                <tbody>
+                                            <table class="table table-bordered border-secondary">
+                                                <tbody id="bank-table-body">
                                                     <tr><th>Bank Code</th><td>123456789</td></tr>
                                                     <tr><th>Bank Name</th><td>Commercial Bank</td></tr>
                                                     <tr><th>Bank Branch</th><td>Kandy</td></tr>
