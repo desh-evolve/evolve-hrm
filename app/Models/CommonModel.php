@@ -7,7 +7,8 @@ use App\Models\TableSequence;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+//use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManagerStatic as Image;
 
 
 class CommonModel extends Model

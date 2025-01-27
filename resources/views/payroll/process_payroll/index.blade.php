@@ -136,7 +136,7 @@
                                             <th>Transaction</th>
                                             <th>Functions</th>
                                             <th>
-                                                <input type="checkbox" class="checkbox" name="select_all" onClick="CheckAll(this)" checked/>
+                                                <input type="checkbox" class="checkbox step_2_select_all" name="select_all" onClick="CheckAll('step_2')" checked/>
                                             </th>
                                         </tr>
                                     @endif
@@ -157,7 +157,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <input type="checkbox" class="checkbox" name="pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
+                                            <input type="checkbox" class="checkbox step_2_checkbox" name="pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -167,8 +167,8 @@
                                         <br>
                                     </th>
                                     <th colspan="2" class="text-center">
-                                        <input type="submit" name="action:lock" value="Lock">
-                                        <input type="submit" name="action:unlock" value="UnLock">
+                                        <button type="button" id="lock_click" class="action-btn" data-action="locked">Lock</button>
+                                        <button type="button" id="unlock_click" class="action-btn" data-action="open">UnLock</button>
                                     </th>
                                 </tr>
                             @endif
@@ -232,7 +232,7 @@
                                         <th colspan="4">Pay Stubs</th>
                                         <th>Functions</th>
                                         <th>
-                                            <input type="checkbox" class="checkbox" name="select_all" onClick="CheckAll(this)" checked/>
+                                            <input type="checkbox" class="checkbox step_4__select_all" name="select_all" onClick="CheckAll('step_4')" checked/>
                                         </th>
                                     </tr>
                                 @endif
@@ -251,7 +251,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <input type="checkbox" class="checkbox" name="pay_stub_pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
+                                        <input type="checkbox" class="checkbox step_4_checkbox" name="pay_stub_pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
                                     </td>
                                 </tr>
                             @endforeach
@@ -290,7 +290,7 @@
                                         <th>Transaction</th>
                                         <th>Functions</th>
                                         <th>
-                                            <input type="checkbox" class="checkbox" name="select_all" onClick="CheckAll(this)" checked />
+                                            <input type="checkbox" class="checkbox step_5_select_all" name="select_all" onClick="CheckAll('step_5')" checked />
                                         </th>
                                     </tr>
                                 @endif
@@ -312,7 +312,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <input type="checkbox" class="checkbox" name="pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
+                                        <input type="checkbox" class="checkbox step_5_checkbox" name="pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
                                     </td>
                                 </tr>
                             @endforeach
@@ -342,7 +342,7 @@
                                         <th>Transaction</th>
                                         <th>Functions</th>
                                         <th>
-                                            <input type="checkbox" class="checkbox" name="select_all" onClick="CheckAll(this)" checked />
+                                            <input type="checkbox" class="checkbox step_6_select_all" name="select_all" onClick="CheckAll('step_6')" checked />
                                         </th>
                                     </tr>
                                 @endif
@@ -364,7 +364,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <input type="checkbox" class="checkbox" name="pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
+                                        <input type="checkbox" class="checkbox step_6_checkbox" name="pay_period_ids[]" value="{{ $pay_period['id'] }}" checked>
                                     </td>
                                 </tr>
                             @endforeach
@@ -374,7 +374,7 @@
                                     <br>
                                 </th>
                                 <th colspan="2" class="text-center">
-                                    <input type="submit" name="action:close" value="Close">
+                                    <button type="button" id="close_click" class="action-btn" data-action="closed">Close</button>
                                 </th>
                             </tr>
                         </form>
@@ -390,6 +390,70 @@
     </div>
 
     <script>
+        $(document).on('click', '.action-btn', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            let action = $(this).data('action');
+            let pay_period_ids = [];
+            
+            // Correctly check for data attributes
+            if (action == 'locked') {
+                // Collect selected checkboxes
+                $('.step_2_checkbox:checked').each(function () {
+                    pay_period_ids.push($(this).val());
+                });
+            } else if (action == 'open') {
+                // Collect selected checkboxes
+                $('.step_2_checkbox:checked').each(function () {
+                    pay_period_ids.push($(this).val());
+                });
+            } else if (action == 'closed') {
+                // Collect selected checkboxes
+                $('.step_6_checkbox:checked').each(function () {
+                    pay_period_ids.push($(this).val());
+                });
+            }
+
+
+            if (pay_period_ids.length === 0) {
+                alert('Please select at least one pay period.');
+                return;
+            }
+
+            await submitFunc(action, pay_period_ids);
+        });
+
+
+        async function submitFunc(action, pay_period_ids) {
+            let formData = new FormData();
+            formData.append('action', action);
+
+            pay_period_ids.forEach(id => {
+                formData.append('pay_period_ids[]', id);
+            });
+
+            let url = `/payroll/change_status`;
+            let method = 'POST';
+
+            try {
+                let res = await commonSaveData(url, formData, method);
+                await commonAlert(res.status, res.message);
+
+                if (res.status === 'success') {
+                    location.reload(); // Reload page on success
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function CheckAll(name) {
+            let checkboxes = $('.' + name + '_checkbox');
+            let masterCheckbox = $('.' + name + '_select_all');
+
+            checkboxes.prop('checked', masterCheckbox.prop('checked'));
+        }
+
 
     </script>
 

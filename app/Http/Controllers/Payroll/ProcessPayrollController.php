@@ -42,6 +42,7 @@ class ProcessPayrollController extends Controller
 		$ppc = new PayPeriodController();
 		$ppsc = new PayPeriodScheduleController();
 
+		$pay_periods = [];
 		$open_pay_periods = FALSE;
 
 		$pplf = $ppc->getByCompanyIdAndStatus( $com_id, ['open', 'locked', 'post_adjustment'] );
@@ -155,7 +156,9 @@ class ProcessPayrollController extends Controller
         }else{
             $msg = 'No pay periods pending transaction ';
         }
+
 		$total_pay_periods = count($pay_periods);
+		
 		$parse_obj = [
             'open_pay_periods' => $open_pay_periods,
             'pay_periods' => $pay_periods,
@@ -169,36 +172,61 @@ class ProcessPayrollController extends Controller
     }
 
 	// for close/unlock/lock
-	public function changeStatus(){
-		/*
-		//Lock selected pay periods
-				Debug::Text('Lock Selected Pay Periods... Action: '. $action, __FILE__, __LINE__, __METHOD__,10);
+	public function changeStatus(Request $request)
+	{
+		try {
+			return DB::transaction(function () use ($request) {
+				// Validate the request
+				$request->validate([
+					'action' => 'required',
+					'pay_period_ids' => 'required|array', // Expecting an array for pay_period_ids
+					'pay_period_ids.*' => 'integer', // Ensure that each pay_period_id is an integer
+				]);
 
-				$pplf = TTnew( 'PayPeriodListFactory' );
-
-				$pplf->StartTransaction();
-				if ( isset($pay_period_ids) AND count($pay_period_ids) > 0 ) {
-					foreach($pay_period_ids as $pay_period_id) {
-						$pay_period_obj = $pplf->getById( $pay_period_id )->getCurrent();
-
-						if ( $pay_period_obj->getStatus() != 20 ) {
-							if ( $action == 'close' ) {
-								$pay_period_obj->setStatus(20);
-							} elseif ( $action == 'lock' ) {
-								$pay_period_obj->setStatus(12);
-							} else {
-								$pay_period_obj->setStatus(10);
+				$action = $request->action;
+				$pay_period_ids = $request->pay_period_ids;
+				$ppc = new PayPeriodController();
+				
+				if (isset($pay_period_ids) && count($pay_period_ids) > 0) {
+					foreach ($pay_period_ids as $pay_period_id) {
+						// Fetch pay period object
+						$pay_period_obj = $ppc->getById($pay_period_id)[0]; // Assuming it returns a collection
+						//print_r($pay_period_obj);exit;
+						
+						if ($pay_period_obj->status != 'closed') {
+							// Determine the status based on action
+							$status = null;
+							if ($action == 'closed') {
+								$status = 'closed';
+							} elseif ($action == 'locked') {
+								$status = 'locked';
+							} elseif ($action == 'open') {
+								$status = 'open';
 							}
 
-							$pay_period_obj->Save();
+							if ($status) {
+								// Update pay period status
+								$table = 'pay_period';
+								$inputArr = ['status' => $status];
+								$id = $pay_period_id;
+								$idColumn = 'id';
+
+								// Save the updated status using commonSave method
+								$ppId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+							}
 						}
 					}
+
+					// If needed, return success response after processing
+					return response()->json(['status' => 'success', 'message' => 'Status updated successfully', 'data' => $ppId], 200);
+				} else {
+					return response()->json(['status' => 'error', 'message' => 'No pay periods selected', 'data' => []], 400);
 				}
-				$pplf->CommitTransaction();
-
-				Redirect::Page( URLBuilder::getURL(NULL, 'ClosePayPeriod.php') );
-
-		*/
+			});
+		} catch (\Exception $e) {
+			// Log the error for debugging
+			return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage()], 500);
+		}
 	}
 
 	public function generatePayStubs(){
