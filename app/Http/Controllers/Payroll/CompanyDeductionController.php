@@ -151,7 +151,7 @@ class CompanyDeductionController extends Controller
                     // 'user_ids' => 'nullable|json',
                 ]);
 
-                dd($request->all());
+                // dd($request->all());
                 $payPeriodScheduleInput = [
                     'company_id' => 1, // Replace with dynamic company ID
                     'type' => $request->type,
