@@ -42,5 +42,37 @@ class PayStubController extends Controller
         return $res;
     }
 
+    function getByPayperiodsIdAndUserId($pay_period_id,$user_id)
+    {
+        
+        if ( $pay_period_id == '') {
+            return FALSE;
+        }
+            
+        if ( $user_id == '') {
+            return FALSE;
+        }
+            
+        $table = 'pay_stub';
+        $fields = 'pay_stub.*';
+        $joinArr = [
+            'emp_employees' => ['emp_employees.user_id', '=', 'pay_stub.user_id']
+        ];
+        $whereArr = [
+            ['pay_period_id', '=', $pay_period_id],
+            ['user_id', '=', $user_id],
+            ['emp_employees.status', '!=', 'delete']
+        ];
+        $exceptDel = true;
+        $groupBy = null;
+        $orderBy = null;
+
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel, $groupBy, $orderBy);
+        
+        return $res;
+            
+            
+    }
+
 }
 ?>
