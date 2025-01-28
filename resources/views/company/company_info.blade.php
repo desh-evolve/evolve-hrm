@@ -37,12 +37,18 @@
                             </div>
 
                             <!-- Industry -->
-                            <div class="col-xxl-3 col-md-6 mb-3">
+                            {{-- <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="industry_id" class="form-label mb-1">Industry</label>
                                 <select class="form-select" id="industry_id">
                                     <option value="">Select Industry</option>
                                     <option value="1">Industry 1</option>
                                     <option value="2">Industry 2</option>
+                                </select>
+                            </div> --}}
+                            <div class="col-xxl-3 col-md-6 mb-3">
+                                <label for="industry_id" class="form-label mb-1 req">Industry</label>
+                                <select class="form-select" id="industry_id">
+                                    <option value="">Select a Industry</option>
                                 </select>
                             </div>
 
@@ -104,7 +110,7 @@
                                 <input type="text" class="form-control" id="postal_code"
                                     placeholder="Enter Postal Code">
                             </div>
-                            <div class="col-xxl-3 col-md-6 mb-3">
+                            {{-- <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="country_id" class="form-label mb-1">Country</label>
                                 <select class="form-select" id="country_id">
                                     <option value="">Select Country</option>
@@ -133,31 +139,44 @@
                                     </select>
                                     <button class="btn btn-outline-secondary" type="button">Add New</button>
                                 </div>
+                            </div> --}}
+
+                            <div class="col-xxl-3 col-md-6 mb-3">
+                                <label for="country_id" class="form-label mb-1 req">Country</label>
+                                <select class="form-select" id="country_id">
+                                    <option value="">Select Country</option>
+                                </select>
+                            </div>
+                            <div class="col-xxl-3 col-md-6 mb-3">
+                                <label for="province_id" class="form-label mb-1 req">Province</label>
+                                <select class="form-select" id="province_id">
+                                    <option value="">Select a country first</option>
+                                </select>
+                            </div>
+                            <div class="col-xxl-3 col-md-6 mb-3">
+                                <label for="city_id" class="form-label mb-1 req">City</label>
+                                <select class="form-select" id="city_id">
+                                    <option value="">Select a country first</option>
+                                </select>
                             </div>
 
                             <!-- Contacts -->
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="admin_contact_id" class="form-label mb-1">Admin Contact</label>
-                                <select class="form-select" id="admin_contact_id">
-                                    <option value="">Select Admin Contact</option>
-                                    <option value="1">Person 1</option>
-                                    <option value="2">Person 2</option>
+                                <select class="form-select w-50 me-3" id="admin_contact_id">
+                                    <option value=""></option>
                                 </select>
                             </div>
                             <div class="col-xxl-3 col-md-6 mb-3">
-                                <label for="billing_contact_id" class="form-label mb-1">Billing Contact</label>
-                                <select class="form-select" id="billing_contact_id">
-                                    <option value="">Select Billing Contact</option>
-                                    <option value="1">Person 1</option>
-                                    <option value="2">Person 2</option>
+                                <label for="billing_contact_id" class="form-label mb-1 me-2">Billing Contact</label>
+                                <select class="form-select w-50 me-3" id="billing_contact_id">
+                                    <option value=""></option>
                                 </select>
                             </div>
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="primary_contact_id" class="form-label mb-1">Primary Contact</label>
-                                <select class="form-select" id="primary_contact_id">
-                                    <option value="">Select Primary Contact</option>
-                                    <option value="1">Person 1</option>
-                                    <option value="2">Person 2</option>
+                                <select class="form-select w-50 me-3" id="primary_contact_id">
+                                    <option value=""></option>
                                 </select>
                             </div>
 
@@ -165,12 +184,14 @@
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="logo_img" class="form-label mb-1">Logo Large</label>
                                 <input type="file" class="form-control" id="company_logo" accept="image/*">
-                                <img id="company_logo_i" src="" alt="Company Logo" style="max-width: 70px;" />
+                                <img id="company_logo_i" src="" alt="Company Logo"
+                                    style="max-width: 70px;" />
                             </div>
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="logo_small_img" class="form-label mb-1">Logo Small</label>
                                 <input type="file" class="form-control" id="company_logo_small">
-                                <img id="company_logo_small_i" src="" alt="Company Small Logo" style="max-width: 70px;" />
+                                <img id="company_logo_small_i" src="" alt="Company Small Logo"
+                                    style="max-width: 70px;" />
                             </div>
 
                             <!-- Submit Button -->
@@ -190,7 +211,47 @@
         $(document).ready(async function() {
             // Call the function to load the company data on page load
             await generateCompanyForm();
+            getDropdownData();
         });
+        //=====================================================================================
+        async function getDropdownData() {
+            try {
+                dropdownData = await commonFetchData('/company/dropdown');
+
+                // Populate country dropdown
+                let countryList = (dropdownData?.countries || [])
+                    .map(country =>
+                        `<option value="${country.id}">${country.country_name} (${country.country_code})</option>`)
+                    .join('');
+                $('#country_id').html('<option value="">Select a country</option>' + countryList);
+
+                // Default values for province and city
+                $('#province_id').html('<option value="">Select a country first</option>');
+
+                $('#city_id').html('<option value="">Select a country first</option>');
+
+                // Populate currency dropdown
+                let adminContactList = (dropdownData?.employees || [])
+                    .map(admin => `<option value="${admin.id}">${admin.first_name} ${currency.last_name}</option>`)
+                    .join('');
+                $('#admin_contact_id').html('<option value="">Select a currency</option>' + adminContactList);
+
+                let billingContactList = (dropdownData?.employees || [])
+                    .map(billing =>
+                        `<option value="${currency.id}">${currency.first_name} (${currency.last_name})</option>`)
+                    .join('');
+                $('#billing_contact_id').html('<option value="">Select a currency</option>' + billingContactList);
+
+                let primaryContactList = (dropdownData?.employees || [])
+                    .map(primary =>
+                        `<option value="${primary.id}">${primary.first_name} (${primary.last_name})</option>`)
+                    .join('');
+                $('#primary_contact_id').html('<option value="">Select a currency</option>' + primaryContactList);
+
+            } catch (error) {
+                console.error('Error fetching dropdown data:', error);
+            }
+        }
 
         // Function to populate form fields with company data
         async function generateCompanyForm() {
@@ -232,7 +293,7 @@
                     if (company.logo_small) {
                         // $('#company_logo_small_display').attr('src',
                         //     `${baseUrl}/storage/logos/small/${company.logo_small}`);
-                            $('#company_logo_small_i').attr('src', `${baseUrl}/storage/${company.logo_small}`);
+                        $('#company_logo_small_i').attr('src', `${baseUrl}/storage/${company.logo_small}`);
                     }
                 } else {
                     console.error("No company data found");
