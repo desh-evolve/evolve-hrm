@@ -19,7 +19,8 @@ class CompanyController extends Controller
         $this->middleware('permission:view company', ['only' => [
             'index',
             'getCompanyByCompanyId',
-            'getCompanyDropdownData']]);
+            'getCompanyDropdownData'
+        ]]);
         $this->middleware('permission:update company', ['only' => ['updateCompany']]);
 
         $this->common = new CommonModel();
@@ -34,7 +35,6 @@ class CompanyController extends Controller
     //desh(2024-10-21)
     public function updateCompany(Request $request, $id)
     {
-        // var_dump('submit');
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
@@ -67,6 +67,7 @@ class CompanyController extends Controller
                 $table = 'com_companies';
                 $idColumn = 'id';
                 $inputArr = [
+                    'id' => 1,
                     'company_name' => $request->company_name,
                     'company_short_name' => $request->company_short_name,
                     'industry_id' => $request->industry_id,
