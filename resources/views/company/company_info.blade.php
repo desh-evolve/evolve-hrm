@@ -110,36 +110,6 @@
                                 <input type="text" class="form-control" id="postal_code"
                                     placeholder="Enter Postal Code">
                             </div>
-                            {{-- <div class="col-xxl-3 col-md-6 mb-3">
-                                <label for="country_id" class="form-label mb-1">Country</label>
-                                <select class="form-select" id="country_id">
-                                    <option value="">Select Country</option>
-                                    <option value="1">Country 1</option>
-                                    <option value="2">Country 2</option>
-                                </select>
-                            </div>
-                            <div class="col-xxl-3 col-md-6 mb-3">
-                                <label for="province_id" class="form-label mb-1">Province/State</label>
-                                <div class="input-group">
-                                    <select class="form-select" id="province_id">
-                                        <option value="">Select Province</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                    </select>
-                                    <button class="btn btn-outline-secondary" type="button">Add New</button>
-                                </div>
-                            </div>
-                            <div class="col-xxl-3 col-md-6 mb-3">
-                                <label for="city_id" class="form-label mb-1">City</label>
-                                <div class="input-group">
-                                    <select class="form-select" id="city_id">
-                                        <option value="">Select City</option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                    </select>
-                                    <button class="btn btn-outline-secondary" type="button">Add New</button>
-                                </div>
-                            </div> --}}
 
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="country_id" class="form-label mb-1 req">Country</label>
@@ -161,21 +131,22 @@
                             </div>
 
                             <!-- Contacts -->
+
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="admin_contact_id" class="form-label mb-1">Admin Contact</label>
-                                <select class="form-select w-50 me-3" id="admin_contact_id">
+                                <select class="form-select" id="admin_contact_id">
                                     <option value=""></option>
                                 </select>
                             </div>
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="billing_contact_id" class="form-label mb-1 me-2">Billing Contact</label>
-                                <select class="form-select w-50 me-3" id="billing_contact_id">
+                                <select class="form-select" id="billing_contact_id">
                                     <option value=""></option>
                                 </select>
                             </div>
                             <div class="col-xxl-3 col-md-6 mb-3">
                                 <label for="primary_contact_id" class="form-label mb-1">Primary Contact</label>
-                                <select class="form-select w-50 me-3" id="primary_contact_id">
+                                <select class="form-select" id="primary_contact_id">
                                     <option value=""></option>
                                 </select>
                             </div>
@@ -209,14 +180,16 @@
         // ======================new code===================
 
         $(document).ready(async function() {
+            // Fetch dropdown data first
+            await getDropdownData();
             // Call the function to load the company data on page load
             await generateCompanyForm();
-            getDropdownData();
         });
         //=====================================================================================
         async function getDropdownData() {
             try {
                 dropdownData = await commonFetchData('/company/dropdown');
+                console.log(dropdownData);
 
                 // Populate country dropdown
                 let countryList = (dropdownData?.countries || [])
@@ -225,33 +198,78 @@
                     .join('');
                 $('#country_id').html('<option value="">Select a country</option>' + countryList);
 
+                let industryList = (dropdownData?.industries || [])
+                    .map(industry =>
+                        `<option value="${industry.id}">${industry.industry_name}</option>`)
+                    .join('');
+                $('#industry_id').html('<option value="">Select a Industry</option>' + industryList);
+
                 // Default values for province and city
                 $('#province_id').html('<option value="">Select a country first</option>');
 
                 $('#city_id').html('<option value="">Select a country first</option>');
 
-                // Populate currency dropdown
-                let adminContactList = (dropdownData?.employees || [])
-                    .map(admin => `<option value="${admin.id}">${admin.first_name} ${currency.last_name}</option>`)
+                // Populate dropdown
+                // Populate admin, billing, and primary contact dropdowns
+                let employeeList = (dropdownData?.employees || [])
+                    .map(employee =>
+                        `<option value="${employee.id}">${employee.first_name} ${employee.last_name}</option>`)
                     .join('');
-                $('#admin_contact_id').html('<option value="">Select a currency</option>' + adminContactList);
-
-                let billingContactList = (dropdownData?.employees || [])
-                    .map(billing =>
-                        `<option value="${currency.id}">${currency.first_name} (${currency.last_name})</option>`)
-                    .join('');
-                $('#billing_contact_id').html('<option value="">Select a currency</option>' + billingContactList);
-
-                let primaryContactList = (dropdownData?.employees || [])
-                    .map(primary =>
-                        `<option value="${primary.id}">${primary.first_name} (${primary.last_name})</option>`)
-                    .join('');
-                $('#primary_contact_id').html('<option value="">Select a currency</option>' + primaryContactList);
+                $('#admin_contact_id').html('<option value="">Select an Admin</option>' + employeeList);
+                $('#billing_contact_id').html('<option value="">Select a Billing Contact</option>' + employeeList);
+                $('#primary_contact_id').html('<option value="">Select a Primary Contact</option>' + employeeList);
 
             } catch (error) {
                 console.error('Error fetching dropdown data:', error);
             }
         }
+
+        $(document).on('change', '#country_id', function() {
+            let country_id = $(this).val();
+            loadProvinces(country_id);
+        });
+
+        $(document).on('change', '#province_id', function() {
+            let province_id = $(this).val();
+            loadCities(province_id);
+        });
+
+        async function loadProvinces(countryId) {
+            // Check if a country is selected
+            if (!countryId) {
+                $('#province_id').html('<option value="">Select a country first</option>');
+                $('#city_id').html('<option value="">Select a province first</option>');
+                return;
+            }
+
+            // Filter provinces by country_id
+            const provinceList = (dropdownData?.provinces || [])
+                .filter(province => province.country_id == countryId)
+                .map(province => `<option value="${province.id}">${province.province_name}</option>`)
+                .join('');
+
+            // Populate the province dropdown
+            $('#province_id').html('<option value="">Select a province</option>' + provinceList);
+            $('#city_id').html('<option value="">Select a province first</option>');
+        }
+
+        async function loadCities(provinceId) {
+            // Check if a province is selected
+            if (!provinceId) {
+                $('#city_id').html('<option value="">Select a province first</option>');
+                return;
+            }
+
+            // Filter cities by province_id
+            const cityList = (dropdownData?.cities || [])
+                .filter(city => city.province_id == provinceId)
+                .map(city => `<option value="${city.id}">${city.city_name}</option>`)
+                .join('');
+
+            // Populate the city dropdown
+            $('#city_id').html('<option value="">Select a city</option>' + cityList);
+        }
+
 
         // Function to populate form fields with company data
         async function generateCompanyForm() {
@@ -285,6 +303,9 @@
                     $('#billing_contact_id').val(company.billing_contact_id || '');
                     $('#primary_contact_id').val(company.primary_contact_id || '');
 
+                    // Populate dependent dropdowns
+                    populateDependentDropdowns(company);
+
                     if (company.logo) {
                         // $('#company_logo_display').attr('src', `${baseUrl}/storage/logos/${company.logo}`);
                         $('#company_logo_i').attr('src', `${baseUrl}/storage/${company.logo}`);
@@ -301,6 +322,51 @@
             } catch (error) {
                 console.error("Error fetching company data", error);
             }
+        }
+
+        function populateDependentDropdowns(company) {
+            // Populate province dropdown
+            const provinceList = (dropdownData?.provinces || [])
+                .filter(province => province.country_id === company.country_id) // Filter by country
+                .map(province =>
+                    `<option value="${province.id}">${province.province_name}</option>`)
+                .join('');
+            $('#province_id').html('<option value="">Select a Province</option>' + provinceList);
+            $('#province_id').val(company.province_id || '');
+
+            // Populate city dropdown
+            const cityList = (dropdownData?.cities || [])
+                .filter(city => city.province_id === company.province_id) // Filter by province
+                .map(city =>
+                    `<option value="${city.id}">${city.city_name}</option>`)
+                .join('');
+            $('#city_id').html('<option value="">Select a City</option>' + cityList);
+            $('#city_id').val(company.city_id || '');
+
+
+            // Populate admin contact dropdown
+            const adminContactList = (dropdownData?.employees || [])
+                .map(admin =>
+                    `<option value="${admin.id}">${admin.first_name} ${admin.last_name}</option>`)
+                .join('');
+            $('#admin_contact_id').html('<option value="">Select an Admin</option>' + adminContactList);
+            $('#admin_contact_id').val(company.admin_contact_id || '');
+
+            // Populate billing contact dropdown
+            const billingContactList = (dropdownData?.employees || [])
+                .map(billing =>
+                    `<option value="${billing.id}">${billing.first_name} ${billing.last_name}</option>`)
+                .join('');
+            $('#billing_contact_id').html('<option value="">Select a Billing Contact</option>' + billingContactList);
+            $('#billing_contact_id').val(company.billing_contact_id || '');
+
+            // Populate primary contact dropdown
+            const primaryContactList = (dropdownData?.employees || [])
+                .map(primary =>
+                    `<option value="${primary.id}">${primary.first_name} ${primary.last_name}</option>`)
+                .join('');
+            $('#primary_contact_id').html('<option value="">Select a Primary Contact</option>' + primaryContactList);
+            $('#primary_contact_id').val(company.primary_contact_id || '');
         }
 
         $(document).on('click', '#submit-confirm', async function() {
@@ -387,6 +453,7 @@
 
                 if (res.status === 'success') {
                     generateCompanyForm();
+                    window.location.reload();
                 }
             } catch (error) {
                 console.error('Error:', error);
