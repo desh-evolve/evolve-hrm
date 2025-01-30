@@ -109,7 +109,9 @@ class AccrualController extends Controller
         return $total;
     }
 
-
+    public function getByAccrualByUserIdAndTypeIdAndDate(){
+        print_r('AccrualController->getByAccrualByUserIdAndTypeIdAndDate');exit;
+    }
 
 }
 ?>

@@ -42,8 +42,7 @@ class PayStubController extends Controller
         return $res;
     }
 
-    function getByPayperiodsIdAndUserId($pay_period_id,$user_id)
-    {
+    public function getByPayperiodsIdAndUserId($pay_period_id,$user_id){
         
         if ( $pay_period_id == '') {
             return FALSE;
@@ -74,5 +73,12 @@ class PayStubController extends Controller
             
     }
 
+    public function getByUserIdAndPayPeriodId(){
+        print_r('PayStubController->getByUserIdAndPayPeriodId');exit;
+    }
+
+    public function loadPreviousPayStub(){
+        print_r('PayStubController->loadPreviousPayStub');exit;
+    }
 }
 ?>

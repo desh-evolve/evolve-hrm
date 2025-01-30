@@ -213,12 +213,12 @@
                                     Employee Messages
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a href="{{ route('emp.form') }}"
                                     class="nav-link {{ request()->routeIs('emp.form') ? 'active' : '' }}">
                                     Emp Form
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
                                 <a href="{{ route('employee.user_preference') }}"
                                     class="nav-link {{ request()->routeIs('employee.user_preference') ? 'active' : '' }}">User Preference</a>
@@ -294,132 +294,6 @@
                                 <a href="{{ route('policy.holiday') }}"
                                     class="nav-link {{ request()->routeIs('policy.holiday') ? 'active' : '' }}">Holiday
                                     Policy</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- Employees -->
-                @php
-                    $checkEmployeeNav = request()->routeIs('employee.*');
-                @endphp
-
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ $checkEmployeeNav ? 'active' : '' }}" href="#employeeMultiLevel"
-                        data-bs-toggle="collapse" role="button"
-                        aria-expanded="{{ $checkEmployeeNav ? 'true' : 'false' }}"
-                        aria-controls="employeeMultiLevel">
-                        <i class="ri-group-line"></i> <span data-key="t-multi-level">Employees</span>
-                    </a>
-                    <div class="collapse menu-dropdown {{ $checkEmployeeNav ? 'show' : '' }}"
-                        id="employeeMultiLevel">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('employee.form') }}"
-                                    class="nav-link {{ request()->routeIs('employee.form') ? 'active' : '' }}">Add New
-                                    Employee</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('employee.list') }}"
-                                    class="nav-link {{ request()->routeIs('employee.list') ? 'active' : '' }}">Employee
-                                    List</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('employee.profile') }}"
-                                    class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">My
-                                    Profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('employee.messages.index') }}"
-                                    class="nav-link {{ request()->routeIs('employee.messages.index') ? 'active' : '' }}">
-                                    Employee Messages
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('emp.form') }}"
-                                    class="nav-link {{ request()->routeIs('emp.form') ? 'active' : '' }}">
-                                    Emp Form
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-
-                <!-- Reports -->
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#reports" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false">
-                        <i class="ri-bar-chart-line"></i> <span>Reports</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="reports">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item"><a href="#" class="nav-link">EPF Report</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">Employee Report</a></li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- Payroll -->
-                @php
-                    $checkEmployeeNav = request()->routeIs('payroll.*');
-                @endphp
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#payroll" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false">
-                        <i class="ri-money-dollar-circle-line"></i> <span>Payroll</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="payroll">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item"><a href="#" class="nav-link">End of Pay Period</a></li>
-                            <li class="nav-item">
-                                <a href="{{ route('payroll.pay_stub_amendment') }}"
-                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_amendment') ? 'active' : '' }}">Pay
-                                    Stub Amendment</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="{{ route('payroll.pay_period_schedule') }}"
-                                    class="nav-link {{ request()->routeIs('payroll.pay_period_schedule') ? 'active' : '' }}">Pay
-                                    Period Schedule</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('payroll.pay_stub_account') }}"
-                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_account') ? 'active' : '' }}">Pay
-                                    Stub Account</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('payroll.company_deduction') }}"
-                                    class="nav-link {{ request()->routeIs('payroll.company_deduction') ? 'active' : '' }}">Company Deduction</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('payroll.pay_stub_entry_account_link') }}"
-                                    class="nav-link {{ request()->routeIs('payroll.pay_stub_entry_account_link') ? 'active' : '' }}">Pay Stub Account Links</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <!-- Settings Dropdown -->
-                <li class="nav-item">
-                    <a class="nav-link menu-link {{ request()->routeIs('profile.*') || request()->routeIs('permissions.*') ? 'active' : '' }}"
-                        href="#sidebarSettings" data-bs-toggle="collapse" role="button"
-                        aria-expanded="{{ request()->routeIs('profile.*') || request()->routeIs('permissions.*') ? 'true' : 'false' }}"
-                        aria-controls="sidebarSettings">
-                        <i class="ri-apps-2-line"></i> <span data-key="t-settings">Settings</span>
-                    </a>
-                    <div class="collapse menu-dropdown {{ request()->routeIs('profile.*') || request()->routeIs('permissions.*') ? 'show' : '' }}"
-                        id="sidebarSettings">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('profile.edit') }}"
-                                    class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}"> Profile
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('permissions.index') }}"
-                                    class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}">
-                                    Permissions </a>
                             </li>
                         </ul>
                     </div>

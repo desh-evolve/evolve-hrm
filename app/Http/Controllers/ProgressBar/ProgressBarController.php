@@ -46,29 +46,26 @@ class ProgressBarController extends Controller
             case 'recalculate_company':
             case 'recalculate_employee':
             case 'generate_paystubs':
-                echo 'Generate Pay Stubs!';
+                echo 'Generate Pay Stubs!<br>';
                 
                 if ( !is_array($pay_period_ids) ) {
                     $pay_period_ids = array($pay_period_ids);
                 }
 
                 //add a log record here (check here)
-                echo ('Recalculating Company Pay Stubs for Pay Periods:').' '. implode(',', $pay_period_ids);
+                echo ('Recalculating Company Pay Stubs for Pay Periods:').' '. implode(',', $pay_period_ids).'<br>';
 
                 $init_progress_bar = TRUE;
                 foreach($pay_period_ids as $pay_period_id) {
-                    echo 'Pay Period ID: '. $pay_period_id;
+                    echo 'Pay Period ID: '. $pay_period_id.'<br>';
                     $ppc = new PayPeriodController();
 			        $pplf = $ppc->getByIdAndCompanyId($pay_period_id, $com_id);
 
+                    //print_r($pplf);exit;
+
                     foreach ($pplf as $pay_period_obj) {
-                        echo 'Pay Period Schedule ID: '. $pay_period_obj->pay_period_schedule_id;
-                        //Grab all users for pay period
-                        $ppsuc = new PayPeriodScheduleUserController();
-                        $ppsulf = $ppsuc->getByPayPeriodScheduleId( $pay_period_obj->pay_period_schedule_id );
-
-                        $total_pay_stubs = count($ppsulf);
-
+                        echo 'Pay Period Schedule ID: '. $pay_period_obj->pay_period_schedule_id.'<br>';
+                        
                         if ( $init_progress_bar == TRUE ) {
                             //InitProgressBar();
                             $init_progress_bar = FALSE;
@@ -80,42 +77,53 @@ class ProgressBarController extends Controller
                         //Delete existing pay stub. Make sure we only delete pay stubs that are the same as what we're creating.
                         $psc = new PayStubController();
                         $pslf = $psc->getByPayPeriodId( $pay_period_obj->id );
+                        
                         foreach ( $pslf as $pay_stub_obj ) {
-                            echo 'Existing Pay Stub: '. $pay_stub_obj->id;
+                            echo 'Existing Pay Stub: '. $pay_stub_obj->id.'<br>';
                             //Check PS End Date to match with PP End Date So if an ROE was generated, it won't get deleted when they generate all other Pay Stubs later on.
-                            if ( $pay_stub_obj->status <= 25
-                                AND $pay_stub_obj->tainted === FALSE
-                                AND $pay_stub_obj->end_date == $pay_period_obj->end_date 
+                            
+                            if ( ($pay_stub_obj->status == 'new' || $pay_stub_obj->status == 'locked' || $pay_stub_obj->status == 'open') AND $pay_stub_obj->tainted == FALSE AND Carbon::parse($pay_stub_obj->end_date)->format('Y-m-d') == Carbon::parse($pay_period_obj->end_date)->format('Y-m-d') 
                             ){
-                                echo 'Pay stub matched advance flag, deleting: '. $pay_stub_obj->id;
-                                $pay_stub_obj->setDeleted(TRUE);
-                                $pay_stub_obj->Save();
+                                echo 'Pay stub matched advance flag, deleting: '. $pay_stub_obj->id.'<br>';
+                                $id = $pay_stub_obj->id;
+                                $whereArr = ['id' => $pay_stub_obj->id];
+                                $title = 'Pay Stub';
+                                $table = 'pay_stub';
+                                $returnMsg = false;
+                                $this->common->commonDelete($id, $whereArr, $title, $table, $returnMsg);
                             } else {
-                                echo 'Pay stub does not need regenerating, or it is LOCKED!';
+                                echo 'Pay stub does not need regenerating, or it is LOCKED!<br>';
                             }
                         }
-
                         $i=1;
+
+                        //Grab all users for pay period
+                        $ppsuc = new PayPeriodScheduleUserController();
+                        $ppsulf = $ppsuc->getByPayPeriodScheduleId( $pay_period_obj->pay_period_schedule_id );
+                        $total_pay_stubs = count($ppsulf);
+                        
                         foreach ($ppsulf as $pay_period_schdule_user_obj) {
-                            echo 'Pay Period User ID: '. $pay_period_schdule_user_obj->user_id;
-                            echo 'Total Pay Stubs: '. $total_pay_stubs .' - '. ceil( 1 / (100 / $total_pay_stubs) );
+                            echo 'Pay Period User ID: '. $pay_period_schdule_user_obj->user_id.'<br>';
+                            echo 'Total Pay Stubs: '. $total_pay_stubs .' - '. ceil( 1 / (100 / $total_pay_stubs) ).'<br>';
         
                             /*$profiler->startTimer( 'Calculating Pay Stub' );*/
                             //Calc paystubs.
                             $cpsc = new CalculatePayStubController();
                             $user_id = $pay_period_schdule_user_obj->user_id;
+                            $com_id = $com_id;
                             $pay_period_id = $pay_period_obj->id;
 
                             $res1 = $cpsc->removeTerminatePayStub( $pay_period_id, $user_id );
                             
                             //check here
-                            $res2 = $cpsc->calculateAllowance();
+                            $res2 = $cpsc->calculateAllowance( $pay_period_id, $user_id, $com_id );
+
                             $cpsc->calculate();
                             
-                            $profiler->stopTimer( 'Calculating Pay Stub' );
+                            //$profiler->stopTimer( 'Calculating Pay Stub' );
         
-                            $progress_bar->setValue( Misc::calculatePercent( $i, $total_pay_stubs ) );
-                            $progress_bar->display();
+                            //$progress_bar->setValue( Misc::calculatePercent( $i, $total_pay_stubs ) );
+                            //$progress_bar->display();
         
                             $i++;
                         }

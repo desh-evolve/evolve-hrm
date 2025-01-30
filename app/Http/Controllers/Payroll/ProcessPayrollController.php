@@ -235,7 +235,7 @@ class ProcessPayrollController extends Controller
 		$pbc = new ProgressBarController();
 
 		$next_page = null;
-		$pay_period_ids = null;
+		$pay_period_ids = [1, 2];
 		$filter_user_id = null;
 		$pay_stub_ids = null;
 		$data = null;
