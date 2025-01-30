@@ -18,6 +18,7 @@ use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 use App\Http\Controllers\Company\BranchBankDetailsController;
 use App\Http\Controllers\Company\HierarchyController;
+use App\Http\Controllers\Company\StationController;
 
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
@@ -292,6 +293,17 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/company/currency/delete/{id}', [CurrencyController::class, 'deleteCurrency'])->name('company.currency.delete');
     Route::get('/company/allcurrency', [CurrencyController::class, 'getAllCurrency'])->name('company.currency.all');
     Route::get('/company/currency/{id}', [CurrencyController::class, 'getCurrencyById'])->name('company.currency.getById');
+    //==============================================================================================================================
+    // Station
+    //==============================================================================================================================
+    Route::get('/company/station', [StationController::class, 'index'])->name('company.station.index');
+    Route::get('/company/station/form', [StationController::class, 'form'])->name('company.station.form');
+    Route::post('/company/station/create', [StationController::class, 'createStation'])->name('company.station.create');
+    Route::put('/company/station/update/{id}', [StationController::class, 'updateStation'])->name('company.station.update');
+    Route::delete('/company/station/delete/{id}', [StationController::class, 'deleteStation'])->name('company.station.delete');
+    Route::get('/company/station/dropdown', [StationController::class, 'getDropdownList'])->name('company.station.dropdown');
+    Route::get('/company/station/allStation', [StationController::class, 'getAllStation'])->name('company.station.all');
+    Route::get('/company/station/{id}', [StationController::class, 'getStationById'])->name('company.station.getById');
 
 
     //==============================================================================================================================
