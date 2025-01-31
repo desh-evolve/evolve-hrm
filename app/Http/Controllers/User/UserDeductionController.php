@@ -17,6 +17,9 @@ class UserDeductionController extends Controller
         $this->common = new CommonModel();
     }
 
+    public function getByCompanyIdAndUserId(){
+        print_r('UserDeductionController->getByCompanyIdAndUserId');exit;
+    }
     
 }
 ?>
