@@ -347,4 +347,8 @@ class PremiumPolicyController extends Controller
         }
     }
 
+    public function getByPolicyGroupUserId(){
+        print_r('PremiumPolicyController');exit;
+    }
+
 }

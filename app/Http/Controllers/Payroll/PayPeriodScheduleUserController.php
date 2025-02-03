@@ -31,10 +31,11 @@ class PayPeriodScheduleUserController extends Controller
         ];
         $whereArr = [['pay_period_schedule_id', '=', $id]];
         $exceptDel = true;
+        $connections = [];
         $groupBy = null;
-        $orderBy = 'a.user_id ASC';
+        $orderBy = 'pay_period_schedule_user.user_id';
 
-        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel, $groupBy, $orderBy);
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel, $connections, $groupBy, $orderBy);
 
         return $res;
 	}
