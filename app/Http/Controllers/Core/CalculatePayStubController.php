@@ -55,11 +55,11 @@ class CalculatePayStubController extends Controller
         
         $udtc = new UserDateTotalController();
         $udtlf = $udtc->getDayReportByCompanyIdAndArrayCriteria( $com_id, $filter_data );
-                    
+               
         $sc = new ScheduleController();
         $slf = $sc->getSearchByCompanyIdAndArrayCriteria($com_id,$filter_data);
+        print_r($udtlf);exit;
 
-        //check here
         if ( count($slf) > 0 ) {
             foreach($slf as $s_obj) {
                 $user_id = $s_obj->user_id;
@@ -70,9 +70,12 @@ class CalculatePayStubController extends Controller
                 $schedule_rows[$pay_period_id][$user_id][$date_stamp][$status] = $s_obj->total_time;
                 $schedule_rows[$pay_period_id][$user_id][$date_stamp]['start_time'] = $s_obj->start_time;
                 $schedule_rows[$pay_period_id][$user_id][$date_stamp]['end_time'] = $s_obj->end_time;
+                unset($user_id, $status_id, $status, $pay_period_id, $date_stamp);
             }
         }
-                    
+           
+        print_r(`I'm in CalculatePayStubController`);exit;
+        $tmp_rows = [];
         foreach ($udtlf as $udt_obj ) {
             $user_id = $udt_obj->id;
             $pay_period_id = $udt_obj->pay_period_id;
@@ -95,7 +98,9 @@ class CalculatePayStubController extends Controller
         $nopay_days_no = 0;
         $full_day_leave_no = 0;
         $half_day_leave_no = 0;
-                    
+          
+        print_r(`I'm in CalculatePayStubController`);exit;
+        //check here             
         foreach($tmp_rows as $pp_id=>$user_data) {
             foreach ($user_data as $usr_id => $date_data) {
                 foreach ($date_data as $date_stamp => $att_data) {

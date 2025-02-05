@@ -236,8 +236,8 @@ class ProcessPayrollController extends Controller
 
 		$next_page = null;
 		$pay_period_ids = [1, 2];
-		$filter_user_id = null;
-		$pay_stub_ids = null;
+		$filter_user_id = [1];
+		$pay_stub_ids = [1];
 		$data = null;
 
 		$dataArr = [
