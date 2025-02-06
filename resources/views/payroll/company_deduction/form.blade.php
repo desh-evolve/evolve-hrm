@@ -770,3 +770,57 @@
 
 
 </x-app-layout>
+
+
+
+
+
+public function getStationById($id)
+    {
+
+        ->select([
+                'a.id as id', 'a.id as schedule_id', 'a.status', 'a.start_time', 'a.end_time',
+                'a.user_date_id', 'a.branch_id', 'bfb.branch_name as branch', 'a.department_id',
+                'dfb.department_name as department', 'a.total_time',
+                'a.schedule_policy_id', 'a.absence_policy_id', 'apf.type as absence_policy_type_id',
+                'bf.branch_name as default_branch', 'df.department_name as default_department', 'ugf.emp_group_name as `group`',
+                'utf.emp_designation_name as title', 'udf.user_id', 'udf.date_stamp', 'udf.pay_period_id',
+                'uf.first_name', 'uf.last_name', 'uf.default_branch_id', 'uf.default_department_id',
+                'uf.title_id', 'uf.group_id', 'uf.created_by as user_created_by',
+                'uwf.id as user_wage_id', 'uwf.hourly_rate as user_wage_hourly_rate',
+                'uwf.effective_date as user_wage_effective_date'
+            ])
+
+
+        $station = DB::table('com_stations')
+            ->leftJoin('station_branch', 'station_branch.station_id', '=', 'com_stations.id')
+            ->leftJoin('station_department', 'station_department.station_id', '=', 'com_stations.id')
+            ->leftJoin('station_exclude_user', 'station_exclude_user.station_id', '=', 'com_stations.id')
+            ->leftJoin('station_include_user', 'station_include_user.station_id', '=', 'com_stations.id')
+            ->leftJoin('station_user_group', 'station_user_group.station_id', '=', 'com_stations.id')
+            ->selectRaw("
+            com_stations.*,
+            GROUP_CONCAT(DISTINCT station_branch.branch_id) AS branch_ids,
+            GROUP_CONCAT(DISTINCT station_department.department_id) AS department_ids,
+            GROUP_CONCAT(DISTINCT station_exclude_user.user_id) AS exclude_user_ids,
+            GROUP_CONCAT(DISTINCT station_include_user.user_id) AS include_user_ids,
+            GROUP_CONCAT(DISTINCT station_user_group.group_id) AS group_ids
+        ")
+            ->where('com_stations.id', $id)
+            ->where('com_stations.status', '!=', 'delete')
+            ->groupBy('com_stations.id')
+            ->first();
+
+        // Convert comma-separated values to arrays
+        if ($station) {
+            $station->branch_ids = $station->branch_ids ? explode(',', $station->branch_ids) : [];
+            $station->department_ids = $station->department_ids ? explode(',', $station->department_ids) : [];
+            $station->exclude_user_ids = $station->exclude_user_ids ? explode(',', $station->exclude_user_ids) : [];
+            $station->include_user_ids = $station->include_user_ids ? explode(',', $station->include_user_ids) : [];
+            $station->group_ids = $station->group_ids ? explode(',', $station->group_ids) : [];
+
+            return response()->json(['data' => $station], 200);
+        }
+
+        return response()->json(['message' => 'Station not found'], 404);
+    }
