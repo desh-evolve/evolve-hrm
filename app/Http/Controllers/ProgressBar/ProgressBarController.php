@@ -101,11 +101,10 @@ class ProgressBarController extends Controller
                         $ppsuc = new PayPeriodScheduleUserController();
                         $ppsulf = $ppsuc->getByPayPeriodScheduleId( $pay_period_obj->pay_period_schedule_id );
                         $total_pay_stubs = count($ppsulf);
-                        
+
                         foreach ($ppsulf as $pay_period_schdule_user_obj) {
                             echo 'Pay Period User ID: '. $pay_period_schdule_user_obj->user_id.'<br>';
                             echo 'Total Pay Stubs: '. $total_pay_stubs .' - '. ceil( 1 / (100 / $total_pay_stubs) ).'<br>';
-        
                             /*$profiler->startTimer( 'Calculating Pay Stub' );*/
                             //Calc paystubs.
                             $cpsc = new CalculatePayStubController();
@@ -114,7 +113,9 @@ class ProgressBarController extends Controller
                             $pay_period_id = $pay_period_obj->id;
 
                             $cpsc->removeTerminatePayStub( $pay_period_id, $user_id );
-                            $cpsc->calculateAllowance( $pay_period_id, $user_id, $com_id ); //check here
+                            $cpsc->calculateAllowance( $pay_period_id, $user_id, $com_id ); 
+                            
+                            //check here
                             $cpsc->calculate();
                             
                             //$profiler->stopTimer( 'Calculating Pay Stub' );

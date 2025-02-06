@@ -13,8 +13,7 @@ class EmployeeGroupController extends Controller
 {
     private $common = null;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->middleware('permission:view employee group', ['only' => [
             'index', 
             'getAllEmployeeGroups', 
@@ -27,13 +26,11 @@ class EmployeeGroupController extends Controller
         $this->common = new CommonModel();
     }
 
-    public function index()
-    {
+    public function index(){
         return view('company.employee_group.index');
     }
 
-    public function createEmployeeGroup(Request $request)
-    {
+    public function createEmployeeGroup(Request $request){
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
@@ -62,8 +59,7 @@ class EmployeeGroupController extends Controller
         }
     }
 
-    public function updateEmployeeGroup(Request $request, $id)
-    {
+    public function updateEmployeeGroup(Request $request, $id) {
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
@@ -92,8 +88,7 @@ class EmployeeGroupController extends Controller
         }
     }
 
-    public function deleteEmployeeGroup($id)
-    {
+    public function deleteEmployeeGroup($id) {
         $whereArr = ['id' => $id];
         $title = 'Employee Groups';
         $table = 'com_employee_groups';
@@ -101,8 +96,7 @@ class EmployeeGroupController extends Controller
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
-    public function getAllEmployeeGroups()
-    {
+    public function getAllEmployeeGroups() {
         $table = 'com_employee_groups';
         $fields = '*';
         $employee_groups = $this->common->commonGetAll($table, $fields);
@@ -116,4 +110,6 @@ class EmployeeGroupController extends Controller
         $employee_groups = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $employee_groups], 200);
     }
+
+
 }

@@ -15,12 +15,12 @@ use App\Http\Controllers\Core\UserDateController;
 use App\Http\Controllers\Schedule\ScheduleController;
 use App\Http\Controllers\Accrual\AccrualController;
 use App\Http\Controllers\Company\AllowanceController;
+use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Holiday\HolidayController;
 use App\Http\Controllers\Payroll\PayStubAmendmentController;
 use App\Http\Controllers\Policy\PremiumPolicyController;
 use App\Http\Controllers\User\UserDeductionController;
 use App\Http\Controllers\User\UserGenericStatusController;
-use App\Http\Controllers\UserController;
 
 class CalculatePayStubController extends Controller
 {
@@ -46,7 +46,6 @@ class CalculatePayStubController extends Controller
 
     public function calculateAllowance($pay_period_id, $user_id, $com_id){
         //$udlf = new UserDateController();
-        
         $filter_data['pay_period_ids'] = array($pay_period_id);
         $filter_data['include_user_ids'] = array($user_id);
         $filter_data['user_id'] = array($user_id);
@@ -58,8 +57,7 @@ class CalculatePayStubController extends Controller
                
         $sc = new ScheduleController();
         $slf = $sc->getSearchByCompanyIdAndArrayCriteria($com_id,$filter_data);
-        print_r($udtlf);exit;
-
+        
         if ( count($slf) > 0 ) {
             foreach($slf as $s_obj) {
                 $user_id = $s_obj->user_id;
@@ -74,24 +72,43 @@ class CalculatePayStubController extends Controller
             }
         }
            
-        print_r(`I'm in CalculatePayStubController`);exit;
         $tmp_rows = [];
-        foreach ($udtlf as $udt_obj ) {
+
+        foreach ($udtlf as $udt_obj) {
             $user_id = $udt_obj->id;
             $pay_period_id = $udt_obj->pay_period_id;
             $date_stamp = Carbon::parse($udt_obj->date_stamp)->format('Y-m-d');
-                            
+            
             $status = $udt_obj->status;
             $type = $udt_obj->type;
-                            
+
+            echo $status . '<br>';
+            echo $type . '<br>';
+            echo $udt_obj->total_time . '<br>';
+
+            // Ensure the structure exists before assignment
+            if (!isset($tmp_rows[$pay_period_id])) {
+                $tmp_rows[$pay_period_id] = [];
+            }
+            if (!isset($tmp_rows[$pay_period_id][$user_id])) {
+                $tmp_rows[$pay_period_id][$user_id] = [];
+            }
+            if (!isset($tmp_rows[$pay_period_id][$user_id][$date_stamp])) {
+                $tmp_rows[$pay_period_id][$user_id][$date_stamp] = [
+                    'min_punch_time_stamp' => null,
+                    'max_punch_time_stamp' => null,
+                    'worked_time' => 0, // Ensure initialization before incrementing
+                ];
+            }
+
             $tmp_rows[$pay_period_id][$user_id][$date_stamp]['min_punch_time_stamp'] = Carbon::parse($udt_obj->min_punch_time_stamp)->format('Y-m-d');
             $tmp_rows[$pay_period_id][$user_id][$date_stamp]['max_punch_time_stamp'] = Carbon::parse($udt_obj->max_punch_time_stamp)->format('Y-m-d');
-                            
-            // check here
-            if ( ($status == 'worked' AND $type == 'total' ) OR ($status == 'system' AND $type == 'lunch' ) ) {
-                $tmp_rows[$pay_period_id][$user_id][$date_stamp]['worked_time'] += (int)$udt_obj->getColumn('total_time');
+
+            if (($status === 'worked' && $type === 'total') || ($status === 'system' && $type === 'lunch')) {
+                $tmp_rows[$pay_period_id][$user_id][$date_stamp]['worked_time'] += (int) $udt_obj->total_time;
             }
         }
+
                 
         $worked_days_no = 0;
         $late_days_no = 0;
@@ -99,26 +116,27 @@ class CalculatePayStubController extends Controller
         $full_day_leave_no = 0;
         $half_day_leave_no = 0;
           
-        print_r(`I'm in CalculatePayStubController`);exit;
         //check here             
-        foreach($tmp_rows as $pp_id=>$user_data) {
+        foreach($tmp_rows as $pp_id => $user_data) {
             foreach ($user_data as $usr_id => $date_data) {
                 foreach ($date_data as $date_stamp => $att_data) {
-                                
-                    $dt_stamp = new DateTime();
-                    $dt_stamp->setTimestamp($date_stamp);
-                    $current_date = $dt_stamp->format('Y-m-d');
-                                
+                     
+                    $current_date = Carbon::parse($date_stamp)->format('Y-m-d');
+                     
                     if((isset($schedule_rows[$pp_id][$usr_id][$date_stamp]['start_time']) && $schedule_rows[$pp_id][$usr_id][$date_stamp]['start_time'] !='' )&& (isset($att_data['min_punch_time_stamp'])&& $att_data['min_punch_time_stamp']!='')){
                                     
                         $worked_days_no++;
-                                    
-                        $late_time = TTDate::strtotime($schedule_rows[$pp_id][$usr_id][$date_stamp]['start_time']) - $att_data['min_punch_time_stamp'];
-                                    
+                                   
+                        $scheduled_start = Carbon::parse($schedule_rows[$pp_id][$usr_id][$date_stamp]['start_time'])->timestamp;
+                        $actual_punch_time = Carbon::parse($att_data['min_punch_time_stamp'])->timestamp;
+                        
+                        $late_time = $scheduled_start - $actual_punch_time;
+                        //print_r($late_time);exit;          
+                        
                         if($late_time < 0){
                             $ac = new AccrualController();
                     
-                            $alf_a = $ac->getByAccrualByUserIdAndTypeIdAndDate($usr_id,55,$current_date);
+                            $alf_a = $ac->getByAccrualByUserIdAndTypeIdAndDate($usr_id,'paid_out',$current_date);
                             
                             if(count($alf_a) > 0){
                                 // echo $late_time.'<br>';
@@ -130,34 +148,34 @@ class CalculatePayStubController extends Controller
                                     
                         $hlf = new HolidayController();
                                     
-                        $hlf->getByPolicyGroupUserIdAndDate($usr_id, $current_date);
-                        $hday_obj_arr = $hlf->getCurrent()->data;
+                        $hday_obj_arr = $hlf->getByPolicyGroupUserIdAndDate($usr_id, $current_date);
 
                         if (!empty($hday_obj_arr)) {
                                             
                         } else {
-                            $alf = new AccrualController();
-                            $alf->getByAccrualByUserIdAndTypeIdAndDate($usr_id,55,$current_date);
-                                                    
-                                                    //  echo ' '.$date_stamp;
-                                            
-                            if($alf->getRecordCount() > 0){
-                                $af_obj = $alf->getCurrent();
-                                if($af_obj->getAmount()== -28800){
+                            $ac = new AccrualController();
+                            $alf = $ac->getByAccrualByUserIdAndTypeIdAndDate($usr_id,'paid_out',$current_date);
+                                        
+                            if(count($alf) > 0){
+                                $af_obj = $alf[0];
+                                if($af_obj->amount == -28800){
                                     $full_day_leave_no++;
-                                } elseif($af_obj->getAmount()==-14400){
+                                } elseif($af_obj->amount == -14400){
                                     $half_day_leave_no++;
                                 }
                             } else {
                                 // Used to calculate nopay days and place nopay on salary
                                                             
-                                $ulf = new UserController();
-                                $ulf->getById($usr_id);
-                                $user_obj = $ulf->getCurrent();
-                                                            
+                                $uc = new EmployeeController();
+                                $ulf = $uc->getEmployeeByEmployeeId($usr_id);
+                                $user_obj = $ulf[0];
+                                             
                                 // exclude directors from Nopay
-                                if($user_obj->getTitle()!= 2){ 
+                                //if($user_obj->designation_id != 2){ //check here
                                     
+                                //=======================================
+                                // check here
+                                //=======================================
                                     $udlf = new UserDateController();
                                     $udlf->getByUserIdAndDate($usr_id, $current_date);
 
@@ -211,11 +229,11 @@ class CalculatePayStubController extends Controller
 
                                         unset($udt_obj1);
                                         unset($udt_obj2);
-                                        unset($ulf);
+                                        unset($uc);
                                         
                                         }
                                     }
-                                }
+                                //}
                                                         
                                 $nopay_days_no++;
                             }
