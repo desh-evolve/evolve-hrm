@@ -232,6 +232,8 @@ class UserRolePermissionSeeder extends Seeder
 
         Permission::create(['name' => 'view dashboard', 'type' => 'Dashboard - Admin']);
 
+        Permission::create(['name' => 'view process payroll', 'type' => 'Payroll']);
+
 
         // Create Roles
         $superAdminRole = Role::create(['name' => 'super-admin']); //as super-admin
@@ -290,6 +292,7 @@ class UserRolePermissionSeeder extends Seeder
         $adminRole->givePermissionTo(['create premium policy', 'view premium policy', 'update premium policy', 'delete premium policy']);
         $adminRole->givePermissionTo(['create rounding policy', 'view rounding policy', 'update rounding policy', 'delete rounding policy']);
         $adminRole->givePermissionTo(['create schedule policy', 'view schedule policy', 'update schedule policy', 'delete schedule policy']);
+        $adminRole->givePermissionTo(['view process payroll']);
 
 
 

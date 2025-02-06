@@ -53,7 +53,6 @@ class UserDateTotalController extends Controller
     }
     
     public function getDayReportByCompanyIdAndArrayCriteria($company_id, $filter_data){
-        print_r('getDayReportByCompanyIdAndArrayCriteria');exit;
         
         $order = [
             'tmp.pay_period_id' => 'asc',
@@ -91,16 +90,20 @@ class UserDateTotalController extends Controller
                     a.department_id,
                     a.status,
                     a.type,
+
                     a.over_time_policy_id,
                     n.id AS over_time_policy_wage_id,
                     n.effective_date AS over_time_policy_wage_effective_date,
+
                     a.absence_policy_id,
                     p.id AS absence_policy_wage_id,
                     p.effective_date AS absence_policy_wage_effective_date,
+
                     a.premium_policy_id,
                     r.id AS premium_policy_wage_id,
                     r.effective_date AS premium_policy_wage_effective_date,
-                    z.user_id AS user_wage_id,
+
+                    z.id AS user_wage_id,
                     z.effective_date AS user_wage_effective_date,
                     tmp2.min_punch_time_stamp,
                     tmp2.max_punch_time_stamp,
@@ -108,6 +111,7 @@ class UserDateTotalController extends Controller
                     SUM(actual_total_time) AS actual_total_time
                 FROM user_date_total AS a
                 LEFT JOIN user_date AS b ON a.user_date_id = b.id
+
                 LEFT JOIN overtime_policy AS m ON a.over_time_policy_id = m.id
                 LEFT JOIN emp_wage AS n ON n.id = (
                     SELECT n.id FROM emp_wage AS n
@@ -135,8 +139,9 @@ class UserDateTotalController extends Controller
                     AND r.status != 'delete'
                     ORDER BY r.effective_date DESC LIMIT 1
                 )
-                LEFT JOIN emp_wage AS z ON z.user_id = (
-                    SELECT z.user_id FROM emp_wage AS z
+
+                LEFT JOIN emp_wage AS z ON z.id = (
+                    SELECT z.id FROM emp_wage AS z
                     WHERE z.user_id = b.user_id
                     AND z.effective_date <= b.date_stamp
                     AND z.wage_group_id = 0
@@ -155,32 +160,33 @@ class UserDateTotalController extends Controller
                         LEFT JOIN punch AS tmp2_c ON tmp2_b.id = tmp2_c.punch_control_id
                         WHERE 1=1 ";
 
-        // Dynamic Filters for Subquery
-        if (!empty($filter_data['user_id']) && !in_array(-1, (array)$filter_data['user_id'])) {
-            // Ensure user IDs are integers to prevent SQL injection
-            $userIds = array_map('intval', (array)$filter_data['user_id']);
-            
-            // Create a comma-separated list of user IDs
-            $query .= " AND tmp2_a.user_id IN (" . implode(',', $userIds) . ") ";
-        }
+        
+                        // Dynamic Filters for Subquery
+                        if (!empty($filter_data['user_id']) && !in_array(-1, (array)$filter_data['user_id'])) {
+                            // Ensure user IDs are integers to prevent SQL injection
+                            $userIds = array_map('intval', (array)$filter_data['user_id']);
+                            
+                            // Create a comma-separated list of user IDs
+                            $query .= " AND tmp2_a.user_id IN (" . implode(',', $userIds) . ") ";
+                        }
 
-        if (!empty($filter_data['pay_period_ids']) && !in_array(-1, (array)$filter_data['pay_period_ids'])) {
-            // Ensure pay period IDs are integers to prevent SQL injection
-            $payPeriodIds = array_map('intval', (array)$filter_data['pay_period_ids']);
-            
-            // Create a comma-separated list of pay period IDs
-            $query .= " AND tmp2_a.pay_period_id IN (" . implode(',', $payPeriodIds) . ") ";
-        }
+                        if (!empty($filter_data['pay_period_ids']) && !in_array(-1, (array)$filter_data['pay_period_ids'])) {
+                            // Ensure pay period IDs are integers to prevent SQL injection
+                            $payPeriodIds = array_map('intval', (array)$filter_data['pay_period_ids']);
+                            
+                            // Create a comma-separated list of pay period IDs
+                            $query .= " AND tmp2_a.pay_period_id IN (" . implode(',', $payPeriodIds) . ") ";
+                        }
 
-        if (!empty($filter_data['start_date'])) {
-            $query .= " AND tmp2_a.date_stamp >= ".$filter_data['start_date'];
-        }
+                        if (!empty($filter_data['start_date'])) {
+                            $query .= " AND tmp2_a.date_stamp >= ".$filter_data['start_date'];
+                        }
 
-        if (!empty($filter_data['end_date'])) {
-            $query .= " AND tmp2_a.date_stamp <= ".$filter_data['end_date'];
-        }
+                        if (!empty($filter_data['end_date'])) {
+                            $query .= " AND tmp2_a.date_stamp <= ".$filter_data['end_date'];
+                        }
 
-        $query .= "
+                $query .= "
                         AND tmp2_c.time_stamp IS NOT NULL
                         AND (tmp2_a.status != 'delete' AND tmp2_b.status != 'delete' AND tmp2_c.punch_status != 'delete')
                         GROUP BY tmp2_a.id, tmp2_c.punch_status
@@ -188,33 +194,36 @@ class UserDateTotalController extends Controller
                 ) AS tmp2 ON b.id = tmp2.id
                 WHERE 1=1 ";
 
-        // More Filters (User ID, Pay Period, Branch, Department)
-        $filterKeys = ['user_id', 'pay_period_id', 'punch_branch_id', 'punch_department_id'];
-
-        foreach ($filterKeys as $key) {
-            if (!empty($filter_data[$key]) && !in_array(-1, (array)$filter_data[$key])) {
-                // Ensure values are integers to prevent SQL injection
-                $values = array_map('intval', (array)$filter_data[$key]);
+                if (isset($filter_data['user_id']) && isset($filter_data['user_id'][0]) && !in_array(-1, (array)$filter_data['user_id'])) {
+                    $userIds = implode(',', array_map('intval', (array)$filter_data['user_id']));
+                    $query .= ' AND b.user_id IN (' . $userIds . ') ';
+                }
                 
-                // Create a comma-separated string of values (e.g., 1,2,3)
-                $placeholders = implode(',', $values);
+                if (isset($filter_data['pay_period_ids']) && isset($filter_data['pay_period_ids'][0]) && !in_array(-1, (array)$filter_data['pay_period_ids'])) {
+                    $payPeriodIds = implode(',', array_map('intval', (array)$filter_data['pay_period_ids']));
+                    $query .= ' AND b.pay_period_id IN (' . $payPeriodIds . ') ';
+                }
+                
+                if (isset($filter_data['punch_branch_id']) && isset($filter_data['punch_branch_id'][0]) && !in_array(-1, (array)$filter_data['punch_branch_id'])) {
+                    $branchIds = implode(',', array_map('intval', (array)$filter_data['punch_branch_id']));
+                    $query .= ' AND a.branch_id IN (' . $branchIds . ') ';
+                }
+                
+                if (isset($filter_data['punch_department_id']) && isset($filter_data['punch_department_id'][0]) && !in_array(-1, (array)$filter_data['punch_department_id'])) {
+                    $departmentIds = implode(',', array_map('intval', (array)$filter_data['punch_department_id']));
+                    $query .= ' AND a.department_id IN (' . $departmentIds . ') ';
+                }
+                
+                // Date Filters
+                if (!empty($filter_data['start_date'])) {
+                    $query .= " AND b.date_stamp >= ".$filter_data['start_date'];
+                }
+                if (!empty($filter_data['end_date'])) {
+                    $query .= " AND b.date_stamp <= ".$filter_data['end_date'];
+                }
 
-                // Append condition to query directly (without placeholders)
-                $query .= " AND b.{$key} IN ($placeholders) ";
-            }
-        }
-
-
-        // Date Filters
-        if (!empty($filter_data['start_date'])) {
-            $query .= " AND b.date_stamp >= ".$filter_data['start_date'];
-        }
-        if (!empty($filter_data['end_date'])) {
-            $query .= " AND b.date_stamp <= ".$filter_data['end_date'];
-        }
-
-        // Final Conditions
-        $query .= "
+            // Final Conditions
+            $query .= "
                 AND a.status IN ('system','worked','absence')
                 AND (a.status != 'delete' AND b.status != 'delete')
                 GROUP BY b.user_id, b.pay_period_id, a.branch_id, a.department_id, 
@@ -228,6 +237,14 @@ class UserDateTotalController extends Controller
             ) AS tmp ON z.user_id = tmp.user_id
             WHERE z.company_id = ?";
 
+        if (isset($filter_data['user_id']) && isset($filter_data['user_id'][0]) && !in_array(-1, (array)$filter_data['user_id'])) {
+            $userIds = implode(',', array_map('intval', (array)$filter_data['user_id']));
+            $query .= ' AND z.user_id IN (' . $userIds . ') ';
+        }
+        
+        $query .= ' AND z.status != "delete"';
+
+            
         // Append order conditions
         $query .= " ORDER BY ";
         $c = 0;
@@ -237,6 +254,7 @@ class UserDateTotalController extends Controller
             $c++;
         }
 
+        //print_r($query);exit;
         // Execute Query
         return DB::select($query, $ph);
     }

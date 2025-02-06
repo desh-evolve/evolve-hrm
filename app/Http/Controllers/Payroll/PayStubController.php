@@ -77,10 +77,6 @@ class PayStubController extends Controller
         print_r('PayStubController->getByUserIdAndPayPeriodId');exit;
     }
 
-    public function loadPreviousPayStub(){
-        print_r('PayStubController->loadPreviousPayStub');exit;
-    }
-
     public function save($data){
         print_r('PayStubController->save');exit;
     }
