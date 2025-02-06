@@ -92,9 +92,11 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="last_punch_time_stamp" class="form-label mb-1 col-md-3">Last Downloaded Punch</label>
+                                <label for="last_punch_time_stamp" class="form-label mb-1 col-md-3">Last Downloaded
+                                    Punch</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control w-50" id="last_punch_time_stamp" @disabled(true)>
+                                    <input type="text" class="form-control w-50" id="last_punch_time_stamp"
+                                        @disabled(true)>
                                 </div>
                             </div>
                         </div>
@@ -162,6 +164,12 @@
 
         $(document).ready(async function() {
             await getDropdownData();
+
+            // Check if the `id` parameter is available in the query string
+            <?php if (isset($_GET['id'])): ?>
+            const id = <?= json_encode($_GET['id']) ?>; // Safely pass PHP variable to JavaScript
+            getUpdateData(id);
+            <?php endif; ?>
         });
 
         async function getDropdownData() {
@@ -176,14 +184,14 @@
                         `<option value="${branch.id}">${branch.name}</option>`)
                     .join('');
                 $('#branch_id').html('<option value="">Select Branch</option>' +
-                branchList);
+                    branchList);
 
                 let departmentList = (dropdownData?.departments || [])
                     .map(department =>
                         `<option value="${department.id}">${department.name}</option>`)
                     .join('');
                 $('#department_id').html('<option value="">Select Department</option>' +
-                departmentList);
+                    departmentList);
 
                 // Initialize the multiSelector for users
                 $('#includeUserContainer').multiSelector({
@@ -248,7 +256,7 @@
 
             let createUrl = `/company/station/create`;
             let updateUrl = `/company/station/update/${station_id}`;
-
+            
             let formData = new FormData();
 
             formData.append('group_ids', JSON.stringify(selectedEmpGroupIds));
@@ -259,6 +267,7 @@
 
             formData.append('station_status', $('#station_status').val());
             formData.append('type', $('#type').val());
+            formData.append('station_id', $('#station_id').val());
             formData.append('station', $('#station').val());
             formData.append('source', $('#source').val());
             formData.append('description', $('#description').val());
@@ -272,7 +281,7 @@
             let method = isUpdating ? 'PUT' : 'POST';
 
             try {
-                let res = await commonSaveData(url, formData, method);
+                let res = await commonSaveData(url,formData, method);
                 console.log('response here', res)
                 await commonAlert(res.status, res.message);
 
@@ -292,49 +301,34 @@
 
         async function getUpdateData(id) {
             try {
-                let response = await commonFetchData(`/payroll/station/${id}`);
+                let response = await commonFetchData(`/company/station/${id}`);
                 let data = response?.[0]; // Assuming the API returns an array with one item
 
-                if (!data) {
+                if (!response) {
                     console.error('No data found for the given ID.');
                     return;
                 }
 
-                console.log('Fetched pay period schedule data:', data);
+                console.log('Fetched pay period schedule data:', response);
 
-                // Set the name and status fields
-                // format date
-                // let newStartDate = data.start_date;
-                // let formattedStartDate = new Date(newStartDate).toISOString().split('T')[0]; // 'YYYY-MM-DD'
-                // $('#start_date').val(formattedStartDate);
-
-                // let newEndDate = data.end_date;
-                // let formattedEndDate = new Date(newEndDate).toISOString().split('T')[0]; // 'YYYY-MM-DD'
-                // $('#end_date').val(formattedEndDate);
-
-                $('#station_id').val(data.id);
+                $('#station_id').val(response.id);
                 // Populate form fields
-                
-                $('#time_zone').val(data.time_zone);
-                $('#department_id').val(data.department_id);
-                $('#branch_id').val(data.branch_id);
-                $('#description').val(data.description);
-                $('#source').val(data.source);
-                $('#station').val(data.station_id);
-                $('#type').val(data.type);
-                $('#station_status').val(data.status);
 
-                // userIds = data.users.map(emp => emp.user_id);
+                $('#time_zone').val(response.time_zone);
+                $('#department_id').val(response.department_id);
+                $('#branch_id').val(response.branch_id);
+                $('#description').val(response.description);
+                $('#source').val(response.source);
+                $('#station').val(response.station_customer_id);
+                $('#type').val(response.station_type_id);
+                $('#station_status').val(response.status);
 
                 // // // Initialize the multiSelector for users
-                // $('#userContainer').multiSelector({
+                // $('#include_user_ids').multiSelector({
                 //     title: 'Employees',
                 //     data: dropdownData?.users || [],
-                //     selectedIds: userIds,
+                //     selectedIds: val(response.include_user_ids),
                 // });
-
-                await changeType($('#calculation_type').val());
-                await getUserValueByType($('#calculation_type').val(), data);
 
             } catch (error) {
                 console.error('Error fetching policy group data:', error);
@@ -351,8 +345,6 @@
             $('#department_id').val('');
             $('#last_punch_time_stamp').val('');
             $('#station_status').val('');
-
-            // getDropdownData();
         }
     </script>
 
