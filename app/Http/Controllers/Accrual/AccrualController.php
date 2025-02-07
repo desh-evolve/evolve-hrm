@@ -120,7 +120,7 @@ class AccrualController extends Controller
         $joinArr = [];
 
         $whereArr = [
-            DB::raw("DATE_FORMAT(a.time_stamp,'%Y-%m-%d') = ?", [$date_stamp]),
+            "DATE_FORMAT(time_stamp,'%Y-%m-%d') = ".$date_stamp,
             'user_id' => $user_id,
             'type' => $type,
         ];        

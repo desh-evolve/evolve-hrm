@@ -114,9 +114,9 @@ class ProgressBarController extends Controller
 
                             $cpsc->removeTerminatePayStub( $pay_period_id, $user_id );
                             $cpsc->calculateAllowance( $pay_period_id, $user_id, $com_id ); 
-                            
+                            echo '<br><br><br>';
                             //check here
-                            $cpsc->calculate();
+                            $cpsc->calculate( $pay_period_id, $user_id );
                             
                             //$profiler->stopTimer( 'Calculating Pay Stub' );
         

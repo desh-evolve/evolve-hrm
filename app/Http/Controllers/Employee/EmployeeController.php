@@ -787,6 +787,14 @@ class EmployeeController extends Controller
         return response()->json(['data' => $user_designations], 200);
     }
 
+    public function getById($id){
+        $idColumn = 'user_id';
+        $table = 'emp_employees';
+        $fields = '*';
+        $res = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        return $res;
+    }
+
 //================================================================================================================
 // Employee profile details
 //================================================================================================================

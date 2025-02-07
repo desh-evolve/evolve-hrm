@@ -259,9 +259,28 @@ class UserDateTotalController extends Controller
         return DB::select($query, $ph);
     }
 
-    public function getByUserDateId(){
-        print_r('UserDateTotalController->getByUserDateId');exit;
-    }
+    public function getByUserDateId($user_date_id, $limit = NULL, $page = NULL, $where = NULL, $order = NULL) {
+		if ( $user_date_id == '' ) {
+			return FALSE;
+		}
+        
+        $table = 'user_date_total';
+        $fields = '*';
+        $joinArr = [];
+
+        $whereArr = [
+            'user_date_id' => $user_date_id,
+        ];        
+
+        $exceptDel = true;
+        $connections = [];
+        $groupBy = null;
+        $orderBy = null;
+
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, $exceptDel, $connections, $groupBy, $orderBy);
+
+        return $res;
+	}
 
 }
 

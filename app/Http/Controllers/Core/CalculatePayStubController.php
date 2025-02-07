@@ -17,6 +17,7 @@ use App\Http\Controllers\Accrual\AccrualController;
 use App\Http\Controllers\Company\AllowanceController;
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Holiday\HolidayController;
+use App\Http\Controllers\Payroll\PayPeriodController;
 use App\Http\Controllers\Payroll\PayStubAmendmentController;
 use App\Http\Controllers\Policy\PremiumPolicyController;
 use App\Http\Controllers\User\UserDeductionController;
@@ -82,9 +83,9 @@ class CalculatePayStubController extends Controller
             $status = $udt_obj->status;
             $type = $udt_obj->type;
 
-            echo $status . '<br>';
-            echo $type . '<br>';
-            echo $udt_obj->total_time . '<br>';
+            //echo 'status:'. $status . '<br>';
+            //echo 'type:'. $type . '<br>';
+            //echo 'total_time:'. $udt_obj->total_time . '<br>';
 
             // Ensure the structure exists before assignment
             if (!isset($tmp_rows[$pay_period_id])) {
@@ -109,18 +110,18 @@ class CalculatePayStubController extends Controller
             }
         }
 
-                
         $worked_days_no = 0;
         $late_days_no = 0;
         $nopay_days_no = 0;
         $full_day_leave_no = 0;
         $half_day_leave_no = 0;
-          
+        
+        //echo '$tmp_rows:';
+        //print_r($tmp_rows);
         //check here             
         foreach($tmp_rows as $pp_id => $user_data) {
             foreach ($user_data as $usr_id => $date_data) {
                 foreach ($date_data as $date_stamp => $att_data) {
-                     
                     $current_date = Carbon::parse($date_stamp)->format('Y-m-d');
                      
                     if((isset($schedule_rows[$pp_id][$usr_id][$date_stamp]['start_time']) && $schedule_rows[$pp_id][$usr_id][$date_stamp]['start_time'] !='' )&& (isset($att_data['min_punch_time_stamp'])&& $att_data['min_punch_time_stamp']!='')){
@@ -155,7 +156,7 @@ class CalculatePayStubController extends Controller
                         } else {
                             $ac = new AccrualController();
                             $alf = $ac->getByAccrualByUserIdAndTypeIdAndDate($usr_id,'paid_out',$current_date);
-                                        
+                                   
                             if(count($alf) > 0){
                                 $af_obj = $alf[0];
                                 if($af_obj->amount == -28800){
@@ -173,63 +174,58 @@ class CalculatePayStubController extends Controller
                                 // exclude directors from Nopay
                                 //if($user_obj->designation_id != 2){ //check here
                                     
-                                //=======================================
-                                // check here
-                                //=======================================
-                                    $udlf = new UserDateController();
-                                    $udlf->getByUserIdAndDate($usr_id, $current_date);
+                                    $udc = new UserDateController();
+                                    $udlf = $udc->getByUserIdAndDate($usr_id, $current_date);
+                                    
+                                    if(count($udlf) >0){
+                                        $ud_obj = $udlf[0];
 
-                                    if($udlf->getRecordCount() >0){
-                                        $ud_obj = $udlf->getCurrent();
+                                        $udtc = new UserDateTotalController();
+                                        $udtlf = $udtc->getByUserDateId($ud_obj->id);
 
-                                        $udtlf = new UserDateTotalController();
-                                        $udtlf->getByUserDateId($ud_obj->id);
-
-                                        if($udtlf->getRecordCount() > 0){
-
+                                        if(count($udtlf) > 0){
                                             foreach($udtlf as $udt_obj){
+                                                $id = $udt_obj->id;
+                                                $whereArr = [ 'id' => $udt_obj->id ];
+                                                $title = 'User Date Total Delete';
+                                                $table = 'user_date_total';
 
-                                                $udt_obj->setDeleted(TRUE);
-
-                                                if( $udt_obj->isValid()){
-                                                    $udt_obj->Save(); 
-                                                }
+                                                $this->common->commonDelete($id, $whereArr, $title, $table);
                                             }
                                         }
 
                                                                 
-                                        if(($user_obj->temination_date!='' && $user_obj->temination_date >= $dt_stamp->getTimestamp() )|| $user_obj->temination_date == ''){
-                                                                
-                                        $udt_obj1 = new UserDateTotalController();
+                                        if(($user_obj->terminated_date != '' && $user_obj->terminated_date >= $date_stamp ) || $user_obj->terminated_date == ''){
+                                        
+                                            $udt_obj1 = [];          
+                                            //$udt_obj1 = new UserDateTotalController();
+                                            $udt_obj1['user_date_id'] = $ud_obj->id;
+                                            $udt_obj1['status'] = 'system';
+                                            $udt_obj1['type'] = 'total';
+                                            $udt_obj1['total_time'] = 0;
+                                            
+                                            $table = 'user_date_total';
+                                            $inputArr = $udt_obj1;
+                                            $this->common->commonSave($table, $inputArr);
 
-                                        $udt_obj1->setUserDateID($ud_obj->id);
-                                        $udt_obj1->setStatus(10);
-                                        $udt_obj1->setType(10);
-                                        $udt_obj1->setTotalTime(0);
+                                            $udt_obj2 = [];
+                                            //$udt_obj2 = new UserDateTotalController();
 
-                                        if( $udt_obj1->isValid()){
-                                                    $udt_obj1->Save(); 
-                                        }
+                                            $udt_obj2['user_date_id'] = $ud_obj->id;
+                                            $udt_obj2['status'] = 'absence';
+                                            $udt_obj2['type'] = 'total';
+                                            $udt_obj2['total_time'] = 28800;
+                                            $udt_obj2['absence_policy_id'] = 10;
+                                            $udt_obj2['department_id'] = $user_obj->default_department_id;
+                                            $udt_obj2['branch_id'] = $user_obj->default_branch_id;
 
-                                        $udt_obj2 = new UserDateTotalController();
+                                            $table = 'user_date_total';
+                                            $inputArr = $udt_obj2;
+                                            $this->common->commonSave($table, $inputArr);
 
-
-                                        $udt_obj2->setUserDateID($ud_obj->id);
-                                        $udt_obj2->setStatus(30);
-                                        $udt_obj2->setType(10);
-                                        $udt_obj2->setTotalTime(28800);
-                                        $udt_obj2->setAbsencePolicyID(10);
-                                        $udt_obj2->setDepartment($user_obj->getDefaultDepartment());
-                                        $udt_obj2->setBranch($user_obj->getDefaultBranch());
-
-
-                                        if( $udt_obj2->isValid()){
-                                                    $udt_obj2->Save(); 
-                                        }
-
-                                        unset($udt_obj1);
-                                        unset($udt_obj2);
-                                        unset($uc);
+                                            unset($udt_obj1);
+                                            unset($udt_obj2);
+                                            unset($uc);
                                         
                                         }
                                     }
@@ -256,47 +252,55 @@ class CalculatePayStubController extends Controller
         }// end of payperiods  foreach
                     
                     
-        $allf = new AllowanceController();
-        $allf->getByUserIdAndPayperiodsId($user_id, $pay_period_id);
+        $ac = new AllowanceController();
+        $allf = $ac->getByUserIdAndPayperiodsId($user_id, $pay_period_id);
         
-        if($allf->getRecordCount() >0){
-            
-            $alf_obj = $allf->getCurrent();
-            
-            
-            $alf_obj->setUser($user_id);
-            $alf_obj->setPayPeriod($pay_period_id);
-            $alf_obj->setWorkedDays($worked_days_no);
-            $alf_obj->setLateDays($late_days_no);
-            $alf_obj->setNopayDays($nopay_days_no);
-            $alf_obj->setFulldayLeaveDays($full_day_leave_no);
-            $alf_obj->setHalfdayLeaveDays($half_day_leave_no);
+        if(count($allf)  >0){
+            $alf_obj = [];
+            $alf_obj = $allf[0];
 
-            if($alf_obj->isValid()){
-                $alf_obj->Save();
-            }
+            $id = $alf_obj->id;
+            $idColumn = 'id';
             
+            $inputArr['user_id'] = $user_id;
+            $inputArr['payperiod_id'] = $pay_period_id;
+            $inputArr['worked_days'] = $worked_days_no;
+            $inputArr['late_days'] = $late_days_no;
+            $inputArr['nopay_days'] = $nopay_days_no;
+            $inputArr['fullday_leave_days'] = $full_day_leave_no;
+            $inputArr['halfday_leave_days'] = $half_day_leave_no;
+
+            $table = 'allowance_data';
+            $this->common->commonSave($table, $inputArr, $id, $idColumn);
+            //echo 'allowance saved 1';
         } else {
         
-            $alf = new AllowanceController();
-
-            $alf->setUser($user_id);
-            $alf->setPayPeriod($pay_period_id);
-            $alf->setWorkedDays($worked_days_no);
-            $alf->setLateDays($late_days_no);
-            $alf->setNopayDays($nopay_days_no);
-            $alf->setFulldayLeaveDays($full_day_leave_no);
-            $alf->setHalfdayLeaveDays($half_day_leave_no);
-
-            if($alf->isValid()){
-                $alf->Save();
-            }
+            $inputArr['user_id'] = $user_id;
+            $inputArr['payperiod_id'] = $pay_period_id;
+            $inputArr['worked_days'] = $worked_days_no;
+            $inputArr['late_days'] = $late_days_no;
+            $inputArr['nopay_days'] = $nopay_days_no;
+            $inputArr['fullday_leave_days'] = $full_day_leave_no;
+            $inputArr['halfday_leave_days'] = $half_day_leave_no;
+        
+            $table = 'allowance_data';
+            $this->common->commonSave($table, $inputArr);
+            //echo 'allowance saved 2';
         }
     }
         
-    public function calculate($epoch = NULL, $userObject, $payPeriodObject, $enableCorrection = true, $wageObject) {
+    public function calculate($pay_period_id, $user_id, $epoch = NULL) {
 
-        print_r('CalculatePayStubController->calculate');exit;
+        $uc = new EmployeeController();
+        $userObject = $uc->getById($user_id);
+        $userObject = $userObject[0];
+        
+        $ppc = new PayPeriodController();
+        $payPeriodObject = $ppc->getById($pay_period_id);
+        $payPeriodObject = $payPeriodObject[0];
+
+        $enableCorrection = false;
+        //$wageObject =[];
 
 		if ( $userObject == FALSE OR $userObject->status !== 'active' ) {
 			return FALSE;
@@ -311,7 +315,7 @@ class CalculatePayStubController extends Controller
 		}
 
 		echo 'bbUser Id: '. $userObject->user_id .' Pay Period End Date: DATE+TIME'. $payPeriodObject->end_date;
-
+        //exit;
 		//echo '<pre>';
 
 		//$pay_stub = new PayStubController();
@@ -335,11 +339,13 @@ class CalculatePayStubController extends Controller
 		$pay_stub['pay_period_id'] = $payPeriodObject->id;
 		$pay_stub['currency_id'] = $userObject->currency_id;
 		$pay_stub['status'] = 'new';
-
+        //=================================================
+        //check here
+        //=================================================
 		//Use User Termination Date instead of ROE.
-		if ( $userObject->temination_date != ''
-				AND $userObject->temination_date >= $payPeriodObject->start_date
-				AND $userObject->temination_date <= $payPeriodObject->end_date ) {
+		if ( $userObject->terminated_date != ''
+				AND $userObject->terminated_date >= $payPeriodObject->start_date
+				AND $userObject->terminated_date <= $payPeriodObject->end_date ) {
 			echo 'User has been terminated in this pay period!';
 
 			$is_terminated = TRUE;
@@ -348,10 +354,10 @@ class CalculatePayStubController extends Controller
 		}
 
 		if ( $is_terminated == TRUE ) {
-			echo 'User is Terminated, assuming final pay, setting End Date to terminated date: '. $userObject->temination_date ;
+			echo 'User is Terminated, assuming final pay, setting End Date to terminated date: '. $userObject->terminated_date ;
 
 			$pay_stub['start_date'] = $payPeriodObject->start_date ;
-			$pay_stub['end_date'] = $userObject->temination_date;
+			$pay_stub['end_date'] = $userObject->terminated_date;
 
 			//Use the PS generation date instead of terminated date...
 			//Unlikely they would pay someone before the pay stub is generated.
