@@ -1,6 +1,7 @@
 <script>
 
-const user_id = "<?= isset($_GET['emp']) && is_numeric($_GET['emp']) ? $_GET['emp'] : '' ?>";
+const user_id = "<?= isset($emp) && is_numeric($emp) ? $emp : '' ?>";
+console.log('user_id: ', user_id)
 
 $(document).ready(function() {
     // Inject the PHP value into JavaScript, ensuring it's properly handled
@@ -9,13 +10,13 @@ $(document).ready(function() {
     if (user_id && parseInt(user_id) > 0) {
         console.log('emp_profile_js loaded', user_id);
     }else{
-        window.location.href = `/employee/my_profile`;
+      //  window.location.href = `/error`;
     }
 
     loadEmployeeOverview();
 
-    // Add click event listener to each nav-link
-    $('.nav-link').on('click', function(event) {
+    // Add click event listener to each link-click
+    $('.link-click').on('click', function(event) {
         event.preventDefault(); // Prevent default link behavior if needed
 
         // Get the ID or any data you need (for example, href or tab id)
@@ -60,34 +61,47 @@ $(document).ready(function() {
                 console.log('Unknown tab');
         }
     }
+
+
+    //edit user
+    $(document).on('click', '.edit-profile-btn', function () {
+        if (user_id) {
+            window.location.href = '/employee/form?emp_id=' + user_id;
+        }else{
+            console.error('User id not found!');
+        }
+    });
+
 });
+
+
 
 async function loadEmployeeOverview(){
     try {
-        let data = await commonFetchData(`/employee/${user_id}`);
+        let data = await commonFetchData(`/employee/details/${user_id}`);
 
-        if(data && data.data){
+        if(data && data){
             console.log('Profile Data:', data);
 
-            let userData = data.data.user[0];
-            let companyData = data.data.company[0];
+            let userData = data.user[0];
+            let companyData = data.company[0];
 
             if (!userData || !companyData) {
                 throw new Error('Invalid profile data received.');
             }
 
             // Populate the fields with the API data
-            $('#name').text(userData.first_name + " " + userData.last_name);
-            $('#full-name').text(userData.full_name);
-            $('#name-initials').text(userData.name_with_initials);
-            $('#mobile').text(userData.contact_1);
-            $('#email').text(userData.personal_email);
-            $('#address').text(userData.address_1);
-            $('#location').text(userData.city_name); // Modify this to display the proper location if necessary
-            $('#nic').text(userData.nic);
-            $('#dob').text(userData.dob);
-            $('#gender').text(userData.gender);
-            $('#religion').text(userData.religion || 'N/A');
+            $('#name').text(userData.first_name + " " + userData.last_name || 'N/A');
+            $('#full-name').text(userData.full_name || 'N/A');
+            $('#name-initials').text(userData.name_with_initials || 'N/A');
+            $('#mobile').text(userData.contact_1 || 'N/A');
+            $('#email').text(userData.personal_email || 'N/A');
+            $('#address').text(userData.address_1 || 'N/A');
+            $('#location').text(userData.city_name || 'N/A'); // Modify this to display the proper location if necessary
+            $('#nic').text(userData.nic || 'N/A');
+            $('#dob').text(userData.dob || 'N/A');
+            $('#gender').text(userData.gender || 'N/A');
+            $('#religion').text(userData.religion_name || 'N/A');
             $('#marital-status').text(userData.marital_status || 'N/A');
 
             $('#work-contact').text(userData.work_contact || 'N/A');
@@ -97,30 +111,61 @@ async function loadEmployeeOverview(){
             $('#home-contact').text(userData.home_contact || 'N/A');
             $('#epf-reg-no').text(userData.epf_reg_no || 'N/A');
 
-            $('#user-status').text(userData.user_status == 1 ? 'Active' : 'Inactive');
-            $('#user-number').text(userData.user_id);
-            $('#punch-id').text(userData.punch_machine_user_id);
-            $('#branch').text(userData.province_id);
-            $('#department').text(userData.user_group_id);
-            $('#employment-group').text(userData.user_group_id);
-            $('#designation').text(userData.designation_id);
-            $('#basis-employment').text(userData.employment_type_id);
-            $('#currency').text(userData.currency_name);
-            $('#pay-period').text(userData.pay_period_id || 'N/A');
+            $('#user-status').text(userData.user_status == 1 ? 'Active' : 'Inactive' || 'N/A');
+            $('#user-number').text(userData.id || 'N/A');
+            $('#punch-id').text(userData.punch_machine_user_id || 'N/A');
 
-            $('#appointment-date').text(userData.appointment_date);
+            // branch and department details
+            if (userData.branch_department_details && userData.branch_department_details.length > 0) {
+                const branchDetails = userData.branch_department_details[0];
+                $('#branch').text(branchDetails.branch_name || 'N/A');
+                $('#department').text(branchDetails.department_name || 'N/A');
+            } else {
+                $('#branch').text('N/A');
+                $('#department').text('N/A');
+            }
+
+            $('#employment-group').text(userData.user_group_name || 'N/A');
+            $('#designation').text(userData.designation_name || 'N/A');
+            $('#basis-employment').text(userData.employment_types_name || 'N/A');
+            $('#currency').text(userData.currency_name || 'N/A');
+
+            // pay period details
+            if (userData.pay_period_schedule_details && userData.pay_period_schedule_details.length > 0) {
+                const payPeriodDetails = userData.pay_period_schedule_details[0];
+                $('#pay-period').text(payPeriodDetails.pay_period_schedule_name);
+            } else {
+                $('#pay-period').text('N/A');
+            }
+
+            $('#appointment-date').text(userData.appointment_date || 'N/A');
             $('#appointment-note').text(userData.appointment_note || 'N/A');
             $('#termination-date').text(userData.terminated_date || 'N/A');
             $('#termination-note').text(userData.terminated_note || 'N/A');
             $('#confirmed-date').text(userData.confirmed_date || 'N/A');
             $('#retirement-date').text(userData.retirement_date || 'N/A');
+            $('#resign-date').text(userData.resigned_date || 'N/A');
 
-            $('#title-name').text(userData.first_name + " " + userData.last_name);
-            $('#title-role').text(userData.role || 'Default Role');
+            $('#title-name').text(userData.first_name + " " + userData.last_name || 'N/A');
+
+            // Role details
+            if (userData.role_details && userData.role_details.length > 0) {
+                const roleDetails = userData.role_details[0];
+                const roleName = roleDetails.role_name || 'Default Role';
+
+                // Capitalize the first letter
+                const formattedRoleName = roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase();
+
+                $('#title-role').text(formattedRoleName);
+            } else {
+                $('#title-role').text('Default Role');
+            }
+
+
             $('#title-user-no').text(userData.id || 'N/A');
 
             $('#title-company').text(' ' + '-' + ' ' + companyData.company_name || 'N/A');
-            $('#title-company-address').text(' ' + '-' + ' ' + companyData.address_1 + ', ' + companyData.address_2);
+            $('#title-company-address').text(' ' + '-' + ' ' + companyData.address_1 + ', ' + companyData.address_2 || 'N/A');
         }else{
             throw new Error('No data received from the server.');
         }
@@ -143,24 +188,29 @@ async function loadEmployeeDocuments(){
             let list = '';
 
             if (documents && documents.length > 0) {
-
                 documents.forEach((user, i) => {
                     list += `
                         <tr id="${user.id}">
                             <td>${i + 1}</td>
                             <td>${user.title}</td>
-                            <td>${user.doc_type_id}</td>
+                            <td>${user.name}</td>
                             <td>${formatDate1(user.created_at)}</td>
                             <td>
-                                <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_download_document" title="Download Document" data-tooltip="tooltip" data-bs-placement="top">
-                                    <i class="ri-download-2-line"></i>
-                                     DOWNLOAD
-                                </button>
+                                ${user.file ? `<a href="/employee/document/download/${user.file}" class="text-primary" target="_blank">${user.file}</a>` : 'No File'}
                             </td>
-                        </tr> `;
+                            <td>
+                                ${user.file ? `
+                                    <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_download_document" data-file="${user.file}" title="Download Document" data-tooltip="tooltip" data-bs-placement="top">
+                                        <i class="ri-download-2-line"></i>
+                                        DOWNLOAD
+                                    </button>
+                                ` : ''}
+                            </td>
+                        </tr>
+                    `;
                 });
             } else {
-                list = `<tr><td colspan="5" class="text-danger text-center">No Documents !</td></tr>`;
+                list = `<tr><td colspan="6" class="text-danger text-center">No Documents !</td></tr>`;
             }
 
             $('#documents-table-body').html(list);
@@ -168,30 +218,26 @@ async function loadEmployeeDocuments(){
     } catch (error) {
         console.error('error at emp_profile_js: ', error);
         console.error('Error fetching documents data:', error);
-            $('#documents-table-body').html('<tr><td colspan="5" class="text-danger text-center">Error loading data...</td></tr>');
+            $('#documents-table-body').html('<tr><td colspan="6" class="text-danger text-center">Error loading data...</td></tr>');
     }
-    // <tr>
-    //     <td>
-    //         <div class="d-flex align-items-center">
-    //             <div class="avatar-sm">
-    //                 <div class="avatar-title bg-info-subtle text-info rounded fs-20 material-shadow">
-    //                     <i class="ri-folder-line"></i>
-    //                 </div>
-    //             </div>
-    //             <div class="ms-3 flex-grow-1">
-    //                 <h6 class="fs-15 mb-0"><a href="javascript:void(0);">Project Screenshots Collection</a></h6>
-    //             </div>
-    //         </div>
-    //     </td>
-    //     <td>Floder File</td>
-    //     <td>08 Nov 2021</td>
-    //     <td>
-    //         <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_download_document" title="Download Document" data-tooltip="tooltip" data-bs-placement="top">
-    //             <i class="ri-download-2-line"></i>
-    //         </button>
-    //     </td>
-    // </tr>
+
 }
+
+
+    //download document
+    $(document).on('click', '.click_download_document', function (e) {
+        e.preventDefault();
+
+        let fileName = $(this).data('file');
+        if (!fileName) {
+            alert('No file found.');
+            return;
+        }
+
+        let downloadUrl = `/employee/document/download/${fileName}`;
+        window.location.href = downloadUrl;
+    });
+
 
 
 async function loadEmployeeActivities(){

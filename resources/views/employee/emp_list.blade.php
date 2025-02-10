@@ -85,15 +85,18 @@
                     return `
                         <tr emp_id="${user.id}">
                             <td>${i + 1}</td>
-                            <td>${user.id || 'N/A'}</td>
+                            <td>${user.user_id || 'N/A'}</td>
                             <td>${user.name_with_initials || 'N/A'}</td>
                             <td>${user.nic || 'N/A'}</td>
                             <td>${user.contact_1 || 'N/A'}</td>
                             <td>${stt}</td>
                             <td>
-                                <div class="user-functions button-set text-center">
+                                <div class="user-functions-1 button-set text-center">
                                     <a href="#" class="text-primary manage-qualification" data-id="${user.id}">[Qualifications]</a>
+                                    <a href="#" class="text-primary manage-document" data-id="${user.id}">[Doc]</a>
                                     <a href="#" class="text-primary manage-work" data-id="${user.id}">[Work Experience]</a>
+                                </div>
+                                <div class="user-functions-2 button-set text-center">
                                     <a href="#" class="text-primary manage-promotion" data-id="${user.id}">[Promotion]</a>
                                     <a href="#" class="text-primary manage-family" data-id="${user.id}">[Family]</a>
                                     <a href="#" class="text-primary manage-jobhistory" data-id="${user.id}">[Job History]</a>
@@ -106,6 +109,9 @@
                                 </div>
                             </td>
                             <td>
+                                <button type="button" class="btn btn-warning waves-effect waves-light btn-sm click_view_user" title="View Employee">
+                                    <i class="bi bi-eye"></i>
+                                </button>
                                 <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_user" title="Edit Employee">
                                     <i class="ri-pencil-fill"></i>
                                 </button>
@@ -131,14 +137,16 @@
         function bindFunctionToggles() {
             $('#show_user_functions').off('click').on('click', function (event) {
                 event.preventDefault();
-                $('.user-functions').show();
+                $('.user-functions-1').show();
+                $('.user-functions-2').show();
                 $('.payroll-functions').hide();
             });
 
             $('#show_payroll_functions').off('click').on('click', function (event) {
                 event.preventDefault();
                 $('.payroll-functions').show();
-                $('.user-functions').hide();
+                $('.user-functions-1').hide();
+                $('.user-functions-2').hide();
             });
 
         }
@@ -147,16 +155,35 @@
 // Edit and Delete Event Handlers
 //===================================================================================
 
+        //edit user
         $(document).on('click', '.click_edit_user', function () {
-            let emp_id = $(this).closest('tr').attr('emp_id');
-            window.location.href = '/user/form?emp_id=' + emp_id;
+            let emp_id = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+            if (emp_id) {
+                window.location.href = '/employee/form?emp_id=' + emp_id;
+            }
         });
 
+
+        //view user
+        $(document).on('click', '.click_view_user', function () {
+            let user_id = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+            console.log('User ID:', user_id);
+
+            if (user_id) {
+                window.location.href = `/employee/profile/${user_id}`;
+            } else {
+                console.error('No employee ID found!');
+            }
+        });
+
+
+
+        //delete user
         $(document).on('click', '.click_delete_user', async function () {
             let emp_id = $(this).closest('tr').attr('emp_id');
 
             try {
-                let url = `/user/delete`;
+                let url = `/employee/delete`;
                 const res = await commonDeleteFunction(emp_id, url, 'Employee');
 
                 if (res) {
@@ -205,6 +232,13 @@
             const userId = $(this).data('id');
             window.location.href = `/employee/qualification/details/${userId}`;
         });
+
+        // Navigate to Employee documentation Page
+        $(document).on('click', '.manage-document', function () {
+            const userId = $(this).data('id');
+            window.location.href = `/employee/document/details/${userId}`;
+        });
+
 
          // Navigate to Employee work-experience Details Page
          $(document).on('click', '.manage-work', function () {

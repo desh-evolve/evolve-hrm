@@ -13,11 +13,15 @@ use App\Http\Controllers\Accrual\AccrualController;
 use App\Http\Controllers\Accrual\AccrualBalanceController;
 use App\Http\Controllers\Policy\AccrualPolicyController;
 use App\Http\Controllers\Attendance\LeavesRequestController;
+use App\Http\Controllers\Core\UserDateController;
+use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Payroll\PayPeriodController;
+use Carbon\Carbon;
 
 class LeavesController extends Controller
 {
     private $common = null;
-    
+
     public function __construct()
     {
         $this->middleware('permission:apply leaves', ['only' => ['form', '']]);
@@ -43,7 +47,7 @@ class LeavesController extends Controller
             foreach($lrlf as $lrf){
                 $leave = [];
 
-                
+
                 $leave['name'] = $lrf->fname.' '.$lrf->lname.' (#'.$lrf->emp_id.')';
                 $leave['from'] = $lrf->leave_from;
                 $leave['to'] = $lrf->leave_to;
@@ -51,7 +55,7 @@ class LeavesController extends Controller
                 $leave['leave_type'] = $lrf->accurals_policy_id;
                 $leave['leave_method'] = $lrf->method;
                 $leave['status'] = "Pending Approvals";
-                
+
                 if($lrf->is_covered_approved && $lrf->status == 'pending'){
                     $leave['status'] = "Pending for Authorization";
                 }
@@ -59,24 +63,24 @@ class LeavesController extends Controller
                 if (!$lrf->is_covered_approved && $lrf->status=='cover_rejected') {
                     $leave['status'] = "Cover Rejected";
                 }
-                
+
                 if($lrf->is_covered_approved && $lrf->is_supervisor_approved && $lrf->status == 'pending' ){
                      $leave['status'] = "Supervisor Approved";
                 }
-                
+
                 if($lrf->is_covered_approved && !$lrf->is_supervisor_approved && $lrf->status == 'supervisor_rejected' ){
                         $leave['status'] = "Supervisor Rejected";
                 }
-                
+
                 if($lrf->is_covered_approved && $lrf->is_supervisor_approved && $lrf->is_hr_approved && $lrf->status == 'pending'){
                      $leave['status'] = "HR Approved";
                 }
-                
+
                 if($lrf->is_covered_approved && $lrf->is_supervisor_approved && !$lrf->is_hr_approved && $lrf->status == 'hr_rejected'){
                     $leave['status'] = "HR Rejected";
                 }
-                
-                
+
+
                 $leave_request[]= $leave;
 
             }
@@ -99,9 +103,9 @@ class LeavesController extends Controller
             // }
 
             $alf = $ac->getByCompanyIdAndUserIdAndAccrualPolicyIdAndStatusForLeave($com_id, $user_id, $apf->id, 'awarded');
-            
+
             $header_leave[]['name'] = $apf->name;
-            
+
             if(count($alf) > 0){
                 $af= $alf[0]; //get current accrual
                 $total_asign_leave[]['asign'] =  number_format($af->amount/28800,2);
@@ -129,7 +133,7 @@ class LeavesController extends Controller
             $leave_options[$apf->id]=$apf->name;
 
             //$alf = $ac->getByCompanyIdAndUserIdAndAccrualPolicyIdAndStatus($com_id, $user_id, $apf->id, 'awarded');
-            
+
         }
         $data['leave_options'] = $leave_options;
 
@@ -137,24 +141,24 @@ class LeavesController extends Controller
         $data['method_options'] = $method_options;
 
         $user_options = $this->common->commonGetAll(
-            'emp_employees', 
-            ['user_id', 'id AS emp_id', 'title', 'first_name', 'last_name'], 
-            [], 
+            'emp_employees',
+            ['user_id', 'id AS emp_id', 'title', 'first_name', 'last_name'],
+            [],
             ['user_id' => ['user_id', '!=', $user_id]]
         );
 
         $data['users_cover_options'] = $user_options;
 
         $current_user = $this->common->commonGetById(
-            $user_id, 
-            'user_id', 
-            'emp_employees', 
-            ['user_id', 'emp_employees.id', 'title', 'first_name', 'last_name', 'emp_designation_name'], 
+            $user_id,
+            'user_id',
+            'emp_employees',
+            ['user_id', 'emp_employees.id', 'title', 'first_name', 'last_name', 'emp_designation_name'],
             [ 'com_employee_designations' => ['com_employee_designations.id', '=', 'emp_employees.designation_id']]
         );
 
         $current_user = $current_user[0]; //get current user
-        
+
         $data['name'] = $current_user->first_name.' '.$current_user->last_name;
         //check here
         $data['title'] = $current_user->title;
@@ -170,7 +174,7 @@ class LeavesController extends Controller
             'data' => $data,
             'user' => $current_user
         ];
-        
+
         //print_r($parse_obj);exit;
         return view('attendance.leaves.form', $parse_obj);
     }
@@ -200,7 +204,7 @@ class LeavesController extends Controller
         //=========================================================
 
         $abc = new AccrualBalanceController();
-        
+
         $ablf = $abc->getByUserIdAndAccrualPolicyId($user_id, $request->accurals_policy_id);
 
         $stt = 'error';
@@ -215,7 +219,7 @@ class LeavesController extends Controller
             if($request->method == 1){ //full day leave
                 $amount_taken = (($amount*8) * (28800/8));
             } elseif($request->method == 2){ //half day leave
-                
+
                 if($amount<1){
                      $amount_taken = (($amount*8) * (28800/8));
                 }
@@ -224,48 +228,48 @@ class LeavesController extends Controller
                 }
             } elseif($request->method == 3){ //short leave
                 $amount_taken = 4320;
-                 
+
                 $start_date_stamp = Carbon::parse($request->leave_time);
                 $end_date_stamp = Carbon::parse($request->leave_end_time);
-                
+
                 $time_diff = $end_date_stamp - $start_date_stamp;
-                
+
                 if($time_diff <= 3600){
                     $time_diff = 3600;
                 }
-                
-                
+
+
                 if($time_diff > 7200){
                     $time_diff = 7200;
                 }
-               
+
                 $amount_taken =$time_diff * 0.8;
              }
-            
+
             $amount_taken = -1 * abs($amount_taken);
-             
+
             $current_amount = abs($amount_taken);
 
             if($current_amount <= $balance ){
                 $date_sh_array = explode(',', $request->leave_from);
-                //check here    
+                //check here
                 $udc = new UserDateController();
                 $udtlf_s = $udc->getByUserIdAndDate($user_id, $date_sh_array[0]);
-                
+
                 $udf_obj = $udtlf_s[0]; //get current userdate
                 $pp_id = $udf_obj->pay_period;
-                
+
                 $ppc = new PayPeriodController();
                 $pplf = $ppc->getById($pp_id);
                 $pp_obj = $pplf[0]; //get current
-                
-                $lrc = new LeaveRequestController();
+
+                $lrc = new LeavesRequestController();
                 $row = $lrc->getPayperiodsShortLeaveCount($user_id, $request->accurals_policy_id, $pp_obj->start_date, $pp_obj->end_date);
                 $pp_short_leave_count = $row['count'];
 
                 if($pp_short_leave_count >= 2 && $request->accurals_policy_id == 8){ //short leave = 8
                     $stt = 'warning';
-                    $msg = "You can apply only two short leaves"; 
+                    $msg = "You can apply only two short leaves";
                 }else{
                     //save data
                     $table = 'leave_request';
@@ -295,37 +299,37 @@ class LeavesController extends Controller
                         $is_covered_approved = 1;
                     }
 
-                    $lrc = new LeaveRequestController();
+                    $lrc = new LeavesRequestController();
                     $lrlf_b = $lrc->checkUserHasLeaveTypeForDay($current_user->getId(), $from_date->format('Y-m-d'), $request->accurals_policy_id);
 
                     if(count($lrlf_b) > 0 && $request->accurals_policy_id == 8){ //short leave
                         $stt = 'success';
-                        $msg = "You have This leave for the day";  
+                        $msg = "You have This leave for the day";
                     }else{
                         $inputArr = [
                             'company_id' => $com_id, // Replace with dynamic company ID if applicable
-                            'user_id' => $user_id, 
-                            'designation_id' => $designation_id, 
-                            'accurals_policy_id' => $accurals_policy_id, 
-                            'amount' => $amount, 
-                            'leave_from' => $leave_from, 
-                            'leave_to' => $leave_to, 
-                            'reason' => $reason, 
-                            'address_telephone' => $address_telephone, 
-                            'covered_by' => $covered_by, 
-                            'supervisor_id' => $supervisor_id, 
-                            'method' => $method, 
-                            'is_covered_approved' => $is_covered_approved, 
-                            'is_supervisor_approved' => $is_supervisor_approved, 
-                            'is_hr_approved' => $is_hr_approved, 
-                            'leave_time' => $leave_time, 
-                            'leave_end_time' => $leave_end_time, 
-                            'leave_dates' => $leave_dates, 
-                            
+                            'user_id' => $user_id,
+                            'designation_id' => $designation_id,
+                            'accurals_policy_id' => $accurals_policy_id,
+                            'amount' => $amount,
+                            'leave_from' => $leave_from,
+                            'leave_to' => $leave_to,
+                            'reason' => $reason,
+                            'address_telephone' => $address_telephone,
+                            'covered_by' => $covered_by,
+                            'supervisor_id' => $supervisor_id,
+                            'method' => $method,
+                            'is_covered_approved' => $is_covered_approved,
+                            'is_supervisor_approved' => $is_supervisor_approved,
+                            'is_hr_approved' => $is_hr_approved,
+                            'leave_time' => $leave_time,
+                            'leave_end_time' => $leave_end_time,
+                            'leave_dates' => $leave_dates,
+
                             'created_by' => Auth::user()->id,
                             'updated_by' => Auth::user()->id,
                         ];
-    
+
                         $leaveRequestId = $this->common->commonSave($table, $inputArr);
 
                         $ec = new EmployeeController();
@@ -384,7 +388,7 @@ class LeavesController extends Controller
                         $email->sendEmail($subject, $body, $from, $to);
 
                         $stt = 'success';
-                        $msg = "You have successfully apply leave";  
+                        $msg = "You have successfully apply leave";
                     }
                 }
 

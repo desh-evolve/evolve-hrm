@@ -344,13 +344,13 @@ let dropdownData = [];
                 $('#last_worked_date').val(job_data?.last_worked_date || '');
                 $('#note').val(job_data?.note || '');
 
-            } catch (error) {
-                console.error('Error at getJobHistoryById:', error);
-                $('#error-msg').html('<p class="text-danger">Error fetching user job history data. Please try again.</p>');
-            } finally {
-                $('#jobhistory_form_modal').modal('show');
-            }
-        });
+        } catch (error) {
+            console.error('Error at getJobHistoryById:', error);
+            $('#error-msg').html('<p class="text-danger">Error fetching user job history data. Please try again.</p>');
+        } finally {
+            $('#jobhistory_form_modal').modal('show');
+        }
+    });
 
 
     // Submit (Add/Edit)

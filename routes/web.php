@@ -30,6 +30,7 @@ use App\Http\Controllers\Employee\EmployeeFamilyController;
 use App\Http\Controllers\Employee\EmpWageController;
 use App\Http\Controllers\Employee\EmployeeMessagesController;
 use App\Http\Controllers\Employee\UserPreferenceController;
+use App\Http\Controllers\Employee\EmployeeDocumentsController;
 
 // policies
 use App\Http\Controllers\Policy\RoundingPolicyController;
@@ -50,9 +51,8 @@ use App\Http\Controllers\Attendance\PunchController;
 use App\Http\Controllers\Attendance\MassPunchController;
 use App\Http\Controllers\Attendance\TimeSheetController;
 use App\Http\Controllers\Attendance\LeavesController;
-use App\Http\Controllers\Attendance\AttendanceRequestsController;
 use App\Http\Controllers\Accrual\AccrualBalanceController;
-use App\Http\Controllers\Attendance\RequestController;
+use App\Http\Controllers\Request\RequestController;
 
 // Payroll
 use App\Http\Controllers\Payroll\PayStubAccountController;
@@ -362,11 +362,11 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // Timesheet
     Route::get('/employee/timesheet', [TimeSheetController::class, 'index'])->name('employee.timesheet');
     Route::get('/employee/timesheet/dropdown', [TimeSheetController::class, 'getDropdownData']);
-    
+
     // Leaves
     Route::get('/employee/apply_leaves', [LeavesController::class, 'form'])->name('employee.apply_leaves');
     Route::post('/employee/apply_leaves/create', [LeavesController::class, 'create']);
-    
+
     // Accrual
     Route::get('/accrual/index', [AccrualBalanceController::class, 'index'])->name('accrual.index');
     Route::post('/accrual/create', [AccrualBalanceController::class, 'createAccrualBalance'])->name('accrual.create');
@@ -411,7 +411,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/payroll/pay_period_schedule/dropdown', [PayPeriodScheduleController::class, 'getPayPeriodScheduleDropdownData'])->name('company.pay_period_schedule.dropdown');
     Route::get('/payroll/pay_period_schedule/AllPayPeriodSchedules', [PayPeriodScheduleController::class, 'getAllPayPeriodSchedules'])->name('payroll.pay_period_schedule.all');
     Route::get('/payroll/pay_period_schedule/{id}', [PayPeriodScheduleController::class, 'getPayPeriodScheduleById'])->name('payroll.pay_period_schedule.getById');
-    
+
     //   Pay Period Schedule
     Route::get('/payroll/company_deduction', [CompanyDeductionController::class, 'index'])->name('payroll.company_deduction');
     Route::get('/payroll/company_deduction/form', [CompanyDeductionController::class, 'form'])->name('payroll.company_deduction.form');
@@ -428,7 +428,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::put('/payroll/pay_stub_entry_account_link/update/{id}', [PayStubEntryAccountLinkController::class, 'updatePayStubEntryAccountLink'])->name('payroll.pay_stub_entry_account_link.update');
     Route::get('/payroll/pay_stub_entry_account_link/dropdown', [PayStubEntryAccountLinkController::class, 'getPayStubEntryAccountLinkDropdownData'])->name('company.pay_stub_entry_account_link.dropdown');
     Route::get('/payroll/pay_stub_entry_account_link/{id}', [PayStubEntryAccountLinkController::class, 'getPayStubEntryAccountLinkById'])->name('payroll.pay_stub_entry_account_link.getById');
-    
+
     // Process Payroll (End of pay period)
     Route::get('/payroll/process_payroll', [ProcessPayrollController::class, 'index'])->name('payroll.process_payroll');
     Route::post('/payroll/change_status', [ProcessPayrollController::class, 'changeStatus'])->name('payroll.change_status');
@@ -465,13 +465,26 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/single_wage/{id}', [EmpWageController::class, 'getSingleEmployeeWage'])->name('employee_wage.single');
     Route::get('/employee/wage/all', [EmpWageController::class, 'getAllEmployeeWage'])->name('employee_wage.all');
 
+    //==============================================================================================================================
+    // Employee documents
+    //===============================================================================================================================
+
+    Route::get('/employee/document', [EmployeeDocumentsController::class, 'index'])->name('employee.document.index');
+    Route::get('/employee/document/dropdown', [EmployeeDocumentsController::class, 'getdocumentDropdownData'])->name('employee.document.dropdown');
+    Route::post('/employee/document/create', [EmployeeDocumentsController::class, 'createEmployeeDocument'])->name('employee.document.create');
+    Route::put('/employee/document/update/{id}', [EmployeeDocumentsController::class, 'updateEmployeeDocument'])->name('employee.document.update');
+    Route::delete('/employee/document/delete/{id}', [EmployeeDocumentsController::class, 'deleteEmployeeDocument'])->name('employee.document.delete');
+    Route::get('/employee/document/download/{id}', [EmployeeDocumentsController::class, 'downloadDocument'])->name('employee.document.download');
+    Route::get('/employee/document/{id}', [EmployeeDocumentsController::class, 'getDocumentByEmpId'])->name('employee.document.getById');
+    Route::get('/employee/document/single/{id}', [EmployeeDocumentsController::class, 'getSingleEmployeeDocument'])->name('employee.document.single');
+    Route::get('/employee/document/all', [EmployeeDocumentsController::class, 'getAllEmployeeDocument'])->name('employee.document.all');
 
     //==============================================================================================================================
     // Employees
     //==============================================================================================================================
     Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
     Route::get('/employee/form', [EmployeeController::class, 'employee_form'])->name('employee.form');
-    Route::get('/employee/my_profile', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
+    Route::get('/employee/profile/{emp}', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
     Route::get('/employee/my_profile/details', [EmployeeController::class, 'getLoggedInUserProfile'])->name('employee.my_profile.details');
     Route::get('/employee/dropdown', [EmployeeController::class, 'getEmployeeDropdownData'])->name('employee.dropdown');
     Route::get('/employee/next_employee_id', [EmployeeController::class, 'getNextEmployeeId'])->name('employee.nextEmployeeId');
@@ -479,16 +492,18 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/bank/details/{id}', [EmployeeController::class, 'showBankDetails'])->name('employee.bank.details');
     Route::get('/employee/wage/details/{id}', [EmployeeController::class, 'showWageDetails'])->name('employee.wage.details');
     Route::get('/employee/qualification/details/{id}', [EmployeeController::class, 'showQualificationDetails'])->name('employee.qualification.details');
+    Route::get('/employee/document/details/{id}', [EmployeeController::class, 'showDocuments'])->name('employee.document');
     Route::get('/employee/work_experience/details/{id}', [EmployeeController::class, 'showWorkExperianceDetails'])->name('employee.work_experience.details');
     Route::get('/employee/promotion/details/{id}', [EmployeeController::class, 'showPromotionDetails'])->name('employee.promotion.details');
     Route::get('/employee/family/details/{id}', [EmployeeController::class, 'showFamilyDetails'])->name('employee.family.details');
     Route::get('/employee/jobhistory/details/{id}', [EmployeeController::class, 'showJobHistoryDetails'])->name('employee.jobhistory.details');
 
     Route::post('/employee/create', [EmployeeController::class, 'createEmployee'])->name('employee.create');
-    Route::get('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');
+    Route::put('/employee/update/{id}', [EmployeeController::class, 'updateEmployee'])->name('employee.update');
     Route::delete('/employee/delete/{id}', [EmployeeController::class, 'deleteEmployee'])->name('employee.delete');
     Route::get('/employees', [EmployeeController::class, 'getAllEmployees'])->name('employee.all');
-    Route::get('/employee/{id}', [EmployeeController::class, 'getEmployeeByEmployeeId'])->name('employee.getById');
+    Route::get('/employee/details/{id}', [EmployeeController::class, 'getEmployeeByUserId'])->name('employee.getById');
+    Route::get('/employee/single_record/{id}', [EmployeeController::class, 'getSingleEmployeeByUserId'])->name('employee.single_record');
 
     //employee profile tab views
     Route::get('/employee/profile/qualification/{id}', [EmployeeController::class, 'getQualificationByEmployeeId'])->name('employee.profile.qualification');
@@ -498,10 +513,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/profile/kpi/{id}', [EmployeeController::class, 'getKpiByEmployeeId'])->name('employee.profile.kpi');
     Route::get('/employee/profile/promotion/{id}', [EmployeeController::class, 'getPromotionsByEmployeeId'])->name('employee.profile.promotion');
     Route::get('/employee/profile/documents/{id}', [EmployeeController::class, 'getDocumentsByEmployeeId'])->name('employee.profile.documents');
-
-    // my profile
-    Route::get('/temp_my_profile', [MyProfileController::class, 'index'])->name('emp.my_profile');
-    Route::get('/temp_my_profile/load', [MyProfileController::class, 'getMyProfileById'])->name('emp.my_profile.getId');
+    Route::get('/employee/profile/document/download/{id}', [EmployeeController::class, 'downloadDocumentLoadProfile'])->name('employee.profile_document.download');
 
     //==============================================================================================================================
     // Policies

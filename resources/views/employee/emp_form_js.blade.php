@@ -3,10 +3,55 @@
 let dropdownData = [];
 let filesArray = []; // Array to hold files selected before the reset
 
+
 $(document).ready(function(){
+    resetForm();
     getNextEmployeeNumber();
     getDropdownData();
-})
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let emp_id = urlParams.get('emp_id');
+
+    if (emp_id) {
+        getEmployeeDetails(emp_id); // Fetch employee details for editing
+        modifyFormForUpdate();
+    } else {
+        $("#employee-details-title").text("Add Employee Details"); // change title when adding new
+        $('#user_id').val('');
+    }
+});
+
+
+
+// Function to modify form when updating an employee
+async function modifyFormForUpdate() {
+
+    // Change title when editing
+    $("#employee-details-title").text("Edit Employee Details");
+
+    // Disable user_no field
+    $('#user_no').prop('disabled', true);
+
+    // Hide Documents Tab and Section
+    $('#steparrow-document-info-tab').closest('li').remove();
+    $('#steparrow-document-info').remove();
+
+    // Hide Password and Confirm Password Fields
+    $('#password').closest('.mb-3').hide();
+    $('#confirm_password').closest('.mb-3').hide();
+
+    // Adjust Employee Identification & Contact Information Tabs
+    $(".step-arrow-nav .nav").addClass("nav-justified");
+
+    // Replace "Go to Documents" Button with Submit Button
+    $('#second-form-button').replaceWith(`
+        <button type="button" class="btn btn-success btn-label right ms-auto emp_form_submit">
+            <i class="ri-check-line label-icon align-middle fs-16 ms-2"></i> Submit
+        </button>
+    `);
+}
+
+
 
 async function getDropdownData() {
     showPreloader();
@@ -24,13 +69,13 @@ async function getDropdownData() {
         $('#department_id').html('<option value="">Select a branch first</option>');
 
         // Populate user group dropdown
-        let empGroupList = (dropdownData?.employee_groups || [])
+        let empGroupList = (dropdownData?.user_groups || [])
             .map(empGroup => `<option value="${empGroup.id}">${empGroup.emp_group_name}</option>`)
             .join('');
-        $('#employee_group_id').html('<option value="">Select an user group</option>' + empGroupList);
+        $('#user_group_id').html('<option value="">Select an user group</option>' + empGroupList);
 
         // Populate user designation dropdown
-        let designationList = (dropdownData?.employee_designations || [])
+        let designationList = (dropdownData?.user_designations || [])
             .map(designation => `<option value="${designation.id}">${designation.emp_designation_name}</option>`)
             .join('');
         $('#designation_id').html('<option value="">Select a designation</option>' + designationList);
@@ -61,7 +106,7 @@ async function getDropdownData() {
 
         // Populate permission group dropdown
         let permGroupList = (dropdownData?.roles || [])
-            .map(permGroup => `<option value="${permGroup.value}">${permGroup.name}</option>`)
+            .map(permGroup => `<option value="${permGroup.name}">${permGroup.name}</option>`)
             .join('');
         $('#permission_group_id').html('<option value="">Select a permission group</option>' + permGroupList);
 
@@ -74,7 +119,7 @@ async function getDropdownData() {
                 </div>
             `)
             .join('');
-        $('#employment_types').html(empTypeList);
+        $('#employment_type').html(empTypeList);
 
         // Populate permission group dropdown
         let religionList = (dropdownData?.religion || [])
@@ -92,7 +137,7 @@ async function getDropdownData() {
         $('#province_id').html('<option value="">Select a country first</option>');
         $('#city_id').html('<option value="">Select a country first</option>');
 
-        // Populate country dropdown
+        // Populate doc type dropdown
         let docTypeList = (dropdownData?.doc_types || [])
             .map(doc_type => `<option value="${doc_type.id}">${doc_type.name}</option>`)
             .join('');
@@ -115,6 +160,213 @@ async function getNextEmployeeNumber(){
         console.error('error at emp_form_js -> getNextEmployeeNumber', error);
     }
 }
+
+
+//=========================================================================================================
+// update employee record
+//=========================================================================================================
+
+async function getEmployeeDetails() {
+    try {
+        // Get emp_id from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let emp_id = urlParams.get('emp_id');
+
+        if (!emp_id) {
+            console.error('Employee ID not found in URL.');
+            return;
+        }
+
+        // Fetch employee details from API
+        let emp_data = await commonFetchData(`/employee/single_record/${emp_id}`);
+
+        if (!emp_data || emp_data.length === 0) {
+            console.warn('No details found for this employee.');
+            return;
+        }
+
+        emp_data = emp_data[0];
+        console.log('Fetched Employee Data:', emp_data);
+
+        // Branch and Department Details
+        let branchDepartment = emp_data.branch_department_details?.[0] || {};
+        let emailDetail = emp_data.email_details?.[0] || {};
+        let permissionGroupDetail = emp_data.role_details?.[0] || {};
+        let payPeriodScheduleDetail = emp_data.pay_period_schedule_details?.[0] || {};
+
+        // Populate form fields
+        $('#emp_id').val(emp_data.emp_id || '');
+        $('#user_no').val(emp_data.id || '');
+        $('#punch_machine_user_id').val(emp_data.punch_machine_user_id || '');
+
+        $('#branch_id').val(branchDepartment.branch_id || '');
+        await loadDepartments(branchDepartment.branch_id);
+        $('#department_id').val(branchDepartment.department_id || '');
+
+        $('#user_group_id').val(emp_data.user_group_id || '');
+        $('#designation_id').val(emp_data.designation_id || '');
+        $('#policy_group_id').val(emp_data.policy_group_id || '');
+        $('#user_status').val(emp_data.user_status || '');
+        $('#currency_id').val(emp_data.currency_id || '');
+        $('#pay_period_schedule_id').val(payPeriodScheduleDetail.pay_period_schedule_id || '');
+        $('#appointment_date').val(emp_data.appointment_date || '');
+        $('#appointment_note').val(emp_data.appointment_note || '');
+        $('#terminated_date').val(emp_data.terminated_date || '');
+        $('#terminated_note').val(emp_data.terminated_note || '');
+        $('#confirmed_date').val(emp_data.confirmed_date || '');
+        $('#retirement_date').val(emp_data.retirement_date || '');
+        $('#bond_period').val(emp_data.bond_period || '');
+        $('#permission_group_id').val(permissionGroupDetail.name || '');
+
+        // Contact Information
+        $('#email').val(emailDetail.email || '');
+        $('#title').val(emp_data.title || '');
+        $('#name_with_initials').val(emp_data.name_with_initials || '');
+        $('#first_name').val(emp_data.first_name || '');
+        $('#last_name').val(emp_data.last_name || '');
+        $('#full_name').val(emp_data.full_name || '');
+        $('#dob').val(emp_data.dob || '');
+        $('#nic').val(emp_data.nic || '');
+        $('#gender').val(emp_data.gender || '');
+        $('#religion_id').val(emp_data.religion || '');
+        $('#marital_status').val(emp_data.marital_status || '');
+        $('#personal_email').val(emp_data.personal_email || '');
+        $('#contact_1').val(emp_data.contact_1 || '');
+        $('#contact_2').val(emp_data.contact_2 || '');
+        $('#address_1').val(emp_data.address_1 || '');
+        $('#address_2').val(emp_data.address_2 || '');
+        $('#address_3').val(emp_data.address_3 || '');
+        $('#postal_code').val(emp_data.postal_code || '');
+        $('#country_id').val(emp_data.country_id || '');
+
+        // Populate Province and City based on Country
+        await loadProvinces(emp_data.country_id);
+        $('#province_id').val(emp_data.province_id || '');
+
+        await loadCities(emp_data.province_id);
+        $('#city_id').val(emp_data.city_id || '');
+
+        // Work Information
+        $('#work_email').val(emp_data.work_email || '');
+        $('#work_contact').val(emp_data.work_contact || '');
+        $('#immediate_contact_person').val(emp_data.immediate_contact_person || '');
+        $('#immediate_contact_no').val(emp_data.immediate_contact_no || '');
+        $('#home_contact').val(emp_data.home_contact || '');
+        $('#epf_reg_no').val(emp_data.epf_reg_no || '');
+        $('#resigned_date').val(emp_data.resigned_date || '');
+
+        // Set Employment Type (Radio Button)
+        $("input[name='employment_type']").each(function () {
+            if ($(this).val() == emp_data.employment_type_id) {
+                $(this).prop("checked", true);
+            }
+        });
+
+        // Show or Hide "Months" Field Based on Employment Type
+        const selectedEmpType = emp_data.employment_type_id;
+        const isDurationType = dropdownData?.employment_types?.some(
+            empType => empType.id == selectedEmpType && empType.is_duration === 1
+        );
+
+        if (isDurationType) {
+            $('#month-selection').show();
+            $('#employment_time').val(emp_data.employment_time || '');
+        } else {
+            $('#month-selection').hide();
+            $('#employment_time').val('');
+        }
+
+        // Load Document Details
+        displayDocuments(emp_data?.document_details || []);
+
+    } catch (error) {
+        console.error('Error fetching employee details:', error);
+        $('#error-msg').text('Error fetching employee details. Please try again later.');
+    }
+}
+
+
+function displayDocuments(documents) {
+    $('#document_tbody').html(''); // Clear previous data
+
+    if (!documents || documents.length === 0) {
+        $('#document_tbody').html(`
+            <tr class="no-doc-row">
+                <td colspan="5" class="text-center">No Documents Found</td>
+            </tr>
+        `);
+        return;
+    }
+
+    // Loop through documents and display
+    documents.forEach((doc, index) => {
+        filesArray.push(doc); // Store for later deletion
+
+        // Use the /storage/ URL path since we created a symbolic link
+        let downloadUrl = `/storage/uploads/employee/documents/${doc.file}`;
+
+        $('#document_tbody').append(`
+            <tr data-index="${index}">
+                <td>${index + 1}</td>
+                <td>${doc.doc_type_name || 'N/A'}</td>
+                <td>${doc.title || 'Untitled'}</td>
+                <td>${doc.file || 'No file'}</td>
+                <td>
+                    <a href="${downloadUrl}" class="btn btn-info btn-sm click_download_doc" title="Download Document">
+                        <i class="ri-download-2-line"></i>
+                    </a>
+                    <button type="button" class="btn btn-danger btn-sm click_delete_doc" data-index="${index}" title="Delete Document">
+                        <i class="ri-delete-bin-fill"></i>
+                    </button>
+                </td>
+            </tr>
+        `);
+    });
+}
+
+//======================================================================================================
+// DELETE DOCUMENTS WHEN UPDATING
+//======================================================================================================
+
+    $(document).on('click', '.click_delete_doc', function() {
+        const $row = $(this).closest('tr');
+        const index = $row.data('index'); // Get index from row attribute
+        const id = filesArray[index]?.id; // Get document ID from stored filesArray
+
+            deleteItem(id, $row);
+
+    });
+
+    async function deleteItem(id, $row) {
+        const url ='/employee/document/delete';
+        const title ='Employee Document';
+
+        try {
+            const res = await commonDeleteFunction(id, url, title, $row);
+            if (res) {
+                // Remove document from array
+                filesArray.splice(index, 1);
+                $row.remove(); // Remove row from UI
+
+                // Re-index table rows
+                $('#document_tbody tr').each((i, tr) => {
+                    $(tr).attr('data-index', i);
+                    $(tr).find('td:first').text(i + 1);
+                });
+
+                // If no documents remain, display a message
+                if (filesArray.length === 0) {
+                    $('#document_tbody').html(`
+                        <tr class="no-doc-row">
+                            <td colspan="5" class="text-center">No Documents Found</td>
+                        </tr>
+                    `);
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting document:', error);
+        }
+    }
 
 //=========================================================================================================
 
@@ -165,96 +417,117 @@ async function loadCities(provinceId) {
 }
 
 //=========================================================================================================
+// Added document
+//=========================================================================================================
 
-$(document).on('click', '.add_doc_to_list', function() {
-    const doc_type_id = $('#doc_type_id').val(); // Get selected document type
-    const doc_type_name =$('#doc_type_id option:selected').text();
-    const doc_title = $('#doc_title').val(); // Get document title
-    const file = $('#doc_file')[0].files[0]; // Get selected file
+$(document).on('click', '.add_doc_to_list', function () {
+    const doc_type_id = $('#doc_type_id').val();
+    const doc_type_name = $('#doc_type_id option:selected').text();
+    const doc_title = $('#doc_title').val().trim();
+    const files = $('#doc_file')[0].files; // Get selected files
 
-    // Check if all fields are filled
-    if (!doc_type_name || !file) {
-        alert('Please fill in all fields and select a file.');
+    let missingFields = [];
+
+    if (!doc_type_id) missingFields.push('Document Type');
+    if (!doc_title) missingFields.push('Document Title');
+    if (files.length === 0) missingFields.push('File');
+
+    if (missingFields.length > 0) {
+        $('#document-error-msg').html(`
+            <div class="alert alert-danger alert-dismissible">
+                <strong>Error!</strong> Please fill in the following fields: <strong>${missingFields.join(', ')}.</strong>
+                <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `);
         return;
+    } else {
+        $('#document-error-msg').html('');
     }
 
-    // Check if the document type is already added
-    const isDocTypeExist = filesArray.some(doc => doc.doc_type_id === doc_type_id);
+    // Loop through each selected file
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
 
-    if (isDocTypeExist) {
-        alert('This document type has already been added.');
-        return;
+        // Add to filesArray
+        filesArray.push({
+            doc_type_id: doc_type_id,
+            doc_title: doc_title,
+            file: file,
+            doc_type_name: doc_type_name,
+        });
+
+        // Extract the file name
+        const fileName = file.name;
+
+        // Remove the "Not any Document" row if it exists
+        $('#document_tbody .no-doc-row').remove();
+
+
+        // Add file to table
+        $('#document_tbody').append(`
+            <tr data-index="${filesArray.length - 1}">
+                <td>${filesArray.length}</td>
+                <td>${doc_type_name}</td>
+                <td>${doc_title}</td>
+                <td>${fileName}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm click_remove_document" title="Remove Document">
+                        Remove
+                    </button>
+                </td>
+            </tr>
+        `);
     }
 
-    // Store the file in the filesArray
-    filesArray.push({
-        doc_type_id: doc_type_id,
-        doc_title: doc_title,
-        file: file,
-        doc_type_name: doc_type_name
-    });
-
-    // Extract file name from the file input
-    const fileName = file.name;
-
-    // Create a new row for the document
-    const newRow = `
-        <tr>
-            <td>${doc_type_name}</td>
-            <td>${doc_title}</td>
-            <td>${fileName}</td>
-            <td>
-                <input type="hidden" name="doc_type_id[]" value="${doc_type_id}" />
-                <input type="hidden" name="doc_title[]" value="${doc_title}" />
-                <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_download_document" title="Download Document">
-                    <i class="ri-download-2-line"></i>
-                </button>
-                <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_document" title="Remove Document">
-                    <i class="ri-delete-bin-fill"></i>
-                </button>
-            </td>
-        </tr>
-    `;
-
-    // Append the new row to the table body
-    $('#document_tbody').append(newRow);
-
-    // Reset the input fields after adding the document
+    // Reset file input & fields
     $('#doc_type_id').val('');
     $('#doc_title').val('');
     $('#doc_file').val('');
 });
 
+//===================================================================================================================
+//Added documents remove & download
+//===================================================================================================================
 
-//==============================================
-
-// Delete document from the list
-$(document).on('click', '.click_delete_document', function() {
-    // Find the closest row (tr) that contains the delete button
+// remove document
+$(document).on('click', '.click_remove_document', function () {
     const row = $(this).closest('tr');
+    const index = row.data('index');
 
-    // Get the doc_type_id and doc_title hidden inputs from the row to find the corresponding file in filesArray
-    const doc_type_id = row.find('input[name="doc_type_id[]"]').val();
-    const doc_title = row.find('input[name="doc_title[]"]').val();
-
-    // Remove the row from the table
+    // Remove document from array
+    filesArray.splice(index, 1);
     row.remove();
 
-    // Remove the document from the filesArray based on doc_type_id and doc_title (or any other criteria)
-    filesArray = filesArray.filter(doc => !(doc.doc_type_id === doc_type_id && doc.doc_title === doc_title));
+    // Re-index table
+    $('#document_tbody tr').each((i, tr) => {
+        $(tr).attr('data-index', i);
+        $(tr).find('td:first').text(i + 1);
+    });
+
+    // Show "Not any Document" row if empty
+    if (filesArray.length === 0) {
+        $('#document_tbody').html(`
+            <tr class="no-doc-row">
+                <td colspan="5" class="text-center">Not any Document</td>
+            </tr>
+        `);
+    }
 });
 
 
-// Handle the file download (this is just an example and should be updated based on how the file is stored)
-$(document).on('click', '.click_download_document', function() {
-    // Example code for downloading the file.
-    // You would need a proper URL to the file based on how your server stores it.
-    const fileName = $(this).closest('tr').find('td:nth-child(4)').text();
-    alert('Downloading ' + fileName);
-    // Add your file download logic here (e.g., linking to a server-side file or triggering a download).
+//download document
+$(document).on('click', '.click_download_doc', function (e) {
+    e.preventDefault();
+
+    let fileName = $(this).data('file');
+    if (!fileName) {
+        alert('No file found.');
+        return;
+    }
+
+    let downloadUrl = `/employee/document/download/${fileName}`;
+    window.open(downloadUrl, '_blank');
 });
-
-
 
 //=========================================================================================================
 
@@ -270,11 +543,11 @@ $(document).on('change', 'input[name="employment_type"]', function() {
     // Show month input only for Contract, Training, and Permanent (With Probation)
     if (checkIsDuration) {
         $('#month-selection').show();
-        $('#months').prop('required', true); // Make month input required
+        $('#employment_time').prop('required', true); // Make month input required
     } else {
         $('#month-selection').hide();
-        $('#months').prop('required', false); // Remove required attribute
-        $('#months').val(''); // Clear month input
+        $('#employment_time').prop('required', false); // Remove required attribute
+        $('#employment_time').val(''); // Clear month input
     }
 });
 
@@ -283,39 +556,72 @@ $(document).on('change', 'input[name="employment_type"]', function() {
 // change & validate department according to branch
 //=========================================================================================================
 
-$(document).on('change', '#branch_id', function () {
-    let branchId = $(this).val();
+// $(document).on('change', '#branch_id', function () {
+//     let branchId = $(this).val();
 
-    if (!branchId) {
-        // If no branch is selected, reset and display error for both branch and department
-        $('#department_id').html('<option value="">Select a branch first</option>');
-        $('#department_id').addClass('is-invalid');
-        $('#department_id').siblings('.invalid-feedback').text('This field is required');
+//     if (!branchId) {
+//         // If no branch is selected, reset and display error for both branch and department
+//         $('#department_id').html('<option value="">Select a branch first</option>');
+//         $('#department_id').addClass('is-invalid');
+//         $('#department_id').siblings('.invalid-feedback').text('This field is required');
 
-        $('#branch_id').addClass('is-invalid');
-        $('#branch_id').siblings('.invalid-feedback').text('This field is required');
-    } else {
-        // If a branch is selected, remove branch error and populate department dropdown
-        $('#branch_id').removeClass('is-invalid');
-        $('#branch_id').siblings('.invalid-feedback').text('');
+//         $('#branch_id').addClass('is-invalid');
+//         $('#branch_id').siblings('.invalid-feedback').text('This field is required');
+//     } else {
+//         // If a branch is selected, remove branch error and populate department dropdown
+//         $('#branch_id').removeClass('is-invalid');
+//         $('#branch_id').siblings('.invalid-feedback').text('');
 
-        let departmentList = (dropdownData?.departments || [])
+//         let departmentList = (dropdownData?.departments || [])
+//             .filter(department => department.branch_departments.some(br_dep => br_dep.branch_id == branchId))
+//             .map(department => `<option value="${department.id}">${department.department_name}</option>`)
+//             .join('');
+
+//         $('#department_id').html('<option value="">Select a department</option>' + departmentList);
+
+//     }
+// });
+
+async function loadDepartments(branchId) {
+    return new Promise((resolve) => {
+        if (!branchId) {
+            $('#department_id').html('<option value="">Select a branch first</option>');
+            $('#department_id').addClass('is-invalid');
+            $('#department_id').siblings('.invalid-feedback').text('This field is required');
+            return resolve(); // Ensure function completes
+        }
+
+        // Filter departments based on selected branch
+        const departmentList = (dropdownData?.departments || [])
             .filter(department => department.branch_departments.some(br_dep => br_dep.branch_id == branchId))
             .map(department => `<option value="${department.id}">${department.department_name}</option>`)
             .join('');
 
+        // Populate department dropdown
         $('#department_id').html('<option value="">Select a department</option>' + departmentList);
+        $('#department_id').removeClass('is-invalid');
+        $('#department_id').siblings('.invalid-feedback').text('');
 
-    }
+        resolve(); // Mark the function as completed
+    });
+}
+
+
+$(document).on('change', '#branch_id', async function () {
+    let branchId = $(this).val();
+    await loadDepartments(branchId);
 });
-
 
 //=========================================================================================================
 // validation part 01 in go to contact info page
 //=========================================================================================================
 
+
 $(document).on('click', '#first-form-button', function () {
     let allFieldsValid = true;
+    const urlParams = new URLSearchParams(window.location.search);
+    let emp_id = urlParams.get('emp_id');
+    const isUpdating = Boolean(emp_id);
 
     // Define required field IDs
     const requiredFields = [
@@ -331,11 +637,14 @@ $(document).on('click', '#first-form-button', function () {
         'appointment_date',
         'permission_group_id',
         'email',
-        'password',
-        'confirm_password'
+        'bond_period',
     ];
 
-    const employmentTypeId = 'employment_types';
+    if (!isUpdating) {
+        requiredFields.push('password', 'confirm_password');
+    }
+
+    const employmentTypeId = 'employment_type';
 
     // Iterate through required fields
     requiredFields.forEach(fieldId => {
@@ -352,7 +661,7 @@ $(document).on('click', '#first-form-button', function () {
         }
     });
 
-    // Validate employment_types separately
+    // Validate employment_type separately
     const empTypeContainer = $(`#${employmentTypeId}`);
     const selectedEmpType = empTypeContainer.find("input[name='employment_type']:checked").val();
     const empTypeErrorMessage = empTypeContainer.siblings('.invalid-feedback');
@@ -374,7 +683,7 @@ $(document).on('click', '#first-form-button', function () {
      // Validate "Duration Months" only if required
      const durationRequiredTypes = ["1", "2", "3"]; // Replace with actual IDs for Contract, Training, Permanent (With Probation)
     if (durationRequiredTypes.includes(selectedEmpType)) {
-        const monthsField = $('#months');
+        const monthsField = $('#employment_time');
         const monthsErrorMessage = monthsField.siblings('.invalid-feedback');
 
         if (!monthsField.val()?.trim()) {
@@ -390,6 +699,7 @@ $(document).on('click', '#first-form-button', function () {
 
     // Navigate to the next tab if all fields are valid
     if (allFieldsValid) {
+        $('.error-msgs').html('');
         $('#steparrow-contact-info-tab').tab('show');
     } else {
         $('.error-msgs').html(`
@@ -425,9 +735,9 @@ $(document).on('input change', '[required], select', function () {
 });
 
 
-// Real-time validation for employment_types
+// Real-time validation for employment_type
 $(document).on('change', "input[name='employment_type']", function () {
-    const empTypeContainer = $('#employment_types');
+    const empTypeContainer = $('#employment_type');
     const empTypeErrorMessage = empTypeContainer.siblings('.invalid-feedback');
 
     if ($(this).is(':checked')) {
@@ -619,35 +929,47 @@ $(document).on('click', '#second-form-button', function () {
     }
 });
 
-
-
 //=========================================================================================================
 //submit the form
 //=========================================================================================================
 
-$(document).on('click', '.emp_form_submit', async function(e) {
+$(document).on('click', '.emp_form_submit', async function (e) {
     e.preventDefault(); // Prevent default form submission
 
-    const userId = $('#user_id').val();
-    const createUrl = `/employee/create`;
-    const updateUrl = `/employee/update/${userId}`;
+    const urlParams = new URLSearchParams(window.location.search);
+    let emp_id = urlParams.get('emp_id');
+    let user_id = $('#user_id').val();
 
-    // Get the password and confirm_password values
-    const password = $('#password').val();
-    const confirmPassword = $('#confirm_password').val();
+    const isUpdating = Boolean(emp_id);
+    const url = isUpdating ? `/employee/update/${emp_id}` : `/employee/create`;
+    const method = isUpdating ? 'PUT' : 'POST';
 
-    // Check if the passwords match
-    if (password !== confirmPassword) {
-        alert('Passwords do not match. Please re-enter.');
-        return; // Stop the form submission if passwords don't match
+    const formData = new FormData();
+
+    // Append user_id or emp_id depending on the action
+    if (isUpdating) {
+        formData.append('emp_id', emp_id);
+        // formData.append('user_id', user_id);
+    } else {
+        formData.append('user_id', user_id); // Create new employee
     }
 
-    // Create a FormData object to gather form data, including files
-    const formData = new FormData();
+    // Ensure password is only sent if the user updates it
+    const password = $('#password').val();
+    if (password) {
+        formData.append('password', password);
+    }
 
     // Append standard form fields
     const fields = [
-        'user_no', 'punch_machine_user_id', 'branch_id', 'department_id', 'user_group_id', 'designation_id', 'policy_group_id', 'user_status', 'currency_id', 'pay_period_schedule_id', 'appointment_date', 'appointment_note', 'termination_date', 'confirmed_date', 'retirement_date', 'months', 'permission_group_id', 'email', 'password', 'title', 'name_with_initials', 'first_name', 'last_name', 'full_name', 'dob', 'nic', 'gender', 'religion_id', 'marital_status', 'personal_email', 'contact_1', 'contact_2', 'address_1', 'address_2', 'address_3', 'postal_code', 'country_id', 'province_id', 'city_id', 'work_email', 'work_contact', 'immediate_contact_person', 'immediate_contact_no', 'home_contact', 'epf_no'
+        'user_no', 'punch_machine_user_id', 'branch_id', 'department_id', 'user_group_id',
+        'designation_id', 'policy_group_id', 'user_status', 'currency_id', 'pay_period_schedule_id',
+        'appointment_date', 'appointment_note', 'terminated_date', 'resigned_date', 'bond_period', 'terminated_note', 'confirmed_date', 'retirement_date',
+        'employment_time', 'permission_group_id', 'email', 'password', 'title', 'name_with_initials', 'first_name',
+        'last_name', 'full_name', 'dob', 'nic', 'gender', 'religion_id', 'marital_status', 'personal_email',
+        'contact_1', 'contact_2', 'address_1', 'address_2', 'address_3', 'postal_code', 'country_id',
+        'province_id', 'city_id', 'work_email', 'work_contact', 'immediate_contact_person',
+        'immediate_contact_no', 'home_contact', 'epf_reg_no'
     ];
 
     fields.forEach(field => {
@@ -657,16 +979,17 @@ $(document).on('click', '.emp_form_submit', async function(e) {
         }
     });
 
-
-    // Append 'months' field value as 'bond_period'
-    const months = $('#months').val();
+    // Append 'months' field value as 'employment_time'
+    const months = $('#employment_time').val();
     if (months) {
-        formData.append('bond_period', months); // Map 'months' to 'bond_period'
+        formData.append('employment_time', months); // Map 'months' to 'employment_time'
     }
 
-
     // Append employment type (radio/checkbox)
-    formData.append('employment_type_id', $("input[name='employment_type']:checked").val());
+    const employmentType = $("input[name='employment_type']:checked").val();
+    if (employmentType) {
+        formData.append('employment_type_id', employmentType);
+    }
 
     // Append user photo (if a file is selected)
     const userPhoto = $('#user_image')[0].files[0];
@@ -674,21 +997,15 @@ $(document).on('click', '.emp_form_submit', async function(e) {
         formData.append('user_image', userPhoto);
     }
 
-    // Append the files stored in filesArray to FormData
+
+    // Append document files
     filesArray.forEach((doc, index) => {
-        formData.append(`doc_file[${index}]`, doc.file); // Add file to FormData
-        formData.append(`doc_type_id[${index}]`, doc.doc_type_id); // Add doc_type_id to FormData
-        formData.append(`doc_title[${index}]`, doc.doc_title); // Add doc_title to FormData
+        formData.append(`doc_file[${index}]`, doc.file);
+        formData.append(`doc_type_id[${index}]`, doc.doc_type_id);
+        formData.append(`doc_title[${index}]`, doc.doc_title);
     });
 
-    // Determine if it's an update or create operation
-    const isUpdating = Boolean(userId);
-    const url = isUpdating ? updateUrl : createUrl;
-    const method = isUpdating ? 'PUT' : 'POST';
 
-    if (isUpdating) {
-        formData.append('user_id', userId);
-    }
 
     try {
         // Send data and handle response
@@ -696,7 +1013,9 @@ $(document).on('click', '.emp_form_submit', async function(e) {
         await commonAlert(res.status, res.message);
 
         if (res.status === 'success') {
-            window.location.href = '/employee/profile?emp='+res.data.id;
+            let userId = res.data.user_id;
+            console.log('Redirecting to:', `/employee/profile/${userId}`);
+            window.location.href = `/employee/profile/${userId}`;
         }
     } catch (error) {
         console.error('Error:', error);
@@ -706,28 +1025,111 @@ $(document).on('click', '.emp_form_submit', async function(e) {
 
 
 
-// Reset the form part 01
-$(document).on('click', '.reset-user-form', function () {
-    const form = $(this).closest('form')[0];
-    if (form) form.reset(); // Reset the form fields to their initial state
+//=========================================================================================================
+// Reset form
+//=========================================================================================================
 
-    // Clear error messages and validation states
-    $('.is-invalid').removeClass('is-invalid'); // Remove invalid field highlights
-    $('.invalid-feedback').text(''); // Clear error messages
+// Reset the Emplyee identification form
+$(document).on('click', '.reset-user-form', function () {
+    const formSection = $('#steparrow-basic-info'); // Target only the contact info section
+
+    // Reset all input fields inside this section
+    formSection.find('input, select, textarea').each(function () {
+        if ($(this).is(':checkbox') || $(this).is(':radio')) {
+            $(this).prop('checked', false); // Uncheck checkboxes & radio buttons
+        } else {
+            $(this).val('');
+        }
+    });
+
+    // Clear
+    formSection.find('.is-invalid').removeClass('is-invalid');
+    formSection.find('.invalid-feedback').text('');
     $('.error-msgs').html('');
     $('#first-form-button').prop('disabled', false);
 });
 
-// Reset the form part 02
-$(document).on('click', '.reset-contact-form', function () {
-    const form = $(this).closest('form')[0];
-    if (form) form.reset(); // Reset the form fields to their initial state
 
-    // Clear error messages and validation states
-    $('.is-invalid').removeClass('is-invalid'); // Remove invalid field highlights
-    $('.invalid-feedback').text('');
+// Reset the contact information form
+$(document).on('click', '.reset-contact-form', function () {
+    const formSection = $('#steparrow-contact-info'); // Target only the contact info section
+
+    // Reset all input fields inside this section
+    formSection.find('input, select, textarea').each(function () {
+        if ($(this).is(':checkbox') || $(this).is(':radio')) {
+            $(this).prop('checked', false); // Uncheck checkboxes & radio buttons
+        } else {
+            $(this).val(''); // Reset other inputs
+        }
+    });
+
+    // Clear
+    formSection.find('.is-invalid').removeClass('is-invalid');
+    formSection.find('.invalid-feedback').text('');
     $('.second-part-error-msgs').html('');
+    $('#second-form-button').prop('disabled', false);
 });
 
 
+function resetForm() {
+    $('#emp_id').val('');
+    $('#user_no').val('');
+    $('#title').val('');
+    $('#first_name').val('');
+    $('#last_name').val('');
+    $('#full_name').val('');
+    $('#name_with_initials').val('');
+    $('#address_1').val('');
+    $('#address_2').val('');
+    $('#address_3').val('');
+    $('#nic').val('');
+    $('#country_id').val('');
+    $('#province_id').val('');
+    $('#city_id').val('');
+    $('#postal_code').val('');
+    $('#contact_1').val('');
+    $('#contact_2').val('');
+    $('#work_contact').val('');
+    $('#home_contact').val('');
+    $('#immediate_contact_person').val('');
+    $('#immediate_contact_no').val('');
+    $('#personal_email').val('');
+    $('#work_email').val('');
+    $('#epf_reg_no').val('');
+    $('#religion_id').val('');
+    $('#dob').val('');
+    $('#gender').val('');
+    $('#bond_period').val('');
+    $('#user_status').val('');
+    $('#marital_status').val('');
+    $('#user_image').val('');
+    $('#branch_id').val('');
+    $('#department_id').val('');
+    $('#punch_machine_user_id').val('');
+    $('#designation_id').val('');
+    $('#user_group_id').val('');
+    $('#policy_group_id').val('');
+    $('#pay_period_schedule_id').val('');
+    $('#appointment_date').val('');
+    $('#appointment_note').val('');
+    $('#terminated_date').val('');
+    $('#terminated_note').val('');
+    $('#employment_type_id').val('');
+    $('#employment_time').val('');
+    $('#confirmed_date').val('');
+    $('#resigned_date').val('');
+    $('#retirement_date').val('');
+    $('#currency_id').val('');
+    $('#pay_period_id').val('');
+    $('#permission_group_id').val('');
+    $('#email').val('');
+    $('#password').val('');
+    $('#doc_file').val('');
+    $('#doc_title').val('');
+    $('#doc_type_id').val('');
+    $('.second-part-error-msgs').html('');
+    $('.error-msgs').html('');
+}
+
+//=========================================================================================================
 </script>

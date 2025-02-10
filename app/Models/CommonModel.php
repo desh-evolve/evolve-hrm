@@ -307,50 +307,59 @@ class CommonModel extends Model
 
     public function uploadDocument($docId, $docFile, $uploadDocPath, $saveDocName = null)
     {
-        // Ensure the directory exists
-        if (!Storage::disk('public')->exists($uploadDocPath)) {
-            Storage::disk('public')->makeDirectory($uploadDocPath);
+        try {
+            // Check if the file is valid
+            if (!$docFile->isValid()) {
+                return [
+                    'status' => 'error',
+                    'message' => 'Document upload failed!',
+                    'data' => null
+                ];
+            }
+
+            // Generate a unique file name if not provided
+            if ($saveDocName === null) {
+                $saveDocName = $docId . '_' . uniqid();
+            }
+
+            // Get file extension
+            $fileExt = strtolower($docFile->getClientOriginalExtension());
+
+            // Allowed document extensions
+            $allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
+            if (!in_array($fileExt, $allowedExtensions)) {
+                return [
+                    'status' => 'error',
+                    'message' => 'Unsupported file type!',
+                    'data' => null
+                ];
+            }
+
+            // Define the complete file name
+            $fileName = $saveDocName . '.' . $fileExt;
+
+            // Store the file in the given path
+            $filePath = $docFile->storeAs($uploadDocPath, $fileName, 'public');
+
+            // Return file details
+            return [
+                'status' => 'success',
+                'message' => 'File uploaded successfully!',
+                'data' => [
+                    'docId' => $docId,
+                    'fileName' => $fileName,
+                    'filePath' => $uploadDocPath,
+                    'fullPath' => asset("storage/$uploadDocPath/$fileName")
+                ]
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status' => 'error',
+                'message' => 'Upload failed: ' . $e->getMessage(),
+                'data' => null
+            ];
         }
-
-        // Check if the file was uploaded successfully
-        if (!$docFile->isValid()) {
-            return response()->json(['status' => 'error', 'message' => 'Doc File not uploaded!', 'data' => '']);
-        }
-
-        // Generate new file name if not provided
-        if ($saveDocName === null) {
-            $randomNumber = rand(100, 999);
-            $saveDocName = $docId . $randomNumber . now()->format('YmdHis');
-        }
-
-        // Get file extension
-        $fileExt = strtolower($docFile->getClientOriginalExtension());
-
-        // Supported document extensions
-        $supportedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'];
-        if (!in_array($fileExt, $supportedExtensions)) {
-            return response()->json(['status' => 'error', 'message' => 'Unsupported doc file type!']);
-        }
-
-        // Define the full file name
-        $fileName = $saveDocName . '.' . $fileExt;
-
-        // Store the uploaded file
-        $docFile->storeAs($uploadDocPath, $fileName, 'public');
-
-        // Prepare document data for return
-        $documentData = [
-            'docId' => $docId,
-            'saveDocName' => $saveDocName,
-            'documentExtension' => '.' . $fileExt,
-            'documentPath' => $uploadDocPath,
-            'fileName' => $fileName,
-        ];
-
-        return response()->json(['status' => 'success', 'message' => 'File uploaded successfully!', 'data' => $documentData]);
     }
-
-
 
 
 

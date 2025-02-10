@@ -203,7 +203,7 @@
                                     List</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('employee.profile') }}"
+                                <a href="{{ route('employee.profile', ['emp' => 'my_profile']) }}"
                                     class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">My
                                     Profile</a>
                             </li>
@@ -214,14 +214,10 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('emp.form') }}"
-                                    class="nav-link {{ request()->routeIs('emp.form') ? 'active' : '' }}">
-                                    Emp Form
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a href="{{ route('employee.user_preference') }}"
-                                    class="nav-link {{ request()->routeIs('employee.user_preference') ? 'active' : '' }}">User Preference</a>
+                                    class="nav-link {{ request()->routeIs('employee.user_preference') ? 'active' : '' }}">
+                                    User Preference
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -325,20 +321,15 @@
                                     List</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('employee.profile') }}"
-                                    class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">My
-                                    Profile</a>
+                                <a href="{{ route('employee.profile', ['emp' => 'my_profile']) }}"
+                                    class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">
+                                    My Profile
+                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('employee.messages.index') }}"
                                     class="nav-link {{ request()->routeIs('employee.messages.index') ? 'active' : '' }}">
                                     Employee Messages
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('emp.form') }}"
-                                    class="nav-link {{ request()->routeIs('emp.form') ? 'active' : '' }}">
-                                    Emp Form
                                 </a>
                             </li>
                         </ul>

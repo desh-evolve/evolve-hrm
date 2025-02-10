@@ -33,7 +33,7 @@
                     <div class="col-lg-12 col-12">
                         <div class="p-2">
                             <p class="fs-14 mb-0">Employee No</p>
-                            <h4 class="text-white mb-1" id="title-user-no">#243</h4>
+                            <h4 class="text-white mb-1" id="title-user-no">#</h4>
                         </div>
                     </div>
                 </div>
@@ -49,47 +49,47 @@
                     <div>
                         <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link fs-14 active" data-bs-toggle="tab" href="#overview-tab" role="tab">
+                                <a class="nav-link link-click fs-14 active" data-bs-toggle="tab" href="#overview-tab" role="tab">
                                     <i class="ri-airplay-fill d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Overview</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#documents" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#documents" role="tab">
                                     <i class="ri-folder-4-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Documents</span>
                                 </a>
                             </li>
                             {{-- <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#activities" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#activities" role="tab">
                                     <i class="ri-list-unordered d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Activities</span>
                                 </a>
                             </li> --}}
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#qualifications" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#qualifications" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Qualifications</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#work_experience" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#work_experience" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Work Experience</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#promotions" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#promotions" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Promotions</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#job_history" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#job_history" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Job History</span>
                                 </a>
                             </li>
                             {{-- <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#kpi" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#kpi" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">KPI</span>
                                 </a>
                             </li> --}}
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#bank" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#bank" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Bank</span>
                                 </a>
                             </li>
@@ -98,17 +98,17 @@
                         <!--
                         <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1 mt-3" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#projects" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#projects" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Wage</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#projects" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#projects" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Deductions</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#projects" role="tab">
+                                <a class="nav-link link-click fs-14" data-bs-toggle="tab" href="#projects" role="tab">
                                     <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Paystub Amendments</span>
                                 </a>
                             </li>
@@ -116,7 +116,7 @@
                         -->
                     </div>
                     <div class="flex-shrink-0">
-                        <a href="pages-profile-settings.html" class="btn btn-success"><i class="ri-edit-box-line align-bottom"></i> Edit Profile</a>
+                        <a href="#" class="btn btn-success edit-profile-btn"><i class="ri-edit-box-line align-bottom"></i> Edit Profile</a>
                     </div>
                 </div>
 
@@ -306,6 +306,10 @@
                                                         <th scope="row">Retirement Date :</th>
                                                         <td class="text-muted" id="retirement-date">Loading...</td>
                                                     </tr>
+                                                    <tr>
+                                                        <th scope="row">Resign Date :</th>
+                                                        <td class="text-muted" id="resign-date">Loading...</td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -333,12 +337,13 @@
                                                         <th scope="col">File Name</th>
                                                         <th scope="col">Type</th>
                                                         <th scope="col">Upload Date</th>
+                                                        <th scope="col">Document</th>
                                                         <th scope="col">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="documents-table-body">
                                                     <tr>
-                                                        <td colspan="5" class="text-center">Loading...</td>
+                                                        <td colspan="6" class="text-center">Loading...</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
