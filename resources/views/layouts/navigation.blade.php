@@ -130,6 +130,10 @@
                                     class="nav-link {{ request()->routeIs('reports.employee_detail_report') ? 'active' : '' }}">Employee
                                     Detail Report</a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('reports.attendance_report') }}"
+                                    class="nav-link {{ request()->routeIs('reports.attendance_report') ? 'active' : '' }}">Attendance Report</a>
+                            </li>
                         </ul>
                     </div>
                 </li>

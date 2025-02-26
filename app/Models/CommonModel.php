@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +17,8 @@ class CommonModel extends Model
     use HasFactory;
 
     // desh(2024-10-18)
-    public function checkDuplicates($table, $checkColumn, $checkText, $check_where = false, $where = "") {
+    public function checkDuplicates($table, $checkColumn, $checkText, $check_where = false, $where = "")
+    {
         $query = DB::table($table)
             ->where($checkColumn, $checkText)
             ->where('status', 'active');
@@ -28,7 +31,8 @@ class CommonModel extends Model
     }
 
     // desh(2024-10-18)
-    public function commonGetAll($table, $fields, $joinsArr = [], $whereArr = [], $exceptDel = false, $connections = [], $groupBy = null, $orderBy = null) {
+    public function commonGetAll($table, $fields, $joinsArr = [], $whereArr = [], $exceptDel = false, $connections = [], $groupBy = null, $orderBy = null)
+    {
 
         $query = DB::table($table)->select($fields);
 
@@ -100,7 +104,8 @@ class CommonModel extends Model
     }
 
     // desh(2024-10-18)
-    public function commonGetById($id, $idColumn, $table, $fields, $joinsArr = [], $whereArr = [], $exceptDel = false, $connections = [], $groupBy = null, $orderBy = null) {
+    public function commonGetById($id, $idColumn, $table, $fields, $joinsArr = [], $whereArr = [], $exceptDel = false, $connections = [], $groupBy = null, $orderBy = null)
+    {
 
         $query = DB::table($table)->select($fields)->where($idColumn, $id);
 
@@ -173,7 +178,8 @@ class CommonModel extends Model
     }
 
     // desh(2024-10-18)
-    public function commonDelete($id, $whereArr, $title, $table, $returnMsg = true, $deletedBy = true, $recordLog = true) {
+    public function commonDelete($id, $whereArr, $title, $table, $returnMsg = true, $deletedBy = true, $recordLog = true)
+    {
         $arr = ['status' => 'delete'];
         if ($deletedBy) {
             $arr['updated_by'] = Auth::user()->id;
@@ -189,15 +195,16 @@ class CommonModel extends Model
         $action = 'Deleted';
         $message = $re ? "$title $action Successfully!!!" : "$title $action Failed!!!";
 
-        if($returnMsg){
+        if ($returnMsg) {
             return response()->json(['status' => $status, 'message' => $message, 'data' => ['id' => $id]]);
-        }else{
+        } else {
             return $re;
         }
     }
 
     // desh(2024-10-18)
-    public function commonChangeStatus($id, $whereArr, $title, $table, $status, $updatedBy = true, $recordLog = true) {
+    public function commonChangeStatus($id, $whereArr, $title, $table, $status, $updatedBy = true, $recordLog = true)
+    {
         $arr = ['status' => $status];
         if ($updatedBy) {
             $arr['handled_by'] = session('user_id');
@@ -216,7 +223,8 @@ class CommonModel extends Model
     }
 
     // desh(2024-10-18)
-    public function commonSave($table, $inputArr, $id = null, $idColumn = null, $createdBy = true, $updatedBy = true, $recordLog = true) {
+    public function commonSave($table, $inputArr, $id = null, $idColumn = null, $createdBy = true, $updatedBy = true, $recordLog = true)
+    {
         $type = $id ? 'updated' : 'added';
 
         try {
@@ -254,8 +262,8 @@ class CommonModel extends Model
     // desh(2024-10-18)
     public function uploadImage($imageId, $imageFile, $uploadPath, $thumbPath, $thumbWidth = 300, $thumbHeight = 300, $saveName = null)
     {
-         // Ensure the directory exists
-         if (!Storage::disk('public')->exists($uploadPath)) {
+        // Ensure the directory exists
+        if (!Storage::disk('public')->exists($uploadPath)) {
             Storage::disk('public')->makeDirectory($uploadPath);
         }
 
@@ -350,8 +358,36 @@ class CommonModel extends Model
         return response()->json(['status' => 'success', 'message' => 'File uploaded successfully!', 'data' => $documentData]);
     }
 
+    public static function getDataByColumnValues($table, $column, array $values)
+    {
+        return DB::table($table)->whereIn($column, $values)->get();
+    }
 
 
+    /**
+     * Get data by conditions with optional sorting.
+     *
+     * @param string $table
+     * @param array $conditions
+     * @param array $orderBy
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getDataByConditions($table, array $conditions, array $orderBy = [])
+    {
+        $query = DB::table($table);
 
+        foreach ($conditions as $condition) {
+            if (isset($condition[2]) && is_array($condition[2])) {
+                $query->whereIn($condition[0], $condition[2]);
+            } else {
+                $query->where($condition[0], $condition[1], $condition[2] ?? null);
+            }
+        }
 
+        foreach ($orderBy as $column => $direction) {
+            $query->orderBy($column, $direction);
+        }
+
+        return $query->get();
+    }
 }

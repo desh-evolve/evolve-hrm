@@ -72,3 +72,49 @@
 
 
 </x-app-layout>
+@extends('layouts.app')
+
+@section('content')
+<div id="rowContent">
+    <div id="titleTab">
+        <div class="textTitle"><span class="textTitleSub">{{ __('Generate Report') }}</span></div>
+    </div>
+
+    <div id="rowContentInner">
+        <form method="GET" action="{{ route('reports.generate') }}">
+            @csrf
+
+            <table class="tblList">
+                <tr>
+                    <td class="cellLeftEditTable">{{ __('Select Date Range') }}:</td>
+                    <td class="cellRightEditTable">
+                        <input type="date" name="start_date" value="{{ request('start_date') }}">
+                        to
+                        <input type="date" name="end_date" value="{{ request('end_date') }}">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="cellLeftEditTable">{{ __('Select Pay Period') }}:</td>
+                    <td class="cellRightEditTable">
+                        <select name="pay_period_id">
+                            <option value="">{{ __('All') }}</option>
+                            @foreach($pay_period_options as $id => $period)
+                                <option value="{{ $id }}" {{ request('pay_period_id') == $id ? 'selected' : '' }}>
+                                    {{ $period }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="cellLeftEditTable" colspan="2" align="right">
+                        <button type="submit" class="btn btn-primary">{{ __('Generate Report') }}</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+@endsection
