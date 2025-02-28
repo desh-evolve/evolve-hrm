@@ -349,8 +349,8 @@
                     resetForm();
                     throw new Error(`HTTP error! status: ${response.status}`);
                 } else {
-                    // window.location.href = '/reports/employee_detail_report/report?data=' + JSON.stringify(
-                    //     response);
+                    window.location.href = '/reports/attendance_report/report?data=' + JSON.stringify(
+                        response);
                     console.log('response', response);
                 }
             } catch (error) {

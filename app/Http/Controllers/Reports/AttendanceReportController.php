@@ -16,10 +16,12 @@ class AttendanceReportController extends Controller
     {
         $this->common = new CommonModel();
     }
+
     public function index()
     {
         return view('reports.attendance_report.filter');
     }
+
     public function getDropdownData()
     {
         $com_employee_groups = $this->common->commonGetAll('com_employee_groups', ['id', 'emp_group_name AS name']);
@@ -55,63 +57,14 @@ class AttendanceReportController extends Controller
         ], 200);
     }
 
-    // public function getReportData(Request $request)
-    // {
-    //     $currentCompany = 1; // Assuming the current company is accessible via the authenticated user
-    //     $filterData = $request->all();
+    public function form(Request $request)
+    {
+        // Get the 'data' query parameter
+        $dataList = json_decode($request->query('data'), true);
 
-    //     // Step 1: Get users based on company and filter criteria
-    //     $users = $this->common->commonGetAll('users', '*', [], [
-    //         'company_id' => 1,
-    //         'id' => $filterData['user_id'] ?? null,
-    //         // 'exclude_id' => $filterData['exclude_user_ids'] ?? null,
-    //     ]);
-
-    //     if (empty($users)) {
-    //         return response()->json(['message' => 'No users found'], 404);
-    //     }
-
-    //     // Step 2: Handle pay period logic
-    //     if (isset($filterData['date_type']) && $filterData['date_type'] == 'pay_period_ids') {
-    //         unset($filterData['start_date'], $filterData['end_date']);
-    //     } else {
-    //         unset($filterData['pay_period_ids']);
-    //     }
-
-    //     // Step 3: Process pay period IDs
-    //     if (isset($filterData['pay_period_ids'])) {
-    //         $payPeriodIds = array_map(function ($id) {
-    //             return trim($id, '-');
-    //         }, $filterData['pay_period_ids']);
-    //         $filterData['pay_period_ids'] = $payPeriodIds;
-    //     }
-
-    //     // Step 4: Get the greatest end date of selected pay periods
-    //     $endDate = $this->getEndDate($filterData);
-
-    //     // Step 5: Get user wages
-    //     $userWages = $this->getUserWages($users->pluck('id')->toArray(), $endDate);
-
-    //     // Step 6: Get user date totals
-    //     $userDateTotals = $this->getUserDateTotals(1, $filterData);
-
-    //     // Step 7: Get schedules
-    //     $schedules = $this->getSchedules(1, $filterData);
-
-    //     // Step 8: Get punches (if detailed timesheet is requested)
-    //     $punches = [];
-    //     if ($request->action == 'display_detailed_timesheet') {
-    //         $punches = $this->getPunches(1, $filterData);
-    //     }
-
-    //     // Step 9: Get verified timesheets
-    //     $verifiedTimeSheets = $this->getVerifiedTimeSheets(1, $filterData);
-
-    //     // Step 10: Compile the final report data
-    //     $reportData = $this->compileReportData($users, $userDateTotals, $schedules, $userWages, $verifiedTimeSheets, $punches);
-
-    //     return response()->json(['data' => $reportData], 200);
-    // }
+        // Pass it to the view
+        return view('reports.attendance_report.report', compact('dataList'));
+    }
 
     public function getReportData(Request $request)
     {
@@ -119,12 +72,42 @@ class AttendanceReportController extends Controller
             $currentCompany = 1; // Replace with dynamic company ID if needed
             $filterData = $request->all();
 
+            // Extract parameters and process them if necessary
+            $excludeUserIds = $request->exclude_user_ids ? explode(',', $request->exclude_user_ids) : [];
+            $includeUserIds = $request->include_user_ids ? explode(',', $request->include_user_ids) : [];
+            $userStatusIds = $request->user_status_ids ? explode(',', $request->user_status_ids) : [];
+            $groupIds = $request->group_ids ? explode(',', $request->group_ids) : [];
+            $branchIds = $request->branch_ids ? explode(',', $request->branch_ids) : [];
+            $departmentsIds = $request->department_ids ? explode(',', $request->department_ids) : [];
+            $userTitleIds = $request->user_title_ids ? explode(',', $request->user_title_ids) : [];
+
+
             // Step 1: Get users based on company and filter criteria
-            $users = $this->common->commonGetAll('emp_employees', '*', [], [
-                'company_id' => $currentCompany,
-                'id' => $filterData['include_user_ids'] ?? null,
-                // 'exclude_id' => $filterData['exclude_user_ids'] ?? null,
-            ]);
+            $usersQuery = DB::table('emp_employees')
+                ->where('company_id', $currentCompany)
+                ->when(!empty($excludeUserIds), function ($query) use ($excludeUserIds) {
+                    return $query->whereNotIn('id', $excludeUserIds);
+                })
+                ->when(!empty($includeUserIds), function ($query) use ($includeUserIds) {
+                    return $query->whereIn('id', $includeUserIds);
+                })
+                ->when(!empty($userStatusIds), function ($query) use ($userStatusIds) {
+                    return $query->whereIn('user_status', $userStatusIds);
+                })
+                ->when(!empty($groupIds), function ($query) use ($groupIds) {
+                    return $query->whereIn('user_group_id', $groupIds);
+                })
+                ->when(!empty($branchIds), function ($query) use ($branchIds) {
+                    return $query->whereIn('default_branch_id', $branchIds);
+                })
+                ->when(!empty($departmentsIds), function ($query) use ($departmentsIds) {
+                    return $query->whereIn('default_department_id', $departmentsIds);
+                })
+                ->when(!empty($userTitleIds), function ($query) use ($userTitleIds) {
+                    return $query->whereIn('designation_id', $userTitleIds);
+                });
+
+            $users = $usersQuery->get();
 
             if (empty($users)) {
                 return response()->json(['message' => 'No users found'], 404);
@@ -212,14 +195,14 @@ class AttendanceReportController extends Controller
 
     private function getUserDateTotals($companyId, array $filterData)
     {
-
         $joinsArr = ['user_date' => ['user_date.id', '=', 'user_date_total.user_date_id']];
 
         $whereArr = [
             'user_date.user_id' => $filterData['include_user_ids'] ?? null,
             'user_date.pay_period_id' => $filterData['pay_period_ids'] ?? null
         ];
-        return $this->common->commonGetAll('user_date_total', '*', $joinsArr, $whereArr);
+        $dateTotalData = $this->common->commonGetAll('user_date_total', '*', $joinsArr, $whereArr);
+        return $dateTotalData;
     }
 
     private function getSchedules($companyId, array $filterData)
@@ -243,7 +226,6 @@ class AttendanceReportController extends Controller
             'user_date.pay_period_id' => $filterData['pay_period_ids'] ?? null
         ];
         return $this->common->commonGetAll('punch', '*', $joinsArr, $whereArr);
-
     }
 
     private function getVerifiedTimeSheets($companyId, array $filterData)
@@ -255,30 +237,6 @@ class AttendanceReportController extends Controller
         }
         return [];
     }
-
-    // private function compileReportData($users, $userDateTotals, $schedules, $userWages, $verifiedTimeSheets, $punches)
-    // {
-    //     $reportData = [];
-
-    //     foreach ($users as $user) {
-    //         $userData = [
-    //             'user_id' => $user->id,
-    //             'first_name' => $user->first_name,
-    //             'last_name' => $user->last_name,
-    //             'full_name' => $user->full_name,
-    //             'employee_number' => $user->employee_number,
-    //             'verified_time_sheet' => $this->getVerifiedTimeSheetStatus($user->id, $verifiedTimeSheets),
-    //             'data' => [],
-    //         ];
-
-    //         // Add user date totals, schedules, and punches to the report data
-    //         // (Logic for compiling this data can be added here)
-
-    //         $reportData[] = $userData;
-    //     }
-
-    //     return $reportData;
-    // }
 
     private function compileReportData($users, $userDateTotals, $schedules, $userWages, $verifiedTimeSheets, $punches)
     {
@@ -322,8 +280,8 @@ class AttendanceReportController extends Controller
                 return [
                     'date_stamp' => $dateTotal->date_stamp,
                     'total_time' => $dateTotal->total_time,
-                    'status_id' => $dateTotal->status_id,
-                    'type_id' => $dateTotal->type_id,
+                    // 'status_id' => $dateTotal->status_id,
+                    // 'type_id' => $dateTotal->type_id,
                 ];
             })
             ->values()
