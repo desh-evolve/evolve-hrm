@@ -16,9 +16,9 @@ class EmployeeGroupController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view employee group', ['only' => [
-            'index', 
-            'getAllEmployeeGroups', 
-            'getEmployeeGroupById', 
+            'index',
+            'getAllEmployeeGroups',
+            'getEmployeeGroupById',
         ]]);
         $this->middleware('permission:create employee group', ['only' => ['createEmployeeGroup']]);
         $this->middleware('permission:update employee group', ['only' => ['updateEmployeeGroup']]);
@@ -52,9 +52,9 @@ class EmployeeGroupController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Group  added successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Employee Group added successfully' , 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed adding Group', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed adding Employee Group', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -82,9 +82,9 @@ class EmployeeGroupController extends Controller
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
                 if ($insertId) {
-                    return response()->json(['status' => 'success', 'message' => 'Group updated successfully' , 'data' => ['id' => $insertId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Employee Group updated successfully' , 'data' => ['id' => $insertId]], 200);
                 } else {
-                    return response()->json(['status' => 'error', 'message' => 'Failed updating Group', 'data' => []], 500);
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating Employee Group', 'data' => []], 500);
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {

@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm" id="userDropdown">
+                            <select class="form-select" id="userDropdown">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>

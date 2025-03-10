@@ -1,5 +1,5 @@
 <x-app-layout :title="'Input Example'">
-   
+
     <x-slot name="header">
         <h4 class="mb-sm-0">{{ __('Location Management') }}</h4>
     </x-slot>
@@ -9,7 +9,7 @@
             background-color: #ddd;
         }
     </style>
-    
+
     <div class="row">
         <div class="col-lg-4">
             <div class="card">
@@ -102,7 +102,7 @@
             $('#city_list').html('<p>Click on a province to see cities</p>');
             $('.country_click').closest('.card-header').css({'background-color': 'white'});
             $(this).closest('.card-header').css({'background-color': '#ddd'});
-            
+
             await renderProvinceTable(country_id);
         });
 
@@ -122,7 +122,7 @@
         async function renderCountryTable(){
             $('#add_new_province_btn').hide();
             $('#add_new_city_btn').hide();
-            
+
             let list = '';
             $('#country_list').html('<p>Loading...</p>');
             let items = await commonFetchData('/location/countries');
@@ -168,7 +168,7 @@
         async function renderProvinceTable(country_id){
             $('#add_new_province_btn').show();
             $('#add_new_city_btn').hide();
-            
+
             let list = '';
             let items = await commonFetchData(`/location/provinces/${country_id}`);
 
@@ -256,19 +256,23 @@
         //=================================================================================================
 
         $(document).on('click', '#add_new_country_btn', function(){
+            resetForm();
             formModal('country');
         });
 
         $(document).on('click', '#add_new_province_btn', function(){
+            resetForm();
             formModal('province');
         });
 
         $(document).on('click', '#add_new_city_btn', function(){
+            resetForm();
             formModal('city');
         });
 
         // edit click event
         $(document).on('click', '.click_edit_country', async function(){
+            resetForm();
             let id = $(this).closest('.card-header').find('.country_click').attr('country_id');
             let url = `/location/country/${id}`;
             let values = await commonFetchData(url);
@@ -276,6 +280,7 @@
         });
 
         $(document).on('click', '.click_edit_province', async function(){
+            resetForm();
             let id = $(this).closest('.card-header').find('.province_click').attr('province_id');
             let url = `/location/province/${id}`;
             let values = await commonFetchData(url);
@@ -283,6 +288,7 @@
         });
 
         $(document).on('click', '.click_edit_city', async function(){
+            resetForm();
             let id = $(this).closest('.card-header').find('.city_click').attr('city_id');
             let url = `/location/city/${id}`;
             let values = await commonFetchData(url);
@@ -341,7 +347,7 @@
             const type = $('#location-type').val();
             const location_id = $('#location-id').val();
             const formData = new FormData();
-            
+
             const typeToUrl = {
                 country: { create: '/location/country/create', update: `/location/country/update/${location_id}` },
                 province: { create: '/location/province/create', update: `/location/province/update/${location_id}` },
@@ -365,7 +371,7 @@
                     return;
                 }else{
                     $('#error-msg').html('');
-                }  
+                }
                 formData.append(data[key], value);
             }
 
@@ -447,6 +453,14 @@
             await deleteLocation('city', id, province_id);
         });
 
+
+    function resetForm() {
+        $('#location-type').val('');
+        $('#location-id').val('');
+        $('#location-form-title').html('');
+        $('#location-form-body').html('');
+        $('#error-msg').html('');
+    }
 
     </script>
 </x-app-layout>

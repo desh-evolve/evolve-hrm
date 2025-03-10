@@ -18,7 +18,7 @@
                         <strong> Policies highlighted in yellow may not be active yet because they are not assigned to a <u><a href="/policy/policy_group">Policy Group</a></u>. </strong>
                     </div>
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -51,22 +51,22 @@
                         showWarning = showWarning ? true : accr.policy_groups.length === 0 ? true : false;
                         list += `
                             <tr accrual_policy_control_id="${accr.id}" class="${accr.policy_groups.length > 0 ? '' : 'bg-warning'}">
-                                <td>${i+1}</td>    
-                                <td>${accr.name}</td>    
-                                <td>${accr.type == 'standard' ? 'Standard' : accr.type == 'calendar_based' ? 'Calendar Based' : 'Hour Based'}</td>    
+                                <td>${i+1}</td>
+                                <td>${accr.name}</td>
+                                <td>${accr.type == 'standard' ? 'Standard' : accr.type == 'calendar_based' ? 'Calendar Based' : 'Hour Based'}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_accr_pol" title="Edit Accrual Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_accr_pol" title="Delete Accrual Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
                 }else{
-                    list += `<tr><td colspan="3" class="text-center">No Accrual Policies Found!</td></tr>`;
+                    list += `<tr><td colspan="5" class="text-center">No Accrual Policies Found!</td></tr>`;
                 }
 
                 if(showWarning){
@@ -84,9 +84,13 @@
 
         $(document).on('click', '.click_edit_accr_pol', function(){
             let accr_pol_id = $(this).closest('tr').attr('accrual_policy_control_id');
-            
+            let title = `Edit Accrual Policy`;
+
+            localStorage.setItem('editTitle', title);
+
             window.location.href = '/policy/accrual/form?id='+accr_pol_id;
-        })
+        });
+
 
         $(document).on('click', '.click_delete_accr_pol', async function(){
             let accr_pol_id = $(this).closest('tr').attr('accrual_policy_control_id');
@@ -101,7 +105,7 @@
             } catch (error) {
                 console.error(`Error during accrual policy deletion:`, error);
             }
-        })
+        });
 
 
     </script>

@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
 
 class HolidayPolicyController extends Controller
 {
     private $common = null;
-    
+
     public function __construct()
     {
         $this->middleware('permission:view holiday policy', ['only' => ['index', 'getAllHolidayPolicies']]);
@@ -95,7 +97,7 @@ class HolidayPolicyController extends Controller
                 // Validate request
                 $request->validate([
                     'name' => 'required|string|max:250',
-                    'type' => 'required|string|max:255',
+                    'types' => 'required|string|max:255',
                     'default_schedule_status' => 'required|string|max:255',
                     'minimum_employed_days' => 'required|integer',
                     'minimum_worked_period_days' => 'nullable|integer',
@@ -123,13 +125,13 @@ class HolidayPolicyController extends Controller
                 if (!empty($request->holiday_name) && count($request->holiday_name) !== count($request->holiday_date)) {
                     return response()->json(['error' => 'Mismatch between holiday names and dates'], 400);
                 }
-                
+
                 $table = 'holiday_policy';
-                
+
                 $inputArr = [
                     'company_id' => 1, // Replace with dynamic company ID if applicable
                     'name' => $request->name,
-                    'type' => $request->type,
+                    'type' => $request->types,
                     'default_schedule_status' => $request->default_schedule_status,
                     'minimum_employed_days' => $request->minimum_employed_days,
                     'minimum_worked_period_days' => $request->minimum_worked_period_days,
@@ -152,7 +154,7 @@ class HolidayPolicyController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
-    
+
                 $holidayPolicyId = $this->common->commonSave($table, $inputArr);
                 // Process holiday_name and holiday_date arrays
                 if (!empty($request->holiday_names)) {
@@ -174,8 +176,8 @@ class HolidayPolicyController extends Controller
                         }
                     }
                 }
-                
-    
+
+
                 if ($holidayPolicyId) {
                     return response()->json(['status' => 'success', 'message' => 'Holiday policy created successfully', 'data' => ['id' => $holidayPolicyId]], 200);
                 } else {
@@ -186,7 +188,8 @@ class HolidayPolicyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
+
+
     public function updateHolidayPolicy(Request $request, $id)
     {
         try {
@@ -194,7 +197,7 @@ class HolidayPolicyController extends Controller
                 // Validate request
                 $request->validate([
                     'name' => 'required|string|max:250',
-                    'type' => 'required|string|max:255',
+                    'types' => 'required|string|max:255',
                     'default_schedule_status' => 'required|string|max:255',
                     'minimum_employed_days' => 'required|integer',
                     'minimum_worked_period_days' => 'nullable|integer',
@@ -217,12 +220,13 @@ class HolidayPolicyController extends Controller
                     'holiday_names' => 'nullable|array',
                     'holiday_dates' => 'nullable|array',
                 ]);
-    
+
                 $table = 'holiday_policy';
                 $idColumn = 'id';
+
                 $inputArr = [
                     'name' => $request->name,
-                    'type' => $request->type,
+                    'type' => $request->types,
                     'default_schedule_status' => $request->default_schedule_status,
                     'minimum_employed_days' => $request->minimum_employed_days,
                     'minimum_worked_period_days' => $request->minimum_worked_period_days,
@@ -232,7 +236,7 @@ class HolidayPolicyController extends Controller
                     'include_paid_absence_time' => $request->include_paid_absence_time ?? 0,
                     'minimum_time' => $request->minimum_time,
                     'maximum_time' => $request->maximum_time,
-                    'time' => $request->time,
+                    'time' => $request->time ?? 0,
                     'absence_policy_id' => $request->absence_policy_id,
                     'round_interval_policy_id' => $request->round_interval_policy_id,
                     'force_over_time_policy' => $request->force_over_time_policy ?? 0,
@@ -244,7 +248,7 @@ class HolidayPolicyController extends Controller
                     'average_days' => $request->average_days,
                     'updated_by' => Auth::user()->id,
                 ];
-    
+
                 $updatedId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
                  // Update holidays
@@ -287,7 +291,7 @@ class HolidayPolicyController extends Controller
                     ->whereNotIn('id', $updatedHolidayIds)
                     ->delete();
                 }
-    
+
                 if ($updatedId) {
                     return response()->json(['status' => 'success', 'message' => 'Holiday policy updated successfully', 'data' => ['id' => $updatedId]], 200);
                 } else {
@@ -298,8 +302,6 @@ class HolidayPolicyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
-    
 
 
 }

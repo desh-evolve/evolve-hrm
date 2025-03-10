@@ -11,8 +11,15 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-0">Add Exception Policy</h5>
+                        <h5 class="mb-0 title-form flex-grow-1">Add Exception Policy</h5>
                     </div>
+
+                    <div class="justify-content-md-end">
+                        <div class="d-flex justify-content-end">
+                            <a href="/policy/exception" class="btn btn-danger">Back</a>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="card-body">
                     <form>
@@ -21,7 +28,7 @@
                             <input type="text" class="form-control" id="ex_pol_name" placeholder="Enter Exception Policy Name Here" required />
                         </div>
                         <table class="table table-bordered">
-                            <thead class="bg-primary text-white"/>
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th class="col">Active</th>
                                     <th class="col">Code</th>
@@ -46,7 +53,9 @@
         </div>
     </div>
 
+
     <script>
+
         const ex_pol = [
             { active: 1, code: 'S1', name: 'Unscheduled Absence', grace: '', severity: 'low', watch_window: '', email_notification: 'both' },
             { active: 0, code: 'S2', name: 'Not Scheduled', grace: '', severity: 'low', watch_window: '', email_notification: 'none' },
@@ -76,6 +85,12 @@
 
 
         $(document).ready(function() {
+            // Chenge title
+            let storedTitle = localStorage.getItem('editTitle');
+            if (storedTitle) {
+                $('.title-form').html(storedTitle);
+                localStorage.removeItem('editTitle');
+            }
 
             <?php if (isset($_GET['id'])): ?>
                 let exception_policy_id = <?= json_encode($_GET['id']); ?>;
@@ -94,9 +109,9 @@
         function createRowHTML(ex) {
             return `
                 <tr class="exception-policy-row">
-                    <td><input type="checkbox" class="active-checkbox" ${ex.active ? 'checked' : ''} /></td>    
-                    <td>${ex.code}</td>    
-                    <td>${ex.name}</td>    
+                    <td><input type="checkbox" class="active-checkbox" ${ex.active ? 'checked' : ''} /></td>
+                    <td>${ex.code}</td>
+                    <td>${ex.name}</td>
                     <td>
                         <select class="severity-dropdown">
                             <option value="low" ${ex.severity === 'low' ? 'selected' : ''}>Low</option>
@@ -104,9 +119,9 @@
                             <option value="high" ${ex.severity === 'high' ? 'selected' : ''}>High</option>
                             <option value="critical" ${ex.severity === 'critical' ? 'selected' : ''}>Critical</option>
                         </select>
-                    </td>    
-                    <td>${ex.grace ? `<input type="text" class="grace-input" value="${ex.grace}" />` : ''}</td>    
-                    <td>${ex.watch_window ? `<input type="text" class="watch-window-input" value="${ex.watch_window}" />` : ''}</td>    
+                    </td>
+                    <td>${ex.grace ? `<input type="text" class="grace-input" value="${ex.grace}" />` : ''}</td>
+                    <td>${ex.watch_window ? `<input type="text" class="watch-window-input" value="${ex.watch_window}" />` : ''}</td>
                     <td>
                         <select class="email-notification-dropdown">
                             <option value="none" ${ex.email_notification === 'none' ? 'selected' : ''}>None</option>
@@ -114,7 +129,7 @@
                             <option value="supervisor" ${ex.email_notification === 'supervisor' ? 'selected' : ''}>Supervisor</option>
                             <option value="both" ${ex.email_notification === 'both' ? 'selected' : ''}>Both</option>
                         </select>
-                    </td>    
+                    </td>
                 </tr>
             `;
         }
@@ -133,6 +148,7 @@
         async function getUpdateData(exception_policy_id){
 
             $('#exception_id').val(exception_policy_id); // Set the ID in the hidden field
+            console.log('Exception ID:', $('#exception_id').val());
 
             try {
                 // Fetch the exception policy data
@@ -143,11 +159,11 @@
                 let x = ex_pol;
                 if (data) {
                     $('#ex_pol_name').val(data.name);
-                    
+
                     x = ex_pol.map((val, i) => {
                         // Filter matching exceptions
-                        let exception = data.exceptions.find((e) => e.type_id === val.code); 
-                        
+                        let exception = data.exceptions.find((e) => e.type_id === val.code);
+
                         let res = val;
                         if (exception) {
                             res = {
@@ -161,13 +177,13 @@
                             };
                         }
 
-                        return res; 
+                        return res;
                     }).filter(Boolean); // Remove null entries
                 }
 
                 //load update data
                 populateFormData(x);
-                
+
             } catch (error) {
                 console.error('Error while fetching holiday policy data:', error);
                 $('#error-msg').html('<p class="text-danger">Failed to load data. Please try again.</p>');
@@ -223,10 +239,10 @@
             formData.append('policy_data', JSON.stringify(formDataArr));
 
             const exception_id = $('#exception_id').val();
-            
+
             let createUrl = '/policy/exception/create';
             let updateUrl = `/policy/exception/update/${exception_id}`;
-            
+
             const isUpdating = Boolean(exception_id);
             const url = isUpdating ? updateUrl : createUrl;
             const method = isUpdating ? 'PUT' : 'POST';
@@ -249,6 +265,8 @@
                 $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
             }
         }
+
+
 
 
     </script>

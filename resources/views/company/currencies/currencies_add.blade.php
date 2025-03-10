@@ -29,7 +29,7 @@
 
                     <div class="justify-content-md-end">
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">New Currencies<i class="ri-add-line"></i></button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1" id="add_new_btn">New Currencies <i class="ri-add-line"></i></button>
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                             <input type="text" class="form-control" id="previous_rate" placeholder="Enter Previous Rate" value="">
                         </div>
 
-                        <div class="col-md-12">
+                        <div class="col-xxl-6 col-md-12 mb-3">
                             <label class="form-check-label" for="is_default">Is Default</label>&nbsp;&nbsp;
                             <input class="form-check-input" type="checkbox" id="is_default" name="is_default" value="1">
                         </div>

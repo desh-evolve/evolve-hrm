@@ -16,10 +16,10 @@ class EmployeePreferencesController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view user promotion', ['only' => ['']]);
-        $this->middleware('permission:create user promotion', ['only' => ['']]);
-        $this->middleware('permission:update user promotion', ['only' => ['']]);
-        $this->middleware('permission:delete user promotion', ['only' => ['']]);
+        $this->middleware('permission:view employee preference', ['only' => ['']]);
+        $this->middleware('permission:create employee preference', ['only' => ['']]);
+        $this->middleware('permission:update employee preference', ['only' => ['']]);
+        $this->middleware('permission:delete employee preference', ['only' => ['']]);
 
         $this->common = new CommonModel();
     }

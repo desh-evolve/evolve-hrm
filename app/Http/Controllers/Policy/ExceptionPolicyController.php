@@ -12,7 +12,7 @@ use App\Models\CommonModel;
 class ExceptionPolicyController extends Controller
 {
     private $common = null;
-    
+
     public function __construct()
     {
         $this->middleware('permission:view exception policy', ['only' => ['index', 'getAllExceptionPolicies']]);
@@ -80,13 +80,13 @@ class ExceptionPolicyController extends Controller
     {
         try {
             return DB::transaction(function () use ($request) {
-             
+
                 // Validate the request
                 $request->validate([
                     'name' => 'required|string|max:250',
                     'policy_data' => 'required|string',
                 ]);
-                
+
                 $policyData = json_decode($request->policy_data, true);
 
                 // Insert into exception_policy_control
@@ -97,7 +97,7 @@ class ExceptionPolicyController extends Controller
                     'updated_by' => Auth::user()->id,
                 ];
                 $exceptionPolicyControlId = $this->common->commonSave('exception_policy_control', $controlData);
-    
+
                 // Insert policy data into exception_policy
                 foreach ($policyData as $pol) {
                     // Prepare the policy array with all the necessary fields
@@ -113,7 +113,7 @@ class ExceptionPolicyController extends Controller
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id
                     ];
-                
+
                     // Save the policy
                     $this->common->commonSave('exception_policy', $policy);
 
@@ -129,20 +129,20 @@ class ExceptionPolicyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
+
 
     public function updateExceptionPolicy(Request $request, $id)
     {
 
         try {
             return DB::transaction(function () use ($request, $id) {
-             
+
                 // Validate the request
                 $request->validate([
                     'name' => 'required|string|max:250',
                     'policy_data' => 'required|string',
                 ]);
-                
+
                 $policyData = json_decode($request->policy_data, true);
 
                 // Insert into exception_policy_control
@@ -151,7 +151,7 @@ class ExceptionPolicyController extends Controller
                     'updated_by' => Auth::user()->id,
                 ];
                 $exceptionPolicyControlId = $this->common->commonSave('exception_policy_control', $controlData, $id, 'id');
-    
+
                 // Delete existing policies tied to this control ID before adding new ones
                 DB::table('exception_policy')->where('exception_policy_control_id', $id)->delete();
 
@@ -170,14 +170,14 @@ class ExceptionPolicyController extends Controller
                         'created_by' => Auth::user()->id,
                         'updated_by' => Auth::user()->id
                     ];
-                
+
                     // Save the policy
                     $this->common->commonSave('exception_policy', $policy);
 
                 }
 
                 if($exceptionPolicyControlId){
-                    return response()->json(['status' => 'success', 'message' => 'Exception policy created successfully', 'data' => ['id' => $exceptionPolicyControlId]], 200);
+                    return response()->json(['status' => 'success', 'message' => 'Exception policy updated successfully', 'data' => ['id' => $exceptionPolicyControlId]], 200);
                 }else{
                     return response()->json(['status' => 'error', 'message' => 'Something went wrong', 'data' => []], 500);
                 }
@@ -186,7 +186,7 @@ class ExceptionPolicyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
-    
+
+
 
 }

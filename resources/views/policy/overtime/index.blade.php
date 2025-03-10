@@ -39,7 +39,7 @@
     <div id="overtime-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header p-3 bg-light">
                     <h4 class="modal-title" id="overtime-form-title">Add Overtime Policy</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -107,7 +107,7 @@
                                 <input type="text" class="form-control" id="accrual_rate" placeholder="Select Accrual Rate" value="1.00">
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="overtime_id" value=""></button>
@@ -136,18 +136,18 @@
                         let time = convertSecondsToHoursAndMinutes(ot.trigger_time);
                         list += `
                             <tr overtime_policy_id="${ot.id}" class="${ot.policy_groups.length > 0 ? '' : 'bg-warning'}">
-                                <td>${i+1}</td>    
-                                <td>${ot.name}</td>    
-                                <td>${ot.type}</td>    
-                                <td>${time}</td>    
+                                <td>${i+1}</td>
+                                <td>${ot.name}</td>
+                                <td>${ot.type}</td>
+                                <td>${time}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_ot_pol" title="Edit Overtime Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_ot_pol" title="Delete Overtime Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
@@ -235,11 +235,17 @@
 
         $(document).on('click', '#new_overtime_click', function(){
             resetForm();
+            title = `Add Overtime Policy`;
+            $('.modal-title').html(title);
+
             $('#overtime-form-modal').modal('show');
         })
 
         $(document).on('click', '.click_edit_ot_pol', async function(){
             resetForm();
+            title = `Edit Overtime Policy`;
+            $('.modal-title').html(title);
+
             let overtime_policy_id = $(this).closest('tr').attr('overtime_policy_id');
 
             $('#overtime_id').val(overtime_policy_id); // Set the ID in the hidden field
@@ -248,7 +254,7 @@
                 // Fetch the overtime policy data
                 let response = await commonFetchData(`/policy/overtime/${overtime_policy_id}`);
                 let data = response[0]; // Extract the first object
-                
+
                 if (data) {
 
                     let trigger_time = convertSecondsToHoursAndMinutes(data.trigger_time || 0);
@@ -293,7 +299,7 @@
             formData.append('pay_stub_entry_account_id', $('#pay_stub_entry_account_id').val() || 0);
             formData.append('accrual_policy_id', $('#accrual_policy_id').val() || 0);
             formData.append('accrual_rate', $('#accrual_rate').val() || 0);
-            
+
             let createUrl = `/policy/overtime/create`;
             let updateUrl = `/policy/overtime/update/${overtime_id}`;
 

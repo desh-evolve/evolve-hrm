@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm" id="userDropdown">
+                            <select class="form-select" id="userDropdown">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
@@ -105,9 +105,9 @@
                             <label for="gender" class="form-label mb-1 req">Gender</label>
                             <select class="form-select" id="gender">
                                 <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
                             </select>
                         </div>
                         <div class="col-xxl-4 col-md-6 mb-3">
@@ -162,7 +162,7 @@
 
 <script>
 
-    let userId = "{{ $user->id }}";
+    let userId = "{{ $user->user_id }}";
 
 
     $(document).ready(async function() {
@@ -201,8 +201,8 @@
                 dropdown.append('<option value="">Select Employee</option>'); // Add a default option
 
                 users.forEach(user => {
-                    let isSelected = user.id == userId ? "selected" : ""; // Pre-select if IDs match
-                    let option = `<option value="${user.id}" ${isSelected}>${user.first_name} ${user.last_name}</option>`;
+                    let isSelected = user.user_id == userId ? "selected" : ""; // Pre-select if IDs match
+                    let option = `<option value="${user.user_id}" ${isSelected}>${user.first_name} ${user.last_name}</option>`;
                     dropdown.append(option);
 
                     if (isSelected) {
@@ -239,14 +239,14 @@
                     list += `
                         <tr family_id="${item.id}">
                             <td>${i + 1}</td>
-                            <td>${item.name}</td>
-                            <td>${item.relationship}</td>
-                            <td>${item.dob}</td>
-                            <td>${item.nic}</td>
-                            <td>${item.gender}</td>
-                            <td>${item.contact_1}</td>
-                            <td>${item.address_1}</td>
-                            <td>${item.notes}</td>
+                            <td>${item.name || 'N/A'}</td>
+                            <td>${item.relationship || 'N/A'}</td>
+                            <td>${item.dob || 'N/A'}</td>
+                            <td>${item.nic || 'N/A'}</td>
+                            <td>${item.gender || 'N/A'}</td>
+                            <td>${item.contact_1 || 'N/A'}</td>
+                            <td>${item.address_1 || 'N/A'}</td>
+                            <td>${item.notes || 'N/A'}</td>
                             <td class="text-capitalize">${item.status === 'active'
                                 ? `<span class="badge border border-success text-success">${item.status}</span>`
                                 : `<span class="badge border border-warning text-warning">${item.status}</span>`}</td>
@@ -354,7 +354,7 @@
                 $('#relationship').val(family_data?.relationship || '');
                 $('#dob').val(family_data?.dob || '');
                 $('#nic').val(family_data?.nic || '');
-                $('#gender').val(family_data?.gender || '');
+                $('#gender').val(family_data?.gender || '').trigger('change');
                 $('#contact_1').val(family_data?.contact_1 || '');
                 $('#contact_2').val(family_data?.contact_2 || '');
                 $('#address_1').val(family_data?.address_1 || '');
@@ -372,6 +372,7 @@
                 $('#user-family-form-modal').modal('show');
             }
         });
+
 
         $(document).on('click', '.click-delete-user-family', async function() {
             let family_id = $(this).closest('tr').attr('family_id');

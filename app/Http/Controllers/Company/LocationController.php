@@ -16,14 +16,14 @@ class LocationController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view location', ['only' => [
-            'index', 
-            'getAllCountries', 
-            'getCountryByCountryId', 
+            'index',
+            'getAllCountries',
+            'getCountryByCountryId',
             'getAllProvinces',
-            'getProvinceByProvinceId', 
-            'getProvincesByCountryId', 
+            'getProvinceByProvinceId',
+            'getProvincesByCountryId',
             'getAllCities',
-            'getCityByCityId', 
+            'getCityByCityId',
             'getCitiesByProvinceId'
         ]]);
         $this->middleware('permission:create location', ['only' => ['createCountry', 'createProvince', 'createCity']]);
@@ -42,7 +42,7 @@ class LocationController extends Controller
     //================================================================================================================================
     // country
     //================================================================================================================================
-    
+
     //desh(2024-10-18)
     public function createCountry(Request $request)
     {
@@ -73,7 +73,7 @@ class LocationController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
- 
+
     //desh(2024-10-18)
     public function updateCountry(Request $request, $id)
     {
@@ -108,12 +108,13 @@ class LocationController extends Controller
     //desh(2024-10-18)
     public function deleteCountry($id)
     {
-        $whereArr = ['id' => $id];
-        $title = 'Country';
-        $table = 'loc_countries';
+        $res =  $this->common->commonDelete($id, ['id' => $id], 'Country', 'loc_countries');
+        $this->common->commonDelete($id, ['country_id' => $id], 'Province', 'loc_provinces');
+        $this->common->commonDelete($id, ['province_id' => $id], 'City', 'loc_cities');
 
-        return $this->common->commonDelete($id, $whereArr, $title, $table);
+        return $res;
     }
+
 
     //desh(2024-10-18)
     public function getAllCountries()
@@ -136,7 +137,7 @@ class LocationController extends Controller
     //================================================================================================================================
     // province
     //================================================================================================================================
-    
+
     //desh(2024-10-18)
     public function createProvince(Request $request)
     {
@@ -154,7 +155,7 @@ class LocationController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
-                
+
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {
@@ -167,7 +168,7 @@ class LocationController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
+
     //desh(2024-10-18)
     public function updateProvince(Request $request, $id)
     {
@@ -202,13 +203,13 @@ class LocationController extends Controller
     //desh(2024-10-18)
     public function deleteProvince($id)
     {
-        $whereArr = ['id' => $id];
-        $title = 'Province';
-        $table = 'loc_provinces';
+        $res = $this->common->commonDelete($id, ['id' => $id], 'Province', 'loc_provinces');
+        $this->common->commonDelete($id, ['province_id' => $id], 'City', 'loc_cities');
 
-        return $this->common->commonDelete($id, $whereArr, $title, $table);
+        return $res;
     }
 
+    
     //desh(2024-10-18)
     public function getAllProvinces()
     {
@@ -241,7 +242,7 @@ class LocationController extends Controller
     //================================================================================================================================
     // city
     //================================================================================================================================
-    
+
     //desh(2024-10-18)
     public function createCity(Request $request)
     {
@@ -259,7 +260,7 @@ class LocationController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
-                
+
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 if ($insertId) {

@@ -52,6 +52,7 @@ use App\Http\Controllers\Attendance\MassPunchController;
 use App\Http\Controllers\Attendance\TimeSheetController;
 use App\Http\Controllers\Attendance\LeavesController;
 use App\Http\Controllers\Accrual\AccrualBalanceController;
+use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\Request\RequestController;
 
 // Payroll
@@ -82,20 +83,29 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 */
+
 //==============================================================================================================================
-// Dashboard (temp)
+// Dashboard
 //==============================================================================================================================
 
 // Main Dashboard Route
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/temp', [DashboardController::class, 'index'])->name('dashboard.temp.index');
 
 Route::get('/dashboard/count/employee', [DashboardController::class, 'getAllEmployeeCount'])->name('dashboard.employee.count');
 Route::get('/dashboard/count/leave', [DashboardController::class, 'getAllLeaveCount'])->name('dashboard.leave.count');
 Route::get('/dashboard/messages', [DashboardController::class, 'getNewMessages'])->name('dashboard.new.messages');
 Route::get('/dashboard/requests', [DashboardController::class, 'getRequestsData'])->name('dashboard.requests');
+Route::get('/dashboard/leave_request', [DashboardController::class, 'getAllLeaveRequest'])->name('dashboard.leave_request');
 
+// Employee Dashboard Route
+Route::get('/employee/dashboard', [EmployeeDashboardController::class, 'index'])->name('employee.dashboard');
+Route::get('/employee/dashboard/count/employee', [EmployeeDashboardController::class, 'getAllEmployeeCount'])->name('employee.dashboard.count');
+Route::get('/employee/dashboard/count/leave', [EmployeeDashboardController::class, 'getAllLeaveCount'])->name('employee.dashboard.leave.count');
+Route::get('/employee/dashboard/messages', [EmployeeDashboardController::class, 'getMessages'])->name('employee.dashboard.new.messages');
+Route::get('/employee/dashboard/requests', [EmployeeDashboardController::class, 'getRequests'])->name('employee.dashboard.requests');
+Route::get('/employee/dashboard/leave_request', [EmployeeDashboardController::class, 'getLeaveRequest'])->name('employee.dashboard.leave_request');
 
+//================================================================================================================================
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -251,7 +261,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::put('/employee/bank/update/{id}', [EmployeeBankDetailsController::class, 'updateBankDetails'])->name('employee.bank.update');
     Route::delete('/employee/bank/delete/{id}', [EmployeeBankDetailsController::class, 'deleteBankDetails'])->name('employee.bank.delete');
     Route::get('/employee/bank/{id}', [EmployeeBankDetailsController::class, 'getBankDetailsByEmpId'])->name('employee.bank.getById');
-    Route::get('/company/allemplyee', [EmployeeBankDetailsController::class, 'getAllEmployee'])->name('company.employee.all');
 
      //==============================================================================================================================
     // User Preference
@@ -485,7 +494,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::get('/employee/list', [EmployeeController::class, 'employee_list'])->name('employee.list');
     Route::get('/employee/form', [EmployeeController::class, 'employee_form'])->name('employee.form');
     Route::get('/employee/profile/{emp}', [EmployeeController::class, 'employee_profile'])->name('employee.profile');
-    Route::get('/employee/my_profile/details', [EmployeeController::class, 'getLoggedInUserProfile'])->name('employee.my_profile.details');
+    Route::get('/employee/profile/details', [EmployeeController::class, 'getProfileDetailsUserId'])->name('employee.profile.details');
     Route::get('/employee/dropdown', [EmployeeController::class, 'getEmployeeDropdownData'])->name('employee.dropdown');
     Route::get('/employee/next_employee_id', [EmployeeController::class, 'getNextEmployeeId'])->name('employee.nextEmployeeId');
 
@@ -648,6 +657,8 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     //==============================================================================================================================
     // Company Info index
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
+    Route::get('/company/info/dropdown', [CompanyController::class, 'getCompanyDropdownData'])->name('company.info.dropdown');
+    Route::post('/company/create', [CompanyController::class, 'createCompany'])->name('company.create');
     Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
     Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
 

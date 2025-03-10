@@ -51,31 +51,31 @@
                         showWarning = showWarning ? true : prem.policy_groups.length === 0 ? true : false;
                         list += `
                             <tr premium_policy_control_id="${prem.id}" class="${prem.policy_groups.length > 0 ? '' : 'bg-warning'}">
-                                <td>${i+1}</td>    
-                                <td>${prem.name}</td>    
+                                <td>${i+1}</td>
+                                <td>${prem.name}</td>
                                 <td>${
-                                    prem.type == 'date_time' ? 'Date/Time' : 
-                                    prem.type == 'shift_differential' ? 'Shift Differential' : 
-                                    prem.type == 'meal_break' ? 'Meal/Break' : 
-                                    prem.type == 'callback' ? 'Callback' : 
-                                    prem.type == 'minimum_shift_time' ? 'Minimum Shift Time' : 
-                                    prem.type == 'holiday' ? 'Holiday' : 
-                                    prem.type == 'advanced' ? 'Advanced' : 
+                                    prem.type == 'date_time' ? 'Date/Time' :
+                                    prem.type == 'shift_differential' ? 'Shift Differential' :
+                                    prem.type == 'meal_break' ? 'Meal/Break' :
+                                    prem.type == 'callback' ? 'Callback' :
+                                    prem.type == 'minimum_shift_time' ? 'Minimum Shift Time' :
+                                    prem.type == 'holiday' ? 'Holiday' :
+                                    prem.type == 'advanced' ? 'Advanced' :
                                     'Error'}
-                                </td>    
+                                </td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_prem_pol" title="Edit Premium Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_prem_pol" title="Delete Premium Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
                 }else{
-                    list += `<tr><td colspan="3" class="text-center">No Premium Policies Found!</td></tr>`;
+                    list += `<tr><td colspan="5" class="text-center">No Premium Policies Found!</td></tr>`;
                 }
 
                 if(showWarning){
@@ -93,7 +93,10 @@
 
         $(document).on('click', '.click_edit_prem_pol', function(){
             let prem_pol_id = $(this).closest('tr').attr('premium_policy_control_id');
-            
+            let title = `Edit Premium Policy`;
+
+            localStorage.setItem('editTitle', title);
+
             window.location.href = '/policy/premium/form?id='+prem_pol_id;
         })
 

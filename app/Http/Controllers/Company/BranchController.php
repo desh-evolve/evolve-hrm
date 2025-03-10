@@ -65,6 +65,7 @@ class BranchController extends Controller
                     'country_id' => 'required|integer',
                     'contact_1' => 'required|string|max:15',
                     'email' => 'required|email|unique:com_branches,email',
+                    'currency_id' => 'required|integer',
                     'branch_status' => 'required|string',
                 ]);
 
@@ -81,6 +82,7 @@ class BranchController extends Controller
                     'contact_1' => $request->contact_1,
                     'contact_2' => $request->contact_2,
                     'email' => $request->email,
+                    'currency_id' => $request->currency_id,
                     'status' => $request->branch_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
@@ -113,6 +115,7 @@ class BranchController extends Controller
                     'country_id' => 'required|integer',
                     'contact_1' => 'required|string|max:15',
                     'email' => 'required|email|unique:com_branches,email,' . $id,
+                    'currency_id' => 'required|integer',
                     'branch_status' => 'required|string',
                 ]);
 
@@ -130,6 +133,7 @@ class BranchController extends Controller
                     'contact_1' => $request->contact_1,
                     'contact_2' => $request->contact_2,
                     'email' => $request->email,
+                    'currency_id' => $request->currency_id,
                     'status' => $request->branch_status,
                     'updated_by' => Auth::user()->id,
                 ];
@@ -171,11 +175,11 @@ class BranchController extends Controller
             'loc_cities' => ['loc_cities.id', '=', 'com_branches.city_id'],
             'com_currencies' => ['com_currencies.id', '=', 'com_branches.currency_id']
         ];
-        $branches = $this->common->commonGetAll($table, $fields, $joinsArr, $whereArr = [], $exceptDel = true);
+        $branches = $this->common->commonGetAll($table, $fields, $joinsArr);
         return response()->json(['data' => $branches], 200);
     }
 
-    
+
     //desh(2024-10-21)
     public function getBranchByBranchId($id)
     {

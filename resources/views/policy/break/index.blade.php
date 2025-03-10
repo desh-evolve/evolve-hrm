@@ -39,8 +39,8 @@
     <div id="break-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="break-form-title">Add Break Policy</h4>
+                <div class="modal-header p-3 bg-light">
+                    <h4 class="modal-title" id="break-form-title"></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -125,7 +125,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="break_id" value=""></button>
@@ -137,6 +137,7 @@
         </div>
     </div>
 
+
     <script>
 
         $(document).ready(function(){
@@ -144,7 +145,7 @@
 
             $('.time_window_section').show();
             $('.punch_time_section').hide();
-        })
+        });
 
         async function getAllBreaks(){
             try {
@@ -157,23 +158,23 @@
                         let interval = convertSecondsToHoursAndMinutes(brk.window_length);
                         list += `
                             <tr break_policy_id="${brk.id}" class="${brk.policy_groups.length > 0 ? '' : 'bg-warning'}">
-                                <td>${i+1}</td>    
-                                <td>${brk.name}</td>    
-                                <td>${brk.type == 'auto_deduct' ? 'Auto Deduct' : brk.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>    
-                                <td>${interval}</td>    
+                                <td>${i+1}</td>
+                                <td>${brk.name}</td>
+                                <td>${brk.type == 'auto_deduct' ? 'Auto Deduct' : brk.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>
+                                <td>${interval}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_break_pol" title="Edit Break Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_break_pol" title="Delete Break Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
                 }else{
-                    list += `<tr><td colspan="3" class="text-center">No Break Policies Found!</td></tr>`;
+                    list += `<tr><td colspan="5" class="text-center">No Break Policies Found!</td></tr>`;
                 }
 
                 if(showWarning){
@@ -189,6 +190,8 @@
             }
         }
 
+
+        // Delete break policy
         $(document).on('click', '.click_delete_break_pol', async function(){
             let break_pol_id = $(this).closest('tr').attr('break_policy_id');
 
@@ -202,39 +205,61 @@
             } catch (error) {
                 console.error(`Error during break policy deletion:`, error);
             }
-        })
+        });
 
+
+        // Type selection
         $(document).on('change', '#type', function(){
-            if($(this).val() == 'normal'){
-                $('.checkbox_section').hide();
-                $('label[for="amount"]').text('Break Time');
-            } else {
-                $('.checkbox_section').show();
-                $('label[for="amount"]').text('Deduction/Addition Time');
-            }
-        })
+            let selectedType = $(this).val();
+            updateTypeFields(selectedType);
+        });
 
+        // Function to handle changes based on type selection
+        function updateTypeFields(selectedType) {
+            if (selectedType === 'normal') {
+                $('#include_break_punch_time').closest('.row').hide(); // Hide checkbox row
+                $('#include_multiple_breaks').closest('.row').hide(); // Hide checkbox row
+                $('label[for="amount"]').text('Break Time'); // Change label
+            } else {
+                $('#include_break_punch_time').closest('.row').show(); // Show checkbox row
+                $('#include_multiple_breaks').closest('.row').show(); // show checkbox row
+                $('label[for="amount"]').text('Deduction/Addition Time'); // Reset label
+            }
+        }
+
+
+        // Auto-Detect type selection
         $(document).on('change', '#auto_detect_type', function() {
-            if ($(this).val() == 'time_window') {
+            let selectedAutoDetect = $(this).val();
+            updateAutoDetectFields(selectedAutoDetect);
+        });
+
+        function updateAutoDetectFields(selectedAutoDetect) {
+            if (selectedAutoDetect === 'time_window') {
                 $('.time_window_section').show();
                 $('.punch_time_section').hide();
-            }else{
+            } else {
                 $('.time_window_section').hide();
                 $('.punch_time_section').show();
             }
-        });
+        }
 
-    </script>
 
-    <script>
-
+        // Add break policy
         $(document).on('click', '#new_break_click', function(){
             resetForm();
-            $('#break-form-modal').modal('show');
-        })
+            title = `Add Break Policy`;
+            $('.modal-title').html(title);
 
+            $('#break-form-modal').modal('show');
+        });
+
+
+        // Edit break policy
         $(document).on('click', '.click_edit_break_pol', async function(){
             resetForm();
+            title = `Edit Break Policy`;
+            $('.modal-title').html(title);
             let break_policy_id = $(this).closest('tr').attr('break_policy_id');
 
             $('#break_id').val(break_policy_id); // Set the ID in the hidden field
@@ -245,30 +270,22 @@
                 let data = response[0]; // Extract the first object
 
                 if (data) {
-                    let name = data.name;
-                    let type = data.type;
-                    let auto_detect_type = data.auto_detect_type;
-                    let include_break_punch_time = data.include_break_punch_time;
-                    let include_multiple_breaks = data.include_multiple_breaks;
-                    let trigger_time = convertSecondsToHoursAndMinutes(data.trigger_time || 0);
-                    let amount = convertSecondsToHoursAndMinutes(data.amount || 0);
-                    let start_window = convertSecondsToHoursAndMinutes(data.start_window || 0);
-                    let window_length = convertSecondsToHoursAndMinutes(data.window_length || 0);
-                    let minimum_punch_time = convertSecondsToHoursAndMinutes(data.minimum_punch_time || 0);
-                    let maximum_punch_time = convertSecondsToHoursAndMinutes(data.maximum_punch_time || 0);
-
                     // Populate form fields
                     $('#name').val(data.name || '');
-                    $('#type').val(data.type || '0').trigger('change');
-                    $('#auto_detect_type').val(data.auto_detect_type || '').trigger('change');
-                    $('#include_break_punch_time').prop('checked', include_break_punch_time === 1);
-                    $('#include_multiple_breaks').prop('checked', include_multiple_breaks === 1);
-                    $('#trigger_time').val(trigger_time);
-                    $('#amount').val(amount);
-                    $('#start_window').val(start_window);
-                    $('#window_length').val(window_length);
-                    $('#minimum_punch_time').val(minimum_punch_time);
-                    $('#maximum_punch_time').val(maximum_punch_time);
+                    $('#type').val(data.type || 'normal').trigger('change');
+                    $('#auto_detect_type').val(data.auto_detect_type || 'time_window').trigger('change');
+                    $('#include_break_punch_time').prop('checked', data.include_break_punch_time === 1);
+                    $('#include_multiple_breaks').prop('checked', data.include_multiple_breaks === 1);
+                    $('#trigger_time').val(convertSecondsToHoursAndMinutes(data.trigger_time || 0));
+                    $('#amount').val(convertSecondsToHoursAndMinutes(data.amount || 0));
+                    $('#start_window').val(convertSecondsToHoursAndMinutes(data.start_window || 0));
+                    $('#window_length').val(convertSecondsToHoursAndMinutes(data.window_length || 0));
+                    $('#minimum_punch_time').val(convertSecondsToHoursAndMinutes(data.minimum_punch_time || 0));
+                    $('#maximum_punch_time').val(convertSecondsToHoursAndMinutes(data.maximum_punch_time || 0));
+
+                    // Handle "Type" change manually for correct UI adjustments
+                    updateTypeFields(data.type);
+                    updateAutoDetectFields(data.auto_detect_type);
                 }
             } catch (error) {
                 console.error('Error while fetching break policy data:', error);
@@ -276,8 +293,10 @@
             }
 
             $('#break-form-modal').modal('show');
-        })
+        });
 
+
+        // Add & Edit Submit
         $(document).on('click', '#form_submit', async function (e) {
             e.preventDefault(); // Prevent default form submission
 
@@ -308,7 +327,7 @@
             formData.append('window_length', window_length);
             formData.append('minimum_punch_time', minimum_punch_time);
             formData.append('maximum_punch_time', maximum_punch_time);
-            
+
             let createUrl = `/policy/break/create`;
             let updateUrl = `/policy/break/update/${break_id}`;
 
@@ -336,6 +355,7 @@
             }
         });
 
+
         function resetForm(){
             $('#name').val('');
             $('#type').val('auto_deduct').trigger('change');
@@ -349,7 +369,11 @@
             $('#include_break_punch_time').prop('checked', false);
             $('#include_multiple_breaks').prop('checked', false);
             $('#break_id').val('');
+
+            updateTypeFields('auto_deduct');
+            updateAutoDetectFields('time_window');
         }
+
     </script>
 
 </x-app-layout>

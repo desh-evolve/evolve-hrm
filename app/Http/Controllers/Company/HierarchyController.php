@@ -76,47 +76,66 @@ class HierarchyController extends Controller
         return response()->json(['data' => $data], 200);
     }
 
+
     public function getHierarchyById($id)
     {
+        $idColumn = 'id';
+        $table = 'hierarchy_control';
+        $fields = [
+            'hierarchy_control.*',
+            'hierarchy_control.name AS hierarchy_name',
+            'hierarchy_control.id AS hierarchy_control_id',
+        ];
 
-        $pg = DB::table('hierarchy_control as hc')
-            ->select(
-                'hc.id as hierarchy_control_id',
-                'hc.name as hierarchy_name',
-                'hc.description',
-                'hc.status',
-                DB::raw("(
-            SELECT GROUP_CONCAT(ot.id SEPARATOR ',')
-            FROM hierarchy_object_type hot
-            INNER JOIN object_type ot ON hot.object_type_id = ot.id
-            WHERE hot.hierarchy_control_id = hc.id
-            ) as object_types_ids")
-            )
-            ->where('hc.id', $id)  // Filtering by hierarchy_control_id
-            ->first();
+        $connections = [
+            'hierarchy_object_type' => [
+                'con_fields' => ['hierarchy_object_type.object_type_id', 'hierarchy_object_type.hierarchy_control_id'],  // Selecting object type IDs
+                'con_where' => ['hierarchy_object_type.hierarchy_control_id' => 'id'],  // Link condition
+                'con_joins' => [
+                    'object_type' =>  ['object_type.id', '=', 'hierarchy_object_type.object_type_id']  // Join with object_type table
+                ],
+                'con_name' => 'hierarchy_objectTypes_details',  // Alias for response
+                'except_deleted' => 'all',
+            ],
 
-        // Convert object_types_ids to an array
-        $objectTypesIds = $pg->object_types_ids ? explode(',', $pg->object_types_ids) : [];
+            'hierarchy_user' => [
+                'con_fields' => ['hierarchy_user.hierarchy_control_id', 'hierarchy_user.user_id'],  // Selecting user IDs
+                'con_where' => ['hierarchy_user.hierarchy_control_id' => 'id'],
+                'con_joins' => [
+                    'emp_employees' => ['emp_employees.id', '=', 'hierarchy_user.user_id']  // Join with employees table
+                ],
+                'con_name' => 'hierarchy_users_details',
+                'except_deleted' => 'all',
+            ],
 
-        // Add objectTypesIds to the response data
-        $pg->object_types_ids = $objectTypesIds;
+            'hierarchy_level' => [
+                'con_fields' => ['hierarchy_level.id', 'hierarchy_level.hierarchy_control_id', 'hierarchy_level.level', 'hierarchy_level.user_id'],
+                'con_where' => ['hierarchy_level.hierarchy_control_id' => 'id'],
+                'con_joins' => [
+                    'emp_employees' => ['emp_employees.id', '=', 'hierarchy_level.user_id']  // Join with employees table
+                ],
+                'con_name' => 'hierarchy_levels_details',
+                'except_deleted' => true,
+            ],
+        ];
 
-        // dd('data', $pg);
-        return response()->json(['data' => $pg], 200);
+        // Fetch the hierarchy control details using a common method
+        $hierarchy = $this->common->commonGetById($id, $idColumn, $table, $fields, [], [], true, $connections);
+
+        return response()->json(['data' => $hierarchy], 200);
     }
+
 
     public function deleteHierarchy($id)
     {
         $whereArr = ['id' => $id];
-        $title = 'Pay Period Schedule';
+        $title = 'Hierarchy';
         $table = 'hierarchy_control';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
-    /**
-     * Create a new pay period schedule with associated policies.
-     */
+
     public function createHierarchy(Request $request)
     {
         try {
@@ -127,12 +146,11 @@ class HierarchyController extends Controller
                     'user_ids' => 'nullable|json',
                 ]);
 
-                // dd($request->all());
+
                 $hierarchyInput = [
                     'company_id' => 1, // Replace with dynamic company ID
                     'name' => $request->name,
                     'description' => $request->description,
-
                     'status' => $request->hierarchy_status,
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
@@ -156,9 +174,7 @@ class HierarchyController extends Controller
         }
     }
 
-    /**
-     * Update an existing pay period schedule with associated policies.
-     */
+
     public function updateHierarchy(Request $request, $id)
     {
         try {
@@ -173,12 +189,11 @@ class HierarchyController extends Controller
                     'company_id' => 1, // Replace with dynamic company ID
                     'name' => $request->name,
                     'description' => $request->description,
-
                     'status' => $request->hierarchy_status,
                     'updated_by' => Auth::user()->id,
                 ];
 
-                // Update the `pay_period_schedule` table
+
                 $updated = $this->common->commonSave('hierarchy_control', $hierarchyInput, $id, 'id');
 
                 if (!$updated) {
@@ -196,12 +211,7 @@ class HierarchyController extends Controller
         }
     }
 
-    /**
-     * Save associated policies for a pay period schedule.
-     *
-     * @param int $hierarchyControlId
-     * @param Request $request
-     */
+
 
     private function saveHierarchyUser($hierarchyControlId, $request)
     {
@@ -209,26 +219,35 @@ class HierarchyController extends Controller
             $empIds = json_decode($request->user_ids, true);
 
             if (is_array($empIds)) {
-                // Delete all existing users for this pay period schedule
+                // Delete all existing users 
                 DB::table('hierarchy_user')
                     ->where('hierarchy_control_id', $hierarchyControlId)
-                    ->whereIn('user_id', $empIds)
+                    ->whereNotIn('user_id', $empIds)
                     ->delete();
+
+                // Insert only the new user IDs that aren't already in the database for this hierarchy
+                $existingUsers = DB::table('hierarchy_user')
+                ->where('hierarchy_control_id', $hierarchyControlId)
+                ->pluck('user_id')
+                ->toArray();
+
+                // Filter out existing users to avoid duplicates
+                $newUsers = array_diff($empIds, $existingUsers);
 
                 // Prepare bulk insert data
                 $insertData = array_map(function ($empId) use ($hierarchyControlId) {
-
                     return [
                         'hierarchy_control_id' => $hierarchyControlId,
                         'user_id' => $empId,
                     ];
-                }, $empIds);
+                }, $newUsers);
 
                 // Insert all users in a single query
                 DB::table('hierarchy_user')->insert($insertData);
             }
         }
     }
+
 
     private function saveHierarchyObjectType($hierarchyControlId, $request)
     {
@@ -239,17 +258,25 @@ class HierarchyController extends Controller
                 // Delete all existing users for this pay period schedule
                 DB::table('hierarchy_object_type')
                     ->where('hierarchy_control_id', $hierarchyControlId)
-                    ->whereIn('object_type_id', $objectTypeIds)
+                    ->whereNotIn('object_type_id', $objectTypeIds)
                     ->delete();
+
+                // Insert only the new object type IDs that aren't already in the database for this hierarchy
+                $existingObjectTypes = DB::table('hierarchy_object_type')
+                ->where('hierarchy_control_id', $hierarchyControlId)
+                ->pluck('object_type_id')
+                ->toArray();
+
+                // Filter out existing object types to avoid duplicates
+                $newObjectTypes = array_diff($objectTypeIds, $existingObjectTypes);
 
                 // Prepare bulk insert data
                 $insertData = array_map(function ($objectId) use ($hierarchyControlId) {
-
                     return [
                         'hierarchy_control_id' => $hierarchyControlId,
                         'object_type_id' => $objectId,
                     ];
-                }, $objectTypeIds);
+                }, $newObjectTypes);
 
                 // Insert all users in a single query
                 DB::table('hierarchy_object_type')->insert($insertData);
@@ -257,41 +284,59 @@ class HierarchyController extends Controller
         }
     }
 
+
+
     private function saveHierarchyLevel($hierarchyControlId, $request)
     {
         if (!empty($request->level_list)) {
-            // Decode the level_list JSON
-            $levelList = json_decode($request->level_list, true);
+            $levelList = json_decode($request->level_list, true) ?? [];
+            $deletedLevels = json_decode($request->removed_levels, true) ?? [];
 
-            if (is_array($levelList)) {
-                // Extract unique user IDs from 'level' and 'superior'
-                $userIds = collect($levelList)
-                    ->flatMap(function ($item) {
-                        return [$item['level'], $item['superior']];
-                    })
-                    ->unique()
-                    ->values()
-                    ->all();
-
-                // Delete existing hierarchy user entries for the hierarchy_control_id
+            // Delete Removed Levels
+            if (!empty($deletedLevels)) {
                 DB::table('hierarchy_level')
                     ->where('hierarchy_control_id', $hierarchyControlId)
-                    ->whereIn('user_id', $userIds)
+                    ->whereIn('id', $deletedLevels)
                     ->delete();
+            }
 
-                // Prepare bulk insert data
-                $insertData = collect($levelList)->map(function ($item) use ($hierarchyControlId) {
-                    return [
-                        'hierarchy_control_id' => $hierarchyControlId,
-                        'level' => $item['level'],
-                        'user_id' => $item['superior'],
-                        'status' => 'active', // Default status
-                    ];
-                })->toArray();
+            // Fetch Existing Levels
+            $existingLevels = DB::table('hierarchy_level')
+                ->where('hierarchy_control_id', $hierarchyControlId)
+                ->pluck('id')
+                ->toArray();
 
-                // Insert new data into the database
-                DB::table('hierarchy_level')->insert($insertData);
+            $newLevels = [];
+            foreach ($levelList as $item) {
+                if (isset($item['id']) && in_array($item['id'], $existingLevels)) {
+                    // Update Existing Levels
+                    DB::table('hierarchy_level')
+                        ->where('id', $item['id'])
+                        ->update([
+                            'level' => $item['level'],
+                            'user_id' => $item['superior'],
+                            'status' => 'active',
+                        ]);
+                } else {
+                    // Insert New Levels
+                    if (!isset($item['id']) || str_starts_with($item['id'], "new-")) {
+                        $newLevels[] = [
+                            'hierarchy_control_id' => $hierarchyControlId,
+                            'level' => $item['level'],
+                            'user_id' => $item['superior'],
+                            'status' => 'active',
+                        ];
+                    }
+                }
+            }
+
+            // Bulk Insert New Levels
+            if (!empty($newLevels)) {
+                DB::table('hierarchy_level')->insert($newLevels);
             }
         }
     }
+
+
+
 }

@@ -17,7 +17,7 @@
                         <strong> Policies highlighted in yellow may not be active yet because they are not assigned to a <u><a href="/policy/policy_group">Policy Group</a></u>. </strong>
                     </div>
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -39,8 +39,8 @@
     <div id="meal-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="meal-form-title">Add Meal Policy</h4>
+                <div class="modal-header p-3 bg-light">
+                    <h4 class="modal-title" id="meal-form-title"></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -116,7 +116,7 @@
                                 <input type="checkbox" class="form-check-input" id="include_lunch_punch_time">
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="meal_id" value=""></button>
@@ -128,6 +128,7 @@
         </div>
     </div>
 
+
     <script>
 
         $(document).ready(function(){
@@ -135,7 +136,8 @@
 
             $('.time_window_section').show();
             $('.punch_time_section').hide();
-        })
+        });
+
 
         async function getAllMeals(){
             try {
@@ -148,25 +150,25 @@
                         let interval = convertSecondsToHoursAndMinutes(meal.window_length);
                         list += `
                             <tr meal_policy_id="${meal.id}" class="${meal.policy_groups.length > 0 ? '' : 'bg-warning'}">
-                                <td>${i+1}</td>    
-                                <td>${meal.name}</td>    
-                                <td>${meal.type == 'auto_deduct' ? 'Auto Deduct' : meal.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>    
-                                <td>${interval}</td>    
+                                <td>${i+1}</td>
+                                <td>${meal.name}</td>
+                                <td>${meal.type == 'auto_deduct' ? 'Auto Deduct' : meal.type == 'auto_add' ? 'Auto Add' : 'Normal'}</td>
+                                <td>${interval}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_meal_pol" title="Edit Meal Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_meal_pol" title="Delete Meal Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
                 }else{
-                    list += `<tr><td colspan="3" class="text-center">No Meal Policies Found!</td></tr>`;
+                    list += `<tr><td colspan="5" class="text-center">No Meal Policies Found!</td></tr>`;
                 }
-                
+
                 if(showWarning){
                     $('#check_unassigned_policies').show();
                 }else{
@@ -180,6 +182,8 @@
             }
         }
 
+
+        // delete meal
         $(document).on('click', '.click_delete_meal_pol', async function(){
             let meal_pol_id = $(this).closest('tr').attr('meal_policy_id');
 
@@ -193,71 +197,82 @@
             } catch (error) {
                 console.error(`Error during meal policy deletion:`, error);
             }
-        })
+        });
 
+
+        // Type selection
         $(document).on('change', '#type', function(){
-            if($(this).val() == 'normal'){
-                $('#include_lunch_punch_time').closest('.row').hide();
-                $('label[for="amount"]').text('Meal Time');
-            } else {
-                $('#include_lunch_punch_time').closest('.row').show();
-                $('label[for="amount"]').text('Deduction/Addition Time');
-            }
-        })
+            let selectedType = $(this).val();
+            updateTypeFields(selectedType);
+        });
 
+        // Function to handle changes based on type selection
+        function updateTypeFields(selectedType) {
+            if (selectedType === 'normal') {
+                $('#include_lunch_punch_time').closest('.row').hide(); // Hide checkbox row
+                $('label[for="amount"]').text('Meal Time'); // Change label
+            } else {
+                $('#include_lunch_punch_time').closest('.row').show(); // Show checkbox row
+                $('label[for="amount"]').text('Deduction/Addition Time'); // Reset label
+            }
+        }
+
+        // Auto-Detect type selection
         $(document).on('change', '#auto_detect_type', function() {
-            if ($(this).val() == 'time_window') {
+            let selectedAutoDetect = $(this).val();
+            updateAutoDetectFields(selectedAutoDetect);
+        });
+
+        function updateAutoDetectFields(selectedAutoDetect) {
+            if (selectedAutoDetect === 'time_window') {
                 $('.time_window_section').show();
                 $('.punch_time_section').hide();
-            }else{
+            } else {
                 $('.time_window_section').hide();
                 $('.punch_time_section').show();
             }
-        });
+        }
 
-    </script>
 
-    <script>
-
+        // Add Meal
         $(document).on('click', '#new_meal_click', function(){
             resetForm();
-            $('#meal-form-modal').modal('show');
-        })
+            title = `Add Meal Policy`;
+            $('.modal-title').html(title);
 
+            $('#meal-form-modal').modal('show');
+        });
+
+
+        // Edit Meal
         $(document).on('click', '.click_edit_meal_pol', async function(){
             resetForm();
-            let meal_policy_id = $(this).closest('tr').attr('meal_policy_id');
+            let title = `Edit Meal Policy`;
+            $('.modal-title').html(title);
 
+            let meal_policy_id = $(this).closest('tr').attr('meal_policy_id');
             $('#meal_id').val(meal_policy_id); // Set the ID in the hidden field
 
             try {
-                // Fetch the meal policy data
                 let response = await commonFetchData(`/policy/meal/${meal_policy_id}`);
                 let data = response[0]; // Extract the first object
 
                 if (data) {
-                    let name = data.name;
-                    let type = data.type;
-                    let auto_detect_type = data.auto_detect_type;
-                    let include_lunch_punch_time = data.include_lunch_punch_time;
-                    let trigger_time = convertSecondsToHoursAndMinutes(data.trigger_time || 0);
-                    let amount = convertSecondsToHoursAndMinutes(data.amount || 0);
-                    let start_window = convertSecondsToHoursAndMinutes(data.start_window || 0);
-                    let window_length = convertSecondsToHoursAndMinutes(data.window_length || 0);
-                    let minimum_punch_time = convertSecondsToHoursAndMinutes(data.minimum_punch_time || 0);
-                    let maximum_punch_time = convertSecondsToHoursAndMinutes(data.maximum_punch_time || 0);
-
                     // Populate form fields
                     $('#name').val(data.name || '');
-                    $('#type').val(data.type || '0').trigger('change');
-                    $('#auto_detect_type').val(data.auto_detect_type || '').trigger('change');
-                    $('#strict_schedule').prop('checked', include_lunch_punch_time === 1);
-                    $('#trigger_time').val(trigger_time);
-                    $('#amount').val(amount);
-                    $('#start_window').val(start_window);
-                    $('#window_length').val(window_length);
-                    $('#minimum_punch_time').val(minimum_punch_time);
-                    $('#maximum_punch_time').val(maximum_punch_time);
+                    $('#type').val(data.type || 'normal').trigger('change'); // Trigger change event
+                    $('#auto_detect_type').val(data.auto_detect_type || 'time_window').trigger('change');
+                    $('#include_lunch_punch_time').prop('checked', data.include_lunch_punch_time === 1);
+                    $('#trigger_time').val(convertSecondsToHoursAndMinutes(data.trigger_time || 0));
+                    $('#amount').val(convertSecondsToHoursAndMinutes(data.amount || 0));
+                    $('#start_window').val(convertSecondsToHoursAndMinutes(data.start_window || 0));
+                    $('#window_length').val(convertSecondsToHoursAndMinutes(data.window_length || 0));
+                    $('#minimum_punch_time').val(convertSecondsToHoursAndMinutes(data.minimum_punch_time || 0));
+                    $('#maximum_punch_time').val(convertSecondsToHoursAndMinutes(data.maximum_punch_time || 0));
+
+                    // Handle "Type" change manually for correct UI adjustments
+                    updateTypeFields(data.type);
+                    updateAutoDetectFields(data.auto_detect_type);
                 }
             } catch (error) {
                 console.error('Error while fetching meal policy data:', error);
@@ -265,8 +280,11 @@
             }
 
             $('#meal-form-modal').modal('show');
-        })
+        });
 
+
+
+        // Add & Edit Submit
         $(document).on('click', '#form_submit', async function (e) {
             e.preventDefault(); // Prevent default form submission
 
@@ -295,7 +313,7 @@
             formData.append('window_length', window_length);
             formData.append('minimum_punch_time', minimum_punch_time);
             formData.append('maximum_punch_time', maximum_punch_time);
-            
+
             let createUrl = `/policy/meal/create`;
             let updateUrl = `/policy/meal/update/${meal_id}`;
 
@@ -323,6 +341,8 @@
             }
         });
 
+
+
         function resetForm(){
             $('#name').val('');
             $('#type').val('auto_deduct').trigger('change');
@@ -335,7 +355,12 @@
             $('#maximum_punch_time').val('');
             $('#include_lunch_punch_time').prop('checked', false);
             $('#meal_id').val('');
+
+            updateTypeFields('auto_deduct');
+            updateAutoDetectFields('time_window');
         }
+
+
     </script>
 
 </x-app-layout>

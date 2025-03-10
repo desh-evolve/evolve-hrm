@@ -14,7 +14,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -34,7 +34,7 @@
 
         $(document).ready(function(){
             getAllPolicyGroups();
-        })
+        });
 
         async function getAllPolicyGroups(){
             try {
@@ -44,16 +44,16 @@
                     policy_groups.map((pol_grp, i) => {
                         list += `
                             <tr policy_group_id="${pol_grp.id}">
-                                <td>${i+1}</td>    
-                                <td>${pol_grp.name}</td>   
+                                <td>${i+1}</td>
+                                <td>${pol_grp.name}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_pol_grp" title="Edit Policy Group" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_pol_grp" title="Delete Policy Group" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
@@ -68,12 +68,19 @@
             }
         }
 
+
+        // Edit button
         $(document).on('click', '.click_edit_pol_grp', function(){
             let policy_group_id = $(this).closest('tr').attr('policy_group_id');
-            
-            window.location.href = '/policy/policy_group/form?id='+policy_group_id;
-        })
+            let title = `Edit Policy Group`;
 
+            localStorage.setItem('editTitle', title); // Store title in localStorage
+
+            window.location.href = '/policy/policy_group/form?id='+policy_group_id;
+        });
+
+
+        // Delete button
         $(document).on('click', '.click_delete_pol_grp', async function(){
             let policy_group_id = $(this).closest('tr').attr('policy_group_id');
 
@@ -87,7 +94,7 @@
             } catch (error) {
                 console.error(`Error during policy_group deletion:`, error);
             }
-        })
+        });
 
 
     </script>

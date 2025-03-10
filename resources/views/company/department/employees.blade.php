@@ -72,7 +72,7 @@
 
         async function getDropdownData() {
             try {
-                dropdownData = await commonFetchData('/company/department/users/dropdown');
+                dropdownData = await commonFetchData('/company/department/employees/dropdown');
 
                 // Generate the dropdown list, marking any users from this branch as selected
                 const usersList = (dropdownData?.users || [])
@@ -115,7 +115,7 @@
                                         <ul class="list-group">
                         `;
 
-                        let branch_users = await commonFetchData(`/company/${branch.branch_id}/department/${department_id}/users`);
+                        let branch_users = await commonFetchData(`/company/${branch.branch_id}/department/${department_id}/employees`);
                         branch['users'] = branch_users; //add to department data array
 
                         if(branch_users && branch_users.length > 0){
@@ -151,14 +151,15 @@
 
         $(document).on('click', '#click_back_btn', function(){
             window.history.back();
-        })
+        });
+
 
         $(document).on('click', '.remove_users_btn', async function(){
             let branch_id = $(this).closest('.card').attr('branch_id');
             let user_id = $(this).closest('.list-group-item').attr('user_id');
 
             try {
-                let url = `/company/department/user/delete/${department_id}/${branch_id}/${user_id}`;
+                let url = `/company/department/employee/delete/${department_id}/${branch_id}/${user_id}`;
                 const res = await commonDeleteFunction(null, url, 'Department Employee');  // Await the promise here
 
                 if (res) {
@@ -167,9 +168,11 @@
             } catch (error) {
                 console.error(`Error during branch deletion:`, error);
             }
-        })
+        });
+
 
         $(document).on('click', '.add_users_btn', async function(){
+            resetForm();
             let branch_id = $(this).closest('.card').attr('branch_id');
             $('#branch_id').val(branch_id);
 
@@ -203,6 +206,7 @@
             $('#user-form-modal').modal('show');
         });
 
+
         $(document).on('click', '#user-submit-confirm', async function(){
             let branch_id = $('#branch_id').val();
             let users = $('#usersList').val();
@@ -212,7 +216,7 @@
                 return;
             }
 
-            let url = `/company/department/users/create`;
+            let url = `/company/department/employees/create`;
 
             let formData = new FormData();
 
@@ -239,9 +243,14 @@
                 $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
             }
 
-        })
+        });
 
 
+        function resetForm() {
+            $('#branch_id').val(''); // Clear hidden branch_id field
+            $('#usersList').val(null).trigger('change'); // Reset dropdown selection
+            $('#error-msg').html(''); // Clear error messages
+        }
 
 
     </script>

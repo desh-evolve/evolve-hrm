@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm" id="userDropdown">
+                            <select class="form-select" id="userDropdown">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
@@ -127,7 +127,7 @@
     </div>
 
 <script>
-    let userId = "{{ $user->id }}";
+    let userId = "{{ $user->user_id }}";
 
     // Fetch and render users_work_experience for the selected user
     async function renderWorkExperienceTable() {
@@ -186,8 +186,8 @@
 
             // Loop through the users and add options
             users.forEach(user => {
-                let isSelected = user.id == userId ? "selected" : ""; // Pre-select if IDs match
-                let option = `<option value="${user.id}" ${isSelected}>${user.first_name} ${user.last_name}</option>`;
+                let isSelected = user.user_id == userId ? "selected" : ""; // Pre-select if IDs match
+                let option = `<option value="${user.user_id}" ${isSelected}>${user.first_name} ${user.last_name}</option>`;
                 dropdown.append(option);
 
                 if (isSelected) {

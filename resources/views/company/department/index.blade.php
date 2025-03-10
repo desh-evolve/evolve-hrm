@@ -197,7 +197,7 @@
 
         $(document).on('click', '.click_assign_users', async function(){
             let department_id = $(this).closest('tr').attr('department_id');
-            window.location.href = '/company/department/users?dep_id='+department_id;
+            window.location.href = '/company/department/employees?dep_id='+department_id;
         })
 
         $(document).on('click', '#department-submit-confirm', async function() {

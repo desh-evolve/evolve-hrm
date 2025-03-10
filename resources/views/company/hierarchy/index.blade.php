@@ -1,4 +1,18 @@
 <x-app-layout :title="'Input Example'">
+    <x-slot name="header">
+        <h4 class="mb-sm-0">{{ __('Hierarchy') }}</h4>
+
+        <!--
+        <div class="page-title-right">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="javascript: void(0);">Forms</a></li>
+                <li class="breadcrumb-item active">Basic Elements</li>
+            </ol>
+        </div>
+        -->
+    </x-slot>
+
+
 
     <div class="row">
         <div class="col-lg-12">
@@ -14,7 +28,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -26,7 +40,7 @@
                         </thead>
                         <tbody id="hierarchy_table_body">
                             <tr>
-                                <td colspan="4" class="text-center">Loading...</td>
+                                <td colspan="6" class="text-center">Loading...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -38,7 +52,7 @@
     <script>
         $(document).ready(function() {
             getAllHierarchy();
-        })
+        });
 
         async function getAllHierarchy() {
             try {
@@ -57,7 +71,7 @@
                             <td>${item.description}</td>
                             <td>${objectTypes}</td> <!-- Updated to display object types -->
                             <td class="text-capitalize">${item.status ? item.status : 'Inactive'}</td>
-                            
+
                             <td>
                                 <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_hierarchy" title="Edit Company Deduction" data-tooltip="tooltip" data-bs-placement="top">
                                     <i class="ri-pencil-fill"></i>
@@ -70,7 +84,7 @@
                     `;
                     });
                 } else {
-                    list += `<tr><td colspan="4" class="text-center">No Company Deduction Found!</td></tr>`;
+                    list += `<tr><td colspan="6" class="text-center text-danger">No Hierarchy Found!</td></tr>`;
                 }
 
                 $('#hierarchy_table_body').html(list);
@@ -98,7 +112,7 @@
             try {
                 let url = `/company/hierarchy/delete`;
                 const res = await commonDeleteFunction(hierarchy_id, url,
-                    'Company Deduction'); // Await the promise here
+                    'Hierarchy'); // Await the promise here
 
                 if (res) {
                     await getAllHierarchy();

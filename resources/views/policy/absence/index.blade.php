@@ -34,8 +34,8 @@
     <div id="absence-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="absence-form-title">Add Absence Policy</h4>
+                <div class="modal-header p-3 bg-light">
+                    <h4 class="modal-title" id="absence-form-title"></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -97,7 +97,7 @@
                                 <input type="text" class="form-control" id="accrual_rate" placeholder="Select Accrual Rate (hh:mm)">
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="absence_id" value=""></button>
@@ -109,11 +109,14 @@
         </div>
     </div>
 
+
     <script>
 
         $(document).ready(function(){
             getAllAbsences();
-        })
+            getDropdownData();
+            $('#accrual_rate').closest('.row').hide();
+        });
 
         async function getAllAbsences(){
             try {
@@ -123,17 +126,17 @@
                     absences.map((ab, i) => {
                         list += `
                             <tr absence_policy_id="${ab.id}">
-                                <td>${i+1}</td>    
-                                <td>${ab.name}</td>    
-                                <td>${ab.type == 'paid' ? 'Paid' : ab.type == 'unpaid' ? 'Unpaid' : ab.type == 'dock' ? 'Dock' : 'Paid (above salary)'}</td>    
+                                <td>${i+1}</td>
+                                <td>${ab.name}</td>
+                                <td>${ab.type == 'paid' ? 'Paid' : ab.type == 'unpaid' ? 'Unpaid' : ab.type == 'dock' ? 'Dock' : 'Paid (above salary)'}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_ab_pol" title="Edit Absence Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_ab_pol" title="Delete Absence Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
@@ -148,6 +151,8 @@
             }
         }
 
+
+        // Delete absence policy
         $(document).on('click', '.click_delete_ab_pol', async function(){
             let ab_pol_id = $(this).closest('tr').attr('absence_policy_id');
 
@@ -161,16 +166,8 @@
             } catch (error) {
                 console.error(`Error during absence policy deletion:`, error);
             }
-        })
+        });
 
-
-    </script>
-
-    <script>
-        $(document).ready(function(){
-            getDropdownData();
-            $('#accrual_rate').closest('.row').hide();
-        })
 
         async function getDropdownData() {
             try {
@@ -199,34 +196,60 @@
             }
         }
 
+
+        // Type selection
         $(document).on('change', '#type', function(){
-            let type = $(this).val();
+            let selectedType = $(this).val();
+            updateTypeFields(selectedType);
+        });
 
-            if(type === 'unpaid'){
-                $('#unpaid_section').hide();
-                $('#rate').val('1.00');
-                $('#wage_group_id').val('0').trigger('change');
-                $('#pay_stub_entry_account_id').val('0').trigger('change');
-            }else{
-                $('#unpaid_section').show();
+
+        // Function to handle changes based on type selection
+        function updateTypeFields(selectedType) {
+            if (selectedType === 'unpaid') {
+                $('#rate').closest('.row').hide();
+                $('#wage_group_id').closest('.row').hide();
+                $('#pay_stub_entry_account_id').closest('.row').hide();
+            } else {
+                $('#rate').closest('.row').show(); // Show checkbox row
+                $('#wage_group_id').closest('.row').show(); // show checkbox row
+                $('#pay_stub_entry_account_id').closest('.row').show(); // show checkbox row
             }
-        })
+        }
 
+
+        // Accrual Policy selection
         $(document).on('change', '#accrual_policy_id', function(){
-            if($(this).val() == '0'){
+            let selectedAccrualPolicy = $(this).val();
+            updateAccrualPolicyFields(selectedAccrualPolicy);
+        });
+
+
+       function updateAccrualPolicyFields(selectedAccrualPolicy) {
+            if (selectedAccrualPolicy == '0') {
                 $('#accrual_rate').closest('.row').hide();
-            }else{
+            } else {
                 $('#accrual_rate').closest('.row').show();
             }
-        })
+       }
 
+
+        // Add absence policy
         $(document).on('click', '#new_absence_click', function(){
             resetForm();
-            $('#absence-form-modal').modal('show');
-        })
+            title = `Add Absence Policy`;
+            $('.modal-title').html(title);
 
+            $('#absence-form-modal').modal('show');
+        });
+
+
+         // Edit absence policy
         $(document).on('click', '.click_edit_ab_pol', async function(){
             resetForm();
+            title = `Edit Absence Policy`;
+            $('.modal-title').html(title);
+
             let absence_policy_id = $(this).closest('tr').attr('absence_policy_id');
 
             $('#absence_id').val(absence_policy_id); // Set the ID in the hidden field
@@ -238,14 +261,17 @@
 
                 if (data) {
                     // Populate form fields
-                    $('#name').val(data.name);
-                    $('#type').val(data.type).trigger('change');
+                    $('#name').val(data.name || '');
+                    $('#type').val(data.type || 'paid').trigger('change');
                     $('#rate').val(data.rate);
                     $('#wage_group_id').val(data.wage_group_id).trigger('change');
                     $('#pay_stub_entry_account_id').val(data.pay_stub_entry_account_id).trigger('change');
                     $('#accrual_policy_id').val(data.accrual_policy_id).trigger('change');
                     $('#accrual_rate').val(data.accrual_rate);
-                    
+
+                    // Handle "Type" change manually for correct UI adjustments
+                    updateTypeFields(data.type);
+                    updateAccrualPolicyFields(data.accrual_policy_id);
                 }
             } catch (error) {
                 console.error('Error while fetching absence policy data:', error);
@@ -253,8 +279,10 @@
             }
 
             $('#absence-form-modal').modal('show');
-        })
+        });
 
+
+        // Add & Edit Submit
         $(document).on('click', '#form_submit', async function (e) {
             e.preventDefault(); // Prevent default form submission
 
@@ -270,7 +298,7 @@
             formData.append('pay_stub_entry_account_id', $('#pay_stub_entry_account_id').val());
             formData.append('accrual_policy_id', $('#accrual_policy_id').val());
             formData.append('accrual_rate', $('#accrual_rate').val());
-            
+
             let createUrl = `/policy/absence/create`;
             let updateUrl = `/policy/absence/update/${absence_id}`;
 
@@ -298,6 +326,7 @@
             }
         });
 
+
         function resetForm(){
             $('#absence_id').val('');
             $('#name').val('');
@@ -307,7 +336,12 @@
             $('#pay_stub_entry_account_id').val('0').trigger('change');
             $('#accrual_policy_id').val('0').trigger('change');
             $('#accrual_rate').val('1.00');
+
+            updateTypeFields('paid');
+            updateAccrualPolicyFields('0');
         }
+
+
     </script>
 
 </x-app-layout>

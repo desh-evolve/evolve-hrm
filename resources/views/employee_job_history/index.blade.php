@@ -162,7 +162,7 @@
 //======================================================================================================
 // RENDER TABLE
 //======================================================================================================
-let userId = "{{ $user->id }}";
+let userId = "{{ $user->user_id }}";
 
 let dropdownData = [];
 
@@ -243,7 +243,7 @@ let dropdownData = [];
               if (dropdownData) {
                 // Populate user name dropdown
                 let userList = (dropdownData?.users || [])
-                    .map(user => `<option value="${user.id}">${user.first_name} ${user.last_name}</option>`)
+                    .map(user => `<option value="${user.user_id}">${user.first_name} ${user.last_name}</option>`)
                     .join('');
                 $('#userDropdown').html('<option value="">Select Employee</option>' + userList);
 

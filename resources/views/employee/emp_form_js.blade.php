@@ -167,6 +167,7 @@ async function getNextEmployeeNumber(){
 //=========================================================================================================
 
 async function getEmployeeDetails() {
+    resetForm();
     try {
         // Get emp_id from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -198,11 +199,6 @@ async function getEmployeeDetails() {
         $('#emp_id').val(emp_data.emp_id || '');
         $('#user_no').val(emp_data.id || '');
         $('#punch_machine_user_id').val(emp_data.punch_machine_user_id || '');
-
-        $('#branch_id').val(branchDepartment.branch_id || '');
-        await loadDepartments(branchDepartment.branch_id);
-        $('#department_id').val(branchDepartment.department_id || '');
-
         $('#user_group_id').val(emp_data.user_group_id || '');
         $('#designation_id').val(emp_data.designation_id || '');
         $('#policy_group_id').val(emp_data.policy_group_id || '');
@@ -218,7 +214,24 @@ async function getEmployeeDetails() {
         $('#bond_period').val(emp_data.bond_period || '');
         $('#permission_group_id').val(permissionGroupDetail.name || '');
 
-        // Contact Information
+        // Load dropdowns with proper waiting
+        if (branchDepartment.branch_id) {
+            await loadDepartments(branchDepartment.branch_id);
+            $('#branch_id').val(branchDepartment.branch_id);
+            $('#department_id').val(branchDepartment.department_id || '');
+        }
+
+        if (emp_data.country_id) {
+            await loadProvinces(emp_data.country_id);
+            $('#country_id').val(emp_data.country_id);
+
+            if (emp_data.province_id) {
+                await loadCities(emp_data.province_id);
+                $('#province_id').val(emp_data.province_id);
+                $('#city_id').val(emp_data.city_id || '');
+            }
+        }
+
         $('#email').val(emailDetail.email || '');
         $('#title').val(emp_data.title || '');
         $('#name_with_initials').val(emp_data.name_with_initials || '');
@@ -237,16 +250,6 @@ async function getEmployeeDetails() {
         $('#address_2').val(emp_data.address_2 || '');
         $('#address_3').val(emp_data.address_3 || '');
         $('#postal_code').val(emp_data.postal_code || '');
-        $('#country_id').val(emp_data.country_id || '');
-
-        // Populate Province and City based on Country
-        await loadProvinces(emp_data.country_id);
-        $('#province_id').val(emp_data.province_id || '');
-
-        await loadCities(emp_data.province_id);
-        $('#city_id').val(emp_data.city_id || '');
-
-        // Work Information
         $('#work_email').val(emp_data.work_email || '');
         $('#work_contact').val(emp_data.work_contact || '');
         $('#immediate_contact_person').val(emp_data.immediate_contact_person || '');
@@ -254,6 +257,10 @@ async function getEmployeeDetails() {
         $('#home_contact').val(emp_data.home_contact || '');
         $('#epf_reg_no').val(emp_data.epf_reg_no || '');
         $('#resigned_date').val(emp_data.resigned_date || '');
+
+        if (emp_data.user_image) {
+            $('#user_profile_i').attr('src', `${baseUrl}/storage/${emp_data.user_image}`);
+        }
 
         // Set Employment Type (Radio Button)
         $("input[name='employment_type']").each(function () {
@@ -992,9 +999,9 @@ $(document).on('click', '.emp_form_submit', async function (e) {
     }
 
     // Append user photo (if a file is selected)
-    const userPhoto = $('#user_image')[0].files[0];
+    const userPhoto = $('#user_profile')[0].files[0];
     if (userPhoto) {
-        formData.append('user_image', userPhoto);
+        formData.append('user_profile', userPhoto);
     }
 
 
@@ -1013,17 +1020,15 @@ $(document).on('click', '.emp_form_submit', async function (e) {
         await commonAlert(res.status, res.message);
 
         if (res.status === 'success') {
-            let userId = res.data.user_id;
-            console.log('Redirecting to:', `/employee/profile/${userId}`);
-            window.location.href = `/employee/profile/${userId}`;
+            let user_id = res.data.user_id;
+            console.log('Redirecting to:', `/employee/profile/${user_id}`);
+            window.location.href = `/employee/profile/${user_id}`;
         }
     } catch (error) {
         console.error('Error:', error);
         $('#error-msg').html('<p class="text-danger">An error occurred. Please try again.</p>');
     }
 });
-
-
 
 //=========================================================================================================
 // Reset form
@@ -1102,7 +1107,8 @@ function resetForm() {
     $('#bond_period').val('');
     $('#user_status').val('');
     $('#marital_status').val('');
-    $('#user_image').val('');
+    $('#user_profile').val('');
+    $('#user_profile_i').val('');
     $('#branch_id').val('');
     $('#department_id').val('');
     $('#punch_machine_user_id').val('');

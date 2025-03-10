@@ -44,12 +44,13 @@
                     </a>
                 </li>
 
-                <!-- Template Dashboard -->
-                {{-- <li class="nav-item">
-                    <a href="{{ route('dashboard.temp.index') }}" class="nav-link {{ request()->routeIs('dashboard.temp.index') ? 'active' : '' }}">
-                        <i class="ri-dashboard-2-line"></i>Temp Dashboard
+                <!-- Employee Dashboard -->
+                <li class="nav-item">
+                    <a class="nav-link menu-link {{ request()->routeIs('employee.dashboard') ? 'active' : '' }}"
+                        href="{{ route('employee.dashboard') }}">
+                        <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Employee Dashboard</span>
                     </a>
-                </li> --}}
+                </li>
 
                 <!-- Attendance -->
                 <li class="nav-item">
@@ -204,8 +205,9 @@
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('employee.profile', ['emp' => 'my_profile']) }}"
-                                    class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">My
-                                    Profile</a>
+                                    class="nav-link {{ request()->routeIs('employee.profile') ? 'active' : '' }}">
+                                    My Profile
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('employee.messages.index') }}"
@@ -430,6 +432,12 @@
                     <div class="collapse menu-dropdown {{ $checkCompanyNav ? 'show' : '' }}" id="companyMultiLevel">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
+                                <a href="{{ route('company.info') }}"
+                                    class="nav-link {{ request()->routeIs('company.info') ? 'active' : '' }}">
+                                    Company Information
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="{{ route('location.index') }}"
                                     class="nav-link {{ request()->routeIs('location.index') ? 'active' : '' }}">
                                     Locations
@@ -441,12 +449,7 @@
                                     Currencies
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="{{ route('company.info') }}"
-                                    class="nav-link {{ request()->routeIs('company.info') ? 'active' : '' }}">
-                                    Company Information
-                                </a>
-                            </li>
+
                             <li class="nav-item">
                                 <a href="{{ route('company.branch.index') }}"
                                     class="nav-link {{ request()->routeIs('company.branch.index') ? 'active' : '' }}">

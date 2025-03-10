@@ -15,9 +15,17 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-0">Add Holiday Policy</h5>
+                        <h5 class="mb-0 title-form">Add Holiday Policy</h5>
                     </div>
+
+                    <div class="justify-content-md-end">
+                        <div class="d-flex justify-content-end">
+                            <a href="/policy/holiday" class="btn btn-danger">Back</a>
+                        </div>
+                    </div>
+
                 </div>
+
                 <div class="card-body">
                     <form>
 
@@ -29,11 +37,11 @@
                                 </div>
                             </div>
                             <div class="row mb-3">
-                                <label for="type" class="form-label mb-1 col-md-3">Type</label>
+                                <label for="types" class="form-label mb-1 col-md-3">Type</label>
                                 <div class="col-md-9">
-                                    <select class="form-select w-50" id="type">
+                                    <select class="form-select w-50" id="types">
                                         <option value="standard">Standard</option>
-                                        <option value="advanced_fixed">Advaned - Fixed</option>
+                                        <option value="advanced_fixed">Advanced - Fixed</option>
                                         <option value="advanced_average">Advanced - Average</option>
                                     </select>
                                 </div>
@@ -50,11 +58,11 @@
                         </div>
 
                         <div id="holiday_eligibility_section">
-                            <u><h5 class="bg-primary text-white">Holiday Eligibility</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Holiday Eligibility</h5>
                             <div class="row mb-3">
                                 <label for="minimum_employed_days" class="form-label mb-1 col-md-3">Minimum Employed Days</label>
                                 <div class="col-md-9 d-flex align-items-center">
-                                    <input type="text" class="form-control w-50 numonly" id="minimum_employed_days" value="30">
+                                    <input type="number" class="form-control w-50 numonly" id="minimum_employed_days" value="">
                                     <span class="ps-4"></span>
                                 </div>
                             </div>
@@ -91,7 +99,7 @@
                         </div>
 
                         <div id="holiday_time_calc_section">
-                            <u><h5 class="bg-primary text-white">Holiday Time Calculation</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Holiday Time Calculation</h5>
 
                             <div class="row mb-3" id="holiday_time_section">
                                 <label for="time" class="form-label mb-1 col-md-3">Holiday Time</label>
@@ -171,13 +179,13 @@
                         </div>
 
                         <div id="holidays_section">
-                            <u><h5 class="bg-primary text-white">Add Holidays</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Add Holidays</h5>
                             <div class="row mb-4">
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <label for="time" class="form-label mb-1 col-md-3">Holiday Name</label>
                                     <input type="text" class="form-control w-100" id="holiday_name" placeholder="Enter holiday name here">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-5">
                                     <label for="time" class="form-label mb-1 col-md-3">Holiday Date</label>
                                     <input type="date" class="form-control w-100" id="holiday_date">
                                 </div>
@@ -185,13 +193,14 @@
                                     <button type="button" class="btn btn-primary" id="holiday_add"><i class="ri-add-line"></i></button>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <table class="table table-bordered">
-                                    <thead class="bg-primary text-white"/>
+                                    <thead class="bg-primary text-white">
                                         <tr>
+                                            <th>#</th>
                                             <th>Name</th>
                                             <th>Date</th>
-                                            <th></th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody id="holiday_tbody">
@@ -211,16 +220,27 @@
         </div>
     </div>
 
+
     <script>
+
         $(document).ready(function() {
             getDropdownData();
             showSections('standard');
+
+            //change title
+            let storedTitle = localStorage.getItem('editTitle');
+            if (storedTitle) {
+                $('.title-form').html(storedTitle);
+                localStorage.removeItem('editTitle');
+            }
 
             <?php if (isset($_GET['id'])): ?>
                 let holiday_policy_id = <?= json_encode($_GET['id']); ?>;
                 getUpdateData(holiday_policy_id);
             <?php endif; ?>
+
         });
+
 
         async function getDropdownData() {
             try {
@@ -228,13 +248,13 @@
 
                 // Populate rounding policies dropdown
                 let roundingPoliciesList = (dropdownData?.rounding_policies || [])
-                    .map(type => `<option value="${type.id}">${type.name}</option>`)
+                    .map(types => `<option value="${types.id}">${types.name}</option>`)
                     .join('');
                 $('#round_interval_policy_id').html('<option value="0">--</option>' + roundingPoliciesList);
 
                 // Populate absence policies dropdown
                 let absencePoliciesList = (dropdownData?.absence_policies || [])
-                    .map(type => `<option value="${type.id}">${type.name}</option>`)
+                    .map(types => `<option value="${types.id}">${types.name}</option>`)
                     .join('');
                 $('#absence_policy_id').html('<option value="0">--</option>' + absencePoliciesList);
 
@@ -244,22 +264,26 @@
             }
         }
 
-        $(document).on('change', '#type', function(){
-            let type = $(this).val();
-            showSections(type);
-        })
-        
-        function showSections(type){
-            resetForm(false)
-            if(type === 'standard'){
+
+        // Change Types
+        $(document).on('change', '#types', function(){
+            let types = $(this).val();
+            console.log('Selected type:', types); // Log the selected type
+            showSections(types);
+        });
+
+        function showSections(types){
+            resetForm(false);
+
+            if(types === 'standard'){
                 $('#advanced_holiday_eligibility_section').hide();
                 $('#avg_holiday_time_section').hide();
                 $('#time').closest('.row').show();
-            }else if(type === 'advanced_fixed'){
+            }else if(types === 'advanced_fixed'){
                 $('#advanced_holiday_eligibility_section').show();
                 $('#avg_holiday_time_section').hide();
                 $('#time').closest('.row').show();
-            }else if(type === 'advanced_average'){
+            }else if(types === 'advanced_average'){
                 $('#advanced_holiday_eligibility_section').show();
                 $('#avg_holiday_time_section').show();
                 $('#time').closest('.row').hide();
@@ -268,6 +292,8 @@
             }
         }
 
+
+        // Add Holiday Policy
         $(document).on('click', '#holiday_add', function(){
             let holiday_id = '';
             let holiday_name = $('#holiday_name').val();
@@ -280,64 +306,74 @@
 
             renderHolidayTable(holiday_id, holiday_name, holiday_date);
             resetHolidays();
-        })
+        });
 
+
+        // Render Table
         function renderHolidayTable(holiday_id, holiday_name, holiday_date){
+            let rowCount = $('#holiday_tbody tr').length + 1;
             let list = '';
 
             list = `
                 <tr>
-                    <td>${holiday_name}</td>    
-                    <td>${holiday_date}</td>    
+                    <td>${rowCount}</td>
+                    <td>${holiday_name}</td>
+                    <td>${holiday_date}</td>
                     <td>
                         <input type="hidden" class="holiday_name" id="${holiday_id}" value="${holiday_name}">
                         <input type="hidden" class="holiday_date" id="${holiday_id}" value="${holiday_date}">
-                        <button type="button" class="btn btn-danger waves-effect waves-light btn-sm remove_holiday" title="Remove Holiday" data-tooltip="tooltip" data-bs-placement="top"><i class="ri-delete-bin-fill"></i></button>  
-                    </td>    
+                        <button type="button" class="btn btn-danger waves-effect waves-light btn-sm remove_holiday" title="Remove Holiday" data-tooltip="tooltip" data-bs-placement="top"><i class="ri-delete-bin-fill"></i></button>
+                    </td>
                 </tr>
             `;
 
             $('#holiday_tbody').append(list);
         }
 
-        async function getUpdateData(holiday_policy_id){
 
+
+        async function getUpdateData(holiday_policy_id) {
             $('#holiday_policy_id').val(holiday_policy_id); // Set the ID in the hidden field
 
             try {
                 // Fetch the holiday policy data
                 let response = await commonFetchData(`/policy/holiday/${holiday_policy_id}`);
                 let data = response[0]; // Extract the first object
+                console.log('Fetched Data:', data);
 
                 if (data) {
+                    resetForm(false);  // Reset after setting values
+
                     let minimum_time = convertSecondsToHoursAndMinutes(data.minimum_time || 0);
                     let maximum_time = convertSecondsToHoursAndMinutes(data.maximum_time || 0);
 
                     // Populate form fields
                     $('#name').val(data.name);
-                    $('#type').val(data.type || '').trigger('change');
+                    $('#types').val(data.type || '').trigger('change');
+                    showSections(data.type);  // Ensure correct section is shown
                     $('#default_schedule_status').val(data.default_schedule_status);
-                    $('#minimum_employed_days').val(data.minimum_employed_days);
-                    $('#minimum_worked_days').val(data.minimum_worked_days);
-                    $('#minimum_worked_period_days').val(data.minimum_worked_period_days);
-                    $('#worked_scheduled_days').val(data.worked_scheduled_days);
-                    $('#minimum_worked_after_days').val(data.minimum_worked_after_days);
-                    $('#minimum_worked_after_period_days').val(data.minimum_worked_after_period_days);
-                    $('#worked_after_scheduled_days').val(data.worked_after_scheduled_days);
+
+                    // Setting the value for minimum_employed_days
+                    $('#minimum_employed_days').val(data.minimum_employed_days || 30).trigger('change');
+                    $('#minimum_worked_days').val(data.minimum_worked_days || 0);
+                    $('#minimum_worked_period_days').val(data.minimum_worked_period_days || 0);
+                    $('#worked_scheduled_days').val(data.worked_scheduled_days || 'calendar_days').trigger('change');
+                    $('#minimum_worked_after_days').val(data.minimum_worked_after_days || 0);
+                    $('#minimum_worked_after_period_days').val(data.minimum_worked_after_period_days || 0);
+                    $('#worked_after_scheduled_days').val(data.worked_after_scheduled_days || 'calendar_days').trigger('change');
                     $('#time').val(data.time);
                     $('#average_time_days').val(data.average_time_days);
                     $('#average_time_worked_days').val(data.average_time_worked_days);
                     $('#average_days').val(data.average_days);
                     $('#minimum_time').val(minimum_time);
                     $('#maximum_time').val(maximum_time);
-                    $('#force_over_time_policy').val(data.force_over_time_policy);
-                    $('#include_over_time').val(data.include_over_time);
-                    $('#include_paid_absence_time').val(data.include_paid_absence_time);
+                    $('#force_over_time_policy').prop('checked', data.force_over_time_policy || false);
+                    $('#include_over_time').prop('checked', data.include_over_time || false);
+                    $('#include_paid_absence_time').prop('checked', data.include_paid_absence_time || false);
                     $('#round_interval_policy_id').val(data.round_interval_policy_id || '0').trigger('change');
                     $('#absence_policy_id').val(data.absence_policy_id || '0').trigger('change');
 
-                    if(data.holidays && data.holidays.length > 0){
-
+                    if (data.holidays && data.holidays.length > 0) {
                         data.holidays.map((e) => {
                             renderHolidayTable(e.holiday_id, e.holiday_name, e.holiday_date);
                         })
@@ -350,10 +386,17 @@
             }
         }
 
+
+
+        // Remove button
         $(document).on('click', '.remove_holiday', function(){
             $(this).closest('tr').remove();
-        })
+        });
 
+
+
+        //==
+        // Add & Edit Submit
         $(document).on('click', '#form_submit', async function (e) {
             e.preventDefault(); // Prevent default form submission
 
@@ -361,17 +404,28 @@
             let formData = new FormData();
 
             let holiday_id = $('#holiday_policy_id').val();
+            console.log('holiday id', holiday_id);
+
+            if (!holiday_id) {
+                alert('Holiday ID is missing, cannot update!');
+                return;
+            }
 
             let average_time_worked_days = $('#average_time_worked_days').is(':checked') ? 1 : 0;
             let force_over_time_policy = $('#force_over_time_policy').is(':checked') ? 1 : 0;
             let include_over_time = $('#include_over_time').is(':checked') ? 1 : 0;
             let include_paid_absence_time = $('#include_paid_absence_time').is(':checked') ? 1 : 0;
+
             let time = convertHoursAndMinutesToSeconds($('#time').val() || '0:00');
             let minimum_time = convertHoursAndMinutesToSeconds($('#minimum_time').val() || '0:00');
             let maximum_time = convertHoursAndMinutesToSeconds($('#maximum_time').val() || '0:00');
 
+            // Ensure correct 'types' value is being captured
+            let selectedType = $('#types').val();
+            console.log('Selected Type:', selectedType); // Check if the value is correct
+            formData.append('types', selectedType);
+
             formData.append('name', $('#name').val());
-            formData.append('type', $('#type').val());
             formData.append('default_schedule_status', $('#default_schedule_status').val());
             formData.append('minimum_employed_days', $('#minimum_employed_days').val());
             formData.append('minimum_worked_days', $('#minimum_worked_days').val());
@@ -391,7 +445,7 @@
             formData.append('include_paid_absence_time', include_paid_absence_time);
             formData.append('round_interval_policy_id', $('#round_interval_policy_id').val());
             formData.append('absence_policy_id', $('#absence_policy_id').val());
-            
+
             let holiday_names = $('.holiday_name').map(function (i) {
                 let id = $(this).attr('id');
                 formData.append(`holiday_names[${id ?? i}]`, $(this).val());
@@ -429,20 +483,23 @@
             }
         });
 
+
         function resetHolidays(){
             $('#holiday_name').val('');
             $('#holiday_date').val('');
         }
 
+        // reset
         function resetForm(resetAll = true){
             if(resetAll){
                 $('#absence_id').val('');
                 $('#name').val('');
-                $('#type').val('standard').trigger('change');
+                $('#types').val('standard').trigger('change');
                 $('#default_schedule_status').val('working').trigger('change');
                 $('#holiday_name').val('');
                 $('#holiday_date').val('');
                 $('#holiday_tbody').html('');
+
             }
             $('#minimum_employed_days').val('30');
             $('#minimum_worked_days').val('15');
@@ -463,6 +520,8 @@
             $('#round_interval_policy_id').val('0');
             $('#absence_policy_id').val('0');
         }
+
+
     </script>
 
 </x-app-layout>

@@ -15,9 +15,17 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-0">Add Policy Group</h5>
+                        <h5 class="mb-0 title-form">Add Policy Group</h5>
                     </div>
+
+                    <div class="justify-content-md-end">
+                        <div class="d-flex justify-content-end">
+                            <a href="/policy/policy_group" class="btn btn-danger">Back</a>
+                        </div>
+                    </div>
+
                 </div>
+
                 <div class="card-body">
                     <form>
                         <div class="row border-end">
@@ -117,6 +125,7 @@
         </div>
     </div>
 
+
     <!-- get data to dropdowns js -->
     <script>
 
@@ -124,12 +133,23 @@
 
         $(document).ready(function () {
             getDropdownData();
+
+            // Check if there's a stored title in localStorage
+            let storedTitle = localStorage.getItem('editTitle');
+            if (storedTitle) {
+                $('.title-form').html(storedTitle);
+                localStorage.removeItem('editTitle');
+            }
+
+
             // Check if the `id` parameter is available in the query string
             <?php if (isset($_GET['id'])): ?>
                 const id = <?= json_encode($_GET['id']); ?>; // Safely pass PHP variable to JavaScript
                 getUpdateData(id);
             <?php endif; ?>
+
         });
+
 
         async function getDropdownData() {
             try {
@@ -173,7 +193,7 @@
                     console.error('No data found for the given ID.');
                     return;
                 }
-                
+
                 //console.log('Fetched policy  group data:', data);
 
                 // Set the name and status fields
@@ -182,7 +202,7 @@
 
                 // Set user multiSelector values
                 const userIds = data.users.map(emp => emp.user_id);
-                
+
                 // Initialize the multiSelector for users
                 $('#userContainer').multiSelector({
                     title: 'Employees',
@@ -207,7 +227,7 @@
                 data.policies.forEach(policy => {
                     let dropdownSelector = '';
                     switch (policy.policy_table) {
-                        case 'over_time_policy':
+                        case 'overtime_policy':
                             dropdownSelector = '#over_time_policy_ids';
                             break;
                         case 'round_interval_policy':
@@ -228,7 +248,7 @@
                         case 'holiday_policy':
                             dropdownSelector = '#holiday_policy_ids';
                             break;
-                        case 'exception_policy':
+                        case 'exception_policy_control':
                             dropdownSelector = '#exception_policy_control_id';
                             break;
                         default:
@@ -248,10 +268,6 @@
             }
         }
 
-    </script>
-
-    <!-- submit js -->
-    <script>
 
         $(document).on('click', '#form_submit', async function (e) {
             e.preventDefault(); // Prevent default form submission
@@ -304,7 +320,7 @@
             formData.append('holiday_policy_ids', JSON.stringify($('#holiday_policy_ids').val() || []));
             formData.append('exception_policy_control_id', $('#exception_policy_control_id').val());
 
-            
+
             // Collect selected user IDs from the multiSelector component
             const selectedIds = $('#userContainer .selected-list option').map(function () {
                 return $(this).val();

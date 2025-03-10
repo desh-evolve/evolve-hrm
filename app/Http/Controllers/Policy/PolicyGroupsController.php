@@ -12,7 +12,7 @@ use App\Models\CommonModel;
 class PolicyGroupsController extends Controller
 {
     private $common = null;
-    
+
     public function __construct()
     {
         $this->middleware('permission:view policy group', ['only' => ['index', 'getAllPolicyGroups']]);
@@ -59,23 +59,26 @@ class PolicyGroupsController extends Controller
         ], 200);
     }
 
+
     public function getAllPolicyGroups(){
         $pg = $this->common->commonGetAll('policy_group', '*');
         return response()->json(['data' => $pg], 200);
     }
 
-    public function getPolicyGroupById($id){
+
+    public function getPolicyGroupById($id)
+    {
         $connections = [
             'policy_group_users' => [
                 'con_fields' => ['user_id'],  // Fields to select from connected table
-                'con_where' => ['policy_group_users.policy_group_id' => 'id'],  // Link to the main table 
+                'con_where' => ['policy_group_users.policy_group_id' => 'id'],  // Link to the main table
                 'con_joins' => [],
                 'con_name' => 'users',  // Alias to store connected data in the result
                 'except_deleted' => true,  // Filter out soft-deleted records
             ],
             'policy_group_policies' => [
                 'con_fields' => ['policy_table', 'policy_id'],  // Fields to select from connected table
-                'con_where' => ['policy_group_policies.policy_group_id' => 'id'],  // Link to the main table 
+                'con_where' => ['policy_group_policies.policy_group_id' => 'id'],  // Link to the main table
                 'con_joins' => [],
                 'con_name' => 'policies',  // Alias to store connected data in the result
                 'except_deleted' => true,  // Filter out soft-deleted records
@@ -85,6 +88,7 @@ class PolicyGroupsController extends Controller
         $pg = $this->common->commonGetById($id, 'id', 'policy_group', '*', [], [], false, $connections);
         return response()->json(['data' => $pg], 200);
     }
+
 
     public function deletePolicyGroup($id){
         $whereArr = ['id' => $id];
@@ -225,19 +229,42 @@ class PolicyGroupsController extends Controller
         }
     }
 
+
     private function savePolicyEmployees($policyGroupId, $request)
     {
         if (!empty($request->user_ids)) {
             $empIds = json_decode($request->user_ids, true);
+
             if (is_array($empIds)) {
-                foreach ($empIds as $empId) {
-                    DB::table('policy_group_users')->insert([
+                // Delete all existing users
+                DB::table('policy_group_users')
+                    ->where('policy_group_id', $policyGroupId)
+                    ->whereNotIn('user_id', $empIds)
+                    ->delete();
+
+                // Insert only the new user IDs that aren't already in the database for this hierarchy
+                $existingUsers = DB::table('policy_group_users')
+                ->where('policy_group_id', $policyGroupId)
+                ->pluck('user_id')
+                ->toArray();
+
+                // Filter out existing users to avoid duplicates
+                $newUsers = array_diff($empIds, $existingUsers);
+
+                // Prepare bulk insert data
+                $insertData = array_map(function ($empId) use ($policyGroupId) {
+                    return [
                         'policy_group_id' => $policyGroupId,
                         'user_id' => $empId,
-                    ]);
-                }
+                    ];
+                }, $newUsers);
+
+                // Insert all users in a single query
+                DB::table('policy_group_users')->insert($insertData);
             }
         }
     }
+
+
 
 }

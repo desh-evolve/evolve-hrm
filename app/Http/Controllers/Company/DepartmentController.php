@@ -16,10 +16,10 @@ class DepartmentController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view department', ['only' => [
-            'index', 
-            'users', 
+            'index',
+            'employees',
             'getAllDepartments',
-            'getDepartmentByDepartmentId', 
+            'getDepartmentByDepartmentId',
             'getDepartmentDropdownData',
             'getDepartmentBranchEmployees',
             'getDepartmentEmployeesDropdownData'
@@ -36,9 +36,9 @@ class DepartmentController extends Controller
         return view('company.department.index');
     }
 
-    public function users()
+    public function employees()
     {
-        return view('company.department.users');
+        return view('company.department.employees');
     }
 
     //desh(2024-10-22)
@@ -52,7 +52,7 @@ class DepartmentController extends Controller
     }
 
     //================================================================================================================================
-    
+
     //desh(2024-10-21)
     public function createDepartment(Request $request)
     {
@@ -63,7 +63,7 @@ class DepartmentController extends Controller
                     'department_status' => 'required|string',
                     'branches' => 'required|string',
                 ]);
-    
+
                 $table = 'com_departments';
                 $inputArr = [
                     'department_name' => $request->department_name,
@@ -71,7 +71,7 @@ class DepartmentController extends Controller
                     'created_by' => Auth::user()->id,
                     'updated_by' => Auth::user()->id,
                 ];
-    
+
                 $insertId = $this->common->commonSave($table, $inputArr);
 
                 // Handle branches
@@ -89,7 +89,7 @@ class DepartmentController extends Controller
                         $this->common->commonSave($table2, $inputArr2);
                     }
                 }
-    
+
                 if ($insertId) {
                     return response()->json(['status' => 'success', 'message' => 'Department added successfully', 'data' => ['id' => $insertId]], 200);
                 } else {
@@ -100,7 +100,7 @@ class DepartmentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-    
+
     //desh(2024-10-21)
     public function updateDepartment(Request $request, $id)
     {
@@ -112,7 +112,7 @@ class DepartmentController extends Controller
                     'department_status' => 'required|string',
                     'branches' => 'required|string',  // Assuming branches are a comma-separated string
                 ]);
-    
+
                 $table = 'com_departments';
                 $idColumn = 'id';
                 $inputArr = [
@@ -120,14 +120,14 @@ class DepartmentController extends Controller
                     'status' => $request->department_status,
                     'updated_by' => Auth::user()->id,
                 ];
-    
+
                 // Update department information
                 $updatedId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
-    
+
                 if (!$updatedId) {
                     return response()->json(['status' => 'error', 'message' => 'Failed to update department', 'data' => []], 500);
                 }
-    
+
                 // Handle branches - Update department branches
                 if ($request->has('branches')) {
                     $table2 = 'com_branch_departments';
@@ -173,7 +173,7 @@ class DepartmentController extends Controller
                         }
                     }
                 }
-    
+
                 return response()->json(['status' => 'success', 'message' => 'Department updated successfully', 'data' => ['id' => $updatedId]], 200);
             });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -184,7 +184,7 @@ class DepartmentController extends Controller
                 'data' => []
             ], 500);
         }
-    }    
+    }
 
     //desh(2024-10-21)
     public function deleteDepartment($id)
@@ -211,7 +211,7 @@ class DepartmentController extends Controller
         $idColumn = 'id';
         $table = 'com_departments';
         $fields = ['com_departments.*'];  // You can customize the fields as needed
-    
+
         // Define connections to other tables
         $connections = [
             'com_branch_departments' => [
@@ -224,13 +224,13 @@ class DepartmentController extends Controller
                 'except_deleted' => true,  // Filter out soft-deleted records
             ],
         ];
-    
+
         // Fetch the department with connections
         $department = $this->common->commonGetById($id, $idColumn, $table, $fields, [], [], true, $connections);
-    
+
         return response()->json(['data' => $department], 200);
-    }    
-            
+    }
+
     //desh(2024-10-25)
     public function getDepartmentBranchEmployees($branch_id, $department_id)
     {
@@ -281,21 +281,21 @@ class DepartmentController extends Controller
                     'department_id' => 'required|integer',
                     'users' => 'required|string',
                 ]);
-    
+
                 $table = 'com_branch_department_users';
                 $successCount = 0;
-                
+
                 // Get users array from the request
                 $userIds = explode(',', $request->users);
                 $userIds = array_map('trim', $userIds);
-    
+
                 // Fetch current users from DB for given branch and department
                 $existingEmployees = DB::table($table)
                     ->where('branch_id', $request->branch_id)
                     ->where('department_id', $request->department_id)
                     ->pluck('status', 'user_id')
                     ->toArray();
-    
+
                 // Loop through each user ID in the request
                 foreach ($userIds as $userId) {
                     if (isset($existingEmployees[$userId])) {
@@ -331,7 +331,7 @@ class DepartmentController extends Controller
                         $successCount++;
                     }
                 }
-    
+
                 // Mark users not in the new array as deleted
                 $usersToDelete = array_diff(array_keys($existingEmployees), $userIds);
                 if (!empty($usersToDelete)) {
@@ -345,7 +345,7 @@ class DepartmentController extends Controller
                             'updated_at' => now(),
                         ]);
                 }
-    
+
                 // Return the response based on success count
                 if ($successCount > 0) {
                     return response()->json([
@@ -369,6 +369,6 @@ class DepartmentController extends Controller
             ], 500);
         }
     }
-    
+
 
 }

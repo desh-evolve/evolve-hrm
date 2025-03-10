@@ -132,7 +132,7 @@ class EmployeePromotionController extends Controller
     public function getAllEmployeePromotion()
     {
         $table = 'emp_promotions';
-        $fields = '*';
+        $fields = ['*'];
         $user_promotion = $this->common->commonGetAll($table, $fields);
         return response()->json(['data' => $user_promotion], 200);
     }
@@ -142,8 +142,8 @@ class EmployeePromotionController extends Controller
     {
         $idColumn = 'user_id';
         $table = 'emp_promotions';
-        $fields = '*';
-        $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        $fields = ['*'];
+        $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields, [], [], 'all');
         return response()->json(['data' => $user_promotion], 200);
     }
 
@@ -161,8 +161,8 @@ class EmployeePromotionController extends Controller
     {
         $idColumn = 'id';
         $table = 'emp_promotions';
-        $fields = '*';
-        $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields);
+        $fields = ['*'];
+        $user_promotion = $this->common->commonGetById($id, $idColumn, $table, $fields, [], [], 'all');
         return response()->json(['data' => $user_promotion], 200);
     }
 

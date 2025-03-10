@@ -17,7 +17,7 @@
                         <div class="alert bg-warning border-warning text-white material-shadow" role="alert" id="check_unassigned_policies">
                             <strong> Policies highlighted in yellow may not be active yet because they are not assigned to a <u><a href="/policy/policy_group">Policy Group</a></u>. </strong>
                         </div>
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -39,8 +39,8 @@
     <div id="rounding-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="rounding-form-title">Add Rounding Policy</h4>
+                <div class="modal-header p-3 bg-light">
+                    <h4 class="modal-title" id="rounding-form-title"></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -84,11 +84,12 @@
                         </div>
                         <div class="row mb-3">
                             <label for="strict_schedule" class="form-label mb-1 col-md-3">Strict Schedule</label>
-                            <div class="col-md-9">
+                            <div class="col-md-9 d-flex align-items-center">
                                 <input type="checkbox" class="form-check-input" id="strict_schedule">
+                                <span class="ps-4 text-muted">(Employee can't work more than scheduled time)</span>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="rounding_id" value=""></button>
@@ -117,23 +118,23 @@
                         let interval = convertSecondsToHoursAndMinutes(rnd.round_interval);
                         list += `
                             <tr rounding_policy_id="${rnd.id}" class="${rnd.policy_groups.length > 0 ? '' : 'bg-warning'}">
-                                <td>${i+1}</td>    
-                                <td>${rnd.name}</td>    
-                                <td>${rnd.punch_type}</td>    
-                                <td>${interval}</td>    
+                                <td>${i+1}</td>
+                                <td>${rnd.name}</td>
+                                <td>${rnd.punch_type}</td>
+                                <td>${interval}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_round_pol" title="Edit Rounding Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_round_pol" title="Delete Rounding Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
                 }else{
-                    list += `<tr><td colspan="3" class="text-center">No Rounding Policies Found!</td></tr>`;
+                    list += `<tr><td colspan="5" class="text-center">No Rounding Policies Found!</td></tr>`;
                 }
 
                 if(showWarning){
@@ -188,11 +189,17 @@
 
         $(document).on('click', '#new_rounding_click', function(){
             resetForm();
+            title = `Add Rounding Policy`;
+            $('.modal-title').html(title);
+
             $('#rounding-form-modal').modal('show');
         })
 
         $(document).on('click', '.click_edit_round_pol', async function () { // Declare as async
             resetForm(); // Reset the form to clear previous data
+            title = `Edit Rounding Policy`;
+            $('.modal-title').html(title);
+
             let rounding_policy_id = $(this).closest('tr').attr('rounding_policy_id'); // Correct attribute
 
             $('#rounding_id').val(rounding_policy_id); // Set the ID in the hidden field

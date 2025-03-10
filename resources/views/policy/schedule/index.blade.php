@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Name</th>
@@ -36,8 +36,8 @@
     <div id="schedule-form-modal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="schedule-form-title">Add Schedule Policy</h4>
+                <div class="modal-header p-3 bg-light">
+                    <h4 class="modal-title" id="schedule-form-title"></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -87,7 +87,7 @@
                                 <span class="ps-4">(hh:mm (2:15))</span>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                     <div id="error-msg"></div>
                     <div class="d-flex gap-2 justify-content-end mt-4 mb-2">
                         <input type="hidden" id="schedule_id" value=""></button>
@@ -114,19 +114,19 @@
                         let interval = convertSecondsToHoursAndMinutes(schd.start_window);
                         list += `
                             <tr schedule_policy_id="${schd.id}">
-                                <td>${i+1}</td>    
-                                <td>${schd.name}</td>    
-                                <td>${schd.meal_policy}</td>    
-                                <td>${schd.absence_policy}</td>    
-                                <td>${interval}</td>    
+                                <td>${i+1}</td>
+                                <td>${schd.name}</td>
+                                <td>${schd.meal_policy}</td>
+                                <td>${schd.absence_policy}</td>
+                                <td>${interval}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_round_pol" title="Edit Schedule Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_round_pol" title="Delete Schedule Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
@@ -199,11 +199,17 @@
 
         $(document).on('click', '#new_schedule_click', function(){
             resetForm();
+            title = `Add Schedule Policy`;
+            $('.modal-title').html(title);
+
             $('#schedule-form-modal').modal('show');
         })
 
         $(document).on('click', '.click_edit_round_pol', async function(){
             resetForm();
+            title = `Edit Schedule Policy`;
+            $('.modal-title').html(title);
+
             let schedule_policy_id = $(this).closest('tr').attr('schedule_policy_id');
             $('#schedule_id').val(schedule_policy_id);
 

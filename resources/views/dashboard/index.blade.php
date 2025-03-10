@@ -34,6 +34,8 @@
         <!-- Left Side -->
         <div class="col-lg-9">
             <div class="row">
+                {{-- pie chart --}}
+
                 <div class="col-xl-4">
                     <div class="card" style="height: 510px">
                         <div class="card-header align-items-center d-flex">
@@ -41,34 +43,47 @@
                         </div>
                         <div class="card-body">
 
-                            <div id="store-visits-source" data-colors='["--vz-success", "--vz-danger"]' data-colors-minimal='["--vz-primary", "--vz-primary-rgb, 0.60"]' data-colors-galaxy='["--vz-primary", "--vz-primary-rgb, .75"]' class="apex-charts" dir="ltr"></div>
+                            <div id="store-visits-source" class="apex-charts" dir="ltr"></div>
 
                             <div class="table-responsive mt-5">
                                 <table class="table table-borderless table-sm table-centered align-middle table-nowrap mb-0">
                                     <tbody class="border-0">
                                         <tr>
                                             <td>
-                                                <h4 class="text-truncate fs-14 fs-medium mb-0"><i class="ri-stop-fill align-middle fs-18 text-success me-2"></i>Attendance</h4>
+                                                <h4 class="text-truncate fs-14 fs-medium mb-0">
+                                                    <i class="ri-stop-fill align-middle fs-18 text-success me-2"></i>Attendance
+                                                </h4>
                                             </td>
                                             <td>
-                                                <p class="text-muted mb-0"><i data-feather="users" class="me-2 icon-sm"></i>35</p>
+                                                <p class="text-muted mb-0">
+                                                    <i data-feather="users" class="me-2 icon-sm"></i>
+                                                    <span class="employee-count-pie">0</span>
+                                                </p>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <h4 class="text-truncate fs-14 fs-medium mb-0"><i class="ri-stop-fill align-middle fs-18 text-danger me-2"></i>Approved Leaves</h4>
+                                                <h4 class="text-truncate fs-14 fs-medium mb-0">
+                                                    <i class="ri-stop-fill align-middle fs-18 text-danger me-2"></i>Approved Leaves
+                                                </h4>
                                             </td>
                                             <td>
-                                                <p class="text-muted mb-0"><i data-feather="external-link" class="me-2 icon-sm"></i>10</p>
+                                                <p class="text-muted mb-0">
+                                                    <i data-feather="external-link" class="me-2 icon-sm"></i>
+                                                    <span class="leaves-count-pie">0</span>
+                                                </p>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
+
                         </div>
                     </div>
                 </div>
 
+
+                {{-- == --}}
                 <div class="col-xl-8">
                     <div class="row">
                         <!-- Employee Count -->
@@ -144,7 +159,7 @@
                             </div>
 
                             <div class="mt-2 mb-3 text-center">
-                                <a href="/employee/messages" class="text-muted text-decoration-underline fs-5">View More</a>
+                                <a href="/employee/messages" class="text-info text-decoration-underline fs-6">View More</a>
                             </div>
                         </div>
                     </div>
@@ -184,7 +199,7 @@
                             </div>
                             {{-- view button --}}
                             <div class="mt-2 mb-3 text-center">
-                                <a href="/attendance/request/index" class="text-muted text-decoration-underline fs-5">View More</a>
+                                <a href="/attendance/request/index" class="text-info text-decoration-underline fs-6">View More</a>
                             </div>
                         </div>
                     </div>
@@ -205,46 +220,26 @@
                                         <thead class="text-muted table-light" style="position: sticky; top: 0; z-index: 1;">
                                             <tr>
                                                 <th scope="col">#</th>
-                                                <th scope="col">Employee</th>
-                                                <th scope="col">Type</th>
-                                                <th scope="col">Date</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Leave Type</th>
+                                                <th scope="col">Amount</th>
+                                                <th scope="col">Start Date</th>
+                                                <th scope="col">End Date</th>
+                                                <th scope="col">Status</th>
                                             </tr>
                                         </thead>
 
-                                        <tbody>
+                                        <tbody id="leave_request_table_body">
                                             <tr>
-                                                <td>1</td>
-                                                <td>John Doe</td>
-                                                <td>Active</td>
-                                                <td>2024/12/18</td>
+                                                <td colspan="7" class="text-center">Loading...</td>
                                             </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>Jane Smith</td>
-                                                <td>Inactive</td>
-                                                <td>2024/12/18</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3</td>
-                                                <td>Jane Smith</td>
-                                                <td>Inactive</td>
-                                                <td>2024/12/18</td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>4</td>
-                                                <td>Jane Smith</td>
-                                                <td>Inactive</td>
-                                                <td>2024/12/18</td>
-                                            </tr>
-
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                              {{-- view button --}}
                              <div class="mt-2 mb-3 text-center">
-                                <a href="#" class="text-muted text-decoration-underline fs-5">View More</a>
+                                <a href="#" class="text-info text-decoration-underline fs-6">View More</a>
                             </div>
                         </div>
 
@@ -364,13 +359,15 @@
 
 
     $(document).ready(async function () {
-        updateEmployeeCount();
-        updateApprovedLeaveCount();
-        renderNewMessages();
-        renderRequest();
+        await updateEmployeeCount();
+        await updateApprovedLeaveCount();
+        await renderNewMessages();
+        await renderRequest();
+        await renderPieChart();
+        await renderLeaveRequest();
 
         // Update employee count every 30 seconds
-        setInterval(updateEmployeeCount, 30000);
+        // setInterval(updateEmployeeCount, 30000);
 
         // Utility Function: Format Date
         function formatDate1(datetime) {
@@ -383,8 +380,7 @@
 
         async function updateEmployeeCount() {
             try {
-                let empCount = await commonFetchData('/dashboard/temp/count/employee');
-
+                let empCount = await commonFetchData('/dashboard/count/employee');
                 let employeeCount = empCount || 0;
                 console.log('Employee Count:', employeeCount);
 
@@ -398,16 +394,61 @@
 
         async function updateApprovedLeaveCount() {
             try {
-                let approvedLeave = await commonFetchData('/dashboard/temp/count/leave');
+                let approvedLeave = await commonFetchData('/dashboard/count/leave');
 
-                let Count = approvedLeave.data || 0;
-                console.log('Approved Leave Count:', leaveCount);
+                let Count = approvedLeave || 0;
+                console.log('Approved Leave Count:', Count);
 
                 $('.leaves-count').text(Count).trigger('change');
             } catch (error) {
                 console.error('Error updating approved leave count:', error);
             }
         }
+
+//======================================================================================================
+//render Pie Chart
+//======================================================================================================
+
+        async function renderPieChart() {
+            try {
+                let empCount = await commonFetchData(`/dashboard/count/employee`);
+                let empLeaveCount = await commonFetchData(`/dashboard/count/leave`);
+
+                let employeeCount = empCount || 0;
+                let leaveCount = empLeaveCount || 0;
+
+                console.log('Rendering Pie Chart - Employee:', employeeCount, 'Leaves:', leaveCount);
+
+                // Update the HTML elements with counts
+                $('.employee-count-pie').text(employeeCount);
+                $('.leaves-count-pie').text(leaveCount);
+
+            var options = {
+                series: [employeeCount, leaveCount],
+                labels: ["Attendance", "Approved Leaves"],
+                chart: {
+                    type: 'pie',
+                    height: 350
+                },
+                colors: ['#00AE98', '#e15d44'],
+                legend: {
+                    position: 'bottom'
+                }
+            };
+
+            // Destroy the previous chart instance if it exists
+            if (window.attendanceChart) {
+                window.attendanceChart.destroy();
+            }
+
+            window.attendanceChart = new ApexCharts(document.querySelector("#store-visits-source"), options);
+            window.attendanceChart.render();
+
+            } catch (error) {
+                console.error('Error rendering pie chart:', error);
+            }
+        }
+
 
 
 //======================================================================================================
@@ -416,7 +457,7 @@
 
         async function renderNewMessages() {
             try {
-                const messages = await commonFetchData('/dashboard/temp/messages');
+                const messages = await commonFetchData('/dashboard/messages');
 
                 let list = '';
 
@@ -440,7 +481,6 @@
                     // display only the first 4 messages
                     const latestMessages = sortedMessages.slice(0, 4);
 
-
                     list = latestMessages.map((message,i) => {
 
                         // Extract sender_email from the first detail in message_details
@@ -450,7 +490,7 @@
 
                         return`
                             <tr id="${message.id}">
-                                <th scope="row">${i + 1}</th>
+                                <td scope="row">${i + 1}</td>
                                 <td>${senderEmail}</td>
                                 <td>${message.type_name}</td>
                                 <td>${message.subject}</td>
@@ -478,7 +518,7 @@
 
         async function renderRequest() {
             try {
-                const requests = await commonFetchData('/dashboard/temp/requests');
+                const requests = await commonFetchData('/dashboard/requests');
 
                 let list = '';
                 const pendingRequests = requests.filter(req => req.status === 'pending');
@@ -515,6 +555,47 @@
             }
         }
 
+//======================================================================================================
+//render leave request
+//======================================================================================================
+
+        async function renderLeaveRequest() {
+            try {
+                const leaveRequset = await commonFetchData('/dashboard/leave_request');
+                console.log('all leave-requests', leaveRequset);
+
+                let list = '';
+
+                if (leaveRequset.length === 0) {
+                    $('#leave_request_table_body').html('<tr><td colspan="6" class="text-center">No Leave Request Data</td></tr>');
+                    return;
+                }
+
+
+                list = leaveRequset.map((leave,i) => {
+                    return`
+                        <tr leave_request_id ="${leave.id}">
+                            <td>${i + 1}</td>
+                            <td>${leave.first_name} ${leave.last_name}</td>
+                            <td>${leave.type_name}</td>
+                            <td>${leave.amount}</td>
+                            <td>${leave.leave_from}</td>
+                            <td>${leave.leave_to}</td>
+                            <td class="text-capitalize">${leave.status === 'pending'
+                                ? `<span class="badge border border-warning text-warning">${leave.status}</span>`
+                                : `<span class="badge border border-success text-success">${leave.status}</span>`}</td>
+                            <td>
+                        </tr>
+                    `;
+                }).join('');
+
+                $('#leave_request_table_body').html(list);
+
+            } catch (error) {
+                $('#leave_request_table_body').html('<tr><td colspan="6" class="text-center text-danger">Error Loading Data</td></tr>');
+                console.error('Error fetching message: ',error);
+            }
+        }
 
 
     });

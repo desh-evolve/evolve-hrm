@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\CommonModel;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
@@ -18,7 +19,7 @@ class EmployeeController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view employee profile', ['only' => ['employee_profile', 'getLoggedInUserProfile']]);
+        $this->middleware('permission:view employee profile', ['only' => ['employee_profile', 'getProfileDetailsUserId']]);
         $this->middleware('permission:view user', ['only' => [
             'employee_list',
             'emp_form',
@@ -41,6 +42,7 @@ class EmployeeController extends Controller
             'getPromotionsByEmployeeId',
             'getDocumentsByEmployeeId',
             'getSingleEmployeeByUserId',
+            'getProfileDetailsUserId',
         ]]);
 
         $this->middleware('permission:create user', ['only' => ['employee_form', 'getEmployeeDropdownData', 'createEmployee', 'downloadDocumentLoadProfile']]);
@@ -56,10 +58,12 @@ class EmployeeController extends Controller
         return view('employee.emp_list');
     }
 
+
     public function employee_form()
     {
         return view('employee.emp_form');
     }
+
 
     public function employee_profile($emp)
     {
@@ -71,12 +75,11 @@ class EmployeeController extends Controller
     }
 
 
-
-
     public function emp_form()
     {
         return view('employee.form');
     }
+
 
 //========================================================================================
 // Navigate to Employees' payroll
@@ -84,7 +87,7 @@ class EmployeeController extends Controller
 
     public function showBankDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -105,7 +108,7 @@ class EmployeeController extends Controller
 
     public function showWageDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -129,7 +132,7 @@ class EmployeeController extends Controller
 
     public function showQualificationDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -147,7 +150,7 @@ class EmployeeController extends Controller
 
     public function showDocuments($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -158,14 +161,13 @@ class EmployeeController extends Controller
         }
 
         $documents = $this->common->commonGetById($id, 'user_id', 'emp_documents', '*');
-
         return view('employee_documents.index', ['user' => $user[0], 'documents' => $documents]);
     }
 
 
     public function showWorkExperianceDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -183,7 +185,7 @@ class EmployeeController extends Controller
 
     public function showPromotionDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -201,7 +203,7 @@ class EmployeeController extends Controller
 
     public function showFamilyDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -219,7 +221,7 @@ class EmployeeController extends Controller
 
     public function showJobHistoryDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -237,7 +239,7 @@ class EmployeeController extends Controller
 
     public function showKpiDetails($id)
     {
-        $idColumn = 'id';
+        $idColumn = 'user_id';
         $table = 'emp_employees';
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
@@ -368,7 +370,7 @@ class EmployeeController extends Controller
                 'bond_period' => 'required',
                 'user_status' => 'required|integer',
                 'marital_status' => 'nullable|string|max:20',
-                // 'user_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'user_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'branch_id' => 'required|integer',
                 'department_id' => 'required|integer',
                 'punch_machine_user_id' => 'nullable|integer',
@@ -459,12 +461,18 @@ class EmployeeController extends Controller
                 'updated_by' => Auth::id(),
             ];
 
+            // Handle user image upload
+            if ($request->hasFile('user_profile')) {
+                $logoPath = $request->file('user_profile')->store('userImages', 'public');
+                $userData['user_image'] = $logoPath;
+            }
+
             $userId = DB::table('emp_employees')->insertGetId($userData);
 
 
             // Upload and Save Documents
             if ($request->hasFile('doc_file') && is_iterable($request->file('doc_file'))) {
-                $uploadPath = 'uploads/employee/documents';
+                $uploadPath = 'documents';
 
                 foreach ($request->file('doc_file') as $key => $docFile) {
                     if (!isset($request->doc_type_id[$key]) || !isset($request->doc_title[$key])) {
@@ -530,7 +538,7 @@ class EmployeeController extends Controller
         try {
             return DB::transaction(function () use ($request, $id) {
                 // Retrieve employee record to get user_id
-                $employee = DB::table('emp_employees')->where('id', $id)->first();
+                $employee = DB::table('emp_employees')->where('user_id', $id)->first();
 
                 if (!$employee) {
                     return response()->json(['status' => 'error', 'message' => 'Employee not found.'], 404);
@@ -550,7 +558,8 @@ class EmployeeController extends Controller
                     'address_1' => 'required|string|max:255',
                     'address_2' => 'nullable|string|max:255',
                     'address_3' => 'nullable|string|max:255',
-                    'nic' => ['required', 'string', 'max:255', Rule::unique('emp_employees', 'nic')->ignore($id, 'id')],
+                    // 'nic' => 'required|string|max:255|unique:emp_employees,nic,' . $id,
+                    'nic' => 'required|string|max:255|unique:emp_employees,nic,' . $employee->id . ',id',
                     'country_id' => 'required|integer',
                     'province_id' => 'required|integer',
                     'city_id' => 'required|integer',
@@ -561,8 +570,8 @@ class EmployeeController extends Controller
                     'home_contact' => 'nullable|string|max:20',
                     'immediate_contact_person' => 'nullable|string|max:255',
                     'immediate_contact_no' => 'nullable|string|max:20',
-                    'personal_email' => ['nullable', 'email', 'max:255', Rule::unique('emp_employees', 'personal_email')->ignore($id, 'id')],
-                    'work_email' => ['nullable', 'email', 'max:255', Rule::unique('emp_employees', 'work_email')->ignore($id, 'id')],
+                    'personal_email' => 'nullable|email|max:255|unique:emp_employees,personal_email,' . $employee->id . ',id',
+                    'work_email' => 'nullable|email|max:255|unique:emp_employees,work_email,' . $employee->id . ',id',
                     'epf_reg_no' => 'nullable|string|max:255',
                     'religion_id' => 'nullable|integer',
                     'dob' => 'nullable|date',
@@ -570,6 +579,7 @@ class EmployeeController extends Controller
                     'bond_period' => 'required',
                     'user_status' => 'required|integer',
                     'marital_status' => 'nullable|string|max:20',
+                    'user_profile' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                     'branch_id' => 'required|integer',
                     'department_id' => 'required|integer',
                     'punch_machine_user_id' => 'nullable|integer',
@@ -589,11 +599,11 @@ class EmployeeController extends Controller
                     'currency_id' => 'nullable|integer',
                     'pay_period_schedule_id' => 'nullable|integer',
                     'permission_group_id' => 'nullable|string',
-                    'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user_id, 'id')],
+                    'email' => 'required|email|max:255|unique:users,email,' . $user_id,
                 ]);
 
                 // Update employee details
-                DB::table('emp_employees')->where('id', $id)->update([
+                $updateData = [
                     'title' => $request->title,
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
@@ -637,8 +647,20 @@ class EmployeeController extends Controller
                     'retirement_date' => $request->retirement_date,
                     'currency_id' => $request->currency_id,
                     'updated_by' => Auth::id(),
-                ]);
+                ];
 
+                // Handle User Image upload
+                if ($request->hasFile('user_profile')) {
+                    $imagePath = $request->file('user_profile')->store('userImages', 'public');
+                    $updateData['user_image'] = $imagePath;
+
+                    if ($employee->user_image) {
+                        Storage::disk('public')->delete($employee->user_image);
+                    }
+                }
+
+                // update user details
+                DB::table('emp_employees')->where('user_id', $id)->update($updateData);
 
                 // Update user table
                 DB::table('users')->where('id', $user_id)->update([
@@ -646,9 +668,8 @@ class EmployeeController extends Controller
                     'email' => $request->email,
                 ]);
 
-
-                 // Update branch & department details
-                DB::table('com_branch_department_users')->where('user_id', $user_id)->update([
+                // Update branch & department details
+                DB::table('com_branch_department_users')->where('user_id', $user_id)->updateOrInsert([
                     'user_id' => $user_id,
                     'branch_id' => $request->branch_id,
                     'department_id' => $request->department_id,
@@ -657,18 +678,19 @@ class EmployeeController extends Controller
 
 
                 // Update pay_period_shedule_user details
-                DB::table('pay_period_schedule_user')->where('user_id', $user_id)->update([
+                DB::table('pay_period_schedule_user')->where('user_id', $user_id)->updateOrInsert([
                     'user_id' => $user_id,
                     'pay_period_schedule_id' => $request->pay_period_schedule_id,
                 ]);
 
-                return response()->json(['status' => 'success', 'message' => 'Employee updated successfully', 'data' => ['id' => $id]], 200);
+                return response()->json(['status' => 'success', 'message' => 'Employee updated successfully', 'data' => ['user_id' => $user_id]], 200);
 
             });
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
+
 
 //=============================================================================================================
 // Delete employee
@@ -699,7 +721,7 @@ class EmployeeController extends Controller
     // download document
     public function downloadDocumentLoadProfile($file)
     {
-        $filePath = storage_path("app/public/uploads/employee/documents/" . $file);
+        $filePath = storage_path("app/public/documents/" . $file);
 
         if (!file_exists($filePath)) {
             Log::error("File not found: " . $filePath);
@@ -870,7 +892,7 @@ class EmployeeController extends Controller
         try {
             // Find the user_id associated with the given emp_id
             $employee = DB::table('emp_employees')
-                ->where('id', $id)
+                ->where('user_id', $id)
                 ->select('user_id')
                 ->first();
 
@@ -897,7 +919,7 @@ class EmployeeController extends Controller
         try {
             // Find the user_id associated with the given emp_id
             $employee = DB::table('emp_employees')
-                ->where('id', $id)
+                ->where('user_id', $id)
                 ->select('user_id')
                 ->first();
 
@@ -924,7 +946,7 @@ class EmployeeController extends Controller
         try {
             // Find the user_id associated with the given emp_id
             $employee = DB::table('emp_employees')
-                ->where('id', $id)
+                ->where('user_id', $id)
                 ->select('user_id')
                 ->first();
 
@@ -951,7 +973,7 @@ class EmployeeController extends Controller
         try {
             // Find the user_id associated with the given emp_id
             $employee = DB::table('emp_employees')
-                ->where('id', $id)
+                ->where('user_id', $id)
                 ->select('user_id')
                 ->first();
 
@@ -964,7 +986,7 @@ class EmployeeController extends Controller
             $idColumn = 'user_id';
             $table = 'emp_promotions';
             $fields = '*';
-            $promotions = $this->common->commonGetById($user_id, $idColumn, $table, $fields);
+            $promotions = $this->common->commonGetById($user_id, $idColumn, $table, $fields, [], [], 'all');
 
             return response()->json(['status' => 'success', 'data' => $promotions], 200);
         } catch (\Exception $e) {
@@ -978,7 +1000,7 @@ class EmployeeController extends Controller
         try {
             // Find the user_id associated with the given emp_id
             $employee = DB::table('emp_employees')
-                ->where('id', $id)
+                ->where('user_id', $id)
                 ->select('user_id')
                 ->first();
 
@@ -1010,7 +1032,7 @@ class EmployeeController extends Controller
         try {
             // Find the user_id associated with the given emp_id
             $employee = DB::table('emp_employees')
-                ->where('id', $id)
+                ->where('user_id', $id)
                 ->select('user_id')
                 ->first();
 
@@ -1037,9 +1059,9 @@ class EmployeeController extends Controller
     public function getDocumentsByEmployeeId($id)
     {
         try {
-            // Find the user_id associated with the given emp_id
+            // Find the user_id associated with the given id
             $employee = DB::table('emp_employees')
-                ->where('id', $id)
+                ->where('user_id', $id)
                 ->select('user_id')
                 ->first();
 
@@ -1064,6 +1086,59 @@ class EmployeeController extends Controller
         }
     }
 
+
+    // profile
+    public function getProfileDetailsUserId()
+    {
+        try {
+            // Get the logged-in user's ID
+            $userId = Auth::user()->id;
+
+            if (!$userId) {
+                return response()->json(['status' => 'error', 'message' => 'User not authenticated'], 401);
+            }
+
+            // Fetch user data
+            $idColumn = 'emp_employees.user_id';
+            $table = 'emp_employees';
+            $fields = [
+                'emp_employees.*',
+                'com_employee_groups.emp_group_name AS user_group_name',
+            ];
+
+            $joinArr = [
+                'com_employee_groups' => ['com_employee_groups.id', '=', 'emp_employees.user_group_id'],
+            ];
+
+            $connections = [
+                'model_has_roles' => [
+                    'con_fields' => [
+                        'model_has_roles.role_id AS role_id',
+                        'model_has_roles.model_id AS user_id',
+                        'roles.name AS role_name',
+                    ],
+                    'con_where' => [
+                        'model_has_roles.model_id' => $userId, // Match `user_id` with employee data
+                    ],
+                    'con_joins' => [
+                        'roles' => ['roles.id', '=', 'model_has_roles.role_id'],
+                    ],
+                    'con_name' => 'role_details',
+                    'except_deleted' => 'all', // Removed the `status` condition
+                ],
+            ];
+
+            // Fetch the user's details
+            $user = $this->common->commonGetById($userId, $idColumn, $table, $fields, $joinArr, [], true, $connections);
+             // Log the user data to check if it's being fetched correctly
+            Log::info('Fetched user data:', ['user' => $user]);
+
+            return response()->json(['data' => $user], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
 
 
 }

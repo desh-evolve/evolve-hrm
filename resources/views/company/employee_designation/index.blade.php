@@ -4,11 +4,7 @@
         <h4 class="mb-sm-0">{{ __('Employee Designation') }}</h4>
     </x-slot>
 
-    <style>
-        .card-header:hover {
-            background-color: #ddd;
-        }
-    </style>
+
 
     <div class="row">
         <div class="col-lg-12">
@@ -24,7 +20,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Employee Designation Name</th>
@@ -34,7 +30,7 @@
                         </thead>
                         <tbody id="designation_table_body">
                             <tr>
-                                <td colspan="7" class="text-center">Loading...</td>
+                                <td colspan="5" class="text-center">Loading...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -56,7 +52,7 @@
                             <label for="country_name" class="form-label mb-1 req">Designation Name</label>
                             <input type="text" class="form-control" id="emp_designation_name" placeholder="Enter Designation Name" value="" >
                         </div>
-                        <div class="col-xxl-4 col-md-4 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="designation_status" class="form-label mb-1 req">Status</label>
                             <select class="form-select" id="designation_status" >
                                 <option value="active">Active</option>
@@ -115,7 +111,7 @@
                     `;
                 })
             } else {
-                list = `<p class="text-danger">No Designation Yet!</p>`;
+                list = `<tr><td colspan="5" class="text-center text-danger">No Designation Yet!</td></tr>`;
             }
 
             $('#designation_table_body').html(list);
@@ -162,6 +158,8 @@
             }
         });
 
+
+        // add & edit submit
         $(document).on('click', '#designation-submit-confirm', async function() {
             const designation_id = $('#designation_id').val();
             const emp_designation_name = $('#emp_designation_name').val();
@@ -174,7 +172,7 @@
 
 
             if(!emp_designation_name || !designation_status){
-                $('#error-msg').html('<p class="text-danger">All fields are required: ');
+                $('#error-msg').html('<p class="text-danger">All fields are required!');
                 return;
             } else {
                 $('#error-msg').html(''); // Clear error message if no issues
@@ -232,6 +230,7 @@
             $('#designation_id').val('');
             $('#emp_designation_name').val('');
             $('#designation_status').val('active');
+            $('#error-msg').html('');
         }
     </script>
 </x-app-layout>

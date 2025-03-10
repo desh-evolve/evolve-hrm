@@ -435,8 +435,9 @@
                                             </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="user_image">Employee Photo</label>
-                                                    <input type="file" class="form-control" id="user_image" name="user_image" />
+                                                    <label class="form-label" for="user_profile">Employee Photo</label>
+                                                    <input type="file" class="form-control" id="user_profile" name="user_profile" />
+                                                    <img id="user_profile_i" src="" alt="User Image" style="max-width: 70px;" />
                                                 </div>
                                             </div>
                                         </div>

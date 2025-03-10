@@ -5,22 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\CommonModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class DashboardController extends Controller
+class EmployeeDashboardController extends Controller
 {
     private $common = null;
 
     public function __construct()
     {
-        $this->middleware('permission:view dashboard', ['only' => [
+        $this->middleware('permission:view employee dashboard', ['only' => [
             'index',
             'getAllEmployeeCount',
             'getAllLeaveCount',
-            'getNewMessages',
-            'getRequestsData',
-            'getAllLeaveRequest'
+            'getMessages',
+            'getRequests',
+            'getLeaveRequest',
             ]]);
 
         $this->common = new CommonModel();
@@ -30,11 +29,11 @@ class DashboardController extends Controller
     // pawanee(2024-12-17)
     public function index()
     {
-        return view('dashboard.index');
+        return view('employee_dashboard.index');
     }
 
 
-    // pawanee(2024-12-17)
+    // pawanee(2024-02-27)
     public function getAllEmployeeCount()
     {
         $table = 'emp_employees';
@@ -45,7 +44,8 @@ class DashboardController extends Controller
     }
 
 
-    // pawanee(2024-12-17)
+
+
     public function getAllLeaveCount()
     {
         $table = 'leave_request';
@@ -66,9 +66,7 @@ class DashboardController extends Controller
 
 
 
-
-    // pawanee(2024-12-17)
-    public function getNewMessages()
+    public function getMessages()
     {
         $loggedInUserId = Auth::id();
 
@@ -124,24 +122,30 @@ class DashboardController extends Controller
 
 
     // pawanee(2024-12-17)
-    public function getRequestsData()
+    public function getRequests()
     {
         try {
+            $loggedInUserId = Auth::id();
+
             $table = 'request';
             $fields = [
                 'request.*',
                 'object_type.name AS type_name',
                 'emp_employees.name_with_initials AS employee_name',
-                'employee_date.employee_id',
+                'user_date.user_id',
             ];
 
             $joinArr = [
                 'object_type' => ['object_type.id', '=', 'request.type_id'],
-                'employee_date' => ['employee_date.id', '=', 'request.employee_date_id'],
-                'emp_employees' => ['emp_employees.user_id', '=', 'employee_date.employee_id'],
+                'user_date' => ['user_date.id', '=', 'request.user_date_id'],
+                'emp_employees' => ['emp_employees.user_id', '=', 'user_date.user_id'],
             ];
 
-            $requestData = $this->common->commonGetAll($table, $fields, $joinArr, [], true);
+            $whereArr = [
+                ['user_date.user_id', '=', $loggedInUserId]
+            ];
+
+            $requestData = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true);
 
             return response()->json(['data' => $requestData], 200);
 
@@ -151,23 +155,25 @@ class DashboardController extends Controller
         }
     }
 
-    public function getAllLeaveRequest()
+
+    public function getLeaveRequest()
     {
         try {
+            $loggedInUserId = Auth::id();
 
             $table = 'leave_request';
             $fields = [
                 'leave_request.*',
                 'accrual_policy.name AS type_name',
-                'emp_employees.first_name',
-                'emp_employees.last_name',
             ];
             $joinArr = [
-                'accrual_policy' => ['accrual_policy.id', '=', 'leave_request.accurals_policy_id'],
-                'emp_employees' => ['emp_employees.id', '=', 'leave_request.user_id']
+                'accrual_policy' => ['accrual_policy.id', '=', 'leave_request.accurals_policy_id']
+            ];
+            $whereArr = [
+                ['leave_request.user_id', '=', $loggedInUserId]
             ];
 
-            $leaveRequest = $this->common->commonGetAll($table, $fields, $joinArr, [], true);
+            $leaveRequest = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true);
             return response()->json(['data' => $leaveRequest], 200);
 
         } catch (\Exception $e) {

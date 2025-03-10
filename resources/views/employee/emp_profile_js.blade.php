@@ -115,6 +115,9 @@ async function loadEmployeeOverview(){
             $('#user-number').text(userData.id || 'N/A');
             $('#punch-id').text(userData.punch_machine_user_id || 'N/A');
 
+
+
+
             // branch and department details
             if (userData.branch_department_details && userData.branch_department_details.length > 0) {
                 const branchDetails = userData.branch_department_details[0];
@@ -162,6 +165,16 @@ async function loadEmployeeOverview(){
             }
 
 
+            if (userData.user_image) {
+                const imageUrl = '/storage/' + userData.user_image;  // Make sure the path matches the one stored in the DB
+                // Update the image source dynamically
+                $('.avatar-lg img').attr('src', imageUrl);
+            } else {
+                // Set a default image if no user image exists
+                $('.avatar-lg img').attr('src', '{{ asset('assets/images/users/default-avatar.jpg') }}');
+            }
+
+            
             $('#title-user-no').text(userData.id || 'N/A');
 
             $('#title-company').text(' ' + '-' + ' ' + companyData.company_name || 'N/A');

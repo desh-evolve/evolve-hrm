@@ -154,7 +154,7 @@ class LeavesController extends Controller
             'user_id',
             'emp_employees',
             ['user_id', 'emp_employees.id', 'title', 'first_name', 'last_name', 'emp_designation_name'],
-            [ 'com_employee_designations' => ['com_employee_designations.id', '=', 'emp_employees.designation_id']]
+            ['com_user_designations' => ['com_user_designations.id', '=', 'emp_employees.designation_id']]
         );
 
         $current_user = $current_user[0]; //get current user

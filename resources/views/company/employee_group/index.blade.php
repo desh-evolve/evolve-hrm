@@ -3,11 +3,7 @@
         <h4 class="mb-sm-0">{{ __('Employee Group') }}</h4>
     </x-slot>
 
-    <style>
-        .card-header:hover {
-            background-color: #ddd;
-        }
-    </style>
+
 
     <div class="row">
         <div class="col-lg-12">
@@ -18,12 +14,12 @@
                     </div>
                     <div>
                         <button type="button" class="btn btn-primary waves-effect waves-light material-shadow-none me-1"
-                            id="add_new_group_btn">New Group <i class="ri-add-line"></i></button>
+                            id="add_new_group_btn">New Employee Group <i class="ri-add-line"></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Employee Group Name</th>
@@ -33,7 +29,7 @@
                         </thead>
                         <tbody id="group_table_body">
                             <tr>
-                                <td colspan="7" class="text-center">Loading...</td>
+                                <td colspan="5" class="text-center">Loading...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -56,7 +52,7 @@
                             <input type="text" class="form-control" id="emp_group_name"
                                 placeholder="Enter Group Name" value="">
                         </div>
-                        <div class="col-xxl-4 col-md-4 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="group_status" class="form-label mb-1 req">Status</label>
                             <select class="form-select" id="group_status">
                                 <option value="active">Active</option>
@@ -113,7 +109,7 @@
                     `;
                 })
             } else {
-                list = `<p class="text-danger">No Group Yet!</p>`;
+                list = `<tr><td  colspan="5" class="text-center text-danger">No Employee Group Yet!</td></tr>`;
             }
 
             $('#group_table_body').html(list);
@@ -125,7 +121,7 @@
 
         $(document).on('click', '#add_new_group_btn', function() {
            resetForm();
-            title = `Add New Group`;
+            title = `Add New Employee Group`;
             $('#group-form-title').html(title);
             $('#group-form-modal').modal('show');
         });
@@ -152,7 +148,7 @@
             } catch (error) {
                 console.error('error at getGroupById: ', error);
             } finally {
-                title = `Edit Group`;
+                title = `Edit Employee Group`;
                 $('#group-form-title').html(title);
                 $('#group-form-modal').modal('show');
             }
@@ -170,7 +166,7 @@
 
 
             if (!emp_group_name || !group_status) {
-                $('#error-msg').html('<p class="text-danger">All fields are required: ');
+                $('#error-msg').html('<p class="text-danger">All fields are required!');
                 return;
             } else {
                 $('#error-msg').html(''); // Clear error message if no issues
@@ -215,7 +211,7 @@
             try {
                 let url = `/company/employee_group/delete`;
                 const res = await commonDeleteFunction(group_id, url,
-                'Group'); // Await the promise here
+                'Employee Group'); // Await the promise here
 
                 if (res) {
                     await renderGroupTable();
@@ -229,6 +225,7 @@
             $('#group_id').val('');
             $('#emp_group_name').val('');
             $('#group_status').val('active');
+            $('#error-msg').html('');
         }
     </script>
 </x-app-layout>

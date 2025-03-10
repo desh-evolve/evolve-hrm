@@ -51,11 +51,78 @@ class EmployeeDocumentsController extends Controller
 
 
 
+    // public function createEmployeeDocument(Request $request)
+    // {
+    //     try {
+    //         return DB::transaction(function () use ($request) {
+    //             // Validate the request
+    //             $request->validate([
+    //                 'user_id' => 'required|integer',
+    //                 'doc_file' => 'required|array',
+    //                 'doc_file.*' => 'required|file|mimes:pdf,doc,docx,txt,xls,xlsx,ppt,pptx|max:2048',
+    //                 'doc_title' => 'required|array|min:1',
+    //                 'doc_title.*' => 'required|string|max:255',
+    //                 'doc_type_id' => 'required|array|min:1',
+    //                 'doc_type_id.*' => 'required|integer',
+    //             ]);
+
+    //             // Initialize required variables
+    //             $userId = $request->user_id;
+    //             $uploadPath = 'documents';
+    //             $insertIds = [];
+
+    //             // Check if there are uploaded files
+    //             if ($request->hasFile('doc_file') && is_iterable($request->file('doc_file'))) {
+    //                 foreach ($request->file('doc_file') as $key => $docFile) {
+    //                     if (!isset($request->doc_type_id[$key]) || !isset($request->doc_title[$key])) {
+    //                         continue;
+    //                     }
+
+    //                     // Upload document using the common model function
+    //                     $uploadResponse = $this->common->uploadDocument($userId, $docFile, $uploadPath);
+
+    //                     if ($uploadResponse['status'] !== 'success') {
+    //                         Log::error("Document upload failed: " . $uploadResponse['message']);
+    //                         continue;
+    //                     }
+
+    //                     // Prepare data for insertion
+    //                     $inputArr = [
+    //                         'user_id' => $userId,
+    //                         'doc_type_id' => $request->doc_type_id[$key],
+    //                         'title' => $request->doc_title[$key],
+    //                         'file' => $uploadResponse['data']['fileName'],
+    //                         'created_by' => Auth::user()->id,
+    //                         'updated_by' => Auth::user()->id,
+    //                     ];
+
+
+    //                     $insertId = DB::table('emp_documents')->insertGetId($inputArr);
+
+    //                     if ($insertId) {
+    //                         $insertIds[] = $insertId;
+    //                     }
+    //                 }
+    //             }
+
+
+    //             if (!empty($insertIds)) {
+    //                 return response()->json(['status' => 'success', 'message' => 'Documents added successfully', 'data' => ['ids' => $insertIds]], 200);
+    //             } else {
+    //                 return response()->json(['status' => 'error', 'message' => 'Failed to add documents', 'data' => []], 500);
+    //             }
+    //         });
+    //     } catch (\Illuminate\Database\QueryException $e) {
+    //         return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => [] ], 500);
+    //     }
+    // }
+
+
+    //==
     public function createEmployeeDocument(Request $request)
     {
         try {
             return DB::transaction(function () use ($request) {
-                // Validate the request
                 $request->validate([
                     'user_id' => 'required|integer',
                     'doc_file' => 'required|array',
@@ -66,19 +133,22 @@ class EmployeeDocumentsController extends Controller
                     'doc_type_id.*' => 'required|integer',
                 ]);
 
-                // Initialize required variables
                 $userId = $request->user_id;
-                $uploadPath = 'uploads/employee/documents';
+                $uploadPath = 'documents';
                 $insertIds = [];
 
-                // Check if there are uploaded files
+                // Fetch employee ID from emp_employees
+                $employee = DB::table('emp_employees')->where('user_id', $userId)->first();
+                if (!$employee) {
+                    return response()->json(['status' => 'error', 'message' => 'Employee not found', 'data' => []], 404);
+                }
+
                 if ($request->hasFile('doc_file') && is_iterable($request->file('doc_file'))) {
                     foreach ($request->file('doc_file') as $key => $docFile) {
                         if (!isset($request->doc_type_id[$key]) || !isset($request->doc_title[$key])) {
                             continue;
                         }
 
-                        // Upload document using the common model function
                         $uploadResponse = $this->common->uploadDocument($userId, $docFile, $uploadPath);
 
                         if ($uploadResponse['status'] !== 'success') {
@@ -86,16 +156,14 @@ class EmployeeDocumentsController extends Controller
                             continue;
                         }
 
-                        // Prepare data for insertion
                         $inputArr = [
-                            'user_id' => $userId,
+                            'user_id' => $employee->user_id,  // Save user_id from emp_employees
                             'doc_type_id' => $request->doc_type_id[$key],
                             'title' => $request->doc_title[$key],
                             'file' => $uploadResponse['data']['fileName'],
                             'created_by' => Auth::user()->id,
                             'updated_by' => Auth::user()->id,
                         ];
-
 
                         $insertId = DB::table('emp_documents')->insertGetId($inputArr);
 
@@ -105,7 +173,6 @@ class EmployeeDocumentsController extends Controller
                     }
                 }
 
-
                 if (!empty($insertIds)) {
                     return response()->json(['status' => 'success', 'message' => 'Documents added successfully', 'data' => ['ids' => $insertIds]], 200);
                 } else {
@@ -113,7 +180,7 @@ class EmployeeDocumentsController extends Controller
                 }
             });
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => [] ], 500);
+            return response()->json(['status' => 'error', 'message' => 'Error occurred: ' . $e->getMessage(), 'data' => []], 500);
         }
     }
 
@@ -151,7 +218,7 @@ class EmployeeDocumentsController extends Controller
 
                 // Handle file upload if a new file is provided
                 if ($request->hasFile('doc_file')) {
-                    $uploadPath = 'uploads/employee/documents';
+                    $uploadPath = 'documents';
 
                     // Delete old file
                     if (!empty($document->file)) {
@@ -195,7 +262,7 @@ class EmployeeDocumentsController extends Controller
 
     public function downloadDocument($file)
     {
-        $filePath = storage_path("app/public/uploads/employee/documents/" . $file);
+        $filePath = storage_path("app/public/documents/" . $file);
 
         if (!file_exists($filePath)) {
             Log::error("File not found: " . $filePath);

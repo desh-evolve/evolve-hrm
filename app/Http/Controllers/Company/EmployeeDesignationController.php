@@ -20,9 +20,9 @@ class EmployeeDesignationController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view employee designation', ['only' => [
-            'index', 
-            'getAllEmployeeDesignations', 
-            'getEmployeeDesignationById', 
+            'index',
+            'getAllEmployeeDesignations',
+            'getEmployeeDesignationById',
         ]]);
         $this->middleware('permission:create employee designation', ['only' => ['createEmployeeDesignation']]);
         $this->middleware('permission:update employee designation', ['only' => ['updateEmployeeDesignation']]);
@@ -45,7 +45,7 @@ class EmployeeDesignationController extends Controller
                     'designation_status' => 'required',
                 ]);
 
-                $table = 'com_employee_designations';
+                $table = 'com_user_designations';
                 $inputArr = [
                     'emp_designation_name' => $request->emp_designation_name,
                     'status' => $request->designation_status,
@@ -75,7 +75,7 @@ class EmployeeDesignationController extends Controller
                    'designation_status' => 'required',
                 ]);
 
-                $table = 'com_employee_designations';
+                $table = 'com_user_designations';
                 $idColumn = 'id';
                 $inputArr = [
                     'emp_designation_name' => $request->emp_designation_name,
@@ -100,14 +100,14 @@ class EmployeeDesignationController extends Controller
     {
         $whereArr = ['id' => $id];
         $title = 'Employee Designations';
-        $table = 'com_employee_designations';
+        $table = 'com_user_designations';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
 
     public function getAllEmployeeDesignations()
     {
-        $table = 'com_employee_designations';
+        $table = 'com_user_designations';
         $fields = '*';
         $emp_designations = $this->common->commonGetAll($table, $fields);
         return response()->json(['data' => $emp_designations], 200);
@@ -115,7 +115,7 @@ class EmployeeDesignationController extends Controller
 
     public function getEmployeeDesignationById($id){
         $idColumn = 'id';
-        $table = 'com_employee_designations';
+        $table = 'com_user_designations';
         $fields = '*';
         $emp_designations = $this->common->commonGetById($id, $idColumn, $table, $fields);
         return response()->json(['data' => $emp_designations], 200);

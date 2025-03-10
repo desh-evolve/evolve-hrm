@@ -18,7 +18,7 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
-                        <thead class="bg-primary text-white"/>
+                        <thead class="bg-primary text-white">
                             <tr>
                                 <th class="col">#</th>
                                 <th class="col">Branch Name</th>
@@ -53,7 +53,7 @@
                             <input type="text" class="form-control" id="branch_name" placeholder="Enter Branch Name" value="" >
                         </div>
                         <div class="col-xxl-6 col-md-6 mb-3">
-                            <label for="short_name" class="form-label mb-1">Branch Short Name</label>
+                            <label for="short_name" class="form-label mb-1 req">Branch Short Name</label>
                             <input type="text" class="form-control" id="short_name" placeholder="Enter Branch Short Name" value="">
                         </div>
                         <div class="col-xxl-6 col-md-6 mb-3">
@@ -91,7 +91,7 @@
                             <input type="text" class="form-control" id="contact_2" placeholder="Enter Contact 2" value="">
                         </div>
                         <div class="col-xxl-4 col-md-4 mb-3">
-                            <label for="email" class="form-label mb-1">Email</label>
+                            <label for="email" class="form-label mb-1 req">Email</label>
                             <input type="email" class="form-control" id="email" placeholder="Enter Email" value="">
                         </div>
                         <div class="col-xxl-4 col-md-4 mb-3">
@@ -175,7 +175,7 @@
             window.location.href = `/branch/bank/details/${branch_Id}`;
         });
 
-        
+
         //=====================================================================================
         async function getDropdownData() {
             try {
@@ -324,7 +324,7 @@
 
             const formFields = {
                 branch_name: 'required',
-                short_name: '', // Not required
+                short_name: 'required',
                 address_1: 'required',
                 address_2: '', // Not required
                 country_id: 'required',
@@ -332,7 +332,7 @@
                 city_id: 'required',
                 contact_1: 'required',
                 contact_2: '', // Not required
-                email: '', // Not required
+                email: 'required',
                 currency_id: 'required',
                 branch_status: 'required'
             };
@@ -403,6 +403,7 @@
             $('#email').val('');
             $('#currency_id').val('');
             $('#branch_status').val('active');
+            $('#error-msg').html('');
         }
 
     </script>

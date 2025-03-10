@@ -29,7 +29,7 @@
                         </div>
 
                         <div class="col-lg-10">
-                            <select class="form-select form-select-sm" id="userDropdown">
+                            <select class="form-select" id="userDropdown">
                                 <option value="">Select Employee</option>
                             </select>
                         </div>
@@ -70,31 +70,31 @@
                 <div class="modal-body">
                     <div id="qualification-form-body" class="row">
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="user_name" class="form-label mb-1">Employee Name</label>
+                        <div class="col-xxl-6 col-md-6 mb-3">
+                            <label for="user_name" class="form-label mb-1 mb-1 req">Employee Name</label>
                             <input type="text" class="form-control" id="user_name" value="" disabled>
                             <input type="hidden" class="form-control" id="user_id" value="" disabled>
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="qualification" class="form-label">qualification</label>
+                        <div class="col-xxl-6 col-md-6 mb-3">
+                            <label for="qualification" class="form-label mb-1 req">qualification</label>
                             <input type="text" class="form-control" id="qualification" rows="3">
                         </div>
 
-                        <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="institute" class="form-label">Institute</label>
+                        <div class="col-xxl-6 col-md-6 mb-3">
+                            <label for="institute" class="form-label mb-1 req">Institute Name</label>
                             <input type="text" class="form-control" id="institute" rows="3">
                         </div>
-                        <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="year" class="form-label">Year</label>
+                        <div class="col-xxl- col-md-6 mb-3">
+                            <label for="year" class="form-label mb-1 req">Year</label>
                             <input type="text" class="form-control" id="year" rows="3">
                         </div>
-                        <div class="col-xxl-3 col-md-6 mb-3">
-                            <label for="remarks" class="form-label">Remark</label>
+                        <div class="col-xxl-6 col-md-6 mb-3">
+                            <label for="remarks" class="form-label mb-1 req">Remark</label>
                             <input type="text" class="form-control" id="remarks" rows="3">
                         </div>
 
-                        <div class="col-xxl-4 col-md-6 mb-3">
+                        <div class="col-xxl-6 col-md-6 mb-3">
                             <label for="qualification_status" class="form-label mb-1 req">Status</label>
                             <select class="form-select" id="qualification_status">
                                 <option value="active">Active</option>
@@ -118,7 +118,7 @@
 
 <script>
 
-    let userId = "{{ $user->id }}";
+    let userId = "{{ $user->user_id }}";
 
     $(document).ready(async function() {
         await getEmployeeList();
@@ -158,8 +158,8 @@
 
                 // Loop through the users and add options
                 users.forEach(user => {
-                    let isSelected = user.id == userId ? "selected" : ""; // Pre-select if IDs match
-                    let option = `<option value="${user.id}" ${isSelected}>${user.first_name} ${user.last_name}</option>`;
+                    let isSelected = user.user_id == userId ? "selected" : ""; // Pre-select if IDs match
+                    let option = `<option value="${user.user_id}" ${isSelected}>${user.first_name} ${user.last_name}</option>`;
                     dropdown.append(option);
 
                     if (isSelected) {
@@ -170,7 +170,7 @@
                 if (userId) {
                     $('#userDropdown').val(userId); // Set the dropdown value
                     $('#user_name').val(userName); // Display the name in the input field
-                    await renderQualificationsTable(userId); 
+                    await renderQualificationsTable(userId);
                 }
             } else {
                 console.log('No users found');

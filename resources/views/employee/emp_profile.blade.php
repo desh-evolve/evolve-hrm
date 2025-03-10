@@ -1,5 +1,13 @@
 <!-- desh(2024-10-23) -->
 <x-app-layout :title="'Input Example'">
+    <style>
+        .avatar {
+            vertical-align: middle;
+            width: 250px;
+            height: 100px;
+        }
+    </style>
+
     <div class="profile-foreground position-relative mx-n4 mt-n4">
         <div class="profile-wid-bg">
             <img src="{{ asset('assets/images/profile-bg.jpg') }}" alt="" class="profile-wid-img" />
@@ -9,7 +17,7 @@
         <div class="row g-4">
             <div class="col-auto">
                 <div class="avatar-lg">
-                    <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="user-img" class="img-thumbnail rounded-circle" />
+                    <img src="" alt="user-img" class="avatar img-thumbnail rounded-circle" />
                 </div>
             </div>
             <div class="col">
@@ -330,8 +338,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered border-secondary">
-                                                <thead class="bg-secondary text-white">
+                                            <table class="table table-bordered border-muted">
+                                                <thead class="bg-primary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">File Name</th>
@@ -396,8 +404,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered border-secondary">
-                                                <thead class="bg-secondary text-white">
+                                            <table class="table table-bordered border-muted">
+                                                <thead class="bg-primary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Qualification</th>
@@ -429,8 +437,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered border-secondary">
-                                                <thead class="bg-secondary text-white">
+                                            <table class="table table-bordered border-muted">
+                                                <thead class="bg-primary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Company</th>
@@ -463,8 +471,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered border-secondary">
-                                                <thead class="bg-secondary text-white">
+                                            <table class="table table-bordered border-muted">
+                                                <thead class="bg-primary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Prev Designation</th>
@@ -498,8 +506,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered border-secondary">
-                                                <thead class="bg-secondary text-white">
+                                            <table class="table table-bordered border-muted">
+                                                <thead class="bg-primary text-white">
                                                     <tr>
                                                         <th scope="col">#</th>
                                                         <th scope="col">Branch</th>
@@ -533,8 +541,8 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered border-secondary">
-                                                <thead class="bg-secondary text-white">
+                                            <table class="table table-bordered border-muted">
+                                                <thead class="bg-primary text-white">
                                                     <tr>
                                                         <th scope="col">File Name</th>
                                                         <th scope="col">Type</th>
@@ -565,12 +573,12 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered border-secondary">
+                                            <table class="table table-bordered border-primary">
                                                 <tbody id="bank-table-body">
-                                                    <tr><th>Bank Code</th><td>123456789</td></tr>
-                                                    <tr><th>Bank Name</th><td>Commercial Bank</td></tr>
-                                                    <tr><th>Bank Branch</th><td>Kandy</td></tr>
-                                                    <tr><th>Account No</th><td>78945123</td></tr>
+                                                    <tr><th>Bank Code</th></tr>
+                                                    <tr><th>Bank Name</th></tr>
+                                                    <tr><th>Bank Branch</th></tr>
+                                                    <tr><th>Account No</th></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -592,4 +600,5 @@
 
     <!-- javascript functions -->
     @include('employee.emp_profile_js')
+    
 </x-app-layout>

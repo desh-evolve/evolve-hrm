@@ -11,9 +11,17 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-0">Add Premium Policy</h5>
+                        <h5 class="mb-0 title-form">Add Premium Policy</h5>
                     </div>
+
+                    <div class="justify-content-md-end">
+                        <div class="d-flex justify-content-end">
+                            <a href="/policy/premium" class="btn btn-danger">Back</a>
+                        </div>
+                    </div>
+
                 </div>
+
                 <div class="card-body">
                     <form>
 
@@ -41,7 +49,7 @@
                         </div>
 
                         <div id="date_time_section">
-                            <u><h5 class="bg-primary text-white">Date/Time Criteria</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Date/Time Criteria</h5>
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="start_date" class="form-label mb-1 col-md-3">Start Date</label>
                                 <div class="col-md-9 d-flex align-items-center">
@@ -125,10 +133,10 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
+
+
                         <div id="differential_section">
-                            <u><h5 class="bg-primary text-white">Differential Criteria</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Differential Criteria</h5>
                             <div class="row mb-3">
                                 <label for="branch_id" class="form-label mb-1 col-md-3">Branches</label>
                                 <div class="col-md-9" id="branchContainer">
@@ -145,7 +153,7 @@
                         </div>
 
                         <div id="meal_section">
-                            <u><h5 class="bg-primary text-white">Meal/Break Criteria</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Meal/Break Criteria</h5>
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="daily_trigger_time2" class="form-label mb-1 col-md-3">Active After Daily Hours</label>
                                 <div class="col-md-9 d-flex align-items-center">
@@ -170,7 +178,7 @@
                         </div>
 
                         <div id="callback_section">
-                            <u><h5 class="bg-primary text-white">Callback Criteria</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Callback Criteria</h5>
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="minimum_time_between_shift" class="form-label mb-1 col-md-3">Minimum Time Between Shifts</label>
                                 <div class="col-md-9 d-flex align-items-center">
@@ -188,7 +196,7 @@
                         </div>
 
                         <div id="min_shift_section">
-                            <u><h5 class="bg-primary text-white">Minimum Shift Time Criteria</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Minimum Shift Time Criteria</h5>
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="minimum_shift_time" class="form-label mb-1 col-md-3">Minimum Shift Time</label>
                                 <div class="col-md-9 d-flex align-items-center">
@@ -197,9 +205,9 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="hours_section">
-                            <u><h5 class="bg-primary text-white">Hours/Pay Criteria</h5></u>
+                            <h5 class="bg-primary text-white p-1 mb-3">Hours/Pay Criteria</h5>
                             <div class="row mb-3" id="min_emp_days_section">
                                 <label for="minimum_time" class="form-label mb-1 col-md-3">Minimum Time</label>
                                 <div class="col-md-9 d-flex align-items-center">
@@ -286,6 +294,13 @@
             getDropdownData();
             showSections('date_time');
 
+            // Change title
+            let storedTitle = localStorage.getItem('editTitle');
+            if (storedTitle) {
+                $('.title-form').html(storedTitle);
+                localStorage.removeItem('editTitle');
+            }
+
             <?php if (isset($_GET['id'])): ?>
                 const id = <?= json_encode($_GET['id']); ?>; // Safely pass PHP variable to JavaScript
                 getUpdateData(id);
@@ -354,6 +369,7 @@
                 $('#minimum_first_shift_time').val(convertSecondsToHoursAndMinutes(data.minimum_first_shift_time || 0));
                 $('#minimum_shift_time').val(convertSecondsToHoursAndMinutes(data.minimum_shift_time || 0));
 
+
                 // Set branch multiSelector values
                 const branchIds = data.branches.map(branch => branch.branch_id);
 
@@ -394,6 +410,10 @@
                 $('#pay_stub_entry_account_id').val(data.pay_stub_entry_account_id || 0).trigger('change');
                 $('#accrual_policy_id').val(data.accrual_policy_id || 0).trigger('change');
 
+                // Handle "Type" change manually for correct UI adjustments
+                showSections(data.type);
+                updatePayTypeFields(data.pay_type);
+
             } catch (error) {
                 console.error('Error fetching premium policy data:', error);
             }
@@ -428,8 +448,8 @@
                     // Call renderDepartments to display the filtered departments
                     renderDepartments(filteredDepartments);
                 }
-            }); 
-            
+            });
+
         }
 
         function renderDepartments(departments){
@@ -442,6 +462,7 @@
             });
         }
 
+        // change type
         $(document).on('change', '#type', function () {
             let type = $(this).val();
             showSections(type);
@@ -451,7 +472,7 @@
             // Hide all sections initially
             const sections = ['#date_time_section', '#differential_section', '#meal_section', '#callback_section', '#min_shift_section', '#hours_section'];
             sections.forEach(section => $(section).hide());
-            
+
             // Determine which sections to show based on the selected type
             const typeMap = {
                 'date_time': ['#date_time_section', '#hours_section'],
@@ -462,7 +483,7 @@
                 'holiday': ['#hours_section'],
                 'advanced': ['#date_time_section', '#differential_section', '#hours_section']
             };
-            
+
             if (typeMap[type]) {
                 typeMap[type].forEach(section => $(section).show());
             } else {
@@ -470,9 +491,15 @@
             }
         }
 
+
+        // Change pay_type
         $(document).on('change', '#pay_type', function(){
             let pay_type = $(this).val();
+            updatePayTypeFields(pay_type);
+        });
 
+
+        function updatePayTypeFields(pay_type) {
             if(pay_type === 'pay_multiplied'){
                 $('#rate').closest('.row').find('label').text('Rate');
                 $('#rate').closest('.row').find('span').text('(ie: 1.5 for time and a half)');
@@ -488,8 +515,10 @@
             }else{
                 console.error('Wrong pay type selected');
             }
-        })
+        }
 
+
+        // Add  Edit Submit
         $(document).on('click', '#form_submit', async function (e) {
             e.preventDefault(); // Prevent default form submission
 
@@ -583,7 +612,7 @@
                 await commonAlert(res.status, res.message);
 
                 if (res.status === 'success') {
-                    //window.location.href = '/policy/premium';
+                    window.location.href = '/policy/premium';
                 }
             } catch (error) {
                 console.error('Error:', error);

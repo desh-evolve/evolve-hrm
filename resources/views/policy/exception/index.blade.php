@@ -50,16 +50,16 @@
                         showWarning = showWarning ? true : ex.policy_groups.length === 0 ? true : false;
                         list += `
                             <tr exception_policy_control_id="${ex.id}" class="${ex.policy_groups.length > 0 ? '' : 'bg-warning'}">
-                                <td>${i+1}</td>    
-                                <td>${ex.name}</td>    
+                                <td>${i+1}</td>
+                                <td>${ex.name}</td>
                                 <td>
                                     <button type="button" class="btn btn-info waves-effect waves-light btn-sm click_edit_exc_pol" title="Edit Exception Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-pencil-fill"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger waves-effect waves-light btn-sm click_delete_exc_pol" title="Delete Exception Policy" data-tooltip="tooltip" data-bs-placement="top">
                                         <i class="ri-delete-bin-fill"></i>
-                                    </button>    
-                                </td>    
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     })
@@ -82,7 +82,10 @@
 
         $(document).on('click', '.click_edit_exc_pol', function(){
             let ex_pol_id = $(this).closest('tr').attr('exception_policy_control_id');
-            
+            let title = `Edit Exception Policy`;
+
+            localStorage.setItem('editTitle', title);
+
             window.location.href = '/policy/exception/form?id='+ex_pol_id;
         })
 

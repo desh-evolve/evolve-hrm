@@ -122,7 +122,7 @@
                             <button type="button" class="btn btn-success right add_doc_to_list"><i class="ri-add-line"></i></button>
                         </div>
                     </div>
-                    
+
 
                     <!-- Existing file display area -->
                     <div class="row existing-file align-items-center mb-3" style="display: none;">
@@ -178,7 +178,7 @@
 
 <script>
 
-let userId = "{{ $user->id }}";
+let userId = "{{ $user->user_id }}";
 let dropdownData = [];
 let filesArray = [];
 
@@ -264,7 +264,7 @@ let filesArray = [];
             if (dropdownData) {
             // Populate user name dropdown
             let userList = (dropdownData?.users || [])
-                .map(user => `<option value="${user.id}">${user.first_name} ${user.last_name}</option>`)
+                .map(user => `<option value="${user.user_id}">${user.first_name} ${user.last_name}</option>`)
                 .join('');
             $('#userDropdown').html('<option value="">Select Employee</option>' + userList);
 
@@ -367,7 +367,7 @@ let filesArray = [];
                     <td>${fileName}</td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm click_remove_document" title="Remove Document">
-                            <i class="bi bi-x-lg"></i>
+                            <i class="ri-delete-bin-fill"></i>
                         </button>
                     </td>
                 </tr>

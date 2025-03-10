@@ -82,30 +82,32 @@
                             ? '<span class="badge rounded-pill border border-success text-success">Active</span>'
                             : '<span class="badge rounded-pill border border-warning text-warning">Inactive</span>';
 
+                    const userId = user.user_id || '';
+
                     return `
                         <tr emp_id="${user.id}">
                             <td>${i + 1}</td>
-                            <td>${user.user_id || 'N/A'}</td>
-                            <td>${user.name_with_initials || 'N/A'}</td>
+                            <td>${userId || 'N/A'}</td>
+                            <td>${user.first_name} ${user.last_name}</td>
                             <td>${user.nic || 'N/A'}</td>
                             <td>${user.contact_1 || 'N/A'}</td>
                             <td>${stt}</td>
                             <td>
                                 <div class="user-functions-1 button-set text-center">
-                                    <a href="#" class="text-primary manage-qualification" data-id="${user.id}">[Qualifications]</a>
-                                    <a href="#" class="text-primary manage-document" data-id="${user.id}">[Doc]</a>
-                                    <a href="#" class="text-primary manage-work" data-id="${user.id}">[Work Experience]</a>
+                                    <a href="#" class="text-primary manage-qualification" data-user_id="${userId}">[Qualifications]</a>
+                                    <a href="#" class="text-primary manage-document" data-user_id="${userId}">[Doc]</a>
+                                    <a href="#" class="text-primary manage-work" data-user_id="${userId}">[Work Experience]</a>
                                 </div>
                                 <div class="user-functions-2 button-set text-center">
-                                    <a href="#" class="text-primary manage-promotion" data-id="${user.id}">[Promotion]</a>
-                                    <a href="#" class="text-primary manage-family" data-id="${user.id}">[Family]</a>
-                                    <a href="#" class="text-primary manage-jobhistory" data-id="${user.id}">[Job History]</a>
+                                    <a href="#" class="text-primary manage-promotion" data-user_id="${userId}">[Promotion]</a>
+                                    <a href="#" class="text-primary manage-family" data-user_id="${userId}">[Family]</a>
+                                    <a href="#" class="text-primary manage-jobhistory" data-user_id="${userId}">[Job History]</a>
                                 </div>
                                 <div class="payroll-functions button-set" style="display: none;">
-                                    <a href="#" class="text-primary bg-success manage-bank" data-id="${user.id}">[Bank]</a>
-                                    <a href="#" class="text-primary bg-success manage-wage" data-id="${user.id}">[Wage]</a>
-                                    <a href="#" class="text-primary manage-tax" data-id="${user.id}">[Tax]</a>
-                                    <a href="#" class="text-primary manage-amendments" data-id="${user.id}">[PS Amendments]</a>
+                                    <a href="#" class="text-primary bg-success manage-bank" data-user_id="${userId}">[Bank]</a>
+                                    <a href="#" class="text-primary bg-success manage-wage" data-user_id="${userId}">[Wage]</a>
+                                    <a href="#" class="text-primary manage-tax" data-user_id="${userId}">[Tax]</a>
+                                    <a href="#" class="text-primary manage-amendments" data-user_id="${userId}">[PS Amendments]</a>
                                 </div>
                             </td>
                             <td>
@@ -132,8 +134,8 @@
         }
 
 //===================================================================================
- // Event Listeners for Function Toggles
- //===================================================================================
+// Event Listeners for Function Toggles
+//===================================================================================
         function bindFunctionToggles() {
             $('#show_user_functions').off('click').on('click', function (event) {
                 event.preventDefault();
@@ -199,71 +201,97 @@
 //========================================================================================
 
         // Navigate to Employee Bank Details Page
-        $(document).on('click', '.manage-bank', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/bank/details/${userId}`;
+        $(document).on('click', '.manage-bank, .manage-qualification, .manage-document, .manage-work, .manage-promotion, .manage-family, .manage-jobhistory, .manage-wage, .manage-tax, .manage-amendments', function () {
+            const userId = $(this).data('user_id');
+
+            if (!userId) {
+                console.log('successfull user_id', userId);
+                return;
+            }
+
+            const actionMap = {
+                'manage-qualification':'qualification',
+                'manage-document':'document',
+                'manage-work':'work_experience',
+                'manage-promotion':'promotion',
+                'manage-family':'family',
+                'manage-jobhistory':'jobhistory',
+                'manage-bank':'bank',
+                'manage-wage':'wage',
+                'manage-tax':'tax',
+                'manage-amendments':'amendments',
+            };
+
+            const actionClass = $(this).attr('class').split(' ').find(cls => actionMap[cls]);
+
+             if (actionClass) {
+                window.location.href = `/employee/${actionMap[actionClass]}/details/${userId}`;
+            }
+
         });
 
         // Navigate to Employee wage Details Page
-        $(document).on('click', '.manage-wage', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/wage/details/${userId}`;
-        });
+        // $(document).on('click', '.manage-wage', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/wage/details/${userId}`;
+        // });
 
 
         // Navigate to Employee tax Details Page
-        $(document).on('click', '.manage-tax', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/tax/details/${userId}`;
-        });
+        // $(document).on('click', '.manage-tax', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/tax/details/${userId}`;
+        // });
 
         // Navigate to Employee ps amendments Details Page
-        $(document).on('click', '.manage-amendments', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/amendments/details/${userId}`;
-        });
+        // $(document).on('click', '.manage-amendments', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/amendments/details/${userId}`;
+        // });
 
 //========================================================================================
 // Navigate to Employees' employee details
 //========================================================================================
 
         // Navigate to Employee qualification Details Page
-        $(document).on('click', '.manage-qualification', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/qualification/details/${userId}`;
-        });
+        // $(document).on('click', '.manage-qualification', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/qualification/details/${userId}`;
+        // });
 
         // Navigate to Employee documentation Page
-        $(document).on('click', '.manage-document', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/document/details/${userId}`;
-        });
+        // $(document).on('click', '.manage-document', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/document/details/${userId}`;
+        // });
 
 
-         // Navigate to Employee work-experience Details Page
-         $(document).on('click', '.manage-work', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/work_experience/details/${userId}`;
-        });
+        // Navigate to Employee work-experience Details Page
+        // $(document).on('click', '.manage-work', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/work_experience/details/${userId}`;
+        // });
 
-         // Navigate to Employee promotion Details Page
-         $(document).on('click', '.manage-promotion', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/promotion/details/${userId}`;
-        });
+        // Navigate to Employee promotion Details Page
+        // $(document).on('click', '.manage-promotion', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/promotion/details/${userId}`;
+        // });
 
-         // Navigate to Employee family Details Page
-         $(document).on('click', '.manage-family', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/family/details/${userId}`;
-        });
+        // Navigate to Employee family Details Page
+        // $(document).on('click', '.manage-family', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/family/details/${userId}`;
+        // });
 
-         // Navigate to Employee job-history Details Page
-         $(document).on('click', '.manage-jobhistory', function () {
-            const userId = $(this).data('id');
-            window.location.href = `/employee/jobhistory/details/${userId}`;
-        });
+        // Navigate to Employee job-history Details Page
+        // $(document).on('click', '.manage-jobhistory', function () {
+        //     const userId = $(this).data('user_id');
+        //     window.location.href = `/employee/jobhistory/details/${userId}`;
+        // });
 
+
+       
     });
 
 </script>

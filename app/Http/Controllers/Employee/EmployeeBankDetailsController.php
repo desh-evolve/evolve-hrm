@@ -16,7 +16,6 @@ class EmployeeBankDetailsController extends Controller
         $this->middleware('permission:view employee bank details', ['only' => [
             'index',
             'getBankDetailsByEmpId',
-            'getAllEmployee',
             'showBankDetails',
             ]]);
 
@@ -43,12 +42,6 @@ class EmployeeBankDetailsController extends Controller
         $fields = '*';
         $user = $this->common->commonGetById($id, $idColumn, $table, $fields);
 
-
-        // Check if the user exists
-        if (!$user || count($user) === 0) {
-            abort(404, 'Employee not found.');
-        }
-
         // Fetch bank details associated with the user
         $bankDetails = $this->common->commonGetById($id, 'user_id', 'emp_bank_details', '*');
 
@@ -58,7 +51,8 @@ class EmployeeBankDetailsController extends Controller
 
 
     //pawanee(2024-11-08)
-    public function createBankDetails(Request $request){
+    public function createBankDetails(Request $request)
+    {
         try {
             return DB::transaction(function () use ($request) {
                 $request->validate([
@@ -156,12 +150,6 @@ class EmployeeBankDetailsController extends Controller
 
 
 
-    public function getAllEmployee()
-    {
-        $table = 'emp_employees';
-        $fields = '*';
-        $users = $this->common->commonGetAll($table, $fields);
-        return response()->json(['data' => $users], 200);
-    }
+
 
 }
