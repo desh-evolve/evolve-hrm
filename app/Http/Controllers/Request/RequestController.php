@@ -12,8 +12,6 @@ class RequestController extends Controller
 {
 
     // not complete
-
-
     private $common = null;
 
     public function __construct()

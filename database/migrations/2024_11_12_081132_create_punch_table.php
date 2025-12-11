@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->integer('punch_control_id');
             $table->integer('station_id')->nullable();
-            $table->string('punch_type', 11)->comment('normal/lunch/break');
-            $table->string('punch_status', 11)->comment('in/out');
+            $table->string('punch_type', 11)->comment('normal(10), lunch(20), break(30)');
+            $table->string('punch_status', 11)->comment('in(10), out(20)');
             $table->timestamp('time_stamp')->nullable()->comment('entered value');
             $table->timestamp('original_time_stamp')->nullable()->comment('when editing store original here');
             $table->timestamp('actual_time_stamp')->nullable()->comment('created at');
 
-            $table->boolean('transfer')->default(0);
+            $table->boolean('transfer')->default(0)->comment('no(0), yes(1)');
             $table->decimal('longitude', 15, 10)->nullable();
             $table->decimal('latitude', 15, 10)->nullable();
 

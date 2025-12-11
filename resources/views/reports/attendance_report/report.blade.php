@@ -1,11 +1,11 @@
-<x-app-layout :title="'Input Example'">
+<x-app-layout :title="'Attendance Report'">
 
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <div>
-                        <h5 class="mb-0">Attendance Report</h5>
+                        <h5 class="mb-0">Employee Attendance Report</h5>
                     </div>
                 </div>
                 <div class="card-body">
@@ -14,61 +14,56 @@
                             <thead class="bg-primary text-white">
                                 <tr>
                                     <th class="col">#</th>
-                                    <th class="col">First Name</th>
-                                    <th class="col">Last Name</th>
-                                    <th class="col">Title</th>
-                                    <th class="col">Home Phone</th>
-                                    <th class="col">Address 1</th>
-                                    <th class="col">City</th>
-                                    <th class="col">Province/State</th>
-                                    <th class="col">Postal Code</th>
-                                    <th class="col">Status</th>
+                                    <th class="col">Full Name</th>
+                                    <th class="col">Employee Number</th>
+                                    <th class="col">Date</th>
+                                    <th class="col">Total Time Worked</th>
+                                    <th class="col">Schedule Start</th>
+                                    <th class="col">Schedule End</th>
+                                    <th class="col">Hourly Rate</th>
+                                    <th class="col">Verified Time Sheet</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($dataList as $item)
-                                    <tr>
-                                        <td>{{ $item['id'] }}</td>
-                                        <td>{{ $item['first_name'] }}</td>
-                                        <td>{{ $item['last_name'] ?? '-' }}</td>
-                                        <td>{{ $item['title'] }}</td>
-                                        <td>{{ $item['home_contact'] }}</td>
-                                        <td>{{ $item['address_1'] }}</td>
-                                        <td>{{ $item['city_name'] }}</td>
-                                        <td>{{ $item['province_name'] }}</td>
-                                        <td>{{ $item['postal_code'] }}</td>
-                                        <td>
-                                            @php
-                                                switch ($item['user_status']) {
-                                                    case '1':
-                                                        echo 'Active';
-                                                        break;
-                                                    case '2':
-                                                        echo 'Leave - Illness/Injury';
-                                                        break;
-                                                    case '3':
-                                                        echo 'Leave - Maternity/Parental';
-                                                        break;
-                                                    case '4':
-                                                        echo 'Leave - Other';
-                                                        break;
-                                                    default:
-                                                        echo 'Terminated';
-                                                        break;
-                                                }
-                                            @endphp
-                                        </td>
-                                    </tr>
+                                    @foreach ($item['data']['date_totals'] as $index => $dateTotal)
+                                        <tr>
+                                            <td>{{ $item['user_id'] }}</td>
+                                            <td>{{ $item['full_name'] }}</td>
+                                            <td>{{ $item['employee_number'] ?? '-' }}</td>
+                                            <td>{{ $dateTotal['date_stamp'] }}</td>
+                                            <td>
+                                                @php
+                                                    $totalTime = $dateTotal['total_time'];
+                                                    $hours = floor($totalTime / 3600);
+                                                    $minutes = floor(($totalTime % 3600) / 60);
+                                                    echo "{$hours} hours {$minutes} minutes";
+                                                @endphp
+                                            </td>
+                                            <td>
+                                                {{ isset($item['data']['schedules'][$index]['start_time']) ? 
+                                                    date('H:i:s', strtotime($item['data']['schedules'][$index]['start_time'])) : '-' }}
+                                            </td>
+                                            <td>
+                                                {{ isset($item['data']['schedules'][$index]['end_time']) ? 
+                                                    date('H:i:s', strtotime($item['data']['schedules'][$index]['end_time'])) : '-' }}
+                                            </td>
+                                            <td>
+                                                {{ isset($item['data']['wages'][0]['hourly_rate']) ? 
+                                                    number_format($item['data']['wages'][0]['hourly_rate'], 2) : '-' }}
+                                            </td>
+                                            <td>{{ $item['verified_time_sheet'] }}</td>
+                                        </tr>
+                                    @endforeach
                                 @endforeach
                             </tbody>
                         </table>
                     @else
-                        <p>No Employees Details records found.</p>
+                        <p>No attendance records found.</p>
                     @endif
                 </div>
             </div>
         </div>
     </div>
-
 
 </x-app-layout>

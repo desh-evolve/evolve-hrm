@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <div class="card">
+            <div class="card" id="view_accrual_balance_table_body">
 
                 <div class="card-header align-items-center d-flex justify-content-between">
                     <h5 class="mb-0">Accrual Balance List</h5>
@@ -53,6 +53,35 @@
                     </table>
                 </div>
             </div>
+
+            <div class="card" id="view_accrual_table_body" style="display:none;">
+
+                <div class="card-header align-items-center d-flex justify-content-between">
+                    <h5 class="mb-0">Accrual List</h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-bordered">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>#</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all_accrual_table_body">
+                            <tr>
+                                <td colspan="8" class="text-center">Please Select an Employee...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -60,28 +89,22 @@
 
     <script>
         let userId = '';
+        let accrualBalanceId = '';
+        let accrualId = '';
 
-        $(document).ready(async function () {
-            await getDropdownData();
+        $(document).ready(async function() {
+            await getEmployeeDropdownData();
         });
 
-        async function getDropdownData() {
+        async function getEmployeeDropdownData() {
             try {
                 const dropdownData = await commonFetchData('/accrual/dropdown');
                 const employeeList = (dropdownData?.users || [])
-                    .map(emp => `<option value="${emp.user_id}">${emp.first_name} ${emp.last_name} (Emp ID: ${emp.id})</option>`)
+                    .map(emp =>
+                        `<option value="${emp.user_id}">${emp.first_name} ${emp.last_name} (Emp ID: ${emp.id})</option>`
+                    )
                     .join('');
                 $('#userId').html('<option value="">Select Employee Name</option>' + employeeList);
-                
-                const accrualpolicyList = (dropdownData?.accrual_policy || [])
-                    .map(accrual => `<option value="${accrual.id}">${accrual.name}</option>`)
-                    .join('');
-                $('#accrual_policy_id').html('<option value="">Select Accrual policy</option>' + accrualpolicyList);
-                
-                const typeList = (dropdownData?.type || [])
-                    .map(type => `<option value="${type.id}">${type.name}</option>`)
-                    .join('');
-                $('#type').html('<option value="">Select Type</option>' + typeList);
 
 
             } catch (error) {
@@ -89,7 +112,7 @@
             }
         }
 
-        $(document).on('change', '#userId', async function () {
+        $(document).on('change', '#userId', async function() {
             $('.emp_error').removeClass('d-block').addClass('d-none');
             userId = $(this).val();
 
@@ -117,7 +140,7 @@
                 if (accruals && accruals.length > 0) {
                     accruals.forEach((item, i) => {
                         rows += `
-                            <tr accrual_id="${item.id}">
+                            <tr accrual_balance_id="${item.accrual_policy_id}">
                                 <td>${i + 1}</td>
                                 <td>${item.accrual_policy_name}</td>
                                 <td>${item.balance}</td>
@@ -127,11 +150,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-info btn-sm click-edit-accrual" title="Edit">
-                                        <i class="ri-pencil-fill"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-danger btn-sm click_delete_accrual" title="Delete">
-                                        <i class="ri-delete-bin-fill"></i>
+                                    <button type="button" class="btn btn-info btn-sm click-view-accrual" title="Edit">
+                                        <i class="ri-eye-line"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -147,28 +167,29 @@
             }
         }
 
-        $(document).on('click', '#add_new_accrual_btn', function () {
+
+        $(document).on('click', '#add_new_accrual_btn', function() {
             resetForm();
 
             let userId = $('#userId').val();
-            if(!userId){
+            if (!userId) {
                 $('.emp_error').removeClass('d-none').addClass('d-block');
                 $('#user_name').val('');
                 $('#user_id').val('');
-            }else{
+            } else {
                 $('.emp_error').removeClass('d-block').addClass('d-none');
                 $('#accrual-form-title').text('Add New Accrual Balance');
-                
+
                 const userName = $('#userId option:selected').text();
                 $('#user_name').val(userName);
                 $('#user_id').val(userId);
-                
+
                 $('#accrual-form-modal').modal('show');
             }
         });
 
-        $(document).on('click', '.click-edit-accrual', async function () {
-            const accrualId = $(this).closest('tr').attr('accrual_id');
+        $(document).on('click', '.click-edit-accrual', async function() {
+             accrualId = $(this).closest('tr').attr('accrual_id');
 
             try {
                 let accrualData = await commonFetchData(`/accrual/single_accrual/${accrualId}`);
@@ -181,6 +202,11 @@
                 $('#accrual_policy_id').val(accrualData.accrual_policy_id);
                 $('#user_id').val(accrualData.user_id);
                 $('#accrual_status').val(accrualData.status);
+                $('#accrual_balance_id').val(accrualBalanceId);
+
+                let userId = $('#userId').val();
+                const userName = $('#userId option:selected').text();
+                $('#user_name').val(userName);
 
 
                 $('#accrual-form-title').text('Edit accrual');
@@ -190,7 +216,63 @@
             }
         });
 
-        $(document).on('click', '.click_delete_accrual', async function () {
+
+        $(document).on('click', '.click-view-accrual', async function() {
+             accrualBalanceId = $(this).closest('tr').attr('accrual_balance_id');
+
+            try {
+                const accruals = await commonFetchData(`/accrual/accrual_list/${accrualBalanceId}`);
+                console.log(accruals);
+                
+                let rows = '';
+
+                if (accruals && accruals.length > 0) {
+                    accruals.forEach((item, i) => {
+                        rows += `
+                    <tr accrual_id="${item.id}">
+                        <td>${i + 1}</td>
+                        <td>${item.type == '1' ? 'Awarded'
+                            : item.type == '2' ? 'Un-Awarded'
+                            : item.type == '3' ? 'Gift'
+                            : item.type == '4' ? 'Paid Out'
+                            : item.type == '5' ? 'Rollover Adjustment'
+                            : item.type == '6' ? 'Initial Balance'
+                            : 'Other'}</td>
+                        <td>${item.amount}</td>
+                        <td>${item.time_stamp}</td>
+                        <td class="text-capitalize">
+                            <span class="badge border ${item.status === 'active' ? 'border-success text-success' : 'border-warning text-warning'}">
+                                ${item.status}
+                            </span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm click-edit-accrual" title="Edit">
+                                <i class="ri-pencil-fill"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm click_delete_accrual" title="Delete">
+                                <i class="ri-delete-bin-fill"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                    });
+                } else {
+                    rows = '<tr><td colspan="8" class="text-danger text-center">No accruals Yet!</td></tr>';
+                }
+
+                // Append rows to the accrual table body
+                $('#all_accrual_table_body').html(rows);
+
+                // Show the accrual table and hide the balance table
+                $('#view_accrual_table_body').show();
+                $('#view_accrual_balance_table_body').hide();
+            } catch (error) {
+                console.error('Error fetching accrual data:', error);
+            }
+        });
+
+
+        $(document).on('click', '.click_delete_accrual', async function() {
             const accrualId = $(this).closest('tr').attr('accrual_id');
 
             try {

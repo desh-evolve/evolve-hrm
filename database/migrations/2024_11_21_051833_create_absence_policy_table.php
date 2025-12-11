@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id(); // Auto-increment primary key
             $table->integer('company_id')->unsigned();
             $table->string('name', 250);
-            $table->string('type')->nullable()->comment('paid/ paid_above_salary/ unpaid/ dock');
+            $table->string('type')->nullable()->comment('paid(10), paid_above_salary(12), unpaid(20), dock(30)');
             $table->boolean('over_time')->default(0);
             $table->integer('accrual_policy_id')->unsigned()->nullable();
             $table->integer('premium_policy_id')->unsigned()->nullable();

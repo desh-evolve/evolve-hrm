@@ -18,6 +18,7 @@ use App\Http\Controllers\Company\WageGroupController;
 use App\Http\Controllers\Company\CurrencyController;
 use App\Http\Controllers\Company\BranchBankDetailsController;
 use App\Http\Controllers\Company\HierarchyController;
+use App\Http\Controllers\Company\StationController;
 
 use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Employee\EmployeeQualificationController;
@@ -262,7 +263,7 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/employee/bank/delete/{id}', [EmployeeBankDetailsController::class, 'deleteBankDetails'])->name('employee.bank.delete');
     Route::get('/employee/bank/{id}', [EmployeeBankDetailsController::class, 'getBankDetailsByEmpId'])->name('employee.bank.getById');
 
-     //==============================================================================================================================
+    //==============================================================================================================================
     // User Preference
     //==============================================================================================================================
     Route::get('/employee/user_preference', [UserPreferenceController::class, 'index'])->name('employee.user_preference');
@@ -301,6 +302,17 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     Route::delete('/company/currency/delete/{id}', [CurrencyController::class, 'deleteCurrency'])->name('company.currency.delete');
     Route::get('/company/allcurrency', [CurrencyController::class, 'getAllCurrency'])->name('company.currency.all');
     Route::get('/company/currency/{id}', [CurrencyController::class, 'getCurrencyById'])->name('company.currency.getById');
+    //==============================================================================================================================
+    // Station
+    //==============================================================================================================================
+    Route::get('/company/station', [StationController::class, 'index'])->name('company.station.index');
+    Route::get('/company/station/form', [StationController::class, 'form'])->name('company.station.form');
+    Route::post('/company/station/create', [StationController::class, 'createStation'])->name('company.station.create');
+    Route::put('/company/station/update/{id}', [StationController::class, 'updateStation'])->name('company.station.update');
+    Route::delete('/company/station/delete/{id}', [StationController::class, 'deleteStation'])->name('company.station.delete');
+    Route::get('/company/station/dropdown', [StationController::class, 'getDropdownList'])->name('company.station.dropdown');
+    Route::get('/company/station/allStation', [StationController::class, 'getAllStation'])->name('company.station.all');
+    Route::get('/company/station/{id}', [StationController::class, 'getStationById'])->name('company.station.getById');
 
 
     //==============================================================================================================================
@@ -641,24 +653,22 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
     // ============= Reports ==============================
     // ========================================================================================================
 
-     // Employee Detail Report
-     Route::get('/reports/employee_detail_report', [EmployeeDetailReportController::class, 'index'])->name('reports.employee_detail_report');
-     Route::get('/reports/employee_detail_report/report', [EmployeeDetailReportController::class, 'form'])->name('reports.employee_detail_report.report');
-     Route::get('/reports/employee_detail_report/dropdown', [EmployeeDetailReportController::class, 'getDropdownData'])->name('reports.employee_detail_report.dropdown');
-     Route::get('/reports/employee_detail_report/list', [EmployeeDetailReportController::class, 'getReportData'])->name('reports.employee_detail_report.list');
-     // Employee Detail Report
-     Route::get('/reports/attendance_report', [AttendanceReportController::class, 'index'])->name('reports.attendance_report');
-     Route::get('/reports/attendance_report/report', [AttendanceReportController::class, 'form'])->name('reports.attendance_report.report');
-     Route::get('/reports/attendance_report/dropdown', [AttendanceReportController::class, 'getDropdownData'])->name('reports.attendance_report.dropdown');
-     Route::get('/reports/attendance_report/list', [AttendanceReportController::class, 'getReportData'])->name('reports.attendance_report.list');
+    // Employee Detail Report
+    Route::get('/reports/employee_detail_report', [EmployeeDetailReportController::class, 'index'])->name('reports.employee_detail_report');
+    Route::get('/reports/employee_detail_report/report', [EmployeeDetailReportController::class, 'form'])->name('reports.employee_detail_report.report');
+    Route::get('/reports/employee_detail_report/dropdown', [EmployeeDetailReportController::class, 'getDropdownData'])->name('reports.employee_detail_report.dropdown');
+    Route::get('/reports/employee_detail_report/list', [EmployeeDetailReportController::class, 'getReportData'])->name('reports.employee_detail_report.list');
+    // Employee Detail Report
+    Route::get('/reports/attendance_report', [AttendanceReportController::class, 'index'])->name('reports.attendance_report');
+    Route::get('/reports/attendance_report/report', [AttendanceReportController::class, 'form'])->name('reports.attendance_report.report');
+    Route::get('/reports/attendance_report/dropdown', [AttendanceReportController::class, 'getDropdownData'])->name('reports.attendance_report.dropdown');
+    Route::get('/reports/attendance_report/list', [AttendanceReportController::class, 'getReportData'])->name('reports.attendance_report.list');
 
     //==============================================================================================================================
     // Company => this should be on the bottom of the page
     //==============================================================================================================================
     // Company Info index
     Route::get('/company/info', [CompanyController::class, 'index'])->name('company.info');
-    Route::get('/company/info/dropdown', [CompanyController::class, 'getCompanyDropdownData'])->name('company.info.dropdown');
-    Route::post('/company/create', [CompanyController::class, 'createCompany'])->name('company.create');
     Route::put('/company/update/{id}', [CompanyController::class, 'updateCompany'])->name('company.update');
     Route::get('/company/{id}', [CompanyController::class, 'getCompanyByCompanyId'])->name('company.getById');
 

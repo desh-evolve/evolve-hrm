@@ -16,12 +16,7 @@ class CompanyController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:view company', ['only' => [
-            'index',
-            'getCompanyByCompanyId',
-            'getCompanyDropdownData',
-            ]]);
-        $this->middleware('permission:create company', ['only' => ['createCompany']]);
+        $this->middleware('permission:view company', ['only' => ['index', 'getCompanyByCompanyId']]);
         $this->middleware('permission:update company', ['only' => ['updateCompany']]);
 
         $this->common = new CommonModel();
@@ -145,7 +140,6 @@ class CompanyController extends Controller
     //desh(2024-10-21)
     public function updateCompany(Request $request, $id)
     {
-        // var_dump('submit');
         try {
             return DB::transaction(function () use ($request, $id) {
                 $request->validate([
@@ -178,6 +172,7 @@ class CompanyController extends Controller
                 $table = 'com_companies';
                 $idColumn = 'id';
                 $inputArr = [
+                    'id' => 1,
                     'company_name' => $request->company_name,
                     'company_short_name' => $request->company_short_name,
                     'industry_id' => $request->industry_id,
@@ -225,7 +220,24 @@ class CompanyController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
-
+    //desh(2024-10-22)
+    public function getCompanyDropdownData()
+    {
+        $industries  = $this->common->commonGetAll('com_industries', '*');
+        $countries = $this->common->commonGetAll('loc_countries', '*');
+        $provinces = $this->common->commonGetAll('loc_provinces', '*');
+        $cities = $this->common->commonGetAll('loc_cities', '*');
+        $employees = $this->common->commonGetAll('emp_employees', '*');
+        return response()->json([
+            'data' => [
+                'industries' => $industries,
+                'countries' => $countries,
+                'provinces' => $provinces,
+                'cities' => $cities,
+                'employees' => $employees,
+            ]
+        ], 200);
+    }
     //desh(2024-10-21)
     public function getCompanyByCompanyId($id)
     {

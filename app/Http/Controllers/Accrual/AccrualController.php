@@ -109,7 +109,29 @@ class AccrualController extends Controller
         return $total;
     }
 
+    public function getByAccrualByUserIdAndTypeIdAndDate($user_id,$type,$date_stamp, $where = NULL, $order = NULL){
 
+        if ( $user_id == '' || $type == '' || $date_stamp == '') {
+			return FALSE;
+		}
+        
+        $table = 'accrual';
+        $fields = '*';
+        $joinArr = [];
+
+        $whereArr = [
+            "DATE_FORMAT(time_stamp,'%Y-%m-%d') = ".$date_stamp,
+            'user_id' => $user_id,
+            'type' => $type,
+        ];        
+
+        $groupBy = null;
+        $orderBy = null;
+
+        $res = $this->common->commonGetAll($table, $fields, $joinArr, $whereArr, true, [], $groupBy, $orderBy);
+
+        return $res;
+    }
 
 }
 ?>

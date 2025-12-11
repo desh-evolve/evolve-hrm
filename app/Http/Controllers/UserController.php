@@ -92,4 +92,5 @@ class UserController extends Controller
 
         return redirect('/users')->with('status','User Delete Successfully');
     }
+
 }

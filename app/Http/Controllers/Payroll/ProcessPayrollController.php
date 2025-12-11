@@ -234,15 +234,14 @@ class ProcessPayrollController extends Controller
 	{
 		$pbc = new ProgressBarController();
 
-		$action = 'generate_paystubs';
 		$next_page = null;
-		$pay_period_ids = null;
-		$filter_user_id = null;
-		$pay_stub_ids = null;
+		$pay_period_ids = [1, 2];
+		$filter_user_id = [1];
+		$pay_stub_ids = [1];
 		$data = null;
 
 		$dataArr = [
-			'action' => $action,
+			'action' => 'generate_paystubs',
 			'next_page' => $next_page,
 			'pay_period_ids' => $pay_period_ids,
 			'filter_user_id' => $filter_user_id,
@@ -251,7 +250,7 @@ class ProcessPayrollController extends Controller
 		];
 
 		$res = $pbc->initProgressBar($dataArr);
-
+		print_r($res);exit;
 		return $res;
 	}
 

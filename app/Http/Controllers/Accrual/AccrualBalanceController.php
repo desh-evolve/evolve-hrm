@@ -201,6 +201,45 @@ class AccrualBalanceController extends Controller
     }
 
 
+    // public function updateAccrualBalance(Request $request, $id)
+    // {
+    //     try {
+    //         return DB::transaction(function () use ($request, $id) {
+
+    //             $request->validate([
+    //                 'user_id' => 'required',
+    //                 'accrual_policy_id' => 'required|string',
+    //                 'accrual_status' => 'required',
+    //             ]);
+
+    //             $table = 'accrual';
+    //             $idColumn = 'id';
+    //             $inputArr = [
+    //                 'user_id' =>  $request->user_id,
+    //                 'accrual_policy_id' =>  $request->accrual_policy_id,
+    //                 'type' =>  $request->type,
+    //                 'user_date_total_id' =>  $request->user_date_total_id,
+    //                 'time_stamp' =>  $request->time_stamp,
+    //                 'amount' =>  $request->amount,
+    //                 'leave_requset_id' =>  $request->leave_requset_id ?: "0",
+    //                 'status' =>  $request->accrual_status,
+    //                 'updated_by' => Auth::user()->id,
+
+    //             ];
+    //             $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
+
+
+    //             if ($insertId) {
+    //                 return response()->json(['status' => 'success', 'message' => 'Pay Stub Entry Account Link updated successfully', 'data' => ['id' => $insertId]], 200);
+    //             } else {
+    //                 return response()->json(['status' => 'error', 'message' => 'Failed updating Pay Stub Entry Account Link', 'data' => []], 500);
+    //             }
+    //         });
+    //     } catch (\Illuminate\Database\QueryException $e) {
+    //         return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
+    //     }
+    // }
+
     public function updateAccrualBalance(Request $request, $id)
     {
         try {
@@ -208,36 +247,47 @@ class AccrualBalanceController extends Controller
                 $request->validate([
                     'user_id' => 'required',
                     'accrual_policy_id' => 'required|string',
-                    'balance' => 'nullable|regex:/^\d{1,14}(\.\d{1,4})?$/',
+                    'accrual_status' => 'required',
                 ]);
 
-                $table = 'accrual_balance';
+                $table = 'accrual';
                 $idColumn = 'id';
                 $inputArr = [
-                    'user_id' => $request->user_id,
-                    'accrual_policy_id' => $request->accrual_policy_id,
-                    'balance' => $request->balance,
-                    'banked_ytd' => $request->banked_ytd ?: "",
-                    'used_ytd' => $request->used_ytd ?: "",
-                    'awarded_ytd' => $request->awarded_ytd ?: "",
-                    'status' => $request->accrual_balance_status,
+                    'user_id' =>  $request->user_id,
+                    'accrual_policy_id' =>  $request->accrual_policy_id,
+                    'type' =>  $request->type,
+                    'user_date_total_id' =>  $request->user_date_total_id,
+                    'time_stamp' =>  $request->time_stamp,
+                    'amount' =>  $request->amount,
+                    'leave_requset_id' =>  $request->leave_requset_id ?: "0",
+                    'status' =>  $request->accrual_status,
                     'updated_by' => Auth::user()->id,
-
                 ];
                 $insertId = $this->common->commonSave($table, $inputArr, $id, $idColumn);
 
-                if (!$insertId) {
-                    return response()->json(['status' => 'error', 'message' => 'Failed to Update Accrual Balance'], 500);
-                }
-                // Save associated policies
-                $this->saveAccrualType($request);
+                if ($insertId) {
 
-                return response()->json(['status' => 'success', 'message' => 'Accrual Balance updated successfully', 'data' => ['id' => '1']], 200);
+                    // Calculate the total existing amount from the accrual table
+                    $totalExistingAmount = DB::table('accrual')
+                        ->where('accrual_policy_id', $request->accrual_policy_id)
+                        ->where('user_id', $request->user_id)
+                        ->sum('amount');
+
+                    DB::table('accrual_balance')
+                        ->where('accrual_policy_id', $request->accrual_policy_id)
+                        ->where('user_id', $request->user_id)
+                        ->update(['balance' => $totalExistingAmount]);
+
+                    return response()->json(['status' => 'success', 'message' => 'Accrual updated successfully', 'data' => ['id' => $insertId]], 200);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => 'Failed updating Accrual', 'data' => []], 500);
+                }
             });
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['status' => 'error', 'message' => 'Error occurred due to ' . $e->getMessage(), 'data' => []], 500);
         }
     }
+
     private function saveAccrualType($request)
     {
         if (!empty($request->accrual_policy_id)) {
@@ -285,8 +335,8 @@ class AccrualBalanceController extends Controller
     public function deleteAccrualBalance($id)
     {
         $whereArr = ['id' => $id];
-        $title = 'Accrual Balance';
-        $table = 'accrual_balance';
+        $title = 'Accrual';
+        $table = 'accrual';
 
         return $this->common->commonDelete($id, $whereArr, $title, $table);
     }
@@ -317,7 +367,8 @@ class AccrualBalanceController extends Controller
 
     public function getAccrualTypeByAccrualId($id)
     {
-        $idColumn = 'id';
+        // dd($id);
+        $idColumn = 'accrual_policy_id';
         $table = 'accrual';
         $fields = '*';
         $accrual_type = $this->common->commonGetById($id, $idColumn, $table, $fields);

@@ -718,19 +718,6 @@ class EmployeeController extends Controller
         return response()->json(['data' => $user_designations], 200);
     }
 
-    // download document
-    public function downloadDocumentLoadProfile($file)
-    {
-        $filePath = storage_path("app/public/documents/" . $file);
-
-        if (!file_exists($filePath)) {
-            Log::error("File not found: " . $filePath);
-            return response()->json(['status' => 'error', 'message' => 'File not found.'], 404);
-        }
-
-        return response()->download($filePath);
-    }
-
 //================================================================================================================
 // Employee profile details
 //================================================================================================================

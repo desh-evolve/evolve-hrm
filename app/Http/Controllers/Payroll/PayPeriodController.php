@@ -32,6 +32,20 @@ class PayPeriodController extends Controller
         return $res;
     }
 
+    public function getByIdAndCompanyId($id, $com_id){
+        //use com_id if necessary later
+        $table = 'pay_period';
+        $idColumn = 'id';
+        $fields = '*';
+        $joinArr = [];
+        $whereArr = [];
+        $exceptDel = true;
+
+        $res = $this->common->commonGetById($id, $idColumn, $table, $fields, $joinArr, $whereArr, $exceptDel);
+
+        return $res;
+    }
+
     public function getByCompanyIdAndStatus($company_id, $status_ids){
         if ( $company_id == '' ) {
 			return FALSE;
